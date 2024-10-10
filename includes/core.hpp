@@ -1,0 +1,2 @@
+// class representing the problem to be solved. It contains the grid, the time step, the final time, the initial condition, the boundary conditions, the source term, the exact solution, the numerical solution, the error, and the output file.
+// the boundary conditions, the source term, the exact solution, the numerical solver.
