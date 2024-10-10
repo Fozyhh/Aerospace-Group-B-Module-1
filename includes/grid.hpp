@@ -8,7 +8,7 @@
 
 struct Grid
 {
-    int nx, ny, nz;              // number of cells in the x,y,z directions.
+    unsigned int nx, ny, nz;     // number of cells in the x,y,z directions.
     std::vector<double> u, v, w; // velocity values of the grid cells.
     std::vector<double> p;       // pressure values of the grid cells.
 
@@ -20,3 +20,5 @@ struct Grid
         p.resize((nx + 1) * (ny + 1) * (nz + 1));
     }
 };
+
+#endif // GRID_HPP
