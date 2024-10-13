@@ -1,6 +1,7 @@
-#include "core.hpp"
+#include "../includes/core.hpp"
+#include <string>
 
-void IcoNS::preprocessing(string &input_file)
+void IcoNS::preprocessing(std::string &input_file)
 {
     // read the input file.
     for (size_t i = 1; i < nx - 1; i++)
@@ -36,6 +37,7 @@ void IcoNS::preprocessing(string &input_file)
 void IcoNS::solve()
 {
     double time = 0.0;
+    int i = 0;
 
     while (time < T)
     {
@@ -43,6 +45,8 @@ void IcoNS::solve()
         time += dt;
 
         output();
+        std::cout << "time step: " << i << std::endl;
+        i++;
     }
 }
 
@@ -56,9 +60,13 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
                  (u[l + ny * nz + nz] - u[l + ny * nz - nz]) / (2 * dy) +
              (w[l + 1] + w[l - 1] + w[l + ny * nz + 1] + w[l + ny * nz - 1]) / 4.0 *
                  (u[l + ny * nz + 1] - u[l + ny * nz - 1]) / (2 * dz)) +
-           1 / Re * ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) + (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) + (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz));
+           1 / Re *
+               ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) +
+                (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) +
+                (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz));
 
-    f[1] = -();
+    f[1] = -1;
+    f[2] = -1;
 
     return f;
 }
@@ -121,5 +129,4 @@ void IcoNS::solve_time_step()
 
 void IcoNS::output()
 {
-    // write the output file.
 }

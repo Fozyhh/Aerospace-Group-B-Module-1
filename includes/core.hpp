@@ -5,6 +5,7 @@
 #define CORE_HPP
 
 #include "grid.hpp"
+#include <string>
 
 class IcoNS
 {
@@ -25,14 +26,14 @@ public:
           ny(ny),
           nz(nz),
           input_file(input_file),
-          output_file(output_file)
+          output_file(output_file),
+          dx(lx / nx),
+          dy(ly / ny),
+          dz(lz / nz)
     {
-        dx = lx / nx;
-        dy = ly / ny;
-        dz = lz / nz;
     }
 
-    void preprocessing(string &input_file); // grid initialization.
+    void preprocessing(std::string &input_file); // grid initialization.
 
     void solve(); // solve the problem saving the ouput.
 
@@ -54,3 +55,5 @@ private:
     std::string input_file;        // input file.
     std::string output_file;       // output file.
 };
+
+#endif
