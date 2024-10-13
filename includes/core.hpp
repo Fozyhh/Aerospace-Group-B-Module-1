@@ -14,7 +14,10 @@ public:
     {
     };
 
-    IcoNS(const double lx, const double ly, const double lz, const unsigned int nx, const unsigned int ny, const unsigned int nz, const double dt, const double T, const double Re, const std::string &input_file, const std::string &output_file)
+    IcoNS(const double lx, const double ly, const double lz,
+          const unsigned int nx, const unsigned int ny, const unsigned int nz,
+          const double dt, const double T, const double Re,
+          const std::string &input_file, const std::string &output_file)
         : grid(nx, ny, nz),
           dt(dt),
           T(T),
@@ -37,14 +40,15 @@ public:
 
     void solve(); // solve the problem saving the ouput.
 
-    std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k); // compute the source term.
+    std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
+                                  size_t i, size_t j, size_t k);
 
     void solve_time_step(); // solve a time step.
 
     void output(); // write the output file.
 
 private:
-    Grid grid;                     // grid of the domain.
+    Grid grid;                     // grid of the problem.
     const double dt;               // time step.
     const double T;                // final time.
     const double Re;               // Reynolds number.

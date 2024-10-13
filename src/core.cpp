@@ -56,17 +56,34 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
     std::vector<double> f(3);
     size_t l = i * ny * nz + j * nz + k;
     f[0] = -(u[l] * (u[l + ny * nz] - u[l - ny * nz]) / (2 * dx) +
-             (v[l + nz] + v[l - nz] + v[l + ny * nz + nz] + v[l + ny * nz - nz]) / 4.0 *
-                 (u[l + ny * nz + nz] - u[l + ny * nz - nz]) / (2 * dy) +
-             (w[l + 1] + w[l - 1] + w[l + ny * nz + 1] + w[l + ny * nz - 1]) / 4.0 *
-                 (u[l + ny * nz + 1] - u[l + ny * nz - 1]) / (2 * dz)) +
+             (v[l] + v[l - nz] + v[l + ny * nz] + v[l + ny * nz - nz]) / 4.0 *
+                 (u[l + nz] - u[l - nz]) / (2 * dy) +
+             (w[l] + w[l - 1] + w[l + ny * nz] + w[l + ny * nz - 1]) / 4.0 *
+                 (u[l + 1] - u[l - 1]) / (2 * dz)) +
            1 / Re *
                ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) +
                 (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) +
                 (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz));
 
-    f[1] = -1;
-    f[2] = -1;
+    f[1] = -((u[l] + u[l - ny * nz] + u[l + nz] + u[l - ny * nz + nz]) / 4.0 *
+                 (v[l + ny * nz] - v[l - ny * nz]) / (2 * dx) +
+             v[l] * (v[l + nz] - v[l - nz]) / (2 * dy) +
+             (w[l] + w[l - 1] + w[l + nz] + w[l + nz - 1]) / 4.0 *
+                 (v[l + 1] - v[l - 1]) / (2 * dz)) +
+           1 / Re *
+               ((v[l + ny * nz] - 2 * v[l] + v[l - ny * nz]) / (dx * dx) +
+                (v[l + nz] - 2 * v[l] + v[l - nz]) / (dy * dy) +
+                (v[l + 1] - 2 * v[l] + v[l - 1]) / (dz * dz));
+
+    f[2] = -((u[l] + u[l - ny * nz] + u[l + 1] + u[l - ny * nz + 1]) / 4.0 *
+                 (w[l + ny * nz] - w[l - ny * nz]) / (2 * dx) +
+             (v[l] + v[l - nz] + v[l + 1] + v[l - nz + 1]) / 4.0 *
+                 (w[l + nz] - w[l - nz]) / (2 * dy) +
+             w[l] * (w[l + 1] - w[l - 1]) / (2 * dz)) +
+           1 / Re *
+               ((w[l + ny * nz] - 2 * w[l] + w[l - ny * nz]) / (dx * dx) +
+                (w[l + nz] - 2 * w[l] + w[l - nz]) / (dy * dy) +
+                (w[l + 1] - 2 * w[l] + w[l - 1]) / (dz * dz));
 
     return f;
 }
