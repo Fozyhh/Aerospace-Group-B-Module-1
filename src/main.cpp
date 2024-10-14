@@ -2,7 +2,7 @@
 
 int main()
 {
-    IcoNS icoNS(1.0, 1.0, 1.0, 10, 10, 10, 0.01, 1.0, 100.0, "input.txt", "output.txt");
+    IcoNS icoNS(100, 100, 100, 100, 100, 100, 0.01, 10.0, 400.0, "input.txt", "output.txt");
 
     icoNS.solve();
 

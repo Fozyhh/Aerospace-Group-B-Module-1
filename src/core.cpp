@@ -1,7 +1,7 @@
 #include "../includes/core.hpp"
 #include <string>
 
-void IcoNS::preprocessing(std::string &input_file)
+void IcoNS::preprocessing(/*std::string &input_file*/)
 {
     // read the input file.
     for (size_t i = 1; i < nx - 1; i++)
