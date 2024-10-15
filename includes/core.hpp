@@ -32,13 +32,15 @@ public:
         dz = lz / nz;
     }
 
-    void preprocessing(string &input_file); // grid initialization.
+    void preprocessing(/* std::string& input_file */); // grid initialization.
 
     void solve(); // solve the problem saving the ouput.
 
-    std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k); // compute the source term.
+    std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+    std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
 
-    void solve_time_step(); // solve a time step.
+
+    void solve_time_step( double time ); // solve a time step.
 
     void output(); // write the output file.
 
@@ -49,8 +51,10 @@ private:
     const double Re;               // Reynolds number.
     const unsigned int lx, ly, lz; // lengths of edges of the domain.
     const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-    const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+    double dx, dy, dz;       // cell sizes in the x,y,z directions.
     ExactSolution exact_solution;  // exact solution.
     std::string input_file;        // input file.
     std::string output_file;       // output file.
 };
+
+#endif // CORE_HPP
