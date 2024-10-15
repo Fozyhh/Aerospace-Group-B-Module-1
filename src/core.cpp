@@ -63,7 +63,7 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
             (w[l+nz*ny] + w[l] + w[l+nz*ny-1]+w[l-1]) / 4.0 * (u[l+1] - u[l-1])/(2.0*dz))+
             1/Re * ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) +
                     (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) + 
-                    (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz)) + g[0];
+                    (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz)) - g[0];
 
 
     f[1] = -((u[l] + u[l+nz] + u[l-ny*nz]+u[l-ny*nz+nz])/4.0 * (v[l+ny*nz] - v[l-ny*nz] / (2.0*dx)) +
@@ -71,14 +71,14 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
             (w[l] + w[l-1] + w[l + nz] + w[l + nz -1]) / 4.0 + (v[l+1] - v[l -1])/(2.0*dz)) + 
             1/Re * ((v[l+nz*ny] - 2.0*v[l] + v[l-nz*ny]) / (dx*dx) + 
                      (v[l+nz] -2.0*v[l] + v[l-nz]) / (dy*dy) + 
-                     (v[l+1] - 2.0*v[l] + v[l-1]) / (dz*dz));
+                     (v[l+1] - 2.0*v[l] + v[l-1]) / (dz*dz)) - g[1];
 
     f[2] = -((u[l] + u[l-ny*nz] + u[l+1] + u[l-nz*ny+1]) / 4.0 * (w[l+nz*ny] - w[l - nz*ny]) / (2.0*dx) + 
             (v[l+1] + v[l-nz+1] + v[l] + v[l-nz])/4.0 * (w[l+nz]-w[l-nz]) / (2.0*dy) + 
             w[l] * (w[l+1] - w[l-1]) / (2.0*dz)) +
             1/Re * ((w[l+nz*ny] - 2.0*w[l] + w[l-nz*ny]) / (dx*dx) + 
                     (w[l+nz] -2.0*w[l] + w[l-nz]) / (dy*dy) + 
-                    (w[l+1] -2.0*w[l] + w[l-1]) / (dz*dz));
+                    (w[l+1] -2.0*w[l] + w[l-1]) / (dz*dz)) - g[2];
 
 
 
@@ -164,7 +164,8 @@ void IcoNS::solve_time_step( double time)
         {
             for (size_t k = 0; k < nz; k++)
             {
-                diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i) * std::cos(j) * std::sin(k) * std::cos(time+dt));
+                //diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i) * std::cos(j) * std::sin(k) * std::cos(time+dt));
+                diff = grid.u[i * ny * nz + j * nz + k];
                 std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;           
                 //std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * ny * nz + j * nz + k] << std::endl;
                 //std::cout << "v[" << i << "," << j << "," << k << "] = " << grid.v[i * ny * nz + j * nz + k] << std::endl;
