@@ -12,7 +12,19 @@ class IcoNS
 public:
   class ExactSolution
   {
+    //Place holder implementation for now
+    public:
+        std::vector<double> u_exact;
+        std::vector<double> v_exact;
+        std::vector<double> w_exact;
+
+        void initialize(const unsigned int nx, const unsigned int ny, const unsigned int nz) {
+            u_exact.resize(nx * ny * nz, 0.0);
+            v_exact.resize(nx * ny * nz, 0.0);
+            w_exact.resize(nx * ny * nz, 0.0);
+        }
   };
+
 
   IcoNS(const double lx, const double ly, const double lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
@@ -44,6 +56,8 @@ public:
                                 size_t i, size_t j, size_t k);
 
   void solve_time_step(); // solve a time step.
+
+  double errorComp(); // compute the L2 norm
 
   void output(); // write the output file.
 

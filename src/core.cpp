@@ -1,4 +1,5 @@
 #include "../includes/core.hpp"
+#include <math.h>
 #include <string>
 
 void IcoNS::preprocessing(/*std::string &input_file*/)
@@ -137,6 +138,57 @@ void IcoNS::solve_time_step()
             }
         }
     }
+}
+
+double IcoNS::errorComp()
+{
+  double sum = 0.0;
+  double weight = dx;
+
+  // Assign weights
+   for (size_t i = 0; i < nx; ++i)
+   {
+       for (size_t j = 0; j < ny; ++j)
+       {
+            for (size_t k = 0; k < nz; ++k)
+            {
+                size_t index = i * ny * nz + j * nz + k;
+
+                // Determine if the point is on the boundary
+                int boundary_count = 0;
+                boundary_count += (i == 0) || (i == nx - 1);
+                boundary_count += (j == 0) || (j == ny - 1);
+                boundary_count += (k == 0) || (k == nz - 1);
+
+                // Assign weight based on boundary count
+                // 3 boundaries => Vertex
+                // 2 boundaries => Edge
+                // 1 boundary  => Boundary Surface
+                // 0 boundaries => Internal
+                switch (boundary_count)
+                {
+                    case 3:
+                        weight = dx / 8.0;
+                        break;
+                    case 2:
+                        weight = dx / 4.0;
+                        break;
+                    case 1:
+                        weight = dx / 2.0;
+                        break;
+                    default:
+                        break;
+                }
+
+                double velocity_sq = grid.u[i] * grid.u[i] +
+                                     grid.v[i] * grid.v[i] +
+                                     grid.w[i] * grid.w[i];
+
+                sum += std::sqrt(velocity_sq * weight);
+            }
+       }
+   } 
+  return sum;
 }
 
 void IcoNS::output()
