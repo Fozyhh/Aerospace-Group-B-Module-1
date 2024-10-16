@@ -1,6 +1,8 @@
-#include "core.hpp"
+#include "../includes/core.hpp"
+#include <math.h>
+#include <string>
 
-void IcoNS::preprocessing(string &input_file)
+void IcoNS::preprocessing(/*std::string &input_file*/)
 {
     // read the input file.
     for (size_t i = 1; i < nx - 1; i++)
@@ -36,6 +38,7 @@ void IcoNS::preprocessing(string &input_file)
 void IcoNS::solve()
 {
     double time = 0.0;
+    int i = 0;
 
     while (time < T)
     {
@@ -43,6 +46,8 @@ void IcoNS::solve()
         time += dt;
 
         output();
+        std::cout << "time step: " << i << std::endl;
+        i++;
     }
 }
 
@@ -51,7 +56,7 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
 {
     std::vector<double> f(3);
     size_t l = i * ny * nz + j * nz + k;
-    
+
     
     f[0] = -(u[l] * (u[l+nz*ny] - u[l -nz*ny]) / (2.0*dx) + 
             (v[l+nz*ny] + v[l] + v[l-nz] + v[l+nz*ny-nz]) / 4.0 * (u[l+nz] - u[l-nz])/(2.0*dy) +
@@ -74,7 +79,6 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
             1/Re * ((w[l+nz*ny] - 2.0*w[l] + w[l-nz*ny]) / (dx*dx) + 
                     (w[l+nz] -2.0*w[l] + w[l-nz]) / (dy*dy) + 
                     (w[l+1] -2.0*w[l] + w[l-1]) / (dz*dz));
-
 
 
     return f;
@@ -136,7 +140,57 @@ void IcoNS::solve_time_step()
     }
 }
 
+double IcoNS::errorComp()
+{
+  double sum = 0.0;
+  double weight = dx;
+
+  // Assign weights
+   for (size_t i = 0; i < nx; ++i)
+   {
+       for (size_t j = 0; j < ny; ++j)
+       {
+            for (size_t k = 0; k < nz; ++k)
+            {
+                size_t index = i * ny * nz + j * nz + k;
+
+                // Determine if the point is on the boundary
+                int boundary_count = 0;
+                boundary_count += (i == 0) || (i == nx - 1);
+                boundary_count += (j == 0) || (j == ny - 1);
+                boundary_count += (k == 0) || (k == nz - 1);
+
+                // Assign weight based on boundary count
+                // 3 boundaries => Vertex
+                // 2 boundaries => Edge
+                // 1 boundary  => Boundary Surface
+                // 0 boundaries => Internal
+                switch (boundary_count)
+                {
+                    case 3:
+                        weight = dx / 8.0;
+                        break;
+                    case 2:
+                        weight = dx / 4.0;
+                        break;
+                    case 1:
+                        weight = dx / 2.0;
+                        break;
+                    default:
+                        break;
+                }
+
+                double velocity_sq = grid.u[i] * grid.u[i] +
+                                     grid.v[i] * grid.v[i] +
+                                     grid.w[i] * grid.w[i];
+
+                sum += std::sqrt(velocity_sq * weight);
+            }
+       }
+   } 
+  return sum;
+}
+
 void IcoNS::output()
 {
-    // write the output file.
 }
