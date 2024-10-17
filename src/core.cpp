@@ -22,7 +22,7 @@ void IcoNS::preprocessing(/* std::string &input_file */)
         {
             for (size_t k = 0; k < nz; k++)
             {
-                if (i == 0 || i == nx || j == 0 || j == ny || k == 0 || k == nz)
+                if (i == 0 || i == nx-1 || j == 0 || j == ny-1 || k == 0 || k == nz-1)
                 {
                     grid.u[i * ny * nz + j * nz + k] = 0.0;
                     grid.v[i * ny * nz + j * nz + k] = 0.0;
@@ -109,7 +109,7 @@ void IcoNS::solve_time_step(double time)
             for (size_t k = 1; k < nz - 1; k++)
             {
                 f = functionF(grid.u, grid.v, grid.w, i, j, k, time);
-                std::cout << "f[0] = " << f[0] << std::endl;
+                //std::cout << "f[0] = " << f[0] << std::endl;
                 // solve the momentum equations -> TODO later also with pressure
                 Y2_x[i * ny * nz + j * nz + k] = grid.u[i * ny * nz + j * nz + k] +
                                                  64.0 / 120.0 * dt * f[0];
