@@ -1,10 +1,14 @@
 #include "boundary.hpp"
 
-boundary::boundary(Grid& grid_): 
+boundary::boundary(Grid& grid_,double dx_, double dy_,double dz_): 
 grid(grid_)
 ,nx(grid.nx)
 ,ny(grid.ny)
 ,nz(grid.nz)
+,dx(dx_)
+,dy(dy_)
+,dz(dz_)
+,prec(1/2)
 {}
 
 
@@ -38,4 +42,15 @@ void boundary::update_boundary(){
     }
         grid.u[(nz-1*nz) + nz-1] = boundary_value_u(0,(nz-1),nz-1);
     
+}
+
+
+double boundary::approximate_boundary_u(size_t x, size_t y, size_t z) {
+    double dv = ((boundary_value_v(x * dx, y * dy + prec, z)) -
+                ((boundary_value_v(x * dx, y * dy - prec, z)))) / (2*prec);
+    
+    double dw =  ((boundary_value_w(x * dx, y * dy, z * dz + prec)) -
+                 ((boundary_value_w(x * dx, y * dy, z * dz - prec)))) / (2*prec);
+
+    return  boundary_value_u(x * dx, y * dy, z * dz) - (dv + dw) * (dx/2);
 }
