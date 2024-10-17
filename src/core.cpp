@@ -16,22 +16,6 @@ void IcoNS::preprocessing(/* std::string &input_file */)
             }
         }
     }
-    for (size_t i = 0; i < nx; i++)
-    {
-        for (size_t j = 0; j < ny; j++)
-        {
-            for (size_t k = 0; k < nz; k++)
-            {
-                if (i == 0 || i == nx-1 || j == 0 || j == ny-1 || k == 0 || k == nz-1)
-                {
-                    grid.u[i * ny * nz + j * nz + k] = 0.0;
-                    grid.v[i * ny * nz + j * nz + k] = 0.0;
-                    grid.w[i * ny * nz + j * nz + k] = 0.0;
-                }
-            }
-            // pressure initialization.
-        }
-    }
 }
 
 void IcoNS::solve()
@@ -40,6 +24,7 @@ void IcoNS::solve()
 
     while (time < T)
     {
+        apply_boundary_conditions(time);
         solve_time_step(time);
         time += dt;
 
@@ -54,7 +39,7 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
     size_t l = i * ny * nz + j * nz + k;
 
     std::vector<double> g(3);
-    g = functionG(i, j, k, t);
+    g = functionG(i*dx, j*dy, k*dz, t);
 
     f[0] = -(u[l] * (u[l + nz * ny] - u[l - nz * ny]) / (2.0 * dx) +
              (v[l + nz * ny] + v[l] + v[l - nz] + v[l + nz * ny - nz]) / 4.0 * (u[l + nz] - u[l - nz]) / (2.0 * dy) +
@@ -148,8 +133,80 @@ void IcoNS::solve_time_step(double time)
         }
     }
 
+    // print the grid values.
+    double diff;
+    int count = 0;
+    for (size_t i = 0; i < nx; i++)
+    {
+        for (size_t j = 0; j < ny; j++)
+        {
+            for (size_t k = 0; k < nz; k++)
+            {
+                diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i*dx) * std::cos(j*dy) * std::sin(k*dz) * std::sin(time));
+                //diff = grid.u[i * ny * nz + j * nz + k];
+
+                if(diff > 0.01){
+                    // std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;
+                    count++;
+                }
+                // std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * ny * nz + j * nz + k] << std::endl;
+                // std::cout << "v[" << i << "," << j << "," << k << "] = " << grid.v[i * ny * nz + j * nz + k] << std::endl;
+                // std::cout << "w[" << i << "," << j << "," << k << "] = " << grid.w[i * ny * nz + j * nz + k] << std::endl;
+            }
+        }
+    }
+    std::cout << "at time "<< time << " there are " << count << " cells whith error > 0.01" << std::endl;
+}
+
+void IcoNS::apply_boundary_conditions(double time)
+{
     //compute boundary conditions
     for (size_t i = 0; i < nx; i++)
+    {
+        for (size_t j = 0; j < ny; j++)
+        {
+            // bottom face -> k = 0 -> sin(k*dz) = 0, cos(k*dz) = 1
+            grid.u[i * ny * nz + j * nz] = 0.0;
+            grid.v[i * ny * nz + j * nz] = 0.0;
+            grid.w[i * ny * nz + j * nz] = 2*std::cos(i*dx) * std::cos(j*dy) * std::sin(time);
+            // top face -> k*dz = lz
+            grid.u[i * ny * nz + j * nz + nz - 1] = std::sin(i*dx) * std::cos(j*dy) * std::sin(lz) * std::sin(time);
+            grid.v[i * ny * nz + j * nz + nz - 1] = std::cos(i*dx) * std::sin(j*dy) * std::sin(lz) * std::sin(time);
+            grid.w[i * ny * nz + j * nz + nz - 1] = 2*std::cos(i*dx) * std::cos(j*dy) * std::cos(lz) * std::sin(time);
+        }
+    }
+
+    for (size_t i = 0; i < nx; i++)
+    {
+        for (size_t k = 0; k < nz; k++)
+        {
+            // front face -> j = 0 -> sin(j*dy) = 0, cos(j*dy) = 1
+            grid.u[i * ny * nz + k] = std::sin(i*dx) * std::sin(k*dz) * std::sin(time);
+            grid.v[i * ny * nz + k] = 0.0;
+            grid.w[i * ny * nz + k] = 2*std::cos(i*dx) * std::cos(k*dz) * std::sin(time);
+            // back face -> j*dy = ly
+            grid.u[i * ny * nz + (ny-1) * nz + k] = std::sin(i*dx) * std::cos(ly) * std::sin(k*dz) * std::sin(time);
+            grid.v[i * ny * nz + (ny-1) * nz + k] = std::cos(i*dx) * std::sin(ly) * std::sin(k*dz) * std::sin(time);
+            grid.w[i * ny * nz + (ny-1) * nz + k] = 2*std::cos(i*dx) * std::cos(ly) * std::cos(k*dz) * std::sin(time);
+        }
+    }
+
+    for (size_t j = 0; j < ny; j++)
+    {
+        for (size_t k = 0; k < nz; k++)
+        {
+            // left face -> i = 0 -> sin(i*dx) = 0, cos(i*dx) = 1
+            grid.u[j * nz + k] = 0.0;
+            grid.v[j * nz + k] = std::sin(j*dy) * std::sin(k*dz) * std::sin(time);
+            grid.w[j * nz + k] = 2*std::cos(j*dy) * std::cos(k*dz) * std::sin(time);
+            // right face -> i*dx = lx
+            grid.u[(nx-1) * ny * nz + j * nz + k] = std::sin(lx) * std::cos(j*dy) * std::sin(k*dz) * std::sin(time);
+            grid.v[(nx-1) * ny * nz + j * nz + k] = std::cos(lx) * std::sin(j*dy) * std::sin(k*dz) * std::sin(time);
+            grid.w[(nx-1) * ny * nz + j * nz + k] = 2*std::cos(lx) * std::cos(j*dy) * std::cos(k*dz) * std::sin(time);
+        }
+    }
+
+    /* for (size_t i = 0; i < nx; i++)
     {
         for (size_t j = 0; j < ny; j++)
         {
@@ -157,32 +214,13 @@ void IcoNS::solve_time_step(double time)
             {
                 if(i == 0 || i == nx-1 || j == 0 || j == ny-1 || k == 0 || k == nz-1)
                 {
-                    grid.u[i * ny * nz + j * nz + k] = std::sin(i) * std::cos(j) * std::sin(k) * std::sin(time+dt);
-                    grid.v[i * ny * nz + j * nz + k] = std::cos(i) * std::sin(j) * std::sin(k) * std::sin(time+dt);
-                    grid.w[i * ny * nz + j * nz + k] = 2*std::cos(i) * std::cos(j) * std::cos(k) * std::sin(time+dt);
+                    grid.u[i * ny * nz + j * nz + k] = std::sin(i*dx) * std::cos(j*dy) * std::sin(k*dz) * std::sin(time);
+                    grid.v[i * ny * nz + j * nz + k] = std::cos(i*dx) * std::sin(j*dy) * std::sin(k*dz) * std::sin(time);
+                    grid.w[i * ny * nz + j * nz + k] = 2*std::cos(i*dx) * std::cos(j*dy) * std::cos(k*dz) * std::sin(time);
                 }
             }
         }
-    }
-
-    // print the grid values.
-    double diff;
-    for (size_t i = 0; i < nx; i++)
-    {
-        for (size_t j = 0; j < ny; j++)
-        {
-            for (size_t k = 0; k < nz; k++)
-            {
-                diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i) * std::cos(j) * std::sin(k) * std::sin(time+dt));
-                //diff = grid.u[i * ny * nz + j * nz + k];
-
-                if(diff!=0) std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;
-                // std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * ny * nz + j * nz + k] << std::endl;
-                // std::cout << "v[" << i << "," << j << "," << k << "] = " << grid.v[i * ny * nz + j * nz + k] << std::endl;
-                // std::cout << "w[" << i << "," << j << "," << k << "] = " << grid.w[i * ny * nz + j * nz + k] << std::endl;
-            }
-        }
-    }
+    } */
 }
 
 void IcoNS::output()

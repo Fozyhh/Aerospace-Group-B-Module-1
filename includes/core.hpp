@@ -39,7 +39,7 @@ public:
     std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
     std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
 
-
+    void apply_boundary_conditions(double time); // apply the boundary conditions.
     void solve_time_step( double time ); // solve a time step.
 
     void output(); // write the output file.
