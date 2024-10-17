@@ -157,8 +157,8 @@ void IcoNS::solve_time_step(double time)
             {
                 if(i == 0 || i == nx-1 || j == 0 || j == ny-1 || k == 0 || k == nz-1)
                 {
-                    grid.u[i * ny * nz + j * nz + k] = std::sin(i) * std::cos(j) * std::sin(k) * std::cos(time+dt);
-                    grid.v[i * ny * nz + j * nz + k] = std::cos(i) * std::sin(j) * std::sin(k) * std::cos(time+dt);
+                    grid.u[i * ny * nz + j * nz + k] = std::sin(i) * std::cos(j) * std::sin(k) * std::sin(time+dt);
+                    grid.v[i * ny * nz + j * nz + k] = std::cos(i) * std::sin(j) * std::sin(k) * std::sin(time+dt);
                     grid.w[i * ny * nz + j * nz + k] = 2*std::cos(i) * std::cos(j) * std::cos(k) * std::sin(time+dt);
                 }
             }
@@ -173,9 +173,10 @@ void IcoNS::solve_time_step(double time)
         {
             for (size_t k = 0; k < nz; k++)
             {
-                diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i) * std::cos(j) * std::sin(k) * std::cos(time+dt));
+                diff = std::abs(grid.u[i * ny * nz + j * nz + k] - std::sin(i) * std::cos(j) * std::sin(k) * std::sin(time+dt));
                 //diff = grid.u[i * ny * nz + j * nz + k];
-                std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;
+
+                if(diff!=0) std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;
                 // std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * ny * nz + j * nz + k] << std::endl;
                 // std::cout << "v[" << i << "," << j << "," << k << "] = " << grid.v[i * ny * nz + j * nz + k] << std::endl;
                 // std::cout << "w[" << i << "," << j << "," << k << "] = " << grid.w[i * ny * nz + j * nz + k] << std::endl;
