@@ -1,4 +1,5 @@
 #include "core.hpp"
+#include <math.h>
 
 void IcoNS::preprocessing(string &input_file)
 {
@@ -135,6 +136,16 @@ void IcoNS::solve_time_step()
         }
     }
 }
+
+void IcoNS::apply_boundary_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k,double t){
+    u[i * ny * nz + j * nx + k] = boundary_value_x(i,j,k,t) - (() - ()) * (dx / 2.0);
+}
+
+double IcoNS::boundary_value(size_t x, size_t y, size_t z, double t){
+    if(x == 0){ // faccia 1
+        return t;
+    }
+} 
 
 void IcoNS::output()
 {

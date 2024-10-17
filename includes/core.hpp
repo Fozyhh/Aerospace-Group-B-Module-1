@@ -38,6 +38,12 @@ public:
 
     std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k); // compute the source term.
 
+
+    //TODO: 3 apply 3 values
+    void apply_boundary_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k,double t);
+
+    double boundary_value(size_t x, size_t y, size_t z, double t); 
+
     void solve_time_step(); // solve a time step.
 
     void output(); // write the output file.
