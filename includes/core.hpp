@@ -5,6 +5,7 @@
 #define CORE_HPP
 
 #include "grid.hpp"
+#include "boundary.hpp"
 
 class IcoNS
 {
@@ -24,13 +25,13 @@ public:
           nx(nx),
           ny(ny),
           nz(nz),
+          dx(lx / nx),
+          dy(ly/ny),
+          boundary(grid,dx,dy,dz),
+          dz(lz/nz),
           input_file(input_file),
           output_file(output_file)
-    {
-        dx = lx / nx;
-        dy = ly / ny;
-        dz = lz / nz;
-    }
+    {}
 
     void preprocessing(string &input_file); // grid initialization.
 
@@ -56,7 +57,11 @@ private:
     const unsigned int lx, ly, lz; // lengths of edges of the domain.
     const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
     const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+    boundary boundary;
     ExactSolution exact_solution;  // exact solution.
     std::string input_file;        // input file.
     std::string output_file;       // output file.
+
 };
+
+#endif

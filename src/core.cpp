@@ -32,6 +32,13 @@ void IcoNS::preprocessing(string &input_file)
         }
         // pressure initialization.
     }
+
+
+    //boundary
+    FunctionZero zero;
+    //FunctionCustom custom();
+    boundary.addFunction(0,zero);
+    
 }
 
 void IcoNS::solve()
