@@ -11,16 +11,15 @@ grid(grid_)
 ,prec(1/2)
 {}
 
-
 void boundary::update_boundary(double t){
 
     size_t face=0; // left face
-    for (size_t k = 0; k < nz-1; k++)
+    /*for (size_t k = 0; k < nz-1; k++)
     {
         grid.u[k] = boundary_value_u[face].value(0,0,k,t);
         grid.w[k] = boundary_value_w[face].value(0,0,k,t); 
     }
-        grid.u[nz-1] = boundary_value_u[face].value(0,0,nz-1,t);
+    grid.u[nz-1] = boundary_value_u[face].value(0,0,nz-1,t);
     for (size_t j = 1; j < ny-1; j++)
     {
         grid.u[j*nz] = boundary_value_u[face].value(0,j,0,t);
@@ -39,13 +38,61 @@ void boundary::update_boundary(double t){
         grid.u[(ny-1)*nz + k] = boundary_value_u[face].value(0,(ny-1),k,t);
         grid.w[(ny-1)*nz + k] = boundary_value_w[face].value(0,(ny-1),k,t); 
     }
-        grid.u[(nz-1*nz) + nz-1] = boundary_value_u[face].value(0,(nz-1),nz-1,t);
-    
-    
-    //Missing: right face, front face, back face, upper face, lower face
-    face=1;
+        grid.u[(nz-1*nz) + nz-1] = boundary_value_u[face].value(0,(nz-1),nz-1,t);*/
 
-    face=2;
+    // TODO: check
+    for (size_t k=0; k < nz; k++)
+    {
+        grid.v[k] = boundary_value_v[face].value(0,0,k,t); 
+        grid.w[k] = boundary_value_w[face].value(0,0,k,t); 
+    }
+    grid.v[nz] = boundary_value_v[face].value(0,0,nz,t);
+    for (size_t j = 1; j < ny; j++)
+    {
+        grid.v[j*(nz+1)] = boundary_value_v[face].value(0,j,0,t);
+        grid.w[j*nz] = boundary_value_w[face].value(0,j,0,t); 
+        for(size_t k = 1; k < nz; k++)
+        {
+            grid.v[j*(nz+1) + k] = boundary_value_v[face].value(0,j,k,t);
+            grid.w[j*nz + k] = boundary_value_w[face].value(0,j,k,t); 
+            grid.u[j*(nz+1) + k] = approximate_boundary_u(0,j,k,t,face);
+        }
+        grid.v[j*(nz+1) + nz] = boundary_value_v[face].value(0,j,nz,t);
+    }
+
+    for (size_t k = 0; k < nz; k++)
+    {
+        grid.w[(ny+1)*nz + k] = boundary_value_w[face].value(0,ny,k,t);
+    }
+    
+    
+    //Missing: front face, back face, upper face, lower face
+    face=1; // right face
+    for (size_t k=0; k < nz; k++)
+    {
+        grid.v[nx*ny*(nz+1) + k] = boundary_value_v[face].value(nx,0,k,t); 
+        grid.w[nx*(ny+1)*nz + k] = boundary_value_w[face].value(nx,0,k,t); 
+    }
+    grid.v[nx*ny*(nz+1) + nz] = boundary_value_v[face].value(nx,0,nz,t);
+    for (size_t j = 1; j < ny; j++)
+    {
+        grid.v[nx*ny*(nz+1) + j*(nz+1)] = boundary_value_v[face].value(nx,j,0,t);
+        grid.w[nx*(ny+1)*nz + j*nz] = boundary_value_w[face].value(nx,j,0,t); 
+        for(size_t k = 1; k < nz; k++)
+        {
+            grid.v[nx*ny*(nz+1) + j*(nz+1) + k] = boundary_value_v[face].value(nx,j,k,t);
+            grid.w[nx*(ny+1)*nz + j*nz + k] = boundary_value_w[face].value(nx,j,k,t); 
+            grid.u[(nx-1)*(ny+1)*(nz+1) + j*(nz+1) + k] = approximate_boundary_u(nx-1,j,k,t,face);
+        }
+        grid.v[nx*ny*(nz+1) + j*(nz+1) + nz] = boundary_value_v[face].value(nx,j,nz,t);
+    }
+
+    for (size_t k = 0; k < nz; k++)
+    {
+        grid.w[nx*(ny+1)*nz + (ny+1)*nz + k] = boundary_value_w[face].value(nx,ny,k,t);
+    }
+    
+    face=2; // front face
 
     face=3;
 

@@ -23,9 +23,6 @@ public:
     void update_boundary(double t);
 
     double boundary::approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
-
-
-
     double boundary::approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face);
     double boundary::approximate_boundary_w(size_t x, size_t y, size_t z,double t,size_t face);
     //double boundary_value_u(size_t x, size_t y, size_t z); 
