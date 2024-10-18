@@ -57,29 +57,20 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
     std::vector<double> f(3);
     size_t l = i * ny * nz + j * nz + k;
 
-    
-    f[0] = -(u[l] * (u[l+nz*ny] - u[l -nz*ny]) / (2.0*dx) + 
-            (v[l+nz*ny] + v[l] + v[l-nz] + v[l+nz*ny-nz]) / 4.0 * (u[l+nz] - u[l-nz])/(2.0*dy) +
-            (w[l+nz*ny] + w[l] + w[l+nz*ny-1]+w[l-1]) / 4.0 * (u[l+1] - u[l-1])/(2.0*dz))+
-            1/Re * ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) +
-                    (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) + 
-                    (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz));
+    f[0] = -(u[l] * (u[l + nz * ny] - u[l - nz * ny]) / (2.0 * dx) +
+             (v[l + nz * ny] + v[l] + v[l - nz] + v[l + nz * ny - nz]) / 4.0 * (u[l + nz] - u[l - nz]) / (2.0 * dy) +
+             (w[l + nz * ny] + w[l] + w[l + nz * ny - 1] + w[l - 1]) / 4.0 * (u[l + 1] - u[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((u[l + ny * nz] - 2 * u[l] + u[l - ny * nz]) / (dx * dx) + (u[l + nz] - 2 * u[l] + u[l - nz]) / (dy * dy) + (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz));
 
+    f[1] = -((u[l] + u[l + nz] + u[l - ny * nz] + u[l - ny * nz + nz]) / 4.0 * (v[l + ny * nz] - v[l - ny * nz] / (2.0 * dx)) +
+             v[l] * (v[l + nz] - v[l - nz]) / (2.0 * dy) +
+             (w[l] + w[l - 1] + w[l + nz] + w[l + nz - 1]) / 4.0 + (v[l + 1] - v[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((v[l + nz * ny] - 2.0 * v[l] + v[l - nz * ny]) / (dx * dx) + (v[l + nz] - 2.0 * v[l] + v[l - nz]) / (dy * dy) + (v[l + 1] - 2.0 * v[l] + v[l - 1]) / (dz * dz));
 
-    f[1] = -((u[l] + u[l+nz] + u[l-ny*nz]+u[l-ny*nz+nz])/4.0 * (v[l+ny*nz] - v[l-ny*nz] / (2.0*dx)) +
-            v[l]* (v[l+nz] - v[l-nz])/(2.0*dy) + 
-            (w[l] + w[l-1] + w[l + nz] + w[l + nz -1]) / 4.0 + (v[l+1] - v[l -1])/(2.0*dz)) + 
-            1/Re * ((v[l+nz*ny] - 2.0*v[l] + v[l-nz*ny]) / (dx*dx) + 
-                     (v[l+nz] -2.0*v[l] + v[l-nz]) / (dy*dy) + 
-                     (v[l+1] - 2.0*v[l] + v[l-1]) / (dz*dz));
-
-    f[2] = -((u[l] + u[l-ny*nz] + u[l+1] + u[l-nz*ny+1]) / 4.0 * (w[l+nz*ny] - w[l - nz*ny]) / (2.0*dx) + 
-            (v[l+1] + v[l-nz+1] + v[l] + v[l-nz])/4.0 * (w[l+nz]-w[l-nz]) / (2.0*dy) + 
-            w[l] * (w[l+1] - w[l-1]) / (2.0*dz)) +
-            1/Re * ((w[l+nz*ny] - 2.0*w[l] + w[l-nz*ny]) / (dx*dx) + 
-                    (w[l+nz] -2.0*w[l] + w[l-nz]) / (dy*dy) + 
-                    (w[l+1] -2.0*w[l] + w[l-1]) / (dz*dz));
-
+    f[2] = -((u[l] + u[l - ny * nz] + u[l + 1] + u[l - nz * ny + 1]) / 4.0 * (w[l + nz * ny] - w[l - nz * ny]) / (2.0 * dx) +
+             (v[l + 1] + v[l - nz + 1] + v[l] + v[l - nz]) / 4.0 * (w[l + nz] - w[l - nz]) / (2.0 * dy) +
+             w[l] * (w[l + 1] - w[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((w[l + nz * ny] - 2.0 * w[l] + w[l - nz * ny]) / (dx * dx) + (w[l + nz] - 2.0 * w[l] + w[l - nz]) / (dy * dy) + (w[l + 1] - 2.0 * w[l] + w[l - 1]) / (dz * dz));
 
     return f;
 }
@@ -142,53 +133,160 @@ void IcoNS::solve_time_step()
 
 double IcoNS::errorComp()
 {
-  double sum = 0.0;
-  double weight = dx;
+    double error = 0.0;
 
-  // Assign weights
-   for (size_t i = 0; i < nx; ++i)
-   {
-       for (size_t j = 0; j < ny; ++j)
-       {
-            for (size_t k = 0; k < nz; ++k)
+    // first slice (left face)
+    {
+        error += ((grid.u[0] - exact_solution.value_x(0)) *
+                  (grid.u[0] - exact_solution.value_x(0)) *
+                  dx * dy * dz / 8);
+
+        for (size_t k = 1; k < nz - 1; k++)
+        {
+            error += ((grid.u[k] - exact_solution.value_x(k)) *
+                      (grid.u[k] - exact_solution.value_x(k)) *
+                      dx * dy * dz / 4);
+        }
+
+        error += ((grid.u[nz - 1] - exact_solution.value_x(nz - 1)) *
+                  (grid.u[nz - 1] - exact_solution.value_x(nz - 1)) *
+                  dx * dy * dz / 8);
+
+        for (size_t j = 1; j < ny - 1; j++)
+        {
+            error += ((grid.u[j * nz] - exact_solution.value_x(j * nz)) *
+                      (grid.u[j * nz] - exact_solution.value_x(j * nz)) *
+                      dx * dy * dz / 4);
+            for (size_t k = 1; k < nz - 1; k++)
             {
-                size_t index = i * ny * nz + j * nz + k;
+                error += ((grid.u[j * nz + k] - exact_solution.value_x(j * nz + k)) *
+                          (grid.u[j * nz + k] - exact_solution.value_x(j * nz + k)) *
+                          dx * dy * dz / 2);
+            }
+            error += ((grid.u[j * nz + nz - 1] - exact_solution.value_x(j * nz + nz - 1)) *
+                      (grid.u[j * nz + nz - 1] - exact_solution.value_x(j * nz + nz - 1)) *
+                      dx * dy * dz / 4);
+        }
 
-                // Determine if the point is on the boundary
-                int boundary_count = 0;
-                boundary_count += (i == 0) || (i == nx - 1);
-                boundary_count += (j == 0) || (j == ny - 1);
-                boundary_count += (k == 0) || (k == nz - 1);
+        error += ((grid.u[(ny - 1) * nz] - exact_solution.value_x((ny - 1) * nz)) *
+                  (grid.u[(ny - 1) * nz] - exact_solution.value_x((ny - 1) * nz)) *
+                  dx * dy * dz / 8);
 
-                // Assign weight based on boundary count
-                // 3 boundaries => Vertex
-                // 2 boundaries => Edge
-                // 1 boundary  => Boundary Surface
-                // 0 boundaries => Internal
-                switch (boundary_count)
+        for (size_t k = 1; k < nz - 1; k++)
+        {
+            error += ((grid.u[(ny - 1) * nz + k] - exact_solution.value_x((ny - 1) * nz + k)) *
+                      (grid.u[(ny - 1) * nz + k] - exact_solution.value_x((ny - 1) * nz + k)) *
+                      dx * dy * dz / 4);
+        }
+
+        error += ((grid.u[(ny - 1) * nz + nz - 1] - exact_solution.value_x((ny - 1) * nz + nz - 1)) *
+                  (grid.u[(ny - 1) * nz + nz - 1] - exact_solution.value_x((ny - 1) * nz + nz - 1)) *
+                  dx * dy * dz / 8);
+    }
+
+    // middle slices
+    {
+        for (size_t i = 1; i < nx - 1; i++)
+        {
+            error += ((grid.u[i * ny * nz] - exact_solution.value_x(i * ny * nz)) *
+                      (grid.u[i * ny * nz] - exact_solution.value_x(i * ny * nz)) *
+                      dx * dy * dz / 4);
+
+            for (size_t k = 1; k < nz - 1; k++)
+            {
+                error += ((grid.u[i * ny * nz + k] - exact_solution.value_x(i * ny * nz + k)) *
+                          (grid.u[i * ny * nz + k] - exact_solution.value_x(i * ny * nz + k)) *
+                          dx * dy * dz / 2);
+            }
+            error += ((grid.u[i * ny * nz + nz - 1] - exact_solution.value_x(i * ny * nz + nz - 1)) *
+                      (grid.u[i * ny * nz + nz - 1] - exact_solution.value_x(i * ny * nz + nz - 1)) *
+                      dx * dy * dz / 4);
+
+            for (size_t j = 1; j < ny - 1; j++)
+            {
+                error += ((grid.u[i * ny * nz + j * nz] - exact_solution.value_x(i * ny * nz + j * nz)) *
+                          (grid.u[i * ny * nz + j * nz] - exact_solution.value_x(i * ny * nz + j * nz)) *
+                          dx * dy * dz / 2);
+
+                for (size_t k = 1; k < nz - 1; k++)
                 {
-                    case 3:
-                        weight = dx / 8.0;
-                        break;
-                    case 2:
-                        weight = dx / 4.0;
-                        break;
-                    case 1:
-                        weight = dx / 2.0;
-                        break;
-                    default:
-                        break;
+                    error += ((grid.u[i * ny * nz + j * nz + k] - exact_solution.value_x(i * ny * nz + j * nz + k)) *
+                              (grid.u[i * ny * nz + j * nz + k] - exact_solution.value_x(i * ny * nz + j * nz + k)) *
+                              dx * dy * dz);
                 }
 
-                double velocity_sq = grid.u[i] * grid.u[i] +
-                                     grid.v[i] * grid.v[i] +
-                                     grid.w[i] * grid.w[i];
-
-                sum += std::sqrt(velocity_sq * weight);
+                error += ((grid.u[i * ny * nz + j * nz + nz - 1] - exact_solution.value_x(i * ny * nz + j * nz + nz - 1)) *
+                          (grid.u[i * ny * nz + j * nz + nz - 1] - exact_solution.value_x(i * ny * nz + j * nz + nz - 1)) *
+                          dx * dy * dz / 2);
             }
-       }
-   } 
-  return sum;
+
+            error += ((grid.u[i * ny * nz + (ny - 1) * nz] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz)) *
+                      (grid.u[i * ny * nz + (ny - 1) * nz] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz)) *
+                      dx * dy * dz / 4);
+
+            for (size_t k = 1; k < nz - 1; k++)
+            {
+                error += ((grid.u[i * ny * nz + (ny - 1) * nz + k] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz + k)) *
+                          (grid.u[i * ny * nz + (ny - 1) * nz + k] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz + k)) *
+                          dx * dy * dz / 2);
+            }
+
+            error += ((grid.u[i * ny * nz + (ny - 1) * nz + nz - 1] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz + nz - 1)) *
+                      (grid.u[i * ny * nz + (ny - 1) * nz + nz - 1] - exact_solution.value_x(i * ny * nz + (ny - 1) * nz + nz - 1)) *
+                      dx * dy * dz / 4);
+        }
+    }
+
+    // last slice (right face)
+    {
+        error += ((grid.u[(nx - 1) * ny * nz] - exact_solution.value_x((nx - 1) * ny * nz)) *
+                  (grid.u[(nx - 1) * ny * nz] - exact_solution.value_x((nx - 1) * ny * nz)) *
+                  dx * dy * dz / 8);
+
+        for (size_t k = 1; k < nz - 1; k++)
+        {
+            error += ((grid.u[(nx - 1) * ny * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + k)) *
+                      (grid.u[(nx - 1) * ny * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + k)) *
+                      dx * dy * dz / 4);
+        }
+
+        error += ((grid.u[(nx - 1) * ny * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + nz - 1)) *
+                  (grid.u[(nx - 1) * ny * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + nz - 1)) *
+                  dx * dy * dz / 8);
+
+        for (size_t j = 1; j < ny - 1; j++)
+        {
+            error += ((grid.u[(nx - 1) * ny * nz + j * nz] - exact_solution.value_x((nx - 1) * ny * nz + j * nz)) *
+                      (grid.u[(nx - 1) * ny * nz + j * nz] - exact_solution.value_x((nx - 1) * ny * nz + j * nz)) *
+                      dx * dy * dz / 4);
+            for (size_t k = 1; k < nz - 1; k++)
+            {
+                error += ((grid.u[(nx - 1) * ny * nz + j * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + j * nz + k)) *
+                          (grid.u[(nx - 1) * ny * nz + j * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + j * nz + k)) *
+                          dx * dy * dz / 2);
+            }
+            error += ((grid.u[(nx - 1) * ny * nz + j * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + j * nz + nz - 1)) *
+                      (grid.u[(nx - 1) * ny * nz + j * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + j * nz + nz - 1)) *
+                      dx * dy * dz / 4);
+        }
+
+        error += ((grid.u[(nx - 1) * ny * nz + (ny - 1) * nz] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz)) *
+                  (grid.u[(nx - 1) * ny * nz + (ny - 1) * nz] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz)) *
+                  dx * dy * dz / 8);
+
+        for (size_t k = 1; k < nz - 1; k++)
+        {
+            error += ((grid.u[(nx - 1) * ny * nz + (ny - 1) * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz + k)) *
+                      (grid.u[(nx - 1) * ny * nz + (ny - 1) * nz + k] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz + k)) *
+                      dx * dy * dz / 4);
+        }
+
+        error += ((grid.u[(nx - 1) * ny * nz + (ny - 1) * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz + nz - 1)) *
+                  (grid.u[(nx - 1) * ny * nz + (ny - 1) * nz + nz - 1] - exact_solution.value_x((nx - 1) * ny * nz + (ny - 1) * nz + nz - 1)) *
+                  dx * dy * dz / 8);
+    }
+
+    return error;
 }
 
 void IcoNS::output()
