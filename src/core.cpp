@@ -133,64 +133,46 @@ void IcoNS::solve_time_step()
     }
 }
 
-/*
 double IcoNS::L2_error(const double t)
 {
-
     double sum = 0.0;
-
-    std::vector<double> wx(grid.nx, 1.0);
-    std::vector<double> wy(grid.ny, 1.0);
-    std::vector<double> wz(grid.nz, 1.0);
-
+    
+    std::vector<double> wx(grid.nx, 1.0); 
     wx[0] = 0.5;
     wx[grid.nx - 1] = 0.5;
+
+    std::vector<double> wy(grid.ny, 1.0); 
     wy[0] = 0.5;
     wy[grid.ny - 1] = 0.5;
+
+    std::vector<double> wz(grid.nz, 1.0); 
     wz[0] = 0.5;
     wz[grid.nz - 1] = 0.5;
 
-    size_t l;
 
-    for (size_t i = 0; i < grid.nx; i++)
+    for (size_t i = 1; i < grid.nx - 1; i++)
     {
-        for (size_t j = 0; j < grid.ny; j++)
+        for (size_t j = 1; j < grid.ny - 1; j++)
         {
-            for (size_t k = 0; k < grid.nz; k++)
+            for (size_t k = 1; k < grid.nz - 1; k++)
             {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.u[l] - exact_solution.value_x(i, j, k, t)) * (grid.u[l] - exact_solution.value_x(i, j, k, t))) * dx * dy * dz;
+                size_t l = i * grid.ny * grid.nz + j * grid.nz + k;
+
+                double exactUx = exact_solution.value_x(i, j, k, t);
+                double exactUy = exact_solution.value_y(i, j, k, t);
+                double exactUz = exact_solution.value_z(i, j, k, t);
+
+                sum +=    ((grid.u[l] - exactUx) * (grid.u[l] - exactUx) * dx * dy * dz * wx[i] * wy[j] * wz[k])
+                        + ((grid.v[l] - exactUy) * (grid.v[l] - exactUy) * dx * dy * dz * wx[i] * wy[j] * wz[k])
+                        + ((grid.w[l] - exactUz) * (grid.w[l] - exactUz) * dx * dy * dz * wx[i] * wy[j] * wz[k]);
             }
         }
     }
 
-    for (size_t i = 0; i < grid.nx; i++)
-    {
-        for (size_t j = 0; j < grid.ny; j++)
-        {
-            for (size_t k = 0; k < grid.nz; k++)
-            {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.v[l] - exact_solution.value_y(i, j, k, t)) * (grid.v[l] - exact_solution.value_y(i, j, k, t))) * dy * dx * dz;
-            }
-        }
-    }
-
-    for (size_t i = 0; i < grid.nx; i++)
-    {
-        for (size_t j = 0; j < grid.ny; j++)
-        {
-            for (size_t k = 0; k < grid.nz; k++)
-            {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.w[l] - exact_solution.value_z(i, j, k, t)) * (grid.w[l] - exact_solution.value_z(i, j, k, t))) * dz * dx * dz;
-            }
-        }
-    }
     return sqrt(sum);
 }
-*/
 
+/*
 double IcoNS::error_comp_X(const double t)
 {
     double error = 0.0;
@@ -672,6 +654,7 @@ double IcoNS::L2_error(const double t)
 
     return sqrt(error);
 }
+*/
 
 void IcoNS::output()
 {
