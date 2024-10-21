@@ -1,7 +1,7 @@
 
 #include <cmath>
 
-#include "core.hpp"
+#include "../includes/core.hpp"
 #include <math.h>
 #include <string>
 void IcoNS::preprocessing(/*std::string &input_file*/)
@@ -48,9 +48,22 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     boundary.addFunction(0,zero);
     boundary.addFunction(0,zero);
     boundary.addFunction(0,frontface_u);
+    boundary.addFunction(0,frontface_u);
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,zero);
 
     boundary.addFunction(1,zero);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(1,frontface_u);
+    boundary.addFunction(1,frontface_u);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(1,zero);
 
+    boundary.addFunction(2,zero);
+    boundary.addFunction(2,zero);
+    boundary.addFunction(2,frontface_u);
+    boundary.addFunction(2,frontface_u);
+    boundary.addFunction(2,zero);
     boundary.addFunction(2,zero);
 }
 
