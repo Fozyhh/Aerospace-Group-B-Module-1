@@ -168,13 +168,13 @@ void boundary::update_boundary(double t){
     grid.u[0] =  boundary_value_u[face].value(0,0,0,t);
     for (size_t k=1; k < nx; k++)
     {
-        grid.u[(ny+1) * (nz+1) * k] = boundary_value_v[face].value(k,0,0,t);
-        grid.v[(nz+1) * ny * k] = boundary_value_u[face].value(k,0,0,t);
+        grid.u[(ny+1) * (nz+1) * k] = boundary_value_u[face].value(k,0,0,t);
+        grid.v[(nz+1) * ny * k] = boundary_value_v[face].value(k,0,0,t);
     }
     
     for (size_t j = 1; j < ny; j++)
     {
-        grid.u[j * (nz+1)] = boundary_value_v[face].value(0,j,0,t);
+        grid.u[j * (nz+1)] = boundary_value_u[face].value(0,j,0,t);
         for(size_t k = 1; k < nx; k++)
         {
             grid.u[(ny+1) * (nz+1) * k + j*(nz+1)] = boundary_value_u[face].value(k,j,0,t);
@@ -186,20 +186,20 @@ void boundary::update_boundary(double t){
 
     for (size_t k = 0; k < nx; k++)
     {
-        grid.u[(ny+1) * (nz+1) * k + ny*(nz+1)] = boundary_value_w[face].value(k,ny,0,t);
+        grid.u[(ny+1) * (nz+1) * k + ny*(nz+1)] = boundary_value_u[face].value(k,ny,0,t);
     }
 
     face=3; //back face
     grid.u[nz] =  boundary_value_u[face].value(0,0,nz,t);
     for (size_t k=1; k < nx; k++)
     {
-        grid.u[(ny+1) * (nz+1) * k + nz] = boundary_value_v[face].value(k,0,nz,t);
-        grid.v[(nz+1) * ny * k + nz] = boundary_value_u[face].value(k,0,nz,t);
+        grid.u[(ny+1) * (nz+1) * k + nz] = boundary_value_u[face].value(k,0,nz,t);
+        grid.v[(nz+1) * ny * k + nz] = boundary_value_v[face].value(k,0,nz,t);
     }
     
     for (size_t j = 1; j < ny; j++)
     {
-        grid.u[j * (nz+1) + nz] = boundary_value_v[face].value(0,j,nz,t);
+        grid.u[j * (nz+1) + nz] = boundary_value_u[face].value(0,j,nz,t);
         for(size_t k = 1; k < nx; k++)
         {
             grid.u[(ny+1) * (nz+1) * k + j*(nz+1) + nz] = boundary_value_u[face].value(k,j,nz,t);
@@ -211,7 +211,7 @@ void boundary::update_boundary(double t){
 
     for (size_t k = 0; k < nx; k++)
     {
-        grid.u[(ny+1) * (nz+1) * k + ny*(nz+1) + nz] = boundary_value_w[face].value(k,ny,nz,t);
+        grid.u[(ny+1) * (nz+1) * k + ny*(nz+1) + nz] = boundary_value_u[face].value(k,ny,nz,t);
     }
 
     face=4; //lower face
