@@ -4,6 +4,7 @@
 #include "core.hpp"
 #include "grid.hpp"
 #include <vector>
+#include <functional>
 
 class boundary
 {
@@ -29,23 +30,34 @@ public:
     //double boundary_value_v(size_t x, size_t y, size_t z); 
     //double boundary_value_w(size_t x, size_t y, size_t z);
 
-    void addFunction(size_t direction, Function x);
+    void addFunction(size_t direction, Function& x);
 
 };
 
 class Function
 {
 public:
-    double value(size_t x, size_t y, size_t z,double t);
+    virtual double value(double x, double y, double z,double t) = 0;
 };
 
 
 class FunctionZero : public Function{
 public:
-    double value(size_t x, size_t y, size_t z,double t){
+    double value(double x, double y, double z,double t) override {
         return 0;
     }
 };
+
+class FunctionX : public Function{
+    public:
+    std::function<double(double, double, double ,double)> func;
+
+    FunctionX(std::function<double(double, double, double ,double)> func_): func(func_){};
+
+    double value(double x, double y, double z,double t) override{
+        return func(x,y,z,t);
+    }
+}
 
 
 

@@ -283,7 +283,7 @@ double boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t,s
     return  boundary_value_w[face].value(x * dx, y * dy, z * dz,t) - (du + dv) * (dz/2);
 }
 
-void boundary::addFunction(size_t direction, Function x){
+void boundary::addFunction(size_t direction, Function& x){
     switch(direction){
         case 0:
             boundary_value_u.push_back(x);
