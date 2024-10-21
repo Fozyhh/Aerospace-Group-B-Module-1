@@ -5,7 +5,10 @@
 #define CORE_HPP
 
 #include "grid.hpp"
+
 #include "boundary.hpp"
+#include <string>
+
 
 class IcoNS
 {
@@ -65,3 +68,4 @@ private:
 };
 
 #endif
+
