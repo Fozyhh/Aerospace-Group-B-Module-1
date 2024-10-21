@@ -5,73 +5,67 @@
 #define CORE_HPP
 
 #include "grid.hpp"
+
+#include "boundary.hpp"
 #include <string>
+
 
 class IcoNS
 {
 public:
-  class ExactSolution
-  {
-    //Place holder implementation for now
-    public:
-        std::vector<double> u_exact;
-        std::vector<double> v_exact;
-        std::vector<double> w_exact;
+    class ExactSolution
+    {
+    };
 
-        void initialize(const unsigned int nx, const unsigned int ny, const unsigned int nz) {
-            u_exact.resize(nx * ny * nz, 0.0);
-            v_exact.resize(nx * ny * nz, 0.0);
-            w_exact.resize(nx * ny * nz, 0.0);
-        }
-  };
+    IcoNS(const double lx, const double ly, const double lz, const unsigned int nx, const unsigned int ny, const unsigned int nz, const double dt, const double T, const double Re, const std::string &input_file, const std::string &output_file)
+        : grid(nx, ny, nz),
+          dt(dt),
+          T(T),
+          Re(Re),
+          lx(lx),
+          ly(ly),
+          lz(lz),
+          nx(nx),
+          ny(ny),
+          nz(nz),
+          dx(lx / nx),
+          dy(ly/ny),
+          boundary(grid,dx,dy,dz),
+          dz(lz/nz),
+          input_file(input_file),
+          output_file(output_file)
+    {}
+
+    void preprocessing(string &input_file); // grid initialization.
+
+    void solve(); // solve the problem saving the ouput.
+
+    std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k); // compute the source term.
 
 
-  IcoNS(const double lx, const double ly, const double lz,
-        const unsigned int nx, const unsigned int ny, const unsigned int nz,
-        const double dt, const double T, const double Re,
-        const std::string &input_file, const std::string &output_file)
-      : grid(nx, ny, nz),
-        dt(dt),
-        T(T),
-        Re(Re),
-        lx(lx),
-        ly(ly),
-        lz(lz),
-        nx(nx),
-        ny(ny),
-        nz(nz),
-        dx(lx / nx),
-        dy(ly / ny),
-        dz(lz / nz),
-        input_file(input_file),
-        output_file(output_file)
-  {
-  }
+    //TODO: 3 apply 3 values
+    void apply_boundary_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k,double t);
 
-  void preprocessing(/*std::string &input_file*/); // grid initialization.
+    double boundary_value(size_t x, size_t y, size_t z, double t); 
 
-  void solve(); // solve the problem saving the ouput.
+    void solve_time_step(); // solve a time step.
 
-  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
-                                size_t i, size_t j, size_t k);
-
-  void solve_time_step(); // solve a time step.
-
-  double errorComp(); // compute the L2 norm
-
-  void output(); // write the output file.
+    void output(); // write the output file.
 
 private:
-  Grid grid;                     // grid of the problem.
-  const double dt;               // time step.
-  const double T;                // final time.
-  const double Re;               // Reynolds number.
-  const unsigned int lx, ly, lz; // lengths of edges of the domain.
-  const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-  ExactSolution exact_solution;  // exact solution.
-  std::string input_file;        // input file.
-  std::string output_file;       // output file.
+    Grid grid;                     // grid of the domain.
+    const double dt;               // time step.
+    const double T;                // final time.
+    const double Re;               // Reynolds number.
+    const unsigned int lx, ly, lz; // lengths of edges of the domain.
+    const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
+    const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+    boundary boundary;
+    ExactSolution exact_solution;  // exact solution.
+    std::string input_file;        // input file.
+    std::string output_file;       // output file.
+
 };
 
 #endif
+
