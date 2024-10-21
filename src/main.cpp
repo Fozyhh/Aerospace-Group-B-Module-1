@@ -1,10 +1,12 @@
-#include "../includes/core.hpp"
+#include <iostream>
+#include "core.cpp"
 
 int main()
 {
-    IcoNS icoNS(100, 100, 100, 100, 100, 100, 0.01, 10.0, 400.0, "input.txt", "output.txt");
-
-    icoNS.solve();
+    IcoNS problem(1.0, 1.0, 1.0, 50, 50, 50, 0.01, 1.0, 1000, "", "");
+    const std::string input_file = "input.txt";
+    problem.preprocessing();
+    problem.solve();
 
     return 0;
 }

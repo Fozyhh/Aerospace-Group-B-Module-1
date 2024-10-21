@@ -56,8 +56,15 @@ public:
   {
   }
 
+
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
+
+  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
+
+  void apply_boundary_conditions(double time); // apply the boundary conditions.
+  void solve_time_step( double time ); // solve a time step.
   void solve(); // solve the problem saving the ouput.
 
   std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
@@ -88,5 +95,6 @@ private:
 
 };
 
-#endif
+
+#endif // CORE_HPP
 
