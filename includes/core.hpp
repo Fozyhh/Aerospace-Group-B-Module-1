@@ -6,25 +6,30 @@
 
 #include "grid.hpp"
 #include <string>
+#include <cmath>
 
 class IcoNS
 {
 public:
   class ExactSolution
   {
-    //Place holder implementation for now
-    public:
-        std::vector<double> u_exact;
-        std::vector<double> v_exact;
-        std::vector<double> w_exact;
+    // Place holder implementation for now
+  public:
+    double value_x(size_t x, size_t y, size_t z, double t) const
+    {
+      return std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+    }
 
-        void initialize(const unsigned int nx, const unsigned int ny, const unsigned int nz) {
-            u_exact.resize(nx * ny * nz, 0.0);
-            v_exact.resize(nx * ny * nz, 0.0);
-            w_exact.resize(nx * ny * nz, 0.0);
-        }
+    double value_y(size_t x, size_t y, size_t z, double t) const
+    {
+      return std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
+    }
+
+    double value_z(size_t x, size_t y, size_t z, double t) const
+    {
+      return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
+    }
   };
-
 
   IcoNS(const double lx, const double ly, const double lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
@@ -57,7 +62,10 @@ public:
 
   void solve_time_step(); // solve a time step.
 
-  double errorComp(); // compute the L2 norm
+  double error_comp_X(const double t);
+  double error_comp_Y(const double t);
+  double error_comp_Z(const double t);
+  double L2_error(const double t); // compute the L2 norm
 
   void output(); // write the output file.
 
