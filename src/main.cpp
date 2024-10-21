@@ -3,10 +3,21 @@
 
 int main()
 {
-    IcoNS problem(1.0, 1.0, 1.0, 50, 50, 50, 0.01, 1.0, 1000, "", "");
-    const std::string input_file = "input.txt";
-    problem.preprocessing();
-    problem.solve();
+    int main()
+    {
+        const double lx = 1000;
+        const double ly = 1000;
+        const double lz = 1000;
+        const unsigned int nx = 100;
+        const unsigned int ny = 100;
+        const unsigned int nz = 100;
+        const double dt = 1;
+        const double T = 5.0;
+        const double Re = 400.0;
+        IcoNS icoNS(lx, ly, lz, nx, ny, nz, dt, T, Re, "input.txt", "output.txt");
 
-    return 0;
+        icoNS.solve();
+
+        return 0;
+    }
 }
