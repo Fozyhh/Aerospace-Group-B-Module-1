@@ -1,6 +1,8 @@
-#include "../includes/core.hpp"
+
+#include "core.hpp"
 #include <math.h>
 #include <string>
+
 
 void IcoNS::preprocessing(/*std::string &input_file*/)
 {
@@ -33,6 +35,22 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         }
         // pressure initialization.
     }
+
+
+    //boundary
+    FunctionZero zero;
+    FunctionX frontface_u([](double x, double y, double z, double t){
+        return std::sin(x*t);
+    });
+    //Order: left, right, front, back, lower, upper
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,frontface_u);
+
+    boundary.addFunction(1,zero);
+
+    boundary.addFunction(2,zero);
+    
 }
 
 void IcoNS::solve()

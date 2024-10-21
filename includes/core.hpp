@@ -5,8 +5,11 @@
 #define CORE_HPP
 
 #include "grid.hpp"
+
+#include "boundary.hpp"
 #include <string>
 #include <cmath>
+
 
 class IcoNS
 {
@@ -69,17 +72,21 @@ public:
 
   void output(); // write the output file.
 
+
 private:
-  Grid grid;                     // grid of the problem.
-  const double dt;               // time step.
-  const double T;                // final time.
-  const double Re;               // Reynolds number.
-  const unsigned int lx, ly, lz; // lengths of edges of the domain.
-  const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-  ExactSolution exact_solution;  // exact solution.
-  std::string input_file;        // input file.
-  std::string output_file;       // output file.
+    Grid grid;                     // grid of the domain.
+    const double dt;               // time step.
+    const double T;                // final time.
+    const double Re;               // Reynolds number.
+    const unsigned int lx, ly, lz; // lengths of edges of the domain.
+    const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
+    const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+    boundary boundary;
+    ExactSolution exact_solution;  // exact solution.
+    std::string input_file;        // input file.
+    std::string output_file;       // output file.
+
 };
 
 #endif
+
