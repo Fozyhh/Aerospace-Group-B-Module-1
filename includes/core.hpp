@@ -4,9 +4,9 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "grid.hpp"
-
+#include "utils.hpp"
 #include "boundary.hpp"
+#include "grid.hpp"
 #include <string>
 #include <cmath>
 
@@ -14,25 +14,7 @@
 class IcoNS
 {
 public:
-  class ExactSolution
-  {
-    // Place holder implementation for now
-  public:
-    double value_x(size_t x, size_t y, size_t z, double t) const
-    {
-      return std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
-    }
-
-    double value_y(size_t x, size_t y, size_t z, double t) const
-    {
-      return std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
-    }
-
-    double value_z(size_t x, size_t y, size_t z, double t) const
-    {
-      return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
-    }
-  };
+  
 
   IcoNS(const double lx, const double ly, const double lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
@@ -52,10 +34,9 @@ public:
         dy(ly / ny),
         dz(lz / nz),
         input_file(input_file),
-        output_file(output_file)
-  {
-  }
-
+        output_file(output_file),
+        Boundary(grid,dx,dy,dz)
+  {}
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
@@ -88,7 +69,7 @@ private:
     const unsigned int lx, ly, lz; // lengths of edges of the domain.
     const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
     const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-    boundary boundary;
+    boundary Boundary;
     ExactSolution exact_solution;  // exact solution.
     std::string input_file;        // input file.
     std::string output_file;       // output file.

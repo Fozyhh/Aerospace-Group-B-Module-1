@@ -1,5 +1,5 @@
 #include <iostream>
-#include "core.cpp"
+#include "core.hpp"
 
 int main()
 {
@@ -9,7 +9,7 @@ int main()
     const unsigned int nx = 100;
     const unsigned int ny = 100;
     const unsigned int nz = 100;
-    const double dt = 1;
+    const double dt = 0.01;
     const double T = 5.0;
     const double Re = 400.0;
     IcoNS icoNS(lx, ly, lz, nx, ny, nz, dt, T, Re, "input.txt", "output.txt");

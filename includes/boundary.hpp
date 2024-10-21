@@ -1,13 +1,14 @@
-#ifndef BOUNDARY_H
-#define BOUNDARY_H
+#ifndef BOUNDARY_HPP
+#define BOUNDARY_HPP
 
-#include "core.hpp"
+#include "utils.hpp"
 #include "grid.hpp"
+#include <memory>
 #include <vector>
-#include <functional>
 
 class boundary
 {
+    
 private:
     Grid& grid;
     const unsigned int &nx;
@@ -15,54 +16,21 @@ private:
     const unsigned int &nz;
     const double dx,dy,dz;
     const double prec;
-    std::vector<Function> boundary_value_u;
-    std::vector<Function> boundary_value_v;
-    std::vector<Function> boundary_value_w;
+    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_u;
+    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_v;
+    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_w;
     
-public:
+    public:
+
     boundary(Grid& grid_,double dx_, double dy_,double dz_);
     void update_boundary(double t);
 
-    double boundary::approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
-    double boundary::approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face);
-    double boundary::approximate_boundary_w(size_t x, size_t y, size_t z,double t,size_t face);
-    //double boundary_value_u(size_t x, size_t y, size_t z); 
-    //double boundary_value_v(size_t x, size_t y, size_t z); 
-    //double boundary_value_w(size_t x, size_t y, size_t z);
+    double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
+    double approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face);
+    double approximate_boundary_w(size_t x, size_t y, size_t z,double t,size_t face);
 
-    void addFunction(size_t direction, Function& x);
+    void addFunction(size_t direction,std::unique_ptr<BoundaryFunction> x);
+
 
 };
-
-class Function
-{
-public:
-    virtual double value(double x, double y, double z,double t) = 0;
-};
-
-
-class FunctionZero : public Function{
-public:
-    double value(double x, double y, double z,double t) override {
-        return 0;
-    }
-};
-
-class FunctionX : public Function{
-    public:
-    std::function<double(double, double, double ,double)> func;
-
-    FunctionX(std::function<double(double, double, double ,double)> func_): func(func_){};
-
-    double value(double x, double y, double z,double t) override{
-        return func(x,y,z,t);
-    }
-}
-
-
-
-
-
-
-
 #endif
