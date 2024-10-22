@@ -6,31 +6,33 @@
 #include <memory>
 #include <vector>
 
-class boundary
+class Boundary
 {
     
 private:
-    Grid& grid;
+    Grid* grid;
     const unsigned int &nx;
     const unsigned int &ny;
     const unsigned int &nz;
     const double dx,dy,dz;
     const double prec;
-    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_u;
-    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_v;
-    std::vector<std::unique_ptr<BoundaryFunction>> boundary_value_w;
+    
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
+
+    
     
     public:
 
-    boundary(Grid& grid_,double dx_, double dy_,double dz_);
+    
+    Boundary(Grid* grid_,double dx_, double dy_,double dz_);
     void update_boundary(double t);
 
     double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
     double approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face);
     double approximate_boundary_w(size_t x, size_t y, size_t z,double t,size_t face);
 
-    void addFunction(size_t direction,std::unique_ptr<BoundaryFunction> x);
-
-
+    void addFunction(size_t direction, std::shared_ptr<BoundaryFunction> x);
 };
 #endif

@@ -3,6 +3,9 @@
 
 #include <functional>
 #include <cmath>
+#include <iostream>
+#include <vector>
+#include <memory>
 
 
 
@@ -16,7 +19,7 @@ class BoundaryFunction{
 class FunctionZero : public BoundaryFunction{
     public:
         double value(double x, double y, double z,double t) override {
-            return 0;
+          return 0;
         }
 };
 
@@ -50,5 +53,6 @@ class ExactSolution
       return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
     }
   };
+
 
 #endif

@@ -41,50 +41,51 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 
     //boundary
-    auto zero = std::make_unique<FunctionZero>(); // Create a unique_ptr for FunctionZero
-    auto frontface_u = std::make_unique<Dirichlet>([](double x, double y, double z, double t) {
+    auto zero = std::make_shared<FunctionZero>();
+    auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
         return std::sin(x * t);
     });
 
-    auto frontface_v = std::make_unique<Dirichlet>([](double x, double y, double z, double t) {
+    auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
         return std::sin(y * t);
     });
 
-    auto frontface_w = std::make_unique<Dirichlet>([](double x, double y, double z, double t) {
+    auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
         return std::sin(z * t);
     });
+
+    std::cout << "vector building" << std::endl;
     //Order: left, right, front, back, lower, upper
-    Boundary.addFunction(0,std::move(zero));
-    Boundary.addFunction(0,std::move(zero));
-    Boundary.addFunction(0,std::move(frontface_u));
-    Boundary.addFunction(0,std::move(frontface_u));
-    Boundary.addFunction(0,std::move(zero));
-    Boundary.addFunction(0,std::move(zero));
-
-    Boundary.addFunction(1,std::move(zero));
-    Boundary.addFunction(1,std::move(zero));
-    Boundary.addFunction(1,std::move(frontface_v));
-    Boundary.addFunction(1,std::move(frontface_v));
-    Boundary.addFunction(1,std::move(zero));
-    Boundary.addFunction(1,std::move(zero));
-
-    Boundary.addFunction(2,std::move(zero));
-    Boundary.addFunction(2,std::move(zero));
-    Boundary.addFunction(2,std::move(frontface_w));
-    Boundary.addFunction(2,std::move(frontface_w));
-    Boundary.addFunction(2,std::move(zero));
-    Boundary.addFunction(2,std::move(zero));
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,frontface_u);
+    boundary.addFunction(0,frontface_u);
+    boundary.addFunction(0,zero);
+    boundary.addFunction(0,zero);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(1,frontface_v);
+    boundary.addFunction(1,frontface_v);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(1,zero);
+    boundary.addFunction(2,zero);
+    boundary.addFunction(2,zero);
+    boundary.addFunction(2,frontface_w);
+    boundary.addFunction(2,frontface_w);
+    boundary.addFunction(2,zero);
+    boundary.addFunction(2,zero);
 }
 
 void IcoNS::solve()
-{
+{   
     preprocessing();
     double time = 0.0;
     int i = 0;
 
     while (time < T)
     {
-        apply_boundary_conditions(time);
+        //apply_boundary_conditions(time);
+        boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         output();

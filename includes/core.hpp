@@ -35,7 +35,7 @@ public:
         dz(lz / nz),
         input_file(input_file),
         output_file(output_file),
-        Boundary(grid,dx,dy,dz)
+        boundary(&grid,dx,dy,dz)
   {}
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
@@ -69,7 +69,7 @@ private:
     const unsigned int lx, ly, lz; // lengths of edges of the domain.
     const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
     const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-    boundary Boundary;
+    Boundary boundary;
     ExactSolution exact_solution;  // exact solution.
     std::string input_file;        // input file.
     std::string output_file;       // output file.
