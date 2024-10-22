@@ -1,9 +1,13 @@
 
 #include <cmath>
 
-#include "../includes/core.hpp"
+#include "core.hpp"
 #include <math.h>
+
 #include <fstream>
+#include <string>
+#include <memory>
+
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
@@ -40,10 +44,20 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 
     //boundary
-    FunctionZero zero;
-    FunctionX frontface_u([](double x, double y, double z, double t){
-        return std::sin(x*t);
+    auto zero = std::make_shared<FunctionZero>();
+    auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
+        return std::sin(x * t);
     });
+
+    auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
+        return std::sin(y * t);
+    });
+
+    auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t) {
+        return std::sin(z * t);
+    });
+
+    std::cout << "vector building" << std::endl;
     //Order: left, right, front, back, lower, upper
     boundary.addFunction(0,zero);
     boundary.addFunction(0,zero);
@@ -51,24 +65,22 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     boundary.addFunction(0,frontface_u);
     boundary.addFunction(0,zero);
     boundary.addFunction(0,zero);
-
     boundary.addFunction(1,zero);
     boundary.addFunction(1,zero);
-    boundary.addFunction(1,frontface_u);
-    boundary.addFunction(1,frontface_u);
+    boundary.addFunction(1,frontface_v);
+    boundary.addFunction(1,frontface_v);
     boundary.addFunction(1,zero);
     boundary.addFunction(1,zero);
-
     boundary.addFunction(2,zero);
     boundary.addFunction(2,zero);
-    boundary.addFunction(2,frontface_u);
-    boundary.addFunction(2,frontface_u);
+    boundary.addFunction(2,frontface_w);
+    boundary.addFunction(2,frontface_w);
     boundary.addFunction(2,zero);
     boundary.addFunction(2,zero);
 }
 
 void IcoNS::solve()
-{
+{   
     preprocessing();
     double time = 0.0;
     int i = 0;
@@ -77,7 +89,8 @@ void IcoNS::solve()
 
     while (time < T)
     {
-        apply_boundary_conditions(time);
+        //apply_boundary_conditions(time);
+        boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         output();
