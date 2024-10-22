@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Options for profiling and memory checks
 option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
 option(ENABLE_MEMCHECK "Enable memory checks with Valgrind" OFF)
-
+option(ENABLE_MEMPROF "Enable memory profiling with Cachegrind" OFF)
 
 # Directories for reports
 set(GPROF_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/cpuprof_reports" CACHE PATH "Directory to store Gprof reports")
@@ -63,7 +63,7 @@ endif()
 
 
 # Handle Profiling with Gprof
-if(ENABLE_PROFILING)
+if(ENABLE_CPUPROF)
     message(STATUS "Profiling enabled: Using Gprof.")
 
     if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
