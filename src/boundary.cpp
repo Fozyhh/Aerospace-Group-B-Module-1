@@ -38,7 +38,7 @@ void Boundary::update_boundary(double t){
 
     for (size_t k = 0; k < nz; k++)
     {
-        grid->w[(ny+1)*nz + k] = boundary_value_w[face]->value(0,ny,k,t);
+        grid->w[ny*nz + k] = boundary_value_w[face]->value(0,ny,k,t);
     }
     
     std::cout << "Check 1"<< std::endl;
@@ -65,62 +65,62 @@ void Boundary::update_boundary(double t){
 
     for (size_t k = 0; k < nz; k++)
     {
-        grid->w[nx*(ny+1)*nz + (ny+1)*nz + k] = boundary_value_w[face]->value(nx,ny,k,t);
+        grid->w[nx*(ny+1)*nz + ny*nz + k] = boundary_value_w[face]->value(nx,ny,k,t);
     }
     std::cout << "Check 2"<< std::endl;
     face=2; // front face
     grid->u[0] =  boundary_value_u[face]->value(0,0,0,t);
-    for (size_t k=1; k < nx; k++)
+    for (size_t i=1; i < nx; i++)
     {
-        grid->u[(ny+1) * (nz+1) * k] = boundary_value_u[face]->value(k,0,0,t);
-        grid->v[(nz+1) * ny * k] = boundary_value_v[face]->value(k,0,0,t);
+        grid->u[(ny+1) * (nz+1) * i] = boundary_value_u[face]->value(i,0,0,t);
+        grid->v[(nz+1) * ny * i] = boundary_value_v[face]->value(i,0,0,t);
     }
     std::cout << "Check 2,3"<< std::endl;
     for (size_t j = 1; j < ny; j++)
     {
         grid->u[j * (nz+1)] = boundary_value_u[face]->value(0,j,0,t);
-        for(size_t k = 1; k < nx; k++)
+        for(size_t i = 1; i < nx; i++)
         {   
             std::cout << "nx " << nx << " ny " << ny << " nz " << nz <<std::endl;
-            std::cout << "Check 2,5, indexes : "<< j << "-" << k<< std::endl;
-            grid->u[(ny+1) * (nz+1) * k + j*(nz+1)] = boundary_value_u[face]->value(k,j,0,t);
+            std::cout << "Check 2,5, indexes : "<< j << "-" << i << std::endl;
+            grid->u[(ny+1) * (nz+1) * i + j*(nz+1)] = boundary_value_u[face]->value(i,j,0,t);
             std::cout << "Check 2,55"<< std::endl;
-            grid->v[ny * (nz+1) * k + j*(nz+1)] = boundary_value_v[face]->value(k,j,0,t); 
-            std::cout << "Check 2,6: " << (ny+1) * nz * k + j*nz << std::endl;
+            grid->v[ny * (nz+1) * i + j*(nz+1)] = boundary_value_v[face]->value(i,j,0,t); 
+            std::cout << "Check 2,6: " << (ny+1) * nz * i + j*nz << std::endl;
             std::cout << "Size: " << grid->w.size() << std::endl;
-            grid->w[(ny+1) * nz * k + j*nz] = approximate_boundary_w(k,j,0,t,face);
+            grid->w[(ny+1) * nz * i + j*nz] = approximate_boundary_w(i,j,0,t,face);
         }
         grid->u[(ny+1) * (nz+1) * (nx) + j*(nz+1)] = boundary_value_u[face]->value(nx,j,0,t);
     }
     std::cout << "Check 2,8"<< std::endl;
-    for (size_t k = 0; k < nx; k++)
+    for (size_t i = 0; i < nx; i++)
     {
-        grid->u[(ny+1) * (nz+1) * k + ny*(nz+1)] = boundary_value_u[face]->value(k,ny,0,t);
+        grid->u[(ny+1) * (nz+1) * i + ny*(nz+1)] = boundary_value_u[face]->value(i,ny,0,t);
     }
     std::cout << "Check 3"<< std::endl;
     face=3; //back face
     grid->u[nz] =  boundary_value_u[face]->value(0,0,nz,t);
-    for (size_t k=1; k < nx; k++)
+    for (size_t i=1; i < nx; i++)
     {
-        grid->u[(ny+1) * (nz+1) * k + nz] = boundary_value_u[face]->value(k,0,nz,t);
-        grid->v[(nz+1) * ny * k + nz] = boundary_value_v[face]->value(k,0,nz,t);
+        grid->u[(ny+1) * (nz+1) * i + nz] = boundary_value_u[face]->value(i,0,nz,t);
+        grid->v[(nz+1) * ny * i + nz] = boundary_value_v[face]->value(i,0,nz,t);
     }
     
     for (size_t j = 1; j < ny; j++)
     {
-        grid->u[j * (nz+1) + nz] = boundary_value_u[face]->value(0,j,nz,t);
-        for(size_t k = 1; k < nx; k++)
+        grid->u[j * (nz+1) + nz] = boundary_value_u[face]->value(0,j,nz,t);// THIS IS NOT THE BACK FACE BUT THE UPPER FACE, STILL OK
+        for(size_t i = 1; i < nx; i++)
         {
-            grid->u[(ny+1) * (nz+1) * k + j*(nz+1) + nz] = boundary_value_u[face]->value(k,j,nz,t);
-            grid->v[ny * (nz+1) * k + j*(nz+1) + nz] = boundary_value_v[face]->value(k,j,nz,t); 
-            grid->w[(ny+1) * nz * k + j*nz + (nz - 1)] = approximate_boundary_w(k,j,nz,t,face );
+            grid->u[(ny+1) * (nz+1) * i + j*(nz+1) + nz] = boundary_value_u[face]->value(i,j,nz,t);
+            grid->v[ny * (nz+1) * i + j*(nz+1) + nz] = boundary_value_v[face]->value(i,j,nz,t); 
+            grid->w[(ny+1) * nz * i + j*nz + (nz - 1)] = approximate_boundary_w(i,j,nz-1,t,face);
         }
         grid->u[(ny+1) * (nz+1) * (nx) + j*(nz+1) + nz] = boundary_value_u[face]->value(nx,j,nz,t);
     }
 
-    for (size_t k = 0; k < nx; k++)
+    for (size_t i = 0; i < nx; i++)
     {
-        grid->u[(ny+1) * (nz+1) * k + ny*(nz+1) + nz] = boundary_value_u[face]->value(k,ny,nz,t);
+        grid->u[(ny+1) * (nz+1) * i + ny*(nz+1) + nz] = boundary_value_u[face]->value(i,ny,nz,t);
     }
 
     face=4; //lower face
@@ -130,31 +130,31 @@ void Boundary::update_boundary(double t){
         grid->u[k] = boundary_value_u[face]->value(0,0,k,t);
     }
     
-    for (size_t j = 1; j < nx; j++)
+    for (size_t i = 1; i < nx; i++)
     {
-        grid->w[(ny+1) * nz + j] = boundary_value_w[face]->value(j,0,0,t);
+        grid->w[i*(ny+1)*nz] = boundary_value_w[face]->value(i,0,0,t);
         for(size_t k = 1; k < nz; k++)
         {
-            grid->u[(ny+1) * (nz+1) * j + k] = boundary_value_u[face]->value(j,0,k,t);
-            grid->v[ny * (nz+1) * j + k] = boundary_value_v[face]->value(j,0,k,t); 
-            grid->w[(ny+1) * nz * j + k] = approximate_boundary_w(j,0,k,t,face );
+            grid->u[(ny+1) * (nz+1) * i + k] = boundary_value_u[face]->value(i,0,k,t);
+            grid->v[ny * (nz+1) * i + k] = boundary_value_v[face]->value(i,0,k,t); 
+            grid->w[(ny+1) * nz * i + k] = approximate_boundary_w(i,0,k,t,face);
         }
     }
 
     face=5;
     for (size_t k=1; k < nz; k++)
     {
-        grid->u[ny * (nz+1) + k] = boundary_value_u[face]->value(0,ny,k,t);
+        grid->u[(ny-1) * (nz+1) + k] = boundary_value_u[face]->value(0,ny,k,t);
     }
     
-    for (size_t j = 1; j < nx; j++)
+    for (size_t i = 1; i < nx; i++)
     {
-        grid->w[ny * nz + (ny+1) * nz + j] = boundary_value_w[face]->value(j,ny,0,t);
+        grid->w[(ny+1) * nz * i + ny * nz] = boundary_value_w[face]->value(i,ny,0,t);
         for(size_t k = 1; k < nz; k++)
         {
-            grid->u[ny * (nz + 1) + (ny+1) * (nz+1) * j + k] = boundary_value_u[face]->value(j,ny,k,t);
-            grid->v[(ny-1) * nz + ny * (nz+1) * j + k] = boundary_value_v[face]->value(j,ny,k,t); 
-            grid->w[ny*nz + (ny+1) * nz * j + k] = approximate_boundary_w(j,ny,k,t,face );
+            grid->u[ny * (nz + 1) + (ny+1) * (nz+1) * i + k] = boundary_value_u[face]->value(i,ny,k,t);
+            grid->v[(ny-1) * (nz+1) + ny * (nz+1) * i + k] = boundary_value_v[face]->value(i,ny,k,t); 
+            grid->w[(ny-1)*nz + (ny+1) * nz * i + k] = approximate_boundary_w(i,ny-1,k,t,face);
         }
     }
 
@@ -206,3 +206,14 @@ void Boundary::addFunction(size_t direction, std::shared_ptr<BoundaryFunction> x
 };
 
 
+
+
+
+// given x(i) pointing to the right, y(j) pointing into the screen, z(k) pointing up
+for (k){
+    for(j){
+        for(i){
+            [i+j*(nx+1)+k*(nx+1)*(ny+1)]
+        }
+    }
+}
