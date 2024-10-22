@@ -3,7 +3,7 @@
 
 #include "../includes/core.hpp"
 #include <math.h>
-#include <string>
+#include <fstream>
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
@@ -73,14 +73,16 @@ void IcoNS::solve()
     double time = 0.0;
     int i = 0;
 
+    std::ofstream error_log("../ressources/error.log");
+
     while (time < T)
     {
         apply_boundary_conditions(time);
         solve_time_step(time);
         time += dt;
         output();
-        std::cout << "time step: " << i << " ";
-        std::cout << " Error: " << L2_error(time) << std::endl;
+        //csv file w/ "," delimiter: time step, iter, L2_error
+        error_log << time << "," << i << "," << " Error: " << L2_error(time) << std::endl;
         i++;
     }
 }
@@ -258,81 +260,7 @@ void IcoNS::apply_boundary_conditions(double time)
         }
     }
 
-    /* for (size_t i = 0; i < nx; i++)
-    {
-        for (size_t j = 0; j < ny; j++)
-        {
-            for (size_t k = 0; k < nz; k++)
-            {
-                if(i == 0 || i == nx-1 || j == 0 || j == ny-1 || k == 0 || k == nz-1)
-                {
-                    grid.u[i * ny * nz + j * nz + k] = std::sin(i*dx) * std::cos(j*dy) * std::sin(k*dz) * std::sin(time);
-                    grid.v[i * ny * nz + j * nz + k] = std::cos(i*dx) * std::sin(j*dy) * std::sin(k*dz) * std::sin(time);
-                    grid.w[i * ny * nz + j * nz + k] = 2*std::cos(i*dx) * std::cos(j*dy) * std::cos(k*dz) * std::sin(time);
-                }
-            }
-        }
-    } */
 }
-
-/*
-double IcoNS::L2_error(const double t)
-{
-
-    double sum = 0.0;
-
-    std::vector<double> wx(grid.nx, 1.0);
-    std::vector<double> wy(grid.ny, 1.0);
-    std::vector<double> wz(grid.nz, 1.0);
-
-    wx[0] = 0.5;
-    wx[grid.nx - 1] = 0.5;
-    wy[0] = 0.5;
-    wy[grid.ny - 1] = 0.5;
-    wz[0] = 0.5;
-    wz[grid.nz - 1] = 0.5;
-
-    size_t l;
-
-    for (size_t i = 0; i < grid.nx; i++)
-    {
-        for (size_t j = 0; j < grid.ny; j++)
-        {
-            for (size_t k = 0; k < grid.nz; k++)
-            {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.u[l] - exact_solution.value_x(i, j, k, t)) * (grid.u[l] - exact_solution.value_x(i, j, k, t))) * dx * dy * dz;
-            }
-        }
-    }
-
-    for (size_t i = 0; i < grid.nx; i++)
-    {
-        for (size_t j = 0; j < grid.ny; j++)
-        {
-            for (size_t k = 0; k < grid.nz; k++)
-            {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.v[l] - exact_solution.value_y(i, j, k, t)) * (grid.v[l] - exact_solution.value_y(i, j, k, t))) * dy * dx * dz;
-            }
-        }
-    }
-
-    for (size_t i = 0; i < grid.nx; i++)
-    {
-        for (size_t j = 0; j < grid.ny; j++)
-        {
-            for (size_t k = 0; k < grid.nz; k++)
-            {
-                l = i * grid.ny * grid.nz + j * grid.nz + k;
-                sum += (wx[i] * wy[j] * wz[k] * (grid.w[l] - exact_solution.value_z(i, j, k, t)) * (grid.w[l] - exact_solution.value_z(i, j, k, t))) * dz * dx * dz;
-            }
-        }
-    }
-    return sqrt(sum);
-}
-*/
-
 double IcoNS::error_comp_X(const double t)
 {
     double error = 0.0;
