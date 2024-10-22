@@ -7,12 +7,15 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Options for profiling and memory checks
-option(ENABLE_PROFILING "Enable profiling with Gprof" OFF)
+option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
 option(ENABLE_MEMCHECK "Enable memory checks with Valgrind" OFF)
 
+
 # Directories for reports
-set(GPROF_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/profiler_reports" CACHE PATH "Directory to store Gprof reports")
+set(GPROF_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/cpuprof_reports" CACHE PATH "Directory to store Gprof reports")
 set(VALGRIND_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memcheck_reports" CACHE PATH "Directory to store Valgrind reports")
+set(CACHEGRING_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memprof_reports" CACHE PATH "Directoy to store Cahcgrind reports")
+
 
 # Specify the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -31,6 +34,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
 
 endif()
 
+
 # Source files
 set(SOURCES
     src/main.cpp
@@ -42,14 +46,20 @@ set(SOURCES
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
+
 # Create report directories if profiling or memory checks are enabled
-if(ENABLE_PROFILING)
+if(ENABLE_CPUPROF)
     file(MAKE_DIRECTORY "${GPROF_REPORT_DIR}")
 endif()
 
 if(ENABLE_MEMCHECK)
     file(MAKE_DIRECTORY "${VALGRIND_REPORT_DIR}")
 endif()
+
+if(ENABLE_MEMPROF)
+    file(MAKE_DIRECTORY "${CACHEGRIND_REPORT_DIR}")
+endif()
+
 
 # Handle Profiling with Gprof
 if(ENABLE_PROFILING)
@@ -73,6 +83,7 @@ if(ENABLE_PROFILING)
     )
 endif()
 
+
 # Memory Checks with Valgrind
 if(ENABLE_MEMCHECK)
     #Check if Valgrind is installed
@@ -84,7 +95,7 @@ if(ENABLE_MEMCHECK)
     # Enable testing
     enable_testing()
 
-    # Add a test that runs the executable under Valgrind
+    # Test that runs the executable under Valgrind
     add_test(NAME MemoryCheck
              COMMAND ${VALGRIND_EXECUTABLE}
                      --leak-check=full
@@ -94,8 +105,43 @@ if(ENABLE_MEMCHECK)
                      --log-file=${VALGRIND_REPORT_DIR}/valgrind_output.txt
                      $<TARGET_FILE:main>)
 
-    # Make the test fail if Valgrind found any errors
+    # If Valgrind found any errors test is failed
     set_tests_properties(MemoryCheck PROPERTIES
         FAIL_REGULAR_EXPRESSION "ERROR SUMMARY: [1-9]"
     )
+endif()
+
+
+# Memory profiling with Valgring tool Cachegrind
+if(ENABLE_MEMPROF)
+    find_program(CACHEGRIND_EXECUTABLE valgrind CACHE PATH ENV VALGRIND_EXECUTABLE DOC "Path to Valgrind Cachegrind executable")
+
+    if(NOT CACHEGRIND_EXECUTABLE)
+        message(FATAL_ERROR "Cachegrind not found! Please install Valgrind with Cachegrind tool.")
+    endif()
+
+    # Custom target for Cachegrind profiling
+    # "--branch-sim=yes" collects the number of branch instructions and mispredictions. 
+    # This will slow down the cachegrind call by a lot (approx. 25%).
+
+    add_custom_target(profile
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config ${CMAKE_BUILD_TYPE}
+        COMMAND ${CACHEGRIND_EXECUTABLE} --tool=cachegrind --branch-sim=yes --cachegrind-out-file="${CACHEGRIND_REPORT_DIR}/cachegrind.out" ./main
+        DEPENDS main
+        COMMENT "Building and running the program with Cachegrind profiling."
+    )
+
+    # Target to visualize Cachegrind reports using KCachegrind
+    find_program(KCACHEGRIND_EXECUTABLE kcachegrind)
+
+    if(KCACHEGRIND_EXECUTABLE)
+        add_custom_target(viewprofile
+            COMMAND ${KCACHEGRIND_EXECUTABLE} "${CACHEGRIND_REPORT_DIR}/cachegrind.out"
+            DEPENDS profile
+            COMMENT "Opening Cachegrind report with KCachegrind."
+        )
+    else()
+        message(WARNING "KCachegrind not found! Cachegrind reports will be in cachegrind_reports/ directory.")
+    endif()
+
 endif()
