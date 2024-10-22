@@ -14,31 +14,36 @@ KCachegrind:
 `sudo apt install kcachegrind`
 
 ## Normal build
-``mkdir build
+```console 
+mkdir build
 cd build
 cmake ..
 make
 ./main
-``
-## CPU profiling build
-``mkdir build-profile
-cd build-profile
-cmake -DENABLE_PROFILING=ON ..
-make profile
-``
-## Memory profiling build
-`mkdir build-profiling
-cd build-profiling
-cmake -DENABLE_MEMPROF=ON ..
-make profile`
+```
 
+## CPU profiling build
+```console
+mkdir build-cpuprof
+cd build-cpuprof
+cmake -DENABLE_CPUPROF=ON ..
+make profile
+```
+## Memory profiling build
+```console
+mkdir build-memprof
+cd build-memprof
+cmake -DENABLE_MEMPROF=ON ..
+make profile
+```
 ## Memcheck build
-``mkdir build-mem
-cd build-mem
+```console
+mkdir build-memcheck
+cd build-memcheck
 cmake -DENABLE_MEMCHECK=ON ..
 make
 ctest --verbose
-``
+```
 You can then find the reports in the `resources` directory.
 
 PS: It is not ideal to run both profiling and memcheck together as Gprof messes with the optimization flags and Valgrind greatly affects the execution speed of the executable.
