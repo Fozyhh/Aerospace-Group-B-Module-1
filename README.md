@@ -10,8 +10,6 @@ Make sure before compiling that you have the `{PROJECT_ROOT/resources}` director
 `sudo apt install binutils`
 Valgrind:
 `sudo apt install valgrind`
-KCachegrind:
-`sudo apt install kcachegrind`
 
 ## Normal build
 ```console 
@@ -48,11 +46,24 @@ You can then find the reports in the `resources` directory.
 
 PS: It is not ideal to run both profiling and memcheck together as Gprof messes with the optimization flags and Valgrind greatly affects the execution speed of the executable.
 
+# Python scripts
+There are at the moment 3 scripts to parse and visualize the:
+  - error
+  - cpu profiling
+  - memory cache profiling
 
-# Error plot python script
 ## Dependencies
 - matplotlib
 - numpy
+- pandas
 
 Run using: 
-`` python3 vizualisation.py ``
+```console
+python3 vizualisation.py
+```
+```console
+python3 cpu_profile.py
+```
+```console
+python3 mem_profile.py
+```
