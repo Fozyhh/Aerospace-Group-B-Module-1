@@ -3,15 +3,15 @@ import pandas as pd
 
 # Input from gprof_analysis.txt to be parsed into DataFrame
 gprof_report = '../resources/cpuprof_reports/gprof_analysis.txt'
+with open(gprof_report, 'r') as f:
+    lines = f.readlines() 
 
-# Split content into data_lines
-lines = open(gprof_report).readlines()
-
-# Find the index where the flat profile starts
-start_idx = lines.index('   %   cumulative   self              self     total           ') + 1
+# index where the profile starts
+header_idx = next(i for i, line in enumerate(lines) if line.strip().startswith('%'))
+start_idx = header_idx + 1
 
 # Extract relevant lines
-data_lines = lines[start_idx:]
+data_lines = [line for line in lines[start_idx:] if line.strip()]
 
 # Define regex pattern
 # Regex def:
