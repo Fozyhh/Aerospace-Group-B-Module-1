@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
 option(ENABLE_MEMCHECK "Enable memory checks with Valgrind" OFF)
 option(ENABLE_MEMPROF "Enable memory profiling with Cachegrind" OFF)
+option(BUILD_DOCS "Build documentation with Doxygen" OFF)
 
 # Directories for reports
 set(GPROF_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/cpuprof_reports" CACHE PATH "Directory to store Gprof reports")
@@ -131,18 +132,4 @@ if(ENABLE_MEMPROF)
         DEPENDS main
         COMMENT "Building and running the program with Cachegrind profiling."
     )
-
-    # Target to visualize Cachegrind reports using KCachegrind
-    find_program(KCACHEGRIND_EXECUTABLE kcachegrind)
-
-    if(KCACHEGRIND_EXECUTABLE)
-        add_custom_target(viewprofile
-            COMMAND ${KCACHEGRIND_EXECUTABLE} "${CACHEGRIND_REPORT_DIR}/cachegrind.out"
-            DEPENDS profile
-            COMMENT "Opening Cachegrind report with KCachegrind."
-        )
-    else()
-        message(WARNING "KCachegrind not found! Cachegrind reports will be in cachegrind_reports/ directory.")
-    endif()
-
 endif()
