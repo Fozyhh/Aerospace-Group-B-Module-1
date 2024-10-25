@@ -1,0 +1,77 @@
+\doxysection{Function\+Zero Class Reference}
+\hypertarget{classFunctionZero}{}\label{classFunctionZero}\index{FunctionZero@{FunctionZero}}
+
+
+Implements zero boundary condition.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Function\+Zero\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classFunctionZero__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Function\+Zero\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classFunctionZero__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{classFunctionZero_aa49b915beae77cc009d1849e543dafa1}{value}} (double x, double y, double z, double t) override
+\begin{DoxyCompactList}\small\item\em Computes zero boundary value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements zero boundary condition. 
+
+Returns zero for all input coordinates and time 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classFunctionZero_aa49b915beae77cc009d1849e543dafa1}\label{classFunctionZero_aa49b915beae77cc009d1849e543dafa1} 
+\index{FunctionZero@{FunctionZero}!value@{value}}
+\index{value@{value}!FunctionZero@{FunctionZero}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily double Function\+Zero\+::value (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{double}]{z,  }\item[{double}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Computes zero boundary value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate (unused) \\
+\hline
+{\em y} & Y-\/coordinate (unused) \\
+\hline
+{\em z} & Z-\/coordinate (unused) \\
+\hline
+{\em t} & Time (unused) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Always returns 0.\+0 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb}{Boundary\+Function}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}

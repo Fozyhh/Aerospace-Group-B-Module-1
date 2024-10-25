@@ -1,0 +1,67 @@
+\doxysection{Boundary\+Function Class Reference}
+\hypertarget{classBoundaryFunction}{}\label{classBoundaryFunction}\index{BoundaryFunction@{BoundaryFunction}}
+
+
+Abstract base class for boundary condition functions.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Boundary\+Function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=236pt]{classBoundaryFunction__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual double \mbox{\hyperlink{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb}{value}} (double x, double y, double z, double t)=0
+\begin{DoxyCompactList}\small\item\em Pure virtual function for computing boundary values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract base class for boundary condition functions. 
+
+Defines the interface for all boundary condition implementations 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb}\label{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb} 
+\index{BoundaryFunction@{BoundaryFunction}!value@{value}}
+\index{value@{value}!BoundaryFunction@{BoundaryFunction}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily virtual double Boundary\+Function\+::value (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{double}]{z,  }\item[{double}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Pure virtual function for computing boundary values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate \\
+\hline
+{\em y} & Y-\/coordinate \\
+\hline
+{\em z} & Z-\/coordinate \\
+\hline
+{\em t} & Time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Computed boundary value at given position and time 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classFunctionZero_aa49b915beae77cc009d1849e543dafa1}{Function\+Zero}}, and \mbox{\hyperlink{classDirichlet_a993ba27b0a54d618575e2ada7dfc1e30}{Dirichlet}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}

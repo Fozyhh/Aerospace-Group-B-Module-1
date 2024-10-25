@@ -1,0 +1,87 @@
+\doxysection{core.\+hpp}
+\hypertarget{core_8hpp_source}{}\label{core_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/core.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/core.hpp}}
+\mbox{\hyperlink{core_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#ifndef\ CORE\_HPP}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#define\ CORE\_HPP}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{utils_8hpp}{utils.hpp}}"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{boundary_8hpp}{boundary.hpp}}"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{grid_8hpp}{grid.hpp}}"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classIcoNS}{IcoNS}}}
+\DoxyCodeLine{00026\ \{}
+\DoxyCodeLine{00027\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00028\ \ \ }
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{classIcoNS_a69413fb0952685ec804f17897a9cedd1}{IcoNS}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ lx,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ ly,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ lz,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ nx,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ ny,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ nz,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dt,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ T,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ Re,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&input\_file,\ \textcolor{keyword}{const}\ std::string\ \&output\_file)}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ :\ grid(nx,\ ny,\ nz),}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ dt(dt),}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ T(T),}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ Re(Re),}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ lx(lx),}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ ly(ly),}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ lz(lz),}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ nx(nx),}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ ny(ny),}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ nz(nz),}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ dx(lx\ /\ nx),}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ dy(ly\ /\ ny),}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ dz(lz\ /\ nz),}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ input\_file(input\_file),}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ output\_file(output\_file),}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ boundary(\&grid,dx,dy,dz)}
+\DoxyCodeLine{00063\ \ \ \{\}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}{preprocessing}}(\textcolor{comment}{/*std::string\ \&input\_file*/});}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00081\ \ \ std::vector<double>\ \mbox{\hyperlink{classIcoNS_aa9a1fd4b841130d6c9bfd221f9da105b}{functionF}}(\textcolor{keyword}{const}\ std::vector<double>\ \&u,\ \textcolor{keyword}{const}\ std::vector<double>\ \&v,\ \textcolor{keyword}{const}\ std::vector<double>\ \&w,\ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ i,\ \textcolor{keywordtype}{size\_t}\ j,\ \textcolor{keywordtype}{size\_t}\ k,\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00083\ \ }
+\DoxyCodeLine{00092\ \ \ std::vector<double>\ \mbox{\hyperlink{classIcoNS_af79f894b2b6dd5d6b738b047d0a18a09}{functionG}}(\textcolor{keywordtype}{size\_t}\ i,\ \textcolor{keywordtype}{size\_t}\ j,\ \textcolor{keywordtype}{size\_t}\ k,\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_afa62d773fd1999dbf6a91d2d988552cc}{apply\_boundary\_conditions}}(\textcolor{keywordtype}{double}\ time);}
+\DoxyCodeLine{00099\ \ \ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}{solve\_time\_step}}(\ \textcolor{keywordtype}{double}\ time\ );}
+\DoxyCodeLine{00105\ \ \ }
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}{solve}}();}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00121\ \ \ std::vector<double>\ \mbox{\hyperlink{classIcoNS_a9b079c076b56a413d9b1d5e3279154a7}{functionF}}(\textcolor{keyword}{const}\ std::vector<double>\ \&u,\ \textcolor{keyword}{const}\ std::vector<double>\ \&v,\ \textcolor{keyword}{const}\ std::vector<double>\ \&w,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ i,\ \textcolor{keywordtype}{size\_t}\ j,\ \textcolor{keywordtype}{size\_t}\ k);}
+\DoxyCodeLine{00123\ \ \ }
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}{solve\_time\_step}}();}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classIcoNS_a5e7a820eb8ba38f7ecfbda52f89045ad}{error\_comp\_X}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classIcoNS_ad4cafa59815e757eb782a871a1d039ad}{error\_comp\_Y}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00142\ \ \ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classIcoNS_a32aab26593597cae3970ca51626177d1}{error\_comp\_Z}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00149\ \ \ }
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classIcoNS_acabf1047b417942c8c8b334e7a01b278}{L2\_error}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08}{output}}();\ \textcolor{comment}{//\ write\ the\ output\ file.}}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00164\ \ \ \ \ \mbox{\hyperlink{structGrid}{Grid}}\ grid;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dt;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ T;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ Re;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ lx,\ ly,\ lz;\ }
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ nx,\ ny,\ nz;\ }
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dx,\ dy,\ dz;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \mbox{\hyperlink{classBoundary}{Boundary}}\ boundary;}
+\DoxyCodeLine{00172\ \ \ \ \ \mbox{\hyperlink{classExactSolution}{ExactSolution}}\ exact\_solution;\ \ }
+\DoxyCodeLine{00173\ \ \ \ \ std::string\ input\_file;\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00174\ \ \ \ \ std::string\ output\_file;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \};}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ CORE\_HPP}}
+
+\end{DoxyCode}

@@ -1,0 +1,58 @@
+\doxysection{utils.\+hpp}
+\hypertarget{utils_8hpp_source}{}\label{utils_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp}}
+\mbox{\hyperlink{utils_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#ifndef\ UTILS\_H}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ UTILS\_H}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}\{}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb}{value}}(\textcolor{keywordtype}{double}\ x,\ \textcolor{keywordtype}{double}\ y,\ \textcolor{keywordtype}{double}\ z,\textcolor{keywordtype}{double}\ t)\ =\ 0;}
+\DoxyCodeLine{00033\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classFunctionZero}{FunctionZero}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}\{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classFunctionZero_aa49b915beae77cc009d1849e543dafa1}{value}}(\textcolor{keywordtype}{double}\ x,\ \textcolor{keywordtype}{double}\ y,\ \textcolor{keywordtype}{double}\ z,\textcolor{keywordtype}{double}\ t)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classDirichlet}{Dirichlet}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}\{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ std::function<double(\textcolor{keywordtype}{double},\ \textcolor{keywordtype}{double},\ \textcolor{keywordtype}{double}\ ,\textcolor{keywordtype}{double})>\ \mbox{\hyperlink{classDirichlet_a3f1875d0b8a1c4f2167679a68c130179}{func}};\ \ }
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classDirichlet_a53fa10fc08c04827e9ece943a48738e8}{Dirichlet}}(std::function<\textcolor{keywordtype}{double}(\textcolor{keywordtype}{double},\ \textcolor{keywordtype}{double},\ \textcolor{keywordtype}{double}\ ,\textcolor{keywordtype}{double})>\ func\_):\ \mbox{\hyperlink{classDirichlet_a3f1875d0b8a1c4f2167679a68c130179}{func}}(func\_)\{\};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classDirichlet_a993ba27b0a54d618575e2ada7dfc1e30}{value}}(\textcolor{keywordtype}{double}\ x,\ \textcolor{keywordtype}{double}\ y,\ \textcolor{keywordtype}{double}\ z,\textcolor{keywordtype}{double}\ t)\textcolor{keyword}{\ override}\{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classDirichlet_a3f1875d0b8a1c4f2167679a68c130179}{func}}(x,y,z,t);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classExactSolution}{ExactSolution}}\{}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classExactSolution_acafff33e8afa73df81d157d4c4065880}{value\_x}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\ \textcolor{keywordtype}{double}\ t)\textcolor{keyword}{\ const}\{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::sin(x)\ *\ std::cos(y)\ *\ std::sin(z)\ *\ std::sin(t);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classExactSolution_ad42060150426fdead0af417eaa8e6a73}{value\_y}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\ \textcolor{keywordtype}{double}\ t)\textcolor{keyword}{\ const}\{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::cos(x)\ *\ std::sin(y)\ *\ std::sin(z)\ *\ std::sin(t);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classExactSolution_a87701b4cadb6e3a2187c7ac4f3b5af4f}{value\_z}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\ \textcolor{keywordtype}{double}\ t)\textcolor{keyword}{\ const}\{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 2\ *\ std::cos(x)\ *\ std::cos(y)\ *\ std::cos(z)\ *\ std::sin(t);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

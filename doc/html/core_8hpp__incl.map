@@ -1,0 +1,28 @@
+<map id="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/core.hpp" name="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/core.hpp">
+<area shape="rect" id="Node000001" title="Core solver for incompressible Navier&#45;Stokes equations." alt="" coords="177,5,379,60"/>
+<area shape="rect" id="Node000002" href="$utils_8hpp.html" title="Utility classes for boundary conditions and exact solutions." alt="" coords="147,181,225,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,62,231,84,214,109,201,139,193,168,188,167,196,137,209,107,227,81,247,58"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,255,68,280"/>
+<area shape="poly" id="edge16_Node000001_Node000004" title=" " alt="" coords="250,62,197,110,59,247,56,243,193,106,246,58"/>
+<area shape="rect" id="Node000008" href="$boundary_8hpp.html" title="Boundary conditions handler." alt="" coords="223,108,333,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="281,60,281,94,275,94,275,60"/>
+<area shape="rect" id="Node000009" href="$grid_8hpp.html" title="Grid structure definition." alt="" coords="351,181,426,207"/>
+<area shape="poly" id="edge14_Node000001_Node000009" title=" " alt="" coords="306,58,347,106,381,167,376,170,342,110,302,62"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="407,108,466,133"/>
+<area shape="poly" id="edge15_Node000001_Node000010" title=" " alt="" coords="328,58,404,99,402,104,325,62"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="92,255,179,280"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="180,209,154,245,149,242,175,205"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="163,209,75,251,72,246,161,204"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="393,255,473,280"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="226,204,380,248,379,253,225,209"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="305,255,368,280"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="211,204,301,246,298,251,209,209"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="203,255,281,280"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="197,205,227,242,222,245,193,209"/>
+<area shape="poly" id="edge8_Node000008_Node000002" title=" " alt="" coords="265,135,213,175,210,171,262,131"/>
+<area shape="poly" id="edge13_Node000008_Node000006" title=" " alt="" coords="285,133,329,241,324,243,280,135"/>
+<area shape="poly" id="edge12_Node000008_Node000007" title=" " alt="" coords="278,134,251,242,246,241,272,133"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="297,131,360,171,357,176,294,136"/>
+<area shape="poly" id="edge10_Node000009_Node000005" title=" " alt="" coords="398,206,421,242,416,244,394,208"/>
+<area shape="poly" id="edge11_Node000009_Node000006" title=" " alt="" coords="382,209,355,245,351,242,378,205"/>
+</map>

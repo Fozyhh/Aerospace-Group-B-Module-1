@@ -1,0 +1,47 @@
+\doxysection{boundary.\+hpp}
+\hypertarget{boundary_8hpp_source}{}\label{boundary_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/boundary.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/boundary.hpp}}
+\mbox{\hyperlink{boundary_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#ifndef\ BOUNDARY\_HPP}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ BOUNDARY\_HPP}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{utils_8hpp}{utils.hpp}}"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{grid_8hpp}{grid.hpp}}"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBoundary}{Boundary}}}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00025\ \ \ \ \ \mbox{\hyperlink{structGrid}{Grid}}*\ grid;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \&nx;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \&ny;}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \&nz;}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ dx,dy,dz;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ prec;}
+\DoxyCodeLine{00031\ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ boundary\_value\_u;}
+\DoxyCodeLine{00033\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ boundary\_value\_v;}
+\DoxyCodeLine{00034\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ boundary\_value\_w;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{classBoundary}{Boundary}}(\mbox{\hyperlink{structGrid}{Grid}}*\ grid\_,\textcolor{keywordtype}{double}\ dx\_,\ \textcolor{keywordtype}{double}\ dy\_,\textcolor{keywordtype}{double}\ dz\_);}
+\DoxyCodeLine{00048\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_a103d9eb344f3820373bf6b1fbfb2b693}{update\_boundary}}(\textcolor{keywordtype}{double}\ t);}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classBoundary_ac51b238fd7c003e25f252860bd09ac5a}{approximate\_boundary\_u}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\textcolor{keywordtype}{double}\ t,\textcolor{keywordtype}{size\_t}\ face);}
+\DoxyCodeLine{00065\ \ \ \ \ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classBoundary_aef81ed1e7d2829a482ed7119ab6b0468}{approximate\_boundary\_v}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\textcolor{keywordtype}{double}\ t,\textcolor{keywordtype}{size\_t}\ face);}
+\DoxyCodeLine{00076\ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{classBoundary_ac01a2df6dd3a0596573038bec9a4a2a8}{approximate\_boundary\_w}}(\textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keywordtype}{size\_t}\ y,\ \textcolor{keywordtype}{size\_t}\ z,\textcolor{keywordtype}{double}\ t,\textcolor{keywordtype}{size\_t}\ face);}
+\DoxyCodeLine{00087\ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_a951b41eee590dbdb86790a44ce4b4056}{addFunction}}(\textcolor{keywordtype}{size\_t}\ direction,\ std::shared\_ptr<BoundaryFunction>\ x);}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

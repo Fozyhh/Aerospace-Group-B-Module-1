@@ -1,0 +1,55 @@
+\chapter{Aerospace-\/\+Group-\/\+B-\/\+Module-\/1}
+\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README}{}\label{md__2workspaces_2aerospace-group-b-module-1_2README}\index{Aerospace-\/Group-\/B-\/Module-\/1@{Aerospace-\/Group-\/B-\/Module-\/1}}
+\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md0}%
+\Hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md0}%
+Repository for the project related to the "{}\+High Performance Scientific Computing in Aero\+Space"{} course on Navier-\/\+Stokes equation for Incrompessible Fluids\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md1}{}\doxysection{\texorpdfstring{CPU Profiling, Memory Profiling and Memory check}{CPU Profiling, Memory Profiling and Memory check}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md1}
+In order to enable CPU profiling using GProf and Memory checks using Valgrind please follow these steps\+: Make sure before compiling that you have the {\ttfamily \{PROJECT\+\_\+\+ROOT/resources\}} directory.\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md2}{}\doxysubsection{\texorpdfstring{Dependencies\+:}{Dependencies:}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md2}
+{\ttfamily sudo apt install binutils} Valgrind\+: {\ttfamily sudo apt install valgrind} KCachegrind\+: {\ttfamily sudo apt install kcachegrind}\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md3}{}\doxysubsection{\texorpdfstring{Normal build}{Normal build}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md3}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ build}
+\DoxyCodeLine{cd\ build}
+\DoxyCodeLine{cmake\ ..}
+\DoxyCodeLine{make}
+\DoxyCodeLine{./main}
+
+\end{DoxyCode}
+\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md4}{}\doxysubsection{\texorpdfstring{CPU profiling build}{CPU profiling build}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md4}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ build-\/cpuprof}
+\DoxyCodeLine{cd\ build-\/cpuprof}
+\DoxyCodeLine{cmake\ -\/DENABLE\_CPUPROF=ON\ ..}
+\DoxyCodeLine{make\ profile}
+
+\end{DoxyCode}
+ \hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md5}{}\doxysubsection{\texorpdfstring{Memory profiling build}{Memory profiling build}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md5}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ build-\/memprof}
+\DoxyCodeLine{cd\ build-\/memprof}
+\DoxyCodeLine{cmake\ -\/DENABLE\_MEMPROF=ON\ ..}
+\DoxyCodeLine{make\ profile}
+
+\end{DoxyCode}
+ \hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md6}{}\doxysubsection{\texorpdfstring{Memcheck build}{Memcheck build}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md6}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ build-\/memcheck}
+\DoxyCodeLine{cd\ build-\/memcheck}
+\DoxyCodeLine{cmake\ -\/DENABLE\_MEMCHECK=ON\ ..}
+\DoxyCodeLine{make}
+\DoxyCodeLine{ctest\ -\/-\/verbose}
+
+\end{DoxyCode}
+ You can then find the reports in the {\ttfamily resources} directory.
+
+PS\+: It is not ideal to run both profiling and memcheck together as Gprof messes with the optimization flags and Valgrind greatly affects the execution speed of the executable.\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md7}{}\doxysection{\texorpdfstring{Error plot python script}{Error plot python script}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md7}
+\hypertarget{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md8}{}\doxysubsection{\texorpdfstring{Dependencies}{Dependencies}}\label{md__2workspaces_2aerospace-group-b-module-1_2README_autotoc_md8}
+
+\begin{DoxyItemize}
+\item matplotlib
+\item numpy
+\end{DoxyItemize}
+
+Run using\+: {\ttfamily python3 vizualisation.\+py} 

@@ -1,0 +1,282 @@
+\doxysection{Ico\+NS Class Reference}
+\hypertarget{classIcoNS}{}\label{classIcoNS}\index{IcoNS@{IcoNS}}
+
+
+Incompressible Navier-\/\+Stokes solver.  
+
+
+
+
+{\ttfamily \#include $<$core.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classIcoNS_a69413fb0952685ec804f17897a9cedd1}{Ico\+NS}} (const double lx, const double ly, const double lz, const unsigned int nx, const unsigned int ny, const unsigned int nz, const double dt, const double T, const double Re, const std\+::string \&input\+\_\+file, const std\+::string \&output\+\_\+file)
+\begin{DoxyCompactList}\small\item\em Constructor for the \doxylink{classIcoNS}{Ico\+NS} solver. \end{DoxyCompactList}\item 
+\Hypertarget{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}\label{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6} 
+void {\bfseries preprocessing} ()
+\begin{DoxyCompactList}\small\item\em Initialize the grid and simulation parameters. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classIcoNS_aa9a1fd4b841130d6c9bfd221f9da105b}{functionF}} (const std\+::vector$<$ double $>$ \&u, const std\+::vector$<$ double $>$ \&v, const std\+::vector$<$ double $>$ \&w, size\+\_\+t i, size\+\_\+t j, size\+\_\+t k, double t)
+\begin{DoxyCompactList}\small\item\em Compute the source term F. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classIcoNS_af79f894b2b6dd5d6b738b047d0a18a09}{functionG}} (size\+\_\+t i, size\+\_\+t j, size\+\_\+t k, double t)
+\begin{DoxyCompactList}\small\item\em Compute the source term G. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_afa62d773fd1999dbf6a91d2d988552cc}{apply\+\_\+boundary\+\_\+conditions}} (double time)
+\begin{DoxyCompactList}\small\item\em Apply boundary conditions at given time. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3}{solve\+\_\+time\+\_\+step}} (double time)
+\begin{DoxyCompactList}\small\item\em Solve a single time step. \end{DoxyCompactList}\item 
+\Hypertarget{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}\label{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f} 
+void {\bfseries solve} ()
+\begin{DoxyCompactList}\small\item\em Solve the complete problem and save output. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classIcoNS_a9b079c076b56a413d9b1d5e3279154a7}{functionF}} (const std\+::vector$<$ double $>$ \&u, const std\+::vector$<$ double $>$ \&v, const std\+::vector$<$ double $>$ \&w, size\+\_\+t i, size\+\_\+t j, size\+\_\+t k)
+\begin{DoxyCompactList}\small\item\em Alternative source term computation. \end{DoxyCompactList}\item 
+\Hypertarget{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}\label{classIcoNS_aa54746dc22be49d6a9310ace2cce46db} 
+void {\bfseries solve\+\_\+time\+\_\+step} ()
+\begin{DoxyCompactList}\small\item\em Alternative time step solver. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classIcoNS_a5e7a820eb8ba38f7ecfbda52f89045ad}{error\+\_\+comp\+\_\+X}} (const double t)
+\begin{DoxyCompactList}\small\item\em Compute error in X component. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classIcoNS_ad4cafa59815e757eb782a871a1d039ad}{error\+\_\+comp\+\_\+Y}} (const double t)
+\begin{DoxyCompactList}\small\item\em Compute error in Y component. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classIcoNS_a32aab26593597cae3970ca51626177d1}{error\+\_\+comp\+\_\+Z}} (const double t)
+\begin{DoxyCompactList}\small\item\em Compute error in Z component. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classIcoNS_acabf1047b417942c8c8b334e7a01b278}{L2\+\_\+error}} (const double t)
+\begin{DoxyCompactList}\small\item\em Compute the L2 norm of the error. \end{DoxyCompactList}\item 
+\Hypertarget{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08}\label{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08} 
+void {\bfseries output} ()
+\begin{DoxyCompactList}\small\item\em Write results to output file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Incompressible Navier-\/\+Stokes solver. 
+
+Handles the numerical solution of incompressible Navier-\/\+Stokes equations including grid, time integration, boundary conditions, ... 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classIcoNS_a69413fb0952685ec804f17897a9cedd1}\label{classIcoNS_a69413fb0952685ec804f17897a9cedd1} 
+\index{IcoNS@{IcoNS}!IcoNS@{IcoNS}}
+\index{IcoNS@{IcoNS}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{IcoNS()}{IcoNS()}}
+{\footnotesize\ttfamily Ico\+NS\+::\+Ico\+NS (\begin{DoxyParamCaption}\item[{const double}]{lx,  }\item[{const double}]{ly,  }\item[{const double}]{lz,  }\item[{const unsigned int}]{nx,  }\item[{const unsigned int}]{ny,  }\item[{const unsigned int}]{nz,  }\item[{const double}]{dt,  }\item[{const double}]{T,  }\item[{const double}]{Re,  }\item[{const std\+::string \&}]{input\+\_\+file,  }\item[{const std\+::string \&}]{output\+\_\+file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the \doxylink{classIcoNS}{Ico\+NS} solver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lx} & Domain length in x direction \\
+\hline
+{\em ly} & Domain length in y direction \\
+\hline
+{\em lz} & Domain length in z direction \\
+\hline
+{\em nx} & Number of cells in x direction \\
+\hline
+{\em ny} & Number of cells in y direction \\
+\hline
+{\em nz} & Number of cells in z direction \\
+\hline
+{\em dt} & Time step size \\
+\hline
+{\em T} & Final simulation time \\
+\hline
+{\em Re} & Reynolds number \\
+\hline
+{\em input\+\_\+file} & Path to input file \\
+\hline
+{\em output\+\_\+file} & Path to output file \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classIcoNS_afa62d773fd1999dbf6a91d2d988552cc}\label{classIcoNS_afa62d773fd1999dbf6a91d2d988552cc} 
+\index{IcoNS@{IcoNS}!apply\_boundary\_conditions@{apply\_boundary\_conditions}}
+\index{apply\_boundary\_conditions@{apply\_boundary\_conditions}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{apply\_boundary\_conditions()}{apply\_boundary\_conditions()}}
+{\footnotesize\ttfamily void Ico\+NS\+::apply\+\_\+boundary\+\_\+conditions (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Apply boundary conditions at given time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & Current simulation time \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classIcoNS_a5e7a820eb8ba38f7ecfbda52f89045ad}\label{classIcoNS_a5e7a820eb8ba38f7ecfbda52f89045ad} 
+\index{IcoNS@{IcoNS}!error\_comp\_X@{error\_comp\_X}}
+\index{error\_comp\_X@{error\_comp\_X}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_X()}{error\_comp\_X()}}
+{\footnotesize\ttfamily double Ico\+NS\+::error\+\_\+comp\+\_\+X (\begin{DoxyParamCaption}\item[{const double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute error in X component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Error value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_ad4cafa59815e757eb782a871a1d039ad}\label{classIcoNS_ad4cafa59815e757eb782a871a1d039ad} 
+\index{IcoNS@{IcoNS}!error\_comp\_Y@{error\_comp\_Y}}
+\index{error\_comp\_Y@{error\_comp\_Y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_Y()}{error\_comp\_Y()}}
+{\footnotesize\ttfamily double Ico\+NS\+::error\+\_\+comp\+\_\+Y (\begin{DoxyParamCaption}\item[{const double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute error in Y component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Error value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_a32aab26593597cae3970ca51626177d1}\label{classIcoNS_a32aab26593597cae3970ca51626177d1} 
+\index{IcoNS@{IcoNS}!error\_comp\_Z@{error\_comp\_Z}}
+\index{error\_comp\_Z@{error\_comp\_Z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_Z()}{error\_comp\_Z()}}
+{\footnotesize\ttfamily double Ico\+NS\+::error\+\_\+comp\+\_\+Z (\begin{DoxyParamCaption}\item[{const double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute error in Z component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Error value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_a9b079c076b56a413d9b1d5e3279154a7}\label{classIcoNS_a9b079c076b56a413d9b1d5e3279154a7} 
+\index{IcoNS@{IcoNS}!functionF@{functionF}}
+\index{functionF@{functionF}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionF()}{functionF()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Ico\+NS\+::functionF (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{u,  }\item[{const std\+::vector$<$ double $>$ \&}]{v,  }\item[{const std\+::vector$<$ double $>$ \&}]{w,  }\item[{size\+\_\+t}]{i,  }\item[{size\+\_\+t}]{j,  }\item[{size\+\_\+t}]{k }\end{DoxyParamCaption})}
+
+
+
+Alternative source term computation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em u} & X-\/velocity component \\
+\hline
+{\em v} & Y-\/velocity component \\
+\hline
+{\em w} & Z-\/velocity component \\
+\hline
+{\em i} & X-\/index \\
+\hline
+{\em j} & Y-\/index \\
+\hline
+{\em k} & Z-\/index \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector containing source term components 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_aa9a1fd4b841130d6c9bfd221f9da105b}\label{classIcoNS_aa9a1fd4b841130d6c9bfd221f9da105b} 
+\index{IcoNS@{IcoNS}!functionF@{functionF}}
+\index{functionF@{functionF}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionF()}{functionF()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Ico\+NS\+::functionF (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{u,  }\item[{const std\+::vector$<$ double $>$ \&}]{v,  }\item[{const std\+::vector$<$ double $>$ \&}]{w,  }\item[{size\+\_\+t}]{i,  }\item[{size\+\_\+t}]{j,  }\item[{size\+\_\+t}]{k,  }\item[{double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute the source term F. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em u} & X-\/velocity component \\
+\hline
+{\em v} & Y-\/velocity component \\
+\hline
+{\em w} & Z-\/velocity component \\
+\hline
+{\em i} & X-\/index \\
+\hline
+{\em j} & Y-\/index \\
+\hline
+{\em k} & Z-\/index \\
+\hline
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector containing source term components 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_af79f894b2b6dd5d6b738b047d0a18a09}\label{classIcoNS_af79f894b2b6dd5d6b738b047d0a18a09} 
+\index{IcoNS@{IcoNS}!functionG@{functionG}}
+\index{functionG@{functionG}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionG()}{functionG()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Ico\+NS\+::functionG (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{i,  }\item[{size\+\_\+t}]{j,  }\item[{size\+\_\+t}]{k,  }\item[{double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute the source term G. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & X-\/index \\
+\hline
+{\em j} & Y-\/index \\
+\hline
+{\em k} & Z-\/index \\
+\hline
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector containing source term components 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_acabf1047b417942c8c8b334e7a01b278}\label{classIcoNS_acabf1047b417942c8c8b334e7a01b278} 
+\index{IcoNS@{IcoNS}!L2\_error@{L2\_error}}
+\index{L2\_error@{L2\_error}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{L2\_error()}{L2\_error()}}
+{\footnotesize\ttfamily double Ico\+NS\+::\+L2\+\_\+error (\begin{DoxyParamCaption}\item[{const double}]{t }\end{DoxyParamCaption})}
+
+
+
+Compute the L2 norm of the error. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+L2 norm value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3}\label{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3} 
+\index{IcoNS@{IcoNS}!solve\_time\_step@{solve\_time\_step}}
+\index{solve\_time\_step@{solve\_time\_step}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{solve\_time\_step()}{solve\_time\_step()}}
+{\footnotesize\ttfamily void Ico\+NS\+::solve\+\_\+time\+\_\+step (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Solve a single time step. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & Current simulation time \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{core_8hpp}{core.\+hpp}}\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/src/core.\+cpp\end{DoxyCompactItemize}

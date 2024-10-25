@@ -1,0 +1,174 @@
+\doxysection{Boundary Class Reference}
+\hypertarget{classBoundary}{}\label{classBoundary}\index{Boundary@{Boundary}}
+
+
+Handles boundary conditions for the computational domain.  
+
+
+
+
+{\ttfamily \#include $<$boundary.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classBoundary_af023ad8940ca642022a53aa95a73695d}{Boundary}} (\mbox{\hyperlink{structGrid}{Grid}} \texorpdfstring{$\ast$}{*}grid\+\_\+, double dx\+\_\+, double dy\+\_\+, double dz\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructs a boundary handler for the given grid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classBoundary_a103d9eb344f3820373bf6b1fbfb2b693}{update\+\_\+boundary}} (double t)
+\begin{DoxyCompactList}\small\item\em Updates all boundary values at the given time. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classBoundary_ac51b238fd7c003e25f252860bd09ac5a}{approximate\+\_\+boundary\+\_\+u}} (size\+\_\+t x, size\+\_\+t y, size\+\_\+t z, double t, size\+\_\+t face)
+\begin{DoxyCompactList}\small\item\em Approximates boundary value for u-\/velocity component. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classBoundary_aef81ed1e7d2829a482ed7119ab6b0468}{approximate\+\_\+boundary\+\_\+v}} (size\+\_\+t x, size\+\_\+t y, size\+\_\+t z, double t, size\+\_\+t face)
+\begin{DoxyCompactList}\small\item\em Approximates boundary value for v-\/velocity component. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classBoundary_ac01a2df6dd3a0596573038bec9a4a2a8}{approximate\+\_\+boundary\+\_\+w}} (size\+\_\+t x, size\+\_\+t y, size\+\_\+t z, double t, size\+\_\+t face)
+\begin{DoxyCompactList}\small\item\em Approximates boundary value for w-\/velocity component. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classBoundary_a951b41eee590dbdb86790a44ce4b4056}{add\+Function}} (size\+\_\+t direction, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$ x)
+\begin{DoxyCompactList}\small\item\em Adds a boundary function for a specific direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles boundary conditions for the computational domain. 
+
+Manages and applies boundary conditions for velocity components (u,v,w) on all faces of the domain using boundary functions 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classBoundary_af023ad8940ca642022a53aa95a73695d}\label{classBoundary_af023ad8940ca642022a53aa95a73695d} 
+\index{Boundary@{Boundary}!Boundary@{Boundary}}
+\index{Boundary@{Boundary}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{Boundary()}{Boundary()}}
+{\footnotesize\ttfamily Boundary\+::\+Boundary (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structGrid}{Grid}} \texorpdfstring{$\ast$}{*}}]{grid\+\_\+,  }\item[{double}]{dx\+\_\+,  }\item[{double}]{dy\+\_\+,  }\item[{double}]{dz\+\_\+ }\end{DoxyParamCaption})}
+
+
+
+Constructs a boundary handler for the given grid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em grid\+\_\+} & Pointer to the grid \\
+\hline
+{\em dx\+\_\+} & \doxylink{structGrid}{Grid} step in x direction \\
+\hline
+{\em dy\+\_\+} & \doxylink{structGrid}{Grid} step in y direction \\
+\hline
+{\em dz\+\_\+} & \doxylink{structGrid}{Grid} step in z direction \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classBoundary_a951b41eee590dbdb86790a44ce4b4056}\label{classBoundary_a951b41eee590dbdb86790a44ce4b4056} 
+\index{Boundary@{Boundary}!addFunction@{addFunction}}
+\index{addFunction@{addFunction}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{addFunction()}{addFunction()}}
+{\footnotesize\ttfamily void Boundary\+::add\+Function (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{direction,  }\item[{std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$}]{x }\end{DoxyParamCaption})}
+
+
+
+Adds a boundary function for a specific direction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em direction} & Direction index for the boundary \\
+\hline
+{\em x} & Shared pointer to the boundary function \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classBoundary_ac51b238fd7c003e25f252860bd09ac5a}\label{classBoundary_ac51b238fd7c003e25f252860bd09ac5a} 
+\index{Boundary@{Boundary}!approximate\_boundary\_u@{approximate\_boundary\_u}}
+\index{approximate\_boundary\_u@{approximate\_boundary\_u}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{approximate\_boundary\_u()}{approximate\_boundary\_u()}}
+{\footnotesize\ttfamily double Boundary\+::approximate\+\_\+boundary\+\_\+u (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{x,  }\item[{size\+\_\+t}]{y,  }\item[{size\+\_\+t}]{z,  }\item[{double}]{t,  }\item[{size\+\_\+t}]{face }\end{DoxyParamCaption})}
+
+
+
+Approximates boundary value for u-\/velocity component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate index \\
+\hline
+{\em y} & Y-\/coordinate index \\
+\hline
+{\em z} & Z-\/coordinate index \\
+\hline
+{\em t} & Current time \\
+\hline
+{\em face} & Index of the boundary face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Approximated boundary value 
+\end{DoxyReturn}
+\Hypertarget{classBoundary_aef81ed1e7d2829a482ed7119ab6b0468}\label{classBoundary_aef81ed1e7d2829a482ed7119ab6b0468} 
+\index{Boundary@{Boundary}!approximate\_boundary\_v@{approximate\_boundary\_v}}
+\index{approximate\_boundary\_v@{approximate\_boundary\_v}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{approximate\_boundary\_v()}{approximate\_boundary\_v()}}
+{\footnotesize\ttfamily double Boundary\+::approximate\+\_\+boundary\+\_\+v (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{x,  }\item[{size\+\_\+t}]{y,  }\item[{size\+\_\+t}]{z,  }\item[{double}]{t,  }\item[{size\+\_\+t}]{face }\end{DoxyParamCaption})}
+
+
+
+Approximates boundary value for v-\/velocity component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate index \\
+\hline
+{\em y} & Y-\/coordinate index \\
+\hline
+{\em z} & Z-\/coordinate index \\
+\hline
+{\em t} & Current time \\
+\hline
+{\em face} & Index of the boundary face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Approximated boundary value 
+\end{DoxyReturn}
+\Hypertarget{classBoundary_ac01a2df6dd3a0596573038bec9a4a2a8}\label{classBoundary_ac01a2df6dd3a0596573038bec9a4a2a8} 
+\index{Boundary@{Boundary}!approximate\_boundary\_w@{approximate\_boundary\_w}}
+\index{approximate\_boundary\_w@{approximate\_boundary\_w}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{approximate\_boundary\_w()}{approximate\_boundary\_w()}}
+{\footnotesize\ttfamily double Boundary\+::approximate\+\_\+boundary\+\_\+w (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{x,  }\item[{size\+\_\+t}]{y,  }\item[{size\+\_\+t}]{z,  }\item[{double}]{t,  }\item[{size\+\_\+t}]{face }\end{DoxyParamCaption})}
+
+
+
+Approximates boundary value for w-\/velocity component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate index \\
+\hline
+{\em y} & Y-\/coordinate index \\
+\hline
+{\em z} & Z-\/coordinate index \\
+\hline
+{\em t} & Current time \\
+\hline
+{\em face} & Index of the boundary face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Approximated boundary value 
+\end{DoxyReturn}
+\Hypertarget{classBoundary_a103d9eb344f3820373bf6b1fbfb2b693}\label{classBoundary_a103d9eb344f3820373bf6b1fbfb2b693} 
+\index{Boundary@{Boundary}!update\_boundary@{update\_boundary}}
+\index{update\_boundary@{update\_boundary}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{update\_boundary()}{update\_boundary()}}
+{\footnotesize\ttfamily void Boundary\+::update\+\_\+boundary (\begin{DoxyParamCaption}\item[{double}]{t }\end{DoxyParamCaption})}
+
+
+
+Updates all boundary values at the given time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current simulation time \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{boundary_8hpp}{boundary.\+hpp}}\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/src/boundary.\+cpp\end{DoxyCompactItemize}

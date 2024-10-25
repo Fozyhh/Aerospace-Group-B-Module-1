@@ -1,0 +1,103 @@
+\doxysection{Dirichlet Class Reference}
+\hypertarget{classDirichlet}{}\label{classDirichlet}\index{Dirichlet@{Dirichlet}}
+
+
+Implements \doxylink{classDirichlet}{Dirichlet} boundary condition using a function object.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Dirichlet\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classDirichlet__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Dirichlet\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classDirichlet__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDirichlet_a53fa10fc08c04827e9ece943a48738e8}{Dirichlet}} (std\+::function$<$ double(double, double, double, double)$>$ func\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor taking a function object. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classDirichlet_a993ba27b0a54d618575e2ada7dfc1e30}{value}} (double x, double y, double z, double t) override
+\begin{DoxyCompactList}\small\item\em Computes boundary value using stored function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classDirichlet_a3f1875d0b8a1c4f2167679a68c130179}\label{classDirichlet_a3f1875d0b8a1c4f2167679a68c130179} 
+std\+::function$<$ double(double, double, double,double)$>$ {\bfseries func}
+\begin{DoxyCompactList}\small\item\em Function object for boundary values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements \doxylink{classDirichlet}{Dirichlet} boundary condition using a function object. 
+
+Allows specification of arbitrary function for boundary values 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classDirichlet_a53fa10fc08c04827e9ece943a48738e8}\label{classDirichlet_a53fa10fc08c04827e9ece943a48738e8} 
+\index{Dirichlet@{Dirichlet}!Dirichlet@{Dirichlet}}
+\index{Dirichlet@{Dirichlet}!Dirichlet@{Dirichlet}}
+\doxysubsubsection{\texorpdfstring{Dirichlet()}{Dirichlet()}}
+{\footnotesize\ttfamily Dirichlet\+::\+Dirichlet (\begin{DoxyParamCaption}\item[{std\+::function$<$ double(double, double, double, double)$>$}]{func\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor taking a function object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func\+\_\+} & Function object that computes boundary values \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classDirichlet_a993ba27b0a54d618575e2ada7dfc1e30}\label{classDirichlet_a993ba27b0a54d618575e2ada7dfc1e30} 
+\index{Dirichlet@{Dirichlet}!value@{value}}
+\index{value@{value}!Dirichlet@{Dirichlet}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily double Dirichlet\+::value (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{double}]{z,  }\item[{double}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Computes boundary value using stored function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate \\
+\hline
+{\em y} & Y-\/coordinate \\
+\hline
+{\em z} & Z-\/coordinate \\
+\hline
+{\em t} & Time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Computed boundary value 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classBoundaryFunction_a2de057c8c13fa66ebcf1d5b0c9be75cb}{Boundary\+Function}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}

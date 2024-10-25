@@ -1,5 +1,11 @@
-// class representing the problem to be solved. It contains the grid, the time step, the final time, the initial condition, the boundary conditions, the source term, the exact solution, the numerical solution, the error, and the output file.
-// the boundary conditions, the source term, the exact solution, the numerical solver.
+/**
+ * @file core.hpp
+ * @brief Core solver for incompressible Navier-Stokes equations
+ * @details Contains the main solver class for handling the numerical solution
+ *          of incompressible Navier-Stokes equations including the grid, the time step,
+ *          the final time, the initial condition, the boundary conditions, the source term,
+ *          the exact solution, the numerical solution, the error, and the output file.
+ */
 
 #ifndef CORE_HPP
 #define CORE_HPP
@@ -10,12 +16,30 @@
 #include <string>
 #include <cmath>
 
-
+/**
+ * @class IcoNS
+ * @brief Incompressible Navier-Stokes solver
+ * @details Handles the numerical solution of incompressible Navier-Stokes equations
+ *          including grid, time integration, boundary conditions, ...
+ */
 class IcoNS
 {
 public:
   
-
+  /**
+   * @brief Constructor for the IcoNS solver
+   * @param lx Domain length in x direction
+   * @param ly Domain length in y direction
+   * @param lz Domain length in z direction
+   * @param nx Number of cells in x direction
+   * @param ny Number of cells in y direction
+   * @param nz Number of cells in z direction
+   * @param dt Time step size
+   * @param T Final simulation time
+   * @param Re Reynolds number
+   * @param input_file Path to input file
+   * @param output_file Path to output file
+   */
   IcoNS(const double lx, const double ly, const double lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
         const double dt, const double T, const double Re,
@@ -38,44 +62,117 @@ public:
         boundary(&grid,dx,dy,dz)
   {}
 
-  void preprocessing(/*std::string &input_file*/); // grid initialization.
+  /**
+   * @brief Initialize the grid and simulation parameters
+   */
+  void preprocessing(/*std::string &input_file*/);
 
+  /**
+   * @brief Compute the source term F
+   * @param u X-velocity component
+   * @param v Y-velocity component
+   * @param w Z-velocity component
+   * @param i X-index
+   * @param j Y-index
+   * @param k Z-index
+   * @param t Current time
+   * @return Vector containing source term components
+   */
+  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, 
+                                size_t i, size_t j, size_t k, double t);
+ 
+  /**
+   * @brief Compute the source term G
+   * @param i X-index
+   * @param j Y-index
+   * @param k Z-index
+   * @param t Current time
+   * @return Vector containing source term components
+   */
+  std::vector<double> functionG(size_t i, size_t j, size_t k, double t);
 
-  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
+  /**
+   * @brief Apply boundary conditions at given time
+   * @param time Current simulation time
+   */
+  void apply_boundary_conditions(double time);
+  
+  /**
+   * @brief Solve a single time step
+   * @param time Current simulation time
+   */
+  void solve_time_step( double time );
+  
+  /**
+   * @brief Solve the complete problem and save output
+   */
+  void solve();
 
-  void apply_boundary_conditions(double time); // apply the boundary conditions.
-  void solve_time_step( double time ); // solve a time step.
-  void solve(); // solve the problem saving the ouput.
-
+  /**
+   * @brief Alternative source term computation
+   * @param u X-velocity component
+   * @param v Y-velocity component
+   * @param w Z-velocity component
+   * @param i X-index
+   * @param j Y-index
+   * @param k Z-index
+   * @return Vector containing source term components
+   */
   std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
                                 size_t i, size_t j, size_t k);
+  
+  /**
+   * @brief Alternative time step solver
+   */
+  void solve_time_step();
 
-  void solve_time_step(); // solve a time step.
-
+  /**
+   * @brief Compute error in X component
+   * @param t Current time
+   * @return Error value
+   */
   double error_comp_X(const double t);
-  double error_comp_Y(const double t);
-  double error_comp_Z(const double t);
-  double L2_error(const double t); // compute the L2 norm
 
+  /**
+   * @brief Compute error in Y component
+   * @param t Current time
+   * @return Error value
+   */
+  double error_comp_Y(const double t);
+  
+  /**
+   * @brief Compute error in Z component
+   * @param t Current time
+   * @return Error value
+   */ 
+  double error_comp_Z(const double t);
+  
+  /**
+   * @brief Compute the L2 norm of the error
+   * @param t Current time
+   * @return L2 norm value
+   */
+  double L2_error(const double t);
+
+  /**
+   * @brief Write results to output file
+   */
   void output(); // write the output file.
 
 
 private:
-    Grid grid;                     // grid of the domain.
-    const double dt;               // time step.
-    const double T;                // final time.
-    const double Re;               // Reynolds number.
-    const unsigned int lx, ly, lz; // lengths of edges of the domain.
-    const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-    const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+    Grid grid;                     ///< grid of the domain.
+    const double dt;               ///< time step.
+    const double T;                ///< final time.
+    const double Re;               ///< Reynolds number.
+    const unsigned int lx, ly, lz; ///< lengths of edges of the domain.
+    const unsigned int nx, ny, nz; ///< number of cells in the x,y,z directions.
+    const double dx, dy, dz;       ///< cell sizes in the x,y,z directions.
     Boundary boundary;
-    ExactSolution exact_solution;  // exact solution.
-    std::string input_file;        // input file.
-    std::string output_file;       // output file.
+    ExactSolution exact_solution;  ///< exact solution.
+    std::string input_file;        ///< input file.
+    std::string output_file;       ///< output file.
 
 };
 
-
 #endif // CORE_HPP
-

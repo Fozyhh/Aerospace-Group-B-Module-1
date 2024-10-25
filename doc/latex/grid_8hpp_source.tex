@@ -1,0 +1,29 @@
+\doxysection{grid.\+hpp}
+\hypertarget{grid_8hpp_source}{}\label{grid_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp}}
+\mbox{\hyperlink{grid_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#ifndef\ GRID\_HPP}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ GRID\_HPP}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structGrid}{Grid}}}
+\DoxyCodeLine{00020\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ nx,\ ny,\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}};\ \ \ \ \ }
+\DoxyCodeLine{00022\ \ \ \ \ std::vector<double>\ u,\ v,\ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}};\ }
+\DoxyCodeLine{00023\ \ \ \ \ std::vector<double>\ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}}(\textcolor{keywordtype}{int}\ nx,\ \textcolor{keywordtype}{int}\ ny,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})\ :\ nx(nx),\ ny(ny),\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}(\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})}
+\DoxyCodeLine{00032\ \ \ \ \ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ u.resize(nx\ *\ (ny+1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ v.resize((nx+1)\ *\ ny\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}}.resize((nx+1)\ *\ (ny+1)\ *\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}});}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}}.resize((nx\ +\ 1)\ *\ (ny\ +\ 1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}\ +\ 1));}
+\DoxyCodeLine{00037\ \ \ \ \ \}}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ GRID\_HPP}}
+
+\end{DoxyCode}

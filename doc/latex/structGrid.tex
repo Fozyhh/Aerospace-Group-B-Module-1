@@ -1,0 +1,72 @@
+\doxysection{Grid Class Reference}
+\hypertarget{structGrid}{}\label{structGrid}\index{Grid@{Grid}}
+
+
+Represents a 3D grid for fluid simulation.  
+
+
+
+
+{\ttfamily \#include $<$grid.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}} (int nx, int ny, int \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})
+\begin{DoxyCompactList}\small\item\em Constructs a grid with specified dimensions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}\label{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44} 
+unsigned int {\bfseries nx}
+\item 
+\Hypertarget{structGrid_adab54e0dbc5804b663b230b95f5fed1b}\label{structGrid_adab54e0dbc5804b663b230b95f5fed1b} 
+unsigned int {\bfseries ny}
+\item 
+\Hypertarget{structGrid_a47f700be68729d6339e3529f308ebf21}\label{structGrid_a47f700be68729d6339e3529f308ebf21} 
+unsigned int {\bfseries nz}
+\begin{DoxyCompactList}\small\item\em number of cells in the x,y,z directions. \end{DoxyCompactList}\item 
+\Hypertarget{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}\label{structGrid_a87920f94f9478c10606e9c6eb6bf35c8} 
+std\+::vector$<$ double $>$ {\bfseries u}
+\item 
+\Hypertarget{structGrid_aebd3f867b33a55cba599dcc3efc159cf}\label{structGrid_aebd3f867b33a55cba599dcc3efc159cf} 
+std\+::vector$<$ double $>$ {\bfseries v}
+\item 
+\Hypertarget{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}\label{structGrid_a768c5bc618d2c0b78a5661fbb4acb180} 
+std\+::vector$<$ double $>$ {\bfseries w}
+\begin{DoxyCompactList}\small\item\em velocity values of the grid cells. \end{DoxyCompactList}\item 
+\Hypertarget{structGrid_aeafc8ae143fb9328606cb56fcd60924e}\label{structGrid_aeafc8ae143fb9328606cb56fcd60924e} 
+std\+::vector$<$ double $>$ {\bfseries p}
+\begin{DoxyCompactList}\small\item\em pressure values of the grid cells. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a 3D grid for fluid simulation. 
+
+Contains velocity components (u,v,w) and pressure (p) fields stored in 1D vectors with appropriate indexing for 3D representation 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structGrid_a187d388703632c05bd08a8c955433b86}\label{structGrid_a187d388703632c05bd08a8c955433b86} 
+\index{Grid@{Grid}!Grid@{Grid}}
+\index{Grid@{Grid}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{Grid()}{Grid()}}
+{\footnotesize\ttfamily Grid\+::\+Grid (\begin{DoxyParamCaption}\item[{int}]{nx,  }\item[{int}]{ny,  }\item[{int}]{nz }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a grid with specified dimensions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nx} & Number of cells in x direction \\
+\hline
+{\em ny} & Number of cells in y direction \\
+\hline
+{\em nz} & Number of cells in z direction \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{grid_8hpp}{grid.\+hpp}}\end{DoxyCompactItemize}
