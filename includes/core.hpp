@@ -38,10 +38,10 @@ public:
                                   const std::vector<double> &w,
                                   size_t i, size_t j, size_t k, double t); // compute the source term.
 
-  std::array<double, 3> functionF(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u,
-                                  const std::array<double, (NX + 1) * NY *(NZ + 1)> &v,
-                                  const std::array<double, (NX + 1) * (NY + 1) * NZ> &w,
-                                  size_t i, size_t j, size_t k, double t);
+  std::array<double, 3> IcoNS::functionF(std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> u,
+                                         std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> v,
+                                         std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> w,
+                                         size_t i, size_t j, size_t k, double t);
 
   std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
 

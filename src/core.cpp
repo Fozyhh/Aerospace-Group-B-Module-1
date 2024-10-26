@@ -18,9 +18,9 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         {
             for (size_t k = 1; k < NZ - 1; k++)
             {
-                grid.u[i * NY * NZ + j * NZ + k] = 3.0;
-                grid.v[i * NY * NZ + j * NZ + k] = 3.0;
-                grid.w[i * NY * NZ + j * NZ + k] = 3.0;
+                grid.u[i][j][k] = 3.0;
+                grid.v[i][j][k] = 3.0;
+                grid.w[i][j][k] = 3.0;
             }
         }
     }
@@ -33,47 +33,46 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             {
                 if (i == 0 || i == NX || j == 0 || j == NY || k == 0 || k == NZ)
                 {
-                    grid.u[i * NY * NZ + j * NZ + k] = 1.0;
-                    grid.v[i * NY * NZ + j * NZ + k] = 1.0;
-                    grid.w[i * NY * NZ + j * NZ + k] = 1.0;
+                    grid.u[i][j][k] = 1.0;
+                    grid.v[i][j][k] = 1.0;
+                    grid.w[i][j][k] = 1.0;
                 }
             }
         }
         // pressure initialization.
     }
-    /*
-        // boundary
-        auto zero = std::make_shared<FunctionZero>();
-        auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                       { return std::sin(x * t); });
 
-        auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                       { return std::sin(y * t); });
+    // boundary
+    auto zero = std::make_shared<FunctionZero>();
+    auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                   { return std::sin(x * t); });
 
-        auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                       { return std::sin(z * t); });
+    auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                   { return std::sin(y * t); });
 
-        std::cout << "vector building" << std::endl;
-        // Order: left, right, front, back, lower, upper
-        boundary.addFunction(0, zero);
-        boundary.addFunction(0, zero);
-        boundary.addFunction(0, frontface_u);
-        boundary.addFunction(0, frontface_u);
-        boundary.addFunction(0, zero);
-        boundary.addFunction(0, zero);
-        boundary.addFunction(1, zero);
-        boundary.addFunction(1, zero);
-        boundary.addFunction(1, frontface_v);
-        boundary.addFunction(1, frontface_v);
-        boundary.addFunction(1, zero);
-        boundary.addFunction(1, zero);
-        boundary.addFunction(2, zero);
-        boundary.addFunction(2, zero);
-        boundary.addFunction(2, frontface_w);
-        boundary.addFunction(2, frontface_w);
-        boundary.addFunction(2, zero);
-        boundary.addFunction(2, zero);
-        */
+    auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                   { return std::sin(z * t); });
+
+    std::cout << "vector building" << std::endl;
+    // Order: left, right, front, back, lower, upper
+    boundary.addFunction(0, zero);
+    boundary.addFunction(0, zero);
+    boundary.addFunction(0, frontface_u);
+    boundary.addFunction(0, frontface_u);
+    boundary.addFunction(0, zero);
+    boundary.addFunction(0, zero);
+    boundary.addFunction(1, zero);
+    boundary.addFunction(1, zero);
+    boundary.addFunction(1, frontface_v);
+    boundary.addFunction(1, frontface_v);
+    boundary.addFunction(1, zero);
+    boundary.addFunction(1, zero);
+    boundary.addFunction(2, zero);
+    boundary.addFunction(2, zero);
+    boundary.addFunction(2, frontface_w);
+    boundary.addFunction(2, frontface_w);
+    boundary.addFunction(2, zero);
+    boundary.addFunction(2, zero);
 }
 
 void IcoNS::solve()
@@ -87,7 +86,7 @@ void IcoNS::solve()
     while (time < T)
     {
         // apply_boundary_conditions(time);
-        // boundary.update_boundary(time);
+        boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         output();
@@ -123,9 +122,9 @@ std::array<double, 3> IcoNS::functionF(const std::vector<double> &u, const std::
     return f;
 }
 
-std::array<double, 3> IcoNS::functionF(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u,
-                                       const std::array<double, (NX + 1) * NY *(NZ + 1)> &v,
-                                       const std::array<double, (NX + 1) * (NY + 1) * NZ> &w,
+std::array<double, 3> IcoNS::functionF(std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> u,
+                                       std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> v,
+                                       std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> w,
                                        size_t i, size_t j, size_t k, double t)
 {
     std::array<double, 3> f;
@@ -234,13 +233,13 @@ void IcoNS::apply_boundary_conditions(double time)
         for (size_t j = 0; j < NY; j++)
         {
             // bottom face -> k = 0 -> sin(k*dz) = 0, cos(k*dz) = 1
-            grid.u[i * NY * NZ + j * NZ] = 0.0;
-            grid.v[i * NY * NZ + j * NZ] = 0.0;
-            grid.w[i * NY * NZ + j * NZ] = 2 * std::cos(i * dx) * std::cos(j * dy) * std::sin(time);
+            grid.u[i][j][0] = 0.0;
+            grid.v[i][j][0] = 0.0;
+            grid.w[i][j][0] = 2 * std::cos(i * dx) * std::cos(j * dy) * std::sin(time);
             // top face -> k*dz = lz
-            grid.u[i * NY * NZ + j * NZ + NZ - 1] = std::sin(i * dx) * std::cos(j * dy) * std::sin(lz) * std::sin(time);
-            grid.v[i * NY * NZ + j * NZ + NZ - 1] = std::cos(i * dx) * std::sin(j * dy) * std::sin(lz) * std::sin(time);
-            grid.w[i * NY * NZ + j * NZ + NZ - 1] = 2 * std::cos(i * dx) * std::cos(j * dy) * std::cos(lz) * std::sin(time);
+            grid.u[i][j][NZ - 1] = std::sin(i * dx) * std::cos(j * dy) * std::sin(lz) * std::sin(time);
+            grid.v[i][j][NZ - 1] = std::cos(i * dx) * std::sin(j * dy) * std::sin(lz) * std::sin(time);
+            grid.w[i][j][NZ - 1] = 2 * std::cos(i * dx) * std::cos(j * dy) * std::cos(lz) * std::sin(time);
         }
     }
 
@@ -249,13 +248,13 @@ void IcoNS::apply_boundary_conditions(double time)
         for (size_t k = 0; k < NZ; k++)
         {
             // front face -> j = 0 -> sin(j*dy) = 0, cos(j*dy) = 1
-            grid.u[i * NY * NZ + k] = std::sin(i * dx) * std::sin(k * dz) * std::sin(time);
-            grid.v[i * NY * NZ + k] = 0.0;
-            grid.w[i * NY * NZ + k] = 2 * std::cos(i * dx) * std::cos(k * dz) * std::sin(time);
+            grid.u[i][0][k] = std::sin(i * dx) * std::sin(k * dz) * std::sin(time);
+            grid.v[i][0][k] = 0.0;
+            grid.w[i][0][k] = 2 * std::cos(i * dx) * std::cos(k * dz) * std::sin(time);
             // back face -> j*dy = ly
-            grid.u[i * NY * NZ + (NY - 1) * NZ + k] = std::sin(i * dx) * std::cos(ly) * std::sin(k * dz) * std::sin(time);
-            grid.v[i * NY * NZ + (NY - 1) * NZ + k] = std::cos(i * dx) * std::sin(ly) * std::sin(k * dz) * std::sin(time);
-            grid.w[i * NY * NZ + (NY - 1) * NZ + k] = 2 * std::cos(i * dx) * std::cos(ly) * std::cos(k * dz) * std::sin(time);
+            grid.u[i][NY - 1][k] = std::sin(i * dx) * std::cos(ly) * std::sin(k * dz) * std::sin(time);
+            grid.v[i][NY - 1][k] = std::cos(i * dx) * std::sin(ly) * std::sin(k * dz) * std::sin(time);
+            grid.w[i][NY - 1][k] = 2 * std::cos(i * dx) * std::cos(ly) * std::cos(k * dz) * std::sin(time);
         }
     }
 
@@ -264,13 +263,13 @@ void IcoNS::apply_boundary_conditions(double time)
         for (size_t k = 0; k < NZ; k++)
         {
             // left face -> i = 0 -> sin(i*dx) = 0, cos(i*dx) = 1
-            grid.u[j * NZ + k] = 0.0;
-            grid.v[j * NZ + k] = std::sin(j * dy) * std::sin(k * dz) * std::sin(time);
-            grid.w[j * NZ + k] = 2 * std::cos(j * dy) * std::cos(k * dz) * std::sin(time);
+            grid.u[0][j][k] = 0.0;
+            grid.v[0][j][k] = std::sin(j * dy) * std::sin(k * dz) * std::sin(time);
+            grid.w[0][j][k] = 2 * std::cos(j * dy) * std::cos(k * dz) * std::sin(time);
             // right face -> i*dx = lx
-            grid.u[(NX - 1) * NY * NZ + j * NZ + k] = std::sin(lx) * std::cos(j * dy) * std::sin(k * dz) * std::sin(time);
-            grid.v[(NX - 1) * NY * NZ + j * NZ + k] = std::cos(lx) * std::sin(j * dy) * std::sin(k * dz) * std::sin(time);
-            grid.w[(NX - 1) * NY * NZ + j * NZ + k] = 2 * std::cos(lx) * std::cos(j * dy) * std::cos(k * dz) * std::sin(time);
+            grid.u[NX - 1][j][k] = std::sin(lx) * std::cos(j * dy) * std::sin(k * dz) * std::sin(time);
+            grid.v[NX - 1][j][k] = std::cos(lx) * std::sin(j * dy) * std::sin(k * dz) * std::sin(time);
+            grid.w[NX - 1][j][k] = 2 * std::cos(lx) * std::cos(j * dy) * std::cos(k * dz) * std::sin(time);
         }
     }
 }
