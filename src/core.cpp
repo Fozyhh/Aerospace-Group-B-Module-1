@@ -172,7 +172,7 @@ void IcoNS::solve_time_step(double time)
 
                 f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-                Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+                Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                                  50.0 / 120.0 * dt * f_y2[0] -
                                                  34.0 / 120.0 * dt * f[0];
                 Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -214,7 +214,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -254,7 +254,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -294,7 +294,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -334,7 +334,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -374,7 +374,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
@@ -414,7 +414,7 @@ void IcoNS::solve_time_step(double time)
 
             f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * (ny - 1) * (nz - 1) + j * (nz - 1) + k] +
+            Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
             Y3_y[i * (ny - 1) * nz + j * nz + k] = Y2_y[i * (ny - 1) * nz + j * nz + k] +
