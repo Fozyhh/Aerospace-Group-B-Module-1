@@ -96,35 +96,9 @@ void IcoNS::solve()
     }
 }
 
-std::array<double, 3> IcoNS::functionF(const std::vector<double> &u, const std::vector<double> &v,
-                                       const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
-{
-    std::array<double, 3> f;
-    size_t l = i * NY * NZ + j * NZ + k;
-    std::vector<double> g(3);
-    g = functionG(i * dx, j * dy, k * dz, t);
-
-    f[0] = -(u[l] * (u[l + NZ * NY] - u[l - NZ * NY]) / (2.0 * dx) +
-             (v[l + NZ * NY] + v[l] + v[l - NZ] + v[l + NZ * NY - NZ]) / 4.0 * (u[l + NZ] - u[l - NZ]) / (2.0 * dy) +
-             (w[l + NZ * NY] + w[l] + w[l + NZ * NY - 1] + w[l - 1]) / 4.0 * (u[l + 1] - u[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((u[l + NY * NZ] - 2 * u[l] + u[l - NY * NZ]) / (dx * dx) + (u[l + NZ] - 2 * u[l] + u[l - NZ]) / (dy * dy) + (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz)) + g[0];
-
-    f[1] = -((u[l] + u[l + NZ] + u[l - NY * NZ] + u[l - NY * NZ + NZ]) / 4.0 * (v[l + NY * NZ] - v[l - NY * NZ] / (2.0 * dx)) +
-             v[l] * (v[l + NZ] - v[l - NZ]) / (2.0 * dy) +
-             (w[l] + w[l - 1] + w[l + NZ] + w[l + NZ - 1]) / 4.0 + (v[l + 1] - v[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((v[l + NZ * NY] - 2.0 * v[l] + v[l - NZ * NY]) / (dx * dx) + (v[l + NZ] - 2.0 * v[l] + v[l - NZ]) / (dy * dy) + (v[l + 1] - 2.0 * v[l] + v[l - 1]) / (dz * dz)) + g[1];
-
-    f[2] = -((u[l] + u[l - NY * NZ] + u[l + 1] + u[l - NZ * NY + 1]) / 4.0 * (w[l + NZ * NY] - w[l - NZ * NY]) / (2.0 * dx) +
-             (v[l + 1] + v[l - NZ + 1] + v[l] + v[l - NZ]) / 4.0 * (w[l + NZ] - w[l - NZ]) / (2.0 * dy) +
-             w[l] * (w[l + 1] - w[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((w[l + NZ * NY] - 2.0 * w[l] + w[l - NZ * NY]) / (dx * dx) + (w[l + NZ] - 2.0 * w[l] + w[l - NZ]) / (dy * dy) + (w[l + 1] - 2.0 * w[l] + w[l - 1]) / (dz * dz)) + g[2];
-
-    return f;
-}
-
-std::array<double, 3> IcoNS::functionF(std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> u,
-                                       std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> v,
-                                       std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> w,
+std::array<double, 3> IcoNS::functionF(const std::vector<std::vector<std::vector<double>>> &u,
+                                       const std::vector<std::vector<std::vector<double>>> &v,
+                                       const std::vector<std::vector<std::vector<double>>> &w,
                                        size_t i, size_t j, size_t k, double t)
 {
     std::array<double, 3> f;
@@ -132,21 +106,48 @@ std::array<double, 3> IcoNS::functionF(std::array<std::array<std::array<double, 
     std::vector<double> g(3);
     g = functionG(i * dx, j * dy, k * dz, t);
 
-    f[0] = -(u[l] * (u[l + NZ * NY] - u[l - NZ * NY]) / (2.0 * dx) +
-             (v[l + NZ * NY] + v[l] + v[l - NZ] + v[l + NZ * NY - NZ]) / 4.0 * (u[l + NZ] - u[l - NZ]) / (2.0 * dy) +
-             (w[l + NZ * NY] + w[l] + w[l + NZ * NY - 1] + w[l - 1]) / 4.0 * (u[l + 1] - u[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((u[l + NY * NZ] - 2 * u[l] + u[l - NY * NZ]) / (dx * dx) + (u[l + NZ] - 2 * u[l] + u[l - NZ]) / (dy * dy) + (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz)) + g[0];
+    f[0] = -(u[i][j][k] * (u[i + 1][j][k] - u[i - 1][j][k]) / (2.0 * dx) +
+             (v[i + 1][j][k] + v[i][j][k] + v[i][j - 1][k] + v[i + 1][j - 1][k]) / 4.0 * (u[i][j + 1][k] - u[i][j - 1][k]) / (2.0 * dy) +
+             (w[i + 1][j][k] + w[i][j][k] + w[i + 1][j][k - 1] + w[i][j][k - 1]) / 4.0 * (u[i][j][k + 1] - u[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((u[i + 1][j][k] - 2 * u[i][j][k] + u[i - 1][j][k]) / (dx * dx) + (u[i][j + 1][k] - 2 * u[i][j][k] + u[i][j - 1][k]) / (dy * dy) + (u[i][j][k + 1] - 2 * u[i][j][k] + u[i][j][k - 1]) / (dz * dz)) + g[0];
 
-    f[1] = -((u[l] + u[l + NZ] + u[l - NY * NZ] + u[l - NY * NZ + NZ]) / 4.0 * (v[l + NY * NZ] - v[l - NY * NZ] / (2.0 * dx)) +
-             v[l] * (v[l + NZ] - v[l - NZ]) / (2.0 * dy) +
-             (w[l] + w[l - 1] + w[l + NZ] + w[l + NZ - 1]) / 4.0 + (v[l + 1] - v[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((v[l + NZ * NY] - 2.0 * v[l] + v[l - NZ * NY]) / (dx * dx) + (v[l + NZ] - 2.0 * v[l] + v[l - NZ]) / (dy * dy) + (v[l + 1] - 2.0 * v[l] + v[l - 1]) / (dz * dz)) + g[1];
+    f[1] = -((u[i][j][k] + u[i][j + 1][k] + u[i - 1][j][k] + u[i - 1][j + 1][k]) / 4.0 * (v[i + 1][j][k] - v[i - 1][j][k] / (2.0 * dx)) +
+             v[i][j][k] * (v[i][j + 1][k] - v[i][j - 1][k]) / (2.0 * dy) +
+             (w[i][j][k] + w[i][j][k - 1] + w[i][j + 1][k] + w[i][j - 1][k]) / 4.0 + (v[i][j][k + 1] - v[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((v[i + 1][j][k] - 2.0 * v[i][j][k] + v[i - 1][j][k]) / (dx * dx) + (v[i][j + 1][k] - 2.0 * v[i][j][k] + v[i][j - 1][k]) / (dy * dy) + (v[i][j][k + 1] - 2.0 * v[i][j][k] + v[i][j][k - 1]) / (dz * dz)) + g[1];
 
-    f[2] = -((u[l] + u[l - NY * NZ] + u[l + 1] + u[l - NZ * NY + 1]) / 4.0 * (w[l + NZ * NY] - w[l - NZ * NY]) / (2.0 * dx) +
-             (v[l + 1] + v[l - NZ + 1] + v[l] + v[l - NZ]) / 4.0 * (w[l + NZ] - w[l - NZ]) / (2.0 * dy) +
-             w[l] * (w[l + 1] - w[l - 1]) / (2.0 * dz)) +
-           1 / Re * ((w[l + NZ * NY] - 2.0 * w[l] + w[l - NZ * NY]) / (dx * dx) + (w[l + NZ] - 2.0 * w[l] + w[l - NZ]) / (dy * dy) + (w[l + 1] - 2.0 * w[l] + w[l - 1]) / (dz * dz)) + g[2];
+    f[2] = -((u[i][j][k] + u[i - 1][j][k] + u[i][j][k + 1] + u[i - 1][j][k + 1]) / 4.0 * (w[i + 1][j][k] - w[i - 1][j][k]) / (2.0 * dx) +
+             (v[i][j][k + 1] + v[i][j - 1][k + 1] + v[i][j][k] + v[i][j - 1][k]) / 4.0 * (w[i][j + 1][k] - w[i][j - 1][k]) / (2.0 * dy) +
+             w[i][j][k] * (w[i][j][k + 1] - w[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((w[i + 1][j][k] - 2.0 * w[i][j][k] + w[i - 1][j][k]) / (dx * dx) + (w[i][j + 1][k] - 2.0 * w[i][j][k] + w[i][j - 1][k]) / (dy * dy) + (w[i][j][k + 1] - 2.0 * w[i][j][k] + w[i][j][k - 1]) / (dz * dz)) + g[2];
 
+    return f;
+}
+
+std::array<double, 3> IcoNS::functionF(const std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> &u,
+                                       const std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> &v,
+                                       const std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> &w,
+                                       size_t i, size_t j, size_t k, double t)
+{
+    std::array<double, 3> f;
+    size_t l = i * NY * NZ + j * NZ + k;
+    std::vector<double> g(3);
+    g = functionG(i * dx, j * dy, k * dz, t);
+
+    f[0] = -(u[i][j][k] * (u[i + 1][j][k] - u[i - 1][j][k]) / (2.0 * dx) +
+             (v[i + 1][j][k] + v[i][j][k] + v[i][j - 1][k] + v[i + 1][j - 1][k]) / 4.0 * (u[i][j + 1][k] - u[i][j - 1][k]) / (2.0 * dy) +
+             (w[i + 1][j][k] + w[i][j][k] + w[i + 1][j][k - 1] + w[i][j][k - 1]) / 4.0 * (u[i][j][k + 1] - u[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((u[i + 1][j][k] - 2 * u[i][j][k] + u[i - 1][j][k]) / (dx * dx) + (u[i][j + 1][k] - 2 * u[i][j][k] + u[i][j - 1][k]) / (dy * dy) + (u[i][j][k + 1] - 2 * u[i][j][k] + u[i][j][k - 1]) / (dz * dz)) + g[0];
+
+    f[1] = -((u[i][j][k] + u[i][j + 1][k] + u[i - 1][j][k] + u[i - 1][j + 1][k]) / 4.0 * (v[i + 1][j][k] - v[i - 1][j][k] / (2.0 * dx)) +
+             v[i][j][k] * (v[i][j + 1][k] - v[i][j - 1][k]) / (2.0 * dy) +
+             (w[i][j][k] + w[i][j][k - 1] + w[i][j + 1][k] + w[i][j - 1][k]) / 4.0 + (v[i][j][k + 1] - v[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((v[i + 1][j][k] - 2.0 * v[i][j][k] + v[i - 1][j][k]) / (dx * dx) + (v[i][j + 1][k] - 2.0 * v[i][j][k] + v[i][j - 1][k]) / (dy * dy) + (v[i][j][k + 1] - 2.0 * v[i][j][k] + v[i][j][k - 1]) / (dz * dz)) + g[1];
+
+    f[2] = -((u[i][j][k] + u[i - 1][j][k] + u[i][j][k + 1] + u[i - 1][j][k + 1]) / 4.0 * (w[i + 1][j][k] - w[i - 1][j][k]) / (2.0 * dx) +
+             (v[i][j][k + 1] + v[i][j - 1][k + 1] + v[i][j][k] + v[i][j - 1][k]) / 4.0 * (w[i][j + 1][k] - w[i][j - 1][k]) / (2.0 * dy) +
+             w[i][j][k] * (w[i][j][k + 1] - w[i][j][k - 1]) / (2.0 * dz)) +
+           1 / Re * ((w[i + 1][j][k] - 2.0 * w[i][j][k] + w[i - 1][j][k]) / (dx * dx) + (w[i][j + 1][k] - 2.0 * w[i][j][k] + w[i][j - 1][k]) / (dy * dy) + (w[i][j][k + 1] - 2.0 * w[i][j][k] + w[i][j][k - 1]) / (dz * dz)) + g[2];
     return f;
 }
 
@@ -171,12 +172,12 @@ void IcoNS::solve_time_step(double time)
     std::array<double, 3> f;
     std::array<double, 3> f_y2;
     std::array<double, 3> f_y3;
-    std::vector<double> Y2_x(NX * (NY + 1) * (NZ + 1));
-    std::vector<double> Y2_y((NX + 1) * NY * (NZ + 1));
-    std::vector<double> Y2_z((NX + 1) * (NY + 1) * NZ);
-    std::vector<double> Y3_x(NX * (NY + 1) * (NZ + 1));
-    std::vector<double> Y3_y((NX + 1) * NY * (NZ + 1));
-    std::vector<double> Y3_z((NX + 1) * (NY + 1) * NZ);
+    std::vector<std::vector<std::vector<double>>> Y2_x(NX, std::vector<std::vector<double>>(NY + 1, std::vector<double>(NZ + 1)));
+    std::vector<std::vector<std::vector<double>>> Y2_y(NX + 1, std::vector<std::vector<double>>(NY, std::vector<double>(NZ + 1)));
+    std::vector<std::vector<std::vector<double>>> Y2_z(NX + 1, std::vector<std::vector<double>>(NY + 1, std::vector<double>(NZ)));
+    std::vector<std::vector<std::vector<double>>> Y3_x(NX, std::vector<std::vector<double>>(NY + 1, std::vector<double>(NZ + 1)));
+    std::vector<std::vector<std::vector<double>>> Y3_y(NX + 1, std::vector<std::vector<double>>(NY, std::vector<double>(NZ + 1)));
+    std::vector<std::vector<std::vector<double>>> Y3_z(NX + 1, std::vector<std::vector<double>>(NY + 1, std::vector<double>(NZ)));
 
     for (size_t i = 1; i < NX - 1; i++)
     {
@@ -187,38 +188,38 @@ void IcoNS::solve_time_step(double time)
                 f = functionF(grid.u, grid.v, grid.w, i, j, k, time);
                 // std::cout << "f[0] = " << f[0] << std::endl;
                 //  solve the momentum equations -> TODO later also with pressure
-                Y2_x[i * NY * NZ + j * NZ + k] = grid.u[i * NY * NZ + j * NZ + k] +
-                                                 64.0 / 120.0 * dt * f[0];
-                Y2_y[i * NY * NZ + j * NZ + k] = /* grid.v[i * NY * NZ + j * NZ + k] + */
+                Y2_x[i][j][k] = grid.u[i][j][k] +
+                                64.0 / 120.0 * dt * f[0];
+                Y2_y[i][j][k] = /* grid.v[i][j][k] + */
                     64.0 / 120.0 * dt * f[1];
-                Y2_z[i * NY * NZ + j * NZ + k] = /* grid.w[i * NY * NZ + j * NZ + k] + */
+                Y2_z[i][j][k] = /* grid.w[i][j][k] + */
                     64.0 / 120.0 * dt * f[2];
                 // std::cout << "dt " << dt << std::endl;
 
                 f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
 
-                Y3_x[i * NY * NZ + j * NZ + k] = Y2_x[i * NY * NZ + j * NZ + k] +
-                                                 50.0 / 120.0 * dt * f_y2[0] -
-                                                 34.0 / 120.0 * dt * f[0];
-                Y3_y[i * NY * NZ + j * NZ + k] = Y2_y[i * NY * NZ + j * NZ + k] +
-                                                 50.0 / 120.0 * dt * f_y2[1] -
-                                                 34.0 / 120.0 * dt * f[1];
-                Y3_z[i * NY * NZ + j * NZ + k] = Y2_z[i * NY * NZ + j * NZ + k] +
-                                                 50.0 / 120.0 * dt * f_y2[2] -
-                                                 34.0 / 120.0 * dt * f[2];
+                Y3_x[i][j][k] = Y2_x[i][j][k] +
+                                50.0 / 120.0 * dt * f_y2[0] -
+                                34.0 / 120.0 * dt * f[0];
+                Y3_y[i][j][k] = Y2_y[i][j][k] +
+                                50.0 / 120.0 * dt * f_y2[1] -
+                                34.0 / 120.0 * dt * f[1];
+                Y3_z[i][j][k] = Y2_z[i][j][k] +
+                                50.0 / 120.0 * dt * f_y2[2] -
+                                34.0 / 120.0 * dt * f[2];
 
                 // update the grid values.
                 f_y3 = functionF(Y3_x, Y3_y, Y3_z, i, j, k, time + 80 / 120 * dt);
 
-                grid.u[i * NY * NZ + j * NZ + k] = Y3_x[i * NY * NZ + j * NZ + k] +
-                                                   90.0 / 120.0 * dt * f_y3[0] -
-                                                   50.0 / 120.0 * dt * f_y2[0];
-                grid.v[i * NY * NZ + j * NZ + k] = Y3_y[i * NY * NZ + j * NZ + k] +
-                                                   90.0 / 120.0 * dt * f_y3[1] -
-                                                   50.0 / 120.0 * dt * f_y2[1];
-                grid.w[i * NY * NZ + j * NZ + k] = Y3_z[i * NY * NZ + j * NZ + k] +
-                                                   90.0 / 120.0 * dt * f_y3[2] -
-                                                   50.0 / 120.0 * dt * f_y2[2];
+                grid.u[i][j][k] = Y3_x[i][j][k] +
+                                  90.0 / 120.0 * dt * f_y3[0] -
+                                  50.0 / 120.0 * dt * f_y2[0];
+                grid.v[i][j][k] = Y3_y[i][j][k] +
+                                  90.0 / 120.0 * dt * f_y3[1] -
+                                  50.0 / 120.0 * dt * f_y2[1];
+                grid.w[i][j][k] = Y3_z[i][j][k] +
+                                  90.0 / 120.0 * dt * f_y3[2] -
+                                  50.0 / 120.0 * dt * f_y2[2];
                 // std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * NY * NZ + j * NZ + k] << std::endl;
             }
         }
