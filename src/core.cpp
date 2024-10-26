@@ -54,6 +54,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
                                                    { return std::sin(z * t); });
 
     std::cout << "vector building" << std::endl;
+    /*
     // Order: left, right, front, back, lower, upper
     boundary.addFunction(0, zero);
     boundary.addFunction(0, zero);
@@ -73,6 +74,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     boundary.addFunction(2, frontface_w);
     boundary.addFunction(2, zero);
     boundary.addFunction(2, zero);
+    */
 }
 
 void IcoNS::solve()
@@ -86,7 +88,7 @@ void IcoNS::solve()
     while (time < T)
     {
         // apply_boundary_conditions(time);
-        boundary.update_boundary(time);
+        // boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         output();
@@ -226,6 +228,7 @@ void IcoNS::solve_time_step(double time)
     }
 }
 
+/*
 void IcoNS::apply_boundary_conditions(double time)
 {
     // compute boundary conditions
@@ -274,7 +277,7 @@ void IcoNS::apply_boundary_conditions(double time)
         }
     }
 }
-
+*/
 double IcoNS::L2_error(const double t)
 {
     double error = 0.0;

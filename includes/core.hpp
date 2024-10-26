@@ -26,28 +26,28 @@ public:
         dy(ly / NY),
         dz(lz / NZ),
         input_file(input_file),
-        output_file(output_file),
-        boundary(&grid, dx, dy, dz)
+        output_file(output_file)
+  // boundary(&grid, dx, dy, dz)
   {
   }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  std::array<double, 3> functionF(const std::vector<double> &u,
-                                  const std::vector<double> &v,
-                                  const std::vector<double> &w,
+  std::array<double, 3> functionF(const std::vector<std::vector<std::vector<double>>> &u,
+                                  const std::vector<std::vector<std::vector<double>>> &v,
+                                  const std::vector<std::vector<std::vector<double>>> &w,
                                   size_t i, size_t j, size_t k, double t); // compute the source term.
 
-  std::array<double, 3> IcoNS::functionF(std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> u,
-                                         std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> v,
-                                         std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> w,
-                                         size_t i, size_t j, size_t k, double t);
+  std::array<double, 3> functionF(const std::array<std::array<std::array<double, NZ + 1>, NY + 1>, NX> &u,
+                                  const std::array<std::array<std::array<double, NZ + 1>, NY>, NX + 1> &v,
+                                  const std::array<std::array<std::array<double, NZ>, NY + 1>, NX + 1> &w,
+                                  size_t i, size_t j, size_t k, double t);
 
   std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
 
-  void apply_boundary_conditions(double time); // apply the boundary conditions.
-  void solve_time_step(double time);           // solve a time step.
-  void solve();                                // solve the problem saving the ouput.
+  // void apply_boundary_conditions(double time); // apply the boundary conditions.
+  void solve_time_step(double time); // solve a time step.
+  void solve();                      // solve the problem saving the ouput.
 
   double error_comp_X(const double t);
   double error_comp_Y(const double t);
@@ -63,7 +63,7 @@ private:
   const double Re;               // Reynolds number.
   const unsigned int lx, ly, lz; // lengths of edges of the domain.
   const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-  Boundary boundary;
+  // Boundary boundary;
   ExactSolution exact_solution; // exact solution.
   std::string input_file;       // input file.
   std::string output_file;      // output file.
