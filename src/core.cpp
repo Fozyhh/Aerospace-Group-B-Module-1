@@ -41,38 +41,39 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         }
         // pressure initialization.
     }
+    /*
+        // boundary
+        auto zero = std::make_shared<FunctionZero>();
+        auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                       { return std::sin(x * t); });
 
-    // boundary
-    auto zero = std::make_shared<FunctionZero>();
-    auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(x * t); });
+        auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                       { return std::sin(y * t); });
 
-    auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(y * t); });
+        auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
+                                                       { return std::sin(z * t); });
 
-    auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(z * t); });
-
-    std::cout << "vector building" << std::endl;
-    // Order: left, right, front, back, lower, upper
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, frontface_u);
-    boundary.addFunction(0, frontface_u);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, frontface_v);
-    boundary.addFunction(1, frontface_v);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, frontface_w);
-    boundary.addFunction(2, frontface_w);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, zero);
+        std::cout << "vector building" << std::endl;
+        // Order: left, right, front, back, lower, upper
+        boundary.addFunction(0, zero);
+        boundary.addFunction(0, zero);
+        boundary.addFunction(0, frontface_u);
+        boundary.addFunction(0, frontface_u);
+        boundary.addFunction(0, zero);
+        boundary.addFunction(0, zero);
+        boundary.addFunction(1, zero);
+        boundary.addFunction(1, zero);
+        boundary.addFunction(1, frontface_v);
+        boundary.addFunction(1, frontface_v);
+        boundary.addFunction(1, zero);
+        boundary.addFunction(1, zero);
+        boundary.addFunction(2, zero);
+        boundary.addFunction(2, zero);
+        boundary.addFunction(2, frontface_w);
+        boundary.addFunction(2, frontface_w);
+        boundary.addFunction(2, zero);
+        boundary.addFunction(2, zero);
+        */
 }
 
 void IcoNS::solve()
@@ -86,18 +87,46 @@ void IcoNS::solve()
     while (time < T)
     {
         // apply_boundary_conditions(time);
-        boundary.update_boundary(time);
+        // boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         output();
         // csv file w/ "," delimiter: time step, iter, L2_error
-        error_log << time << "," << i << "," << " Error: " << L2_error(time) << std::endl;
+        std::cout << time << "," << i << "," << " Error: " << L2_error(time) << std::endl;
         i++;
     }
 }
 
 std::array<double, 3> IcoNS::functionF(const std::vector<double> &u, const std::vector<double> &v,
                                        const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
+{
+    std::array<double, 3> f;
+    size_t l = i * NY * NZ + j * NZ + k;
+    std::vector<double> g(3);
+    g = functionG(i * dx, j * dy, k * dz, t);
+
+    f[0] = -(u[l] * (u[l + NZ * NY] - u[l - NZ * NY]) / (2.0 * dx) +
+             (v[l + NZ * NY] + v[l] + v[l - NZ] + v[l + NZ * NY - NZ]) / 4.0 * (u[l + NZ] - u[l - NZ]) / (2.0 * dy) +
+             (w[l + NZ * NY] + w[l] + w[l + NZ * NY - 1] + w[l - 1]) / 4.0 * (u[l + 1] - u[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((u[l + NY * NZ] - 2 * u[l] + u[l - NY * NZ]) / (dx * dx) + (u[l + NZ] - 2 * u[l] + u[l - NZ]) / (dy * dy) + (u[l + 1] - 2 * u[l] + u[l - 1]) / (dz * dz)) + g[0];
+
+    f[1] = -((u[l] + u[l + NZ] + u[l - NY * NZ] + u[l - NY * NZ + NZ]) / 4.0 * (v[l + NY * NZ] - v[l - NY * NZ] / (2.0 * dx)) +
+             v[l] * (v[l + NZ] - v[l - NZ]) / (2.0 * dy) +
+             (w[l] + w[l - 1] + w[l + NZ] + w[l + NZ - 1]) / 4.0 + (v[l + 1] - v[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((v[l + NZ * NY] - 2.0 * v[l] + v[l - NZ * NY]) / (dx * dx) + (v[l + NZ] - 2.0 * v[l] + v[l - NZ]) / (dy * dy) + (v[l + 1] - 2.0 * v[l] + v[l - 1]) / (dz * dz)) + g[1];
+
+    f[2] = -((u[l] + u[l - NY * NZ] + u[l + 1] + u[l - NZ * NY + 1]) / 4.0 * (w[l + NZ * NY] - w[l - NZ * NY]) / (2.0 * dx) +
+             (v[l + 1] + v[l - NZ + 1] + v[l] + v[l - NZ]) / 4.0 * (w[l + NZ] - w[l - NZ]) / (2.0 * dy) +
+             w[l] * (w[l + 1] - w[l - 1]) / (2.0 * dz)) +
+           1 / Re * ((w[l + NZ * NY] - 2.0 * w[l] + w[l - NZ * NY]) / (dx * dx) + (w[l + NZ] - 2.0 * w[l] + w[l - NZ]) / (dy * dy) + (w[l + 1] - 2.0 * w[l] + w[l - 1]) / (dz * dz)) + g[2];
+
+    return f;
+}
+
+std::array<double, 3> IcoNS::functionF(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u,
+                                       const std::array<double, (NX + 1) * NY *(NZ + 1)> &v,
+                                       const std::array<double, (NX + 1) * (NY + 1) * NZ> &w,
+                                       size_t i, size_t j, size_t k, double t)
 {
     std::array<double, 3> f;
     size_t l = i * NY * NZ + j * NZ + k;
@@ -143,12 +172,12 @@ void IcoNS::solve_time_step(double time)
     std::array<double, 3> f;
     std::array<double, 3> f_y2;
     std::array<double, 3> f_y3;
-    std::vector<double> Y2_x(NX * NY * NZ);
-    std::vector<double> Y2_y(NX * NY * NZ);
-    std::vector<double> Y2_z(NX * NY * NZ);
-    std::vector<double> Y3_x(NX * NY * NZ);
-    std::vector<double> Y3_y(NX * NY * NZ);
-    std::vector<double> Y3_z(NX * NY * NZ);
+    std::vector<double> Y2_x(NX * (NY + 1) * (NZ + 1));
+    std::vector<double> Y2_y((NX + 1) * NY * (NZ + 1));
+    std::vector<double> Y2_z((NX + 1) * (NY + 1) * NZ);
+    std::vector<double> Y3_x(NX * (NY + 1) * (NZ + 1));
+    std::vector<double> Y3_y((NX + 1) * NY * (NZ + 1));
+    std::vector<double> Y3_z((NX + 1) * (NY + 1) * NZ);
 
     for (size_t i = 1; i < NX - 1; i++)
     {
@@ -195,31 +224,6 @@ void IcoNS::solve_time_step(double time)
             }
         }
     }
-
-    // print the grid values.
-    double diff;
-    int count = 0;
-    for (size_t i = 0; i < NX; i++)
-    {
-        for (size_t j = 0; j < NY; j++)
-        {
-            for (size_t k = 0; k < NZ; k++)
-            {
-                diff = std::abs(grid.u[i * NY * NZ + j * NZ + k] - std::sin(i * dx) * std::cos(j * dy) * std::sin(k * dz) * std::sin(time));
-                // diff = grid.u[i * NY * NZ + j * NZ + k];
-
-                if (diff > 0.01)
-                {
-                    // std::cout << "diff[" << i << "," << j << "," << k << "] = " << diff << std::endl;
-                    count++;
-                }
-                // std::cout << "u[" << i << "," << j << "," << k << "] = " << grid.u[i * NY * NZ + j * NZ + k] << std::endl;
-                // std::cout << "v[" << i << "," << j << "," << k << "] = " << grid.v[i * NY * NZ + j * NZ + k] << std::endl;
-                // std::cout << "w[" << i << "," << j << "," << k << "] = " << grid.w[i * NY * NZ + j * NZ + k] << std::endl;
-            }
-        }
-    }
-    std::cout << "at time " << time << " there are " << count << " cells whith error > 0.01" << std::endl;
 }
 
 void IcoNS::apply_boundary_conditions(double time)
