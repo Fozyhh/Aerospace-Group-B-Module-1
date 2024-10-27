@@ -65,5 +65,19 @@ python3 vizualisation.py
 python3 cpu_profile.py
 ```
 ```console
-python3 mem_profile.py
+python3 mem_profile.py METRIC
 ```
+Available metrics:
+  IR: Instruction Reads
+  L1IMISS: L1 Instruction Cache Misses
+  LLIMISS: LL Instruction Cache Misses
+  DR: Data Reads
+  L1DMISS: L1 Data Cache Misses
+  LLDMISS: LL Data Cache Misses
+  DW: Data Writes
+  L1WMISS: L1 Data Write Misses
+  LLWMISS: LL Data Write Misses
+  BC: Conditional Branches
+  BCM: Conditional Branches Mispredicted
+  BI: Indirect Branches
+  BIM: Indirect Branches Mispredicted

@@ -1,76 +1,102 @@
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
 
-# Read the cachegrind.out file
+# Available metrics
+METRICS = {
+    'IR': ('Ir', 'Instruction Reads'),
+    'L1IMISS': ('I1mr', 'L1 Instruction Cache Misses'),
+    'LLIMISS': ('ILmr', 'LL Instruction Cache Misses'),
+    'DR': ('Dr', 'Data Reads'),
+    'L1DMISS': ('D1mr', 'L1 Data Cache Misses'),
+    'LLDMISS': ('DLmr', 'LL Data Cache Misses'),
+    'DW': ('Dw', 'Data Writes'),
+    'L1WMISS': ('D1mw', 'L1 Data Write Misses'),
+    'LLWMISS': ('DLmw', 'LL Data Write Misses'),
+    'BC': ('Bc', 'Conditional Branches'),
+    'BCM': ('Bcm', 'Conditional Branches Mispredicted'),
+    'BI': ('Bi', 'Indirect Branches'),
+    'BIM': ('Bim', 'Indirect Branches Mispredicted')
+}
+
+def print_available_metrics():
+    print("Available metrics:")
+    for key, (_, description) in METRICS.items():
+        print(f"  {key}: {description}")
+
+if len(sys.argv) != 2 or sys.argv[1] not in METRICS:
+    print("Usage: python3 mem_profile.py METRIC")
+    print_available_metrics()
+    sys.exit(1)
+
+# Select metric
+selected_metric_key = sys.argv[1]
+selected_metric, metric_description = METRICS[selected_metric_key]
+
+# Read file
 with open('../resources/memprof_reports/cachegrind.out', 'r') as file:
     content = file.read()
 
-# Fictionary to hold function cache data
-functions = {}
+# Cache configuration from desc lines
+cache_config = {}
+for line in content.split('\n'):
+    if line.startswith('desc:'):
+        match = re.search(r'(\w+)\s+cache:\s+(\d+)\s+B', line)
+        if match:
+            cache_type, size = match.groups()
+            cache_config[cache_type] = int(size)
 
-lines = content.strip().split('\n')
+data = []
 
-current_file = None
-current_function = None
+# Profile data
+current_file = ""
+current_function = ""
 
-for line in lines:
-    # Skip header lines and empty lines
-    if line.startswith(('version:', 'creator:', 'pid:', 'cmd:', 'part:', 'desc:', 'positions:', 'events:', 'summary:', 'totals:')) or not line.strip():
-        continue
-
-    # Check for file and function definitions
+for line in content.split('\n'):
     if line.startswith('fl='):
         current_file = line[3:]
-        continue
-    if line.startswith('fn='):
+    elif line.startswith('fn='):
         current_function = line[3:]
-        continue
-        
-    # Process metrics line
-    if current_file and current_function and re.match(r'^\d', line):
-        parts = line.strip().split()
-        if len(parts) >= 10:  # Line number + 9 metrics
-            metrics = list(map(int, parts[1:]))
-            function_key = f"{current_file}:{current_function}"
-            if function_key not in functions:
-                functions[function_key] = {
-                    'Ir': metrics[0],    # Instructions
-                    'I1mr': metrics[1],  # L1 instruction cache misses
-                    'ILmr': metrics[2],  # LL instruction cache misses
-                    'Dr': metrics[3],    # Data reads
-                    'D1mr': metrics[4],  # L1 data cache read misses
-                    'DLmr': metrics[5],  # LL data cache read misses
-                    'Dw': metrics[6],    # Data writes
-                    'D1mw': metrics[7],  # L1 data cache write misses
-                    'DLmw': metrics[8],  # LL data cache write misses
-                }
-            else:
-                # Add metrics if same function appears multiple times
-                for i, key in enumerate(['Ir', 'I1mr', 'ILmr', 'Dr', 'D1mr', 'DLmr', 'Dw', 'D1mw', 'DLmw']):
-                    functions[function_key][key] += metrics[i]
+    elif re.match(r'^\d+', line):
+        values = line.split()
+        if len(values) >= 13: 
+            data.append({
+                'file': current_file,
+                'function': current_function,
+                'line': int(values[0]),
+                'Ir': int(values[1]),    # Instruction reads
+                'I1mr': int(values[2]),  # L1 instruction cache misses
+                'ILmr': int(values[3]),  # LL instruction cache misses
+                'Dr': int(values[4]),    # Data reads
+                'D1mr': int(values[5]),  # L1 data cache misses
+                'DLmr': int(values[6]),  # LL data cache misses
+                'Dw': int(values[7]),    # Data writes
+                'D1mw': int(values[8]),  # L1 data write misses
+                'DLmw': int(values[9]),  # LL data write misses
+                'Bc': int(values[10]),   # Conditional branches
+                'Bcm': int(values[11]),  # Conditional branches mispredicted
+                'Bi': int(values[12]),   # Indirect branches
+                'Bim': int(values[13])   # Indirect branches mispredicted
+            })
 
-# Convert to DataFrame
-cache_df = pd.DataFrame.from_dict(functions, orient='index')
+df = pd.DataFrame(data)
 
-print("\nCache Usage DataFrame:")
-print(cache_df)
+# Total metrics per function
+function_metrics = df.groupby('function').sum()
 
-# Save to CSV
-# cache_df.to_csv('cachegrind_analysis.csv')
+top_functions = function_metrics.sort_values(selected_metric, ascending=False).head(10)
 
-# Calculate total cache misses (sum of all miss events)
-cache_df['total_cache_misses'] = cache_df[['I1mr', 'ILmr', 'D1mr', 'DLmr', 'D1mw', 'DLmw']].sum(axis=1)
-
-# Sort by total_cache_misses descending
-cache_sorted = cache_df.sort_values(by='total_cache_misses', ascending=False)
-
-# Plot all functions with cache misses
-plt.figure(figsize=(12,6))
-plt.barh(cache_sorted.index, cache_sorted['total_cache_misses'], color='coral')
-plt.xlabel('Total Cache Misses')
-plt.title('Functions Ranked by Cache Misses')
-plt.xticks(rotation=45)
+# Create visualization
+plt.figure(figsize=(12, 12))
+plt.bar(range(len(top_functions)), top_functions[selected_metric])
+plt.xticks(range(len(top_functions)), top_functions.index, rotation=45, ha='right')
+plt.title(f'Top 10 Functions by {metric_description}')
+plt.xlabel('Function Name')
+plt.ylabel(metric_description)
 plt.tight_layout()
-plt.savefig('../resources/memprof_reports/cachegrind_cache_misses.png')
-plt.show()
+
+plt.savefig(f'../resources/memprof_reports/cachegrind_{selected_metric_key.lower()}.png')
+
+print(f"\nTop 5 Functions by {metric_description}:")
+print(top_functions[selected_metric].head().to_string())
