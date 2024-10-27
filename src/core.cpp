@@ -11,8 +11,12 @@
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
+    
     // read the input file.
-    for (size_t i = 1; i < nx - 1; i++)
+
+    //TODO: I DONT THINK IT CONSIDERS ALL INDEXES AFTER HE RESIZE WITH NX+1 ecc..
+    //ERROR IS MUCH LOWER WITH EVERYTHING SET TO 0
+    /*for (size_t i = 1; i < nx - 1; i++)
     {
         for (size_t j = 1; j < ny - 1; j++)
         {
@@ -40,8 +44,8 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             }
         }
         // pressure initialization.
-    }
-
+    }*/
+    
     // boundary
     auto u_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
         //std::cout << "Uboundary at: " << x <<","<<y<<","<<z <<"," << t <<"="<<std::sin(x*dx) *std::cos(y*dy)*std::sin(z*dz)*std::sin(t) << std::endl;
@@ -109,7 +113,7 @@ void IcoNS::solve()
         time += dt;
         output();
         // csv file w/ "," delimiter: time step, iter, L2_error
-        error_log << time << "," << i << "," << " Error: " << L2_error(time) << std::endl;
+        error_log << time << "," << i << ","  << L2_error(time) << std::endl;
         i++;
     }
 }

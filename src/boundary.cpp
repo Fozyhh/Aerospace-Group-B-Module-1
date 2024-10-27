@@ -8,7 +8,7 @@ grid(grid_)
 ,dx(dx_)
 ,dy(dy_)
 ,dz(dz_)
-,prec(1/2)
+,prec(1.0/2.0)
 {}
 
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
@@ -41,7 +41,7 @@ void Boundary::update_boundary(double t){
         }
         grid.v[j*(nz+1) + nz] = boundary_value_v[face]->value(0,j,nz,t);
     }
-
+    
     for (size_t k = 0; k < nz; k++)
     {
         grid.w[ny*nz + k] = boundary_value_w[face]->value(0,ny,k,t);
@@ -178,10 +178,10 @@ void Boundary::update_boundary(double t){
 double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t,size_t face) {
     double dv = ((boundary_value_v[face]->value(x, y + prec, z,t)) -
                 ((boundary_value_v[face]->value(x, y - prec, z,t)))) / (2*prec);
-    
+
     double dw =  ((boundary_value_w[face]->value(x, y, z + prec ,t)) -
                  ((boundary_value_w[face]->value(x, y, z - prec,t)))) / (2*prec);
-
+    
     return  boundary_value_u[face]->value(x, y, z, t) - (dv + dw) * (dx/2);
 }
 
