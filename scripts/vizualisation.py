@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-data = np.genfromtxt("ressources/error.log", delimiter=",")
+data = np.genfromtxt("resources/error.log", delimiter=",")
 time = data[:, 0]
 iter = data[:, 1]
 error = data[:, 2]
@@ -15,4 +15,4 @@ plt.ylabel("Error")
 plt.legend()
 plt.grid(True)
 
-plt.savefig("ressources/error_plot.png")
+plt.savefig("resources/error_plot.png")

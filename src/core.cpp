@@ -43,7 +43,25 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     }
 
     // boundary
-    auto zero = std::make_shared<FunctionZero>();
+    auto u_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
+        //std::cout << "Uboundary at: " << x <<","<<y<<","<<z <<"," << t <<"="<<std::sin(x*dx) *std::cos(y*dy)*std::sin(z*dz)*std::sin(t) << std::endl;
+        return std::sin(x*dx) *std::cos(y*dy)*std::sin(z*dz)*std::sin(t);
+    });
+    auto v_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
+        return std::cos(x*dx) *std::sin(y*dy)*std::sin(z*dz)*std::sin(t);
+    });
+    auto w_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
+        return 2*std::cos(x*dx) *std::cos(y*dy)*std::cos(z*dz)*std::sin(t);
+    });
+    
+    for (size_t i = 0; i < 6/*nfaces*/; i++)
+    {
+        boundary.addFunction(0,u_func);
+        boundary.addFunction(1,v_func);
+        boundary.addFunction(2,w_func);
+    }
+
+    /*auto zero = std::make_shared<FunctionZero>();
     auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
                                                    { return std::sin(x * t); });
 
@@ -72,7 +90,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     boundary.addFunction(2, frontface_w);
     boundary.addFunction(2, frontface_w);
     boundary.addFunction(2, zero);
-    boundary.addFunction(2, zero);
+    boundary.addFunction(2, zero);*/
 }
 
 void IcoNS::solve()
@@ -81,10 +99,10 @@ void IcoNS::solve()
     double time = 0.0;
     int i = 0;
 
-    std::ofstream error_log("../ressources/error.log");
+    std::ofstream error_log("../resources/error.log");
 
     while (time < T)
-    {
+    {  
         // apply_boundary_conditions(time);
         boundary.update_boundary(time);
         solve_time_step(time);
@@ -102,21 +120,31 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
     std::vector<double> f(3);
     // size_t l = i * ny * nz + j * nz + k;   //think this is wrong, we should have one l for each grid
 
-    size_t lu = i * ny * nz + j * nz + k;
+    size_t lu = i * ny * nz + j * nz + k; //98*100*100 + 200 + 6
     size_t lv = i * (ny - 1) * nz + j * nz + k;
     size_t lw = i * ny * (nz - 1) + j * (nz - 1) + k;
 
     std::vector<double> g(3);
     g = functionG(i, j, k, t);
-
+    
+ 
+    //std::cout << "check 2.63: " << i <<"-" << j << "-" << k << std::endl;
+      //      std::cout.flush();
     f[0] = -(u[lu] * (u[lu + nz * ny] - u[lu - nz * ny]) / (2.0 * dx) +
              (v[lv] + v[lv + (ny - 1) * nz] + v[lv - nz] + v[lv + nz * (ny - 1) - nz]) / 4.0 * (u[lu + nz] - u[lu - nz]) / (2.0 * dy) +
              (w[lw] + w[lw + ny * (nz - 1)] + w[lw - 1] + w[lw + ny * (nz - 1) - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * dz)) +
            1 / Re * ((u[lu + ny * nz] - 2 * u[lu] + u[lu - ny * nz]) / (dx * dx) + (u[lu + nz] - 2 * u[lu] + u[lu - nz]) / (dy * dy) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (dz * dz)) + g[0];
+    
+    //std::cout << "check 2.64" << std::endl;
+      //      std::cout.flush();
+
     f[1] = -((u[lu] + u[lu + nz] + u[lu - ny * nz] + u[lu - ny * nz + nz]) / 4.0 * (v[lv + (ny - 1) * nz] - v[lv - (ny - 1) * nz] / (2.0 * dx)) +
              v[lv] * (v[lv + nz] - v[lv - nz]) / (2.0 * dy) +
              (w[lw] + w[lw - 1] + w[lw + ny] + w[lw + ny - 1]) / 4.0 + (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
            1 / Re * ((v[lv + nz * (ny - 1)] - 2.0 * v[lv] + v[lv - nz * (ny - 1)]) / (dx * dx) + (v[lv + nz] - 2.0 * v[lv] + v[lv - nz]) / (dy * dy) + (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (dz * dz)) + g[1];
+    
+    
+    
     f[2] = -((u[lu] + u[lu - ny * nz] + u[lu + 1] + u[lu - nz * ny + 1]) / 4.0 * (w[lw + ny * (nz - 1)] - w[lw - ny * (nz - 1)]) / (2.0 * dx) +
              (v[lv + 1] + v[lv - nz + 1] + v[lv] + v[lv - nz]) / 4.0 * (w[lw + (nz - 1)] - w[lw - (nz - 1)]) / (2.0 * dy) +
              w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * dz)) +
@@ -205,7 +233,7 @@ void IcoNS::solve_time_step(double time)
     // apply runge kutta on faces outside the common cube
     for (size_t i = 1; i < nx - 2; i++)
     {
-        for (size_t k = 1; i < nz - 2; k++)
+        for (size_t k = 1; k < nz - 2; k++)
         {
             size_t j = ny - 2;
             f = functionF(grid.u, grid.v, grid.w, i, j, k, time);
@@ -282,23 +310,21 @@ void IcoNS::solve_time_step(double time)
                                                            50.0 / 120.0 * dt * f_y2[2];
         }
     }
-
     for (size_t j = 1; j < ny - 2; j++)
     {
         for (size_t k = 1; k < nz - 1; k++)
-        {
+        {   
             size_t i = nx - 2;
             f = functionF(grid.u, grid.v, grid.w, i, j, k, time);
-
+            
             Y2_x[i * ny * nz + j * nz + k] = grid.u[i * ny * nz + j * nz + k] +
                                              64.0 / 120.0 * dt * f[0];
             Y2_y[i * (ny - 1) * nz + j * nz + k] = grid.v[i * (ny - 1) * nz + j * nz + k] +
                                                    64.0 / 120.0 * dt * f[1];
             Y2_z[i * ny * (nz - 1) + j * (nz - 1) + k] = grid.w[i * ny * (nz - 1) + j * (nz - 1) + k] +
                                                          64.0 / 120.0 * dt * f[2];
-
-            f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
-
+            f_y2 = functionF(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);//BROKEN LINE with j=2 k=6(????)
+            
             Y3_x[i * ny * nz + j * nz + k] = Y2_x[i * ny * nz + j * nz + k] +
                                              50.0 / 120.0 * dt * f_y2[0] -
                                              34.0 / 120.0 * dt * f[0];
@@ -310,7 +336,7 @@ void IcoNS::solve_time_step(double time)
                                                          34.0 / 120.0 * dt * f[2];
 
             f_y3 = functionF(Y3_x, Y3_y, Y3_z, i, j, k, time + 80 / 120 * dt);
-
+            
             grid.u[i * ny * nz + j * nz + k] = Y3_x[i * ny * nz + j * nz + k] +
                                                90.0 / 120.0 * dt * f_y3[0] -
                                                50.0 / 120.0 * dt * f_y2[0];
@@ -322,7 +348,7 @@ void IcoNS::solve_time_step(double time)
                                                            50.0 / 120.0 * dt * f_y2[2];
         }
     }
-
+    
     for (size_t i = 1; i < nx - 2; i++)
     {
         for (size_t j = 1; j < ny - 2; j++)
@@ -362,7 +388,7 @@ void IcoNS::solve_time_step(double time)
                                                            50.0 / 120.0 * dt * f_y2[2];
         }
     }
-
+    
     for (size_t j = 1; j < ny - 2; j++)
     {
         for (size_t k = 1; k < nz - 2; k++)
@@ -402,7 +428,7 @@ void IcoNS::solve_time_step(double time)
                                                            50.0 / 120.0 * dt * f_y2[2];
         }
     }
-
+    
     for (size_t i = 1; i < nx - 1; i++)
     {
         for (size_t k = 1; k < nz - 2; k++)
@@ -444,7 +470,7 @@ void IcoNS::solve_time_step(double time)
     }
 
     // print the grid values.
-    double diff;
+    /*double diff;
     int count = 0;
     for (size_t i = 0; i < nx; i++)
     {
@@ -466,7 +492,7 @@ void IcoNS::solve_time_step(double time)
             }
         }
     }
-    std::cout << "at time " << time << " there are " << count << " cells whith error > 0.01" << std::endl;
+    std::cout << "at time " << time << " there are " << count << " cells whith error > 0.01" << std::endl;*/
 }
 
 void IcoNS::apply_boundary_conditions(double time)

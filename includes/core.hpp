@@ -35,7 +35,7 @@ public:
         dz(lz / nz),
         input_file(input_file),
         output_file(output_file),
-        boundary(&grid,dx,dy,dz)
+        boundary(grid,dx,dy,dz)
   {}
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.

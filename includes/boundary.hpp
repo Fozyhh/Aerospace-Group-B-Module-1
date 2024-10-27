@@ -10,7 +10,7 @@ class Boundary
 {
     
 private:
-    Grid* grid;
+    Grid& grid;
     const unsigned int &nx;
     const unsigned int &ny;
     const unsigned int &nz;
@@ -26,7 +26,7 @@ private:
     public:
 
     
-    Boundary(Grid* grid_,double dx_, double dy_,double dz_);
+    Boundary(Grid& grid_,double dx_, double dy_,double dz_);
     void update_boundary(double t);
 
     double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
