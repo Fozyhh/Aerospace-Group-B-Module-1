@@ -7,7 +7,9 @@ In order to enable CPU profiling using GProf and Memory checks using Valgrind pl
 Make sure before compiling that you have the `{PROJECT_ROOT/resources}` directory.
 
 ## Dependencies:
+Gprof:
 `sudo apt install binutils`
+
 Valgrind:
 `sudo apt install valgrind`
 
@@ -53,9 +55,9 @@ There are at the moment 3 scripts to parse and visualize the:
   - memory cache profiling
 
 ## Dependencies
-- matplotlib
-- numpy
-- pandas
+  - matplotlib
+  - numpy
+  - pandas
 
 Run using: 
 ```console
@@ -68,16 +70,16 @@ python3 cpu_profile.py
 python3 mem_profile.py METRIC
 ```
 Available metrics:
-  IR: Instruction Reads
-  L1IMISS: L1 Instruction Cache Misses
-  LLIMISS: LL Instruction Cache Misses
-  DR: Data Reads
-  L1DMISS: L1 Data Cache Misses
-  LLDMISS: LL Data Cache Misses
-  DW: Data Writes
-  L1WMISS: L1 Data Write Misses
-  LLWMISS: LL Data Write Misses
-  BC: Conditional Branches
-  BCM: Conditional Branches Mispredicted
-  BI: Indirect Branches
-  BIM: Indirect Branches Mispredicted
+  - IR: Instruction Reads
+  - L1IMISS: L1 Instruction Cache Misses
+  - LLIMISS: LL Instruction Cache Misses
+  - DR: Data Reads
+  - L1DMISS: L1 Data Cache Misses
+  - LLDMISS: LL Data Cache Misses
+  - DW: Data Writes
+  - L1WMISS: L1 Data Write Misses
+  - LLWMISS: LL Data Write Misses
+  - BC: Conditional Branches
+  - BCM: Conditional Branches Mispredicted
+  - BI: Indirect Branches
+  - BIM: Indirect Branches Mispredicted
