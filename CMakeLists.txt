@@ -15,8 +15,7 @@ option(BUILD_DOCS "Build documentation with Doxygen" OFF)
 # Directories for reports
 set(GPROF_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/cpuprof_reports" CACHE PATH "Directory to store Gprof reports")
 set(VALGRIND_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memcheck_reports" CACHE PATH "Directory to store Valgrind reports")
-set(CACHEGRING_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memprof_reports" CACHE PATH "Directoy to store Cahcgrind reports")
-
+set(CACHEGRIND_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memprof_reports" CACHE PATH "Directoy to store Cahcgrind reports")
 
 # Specify the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -128,8 +127,17 @@ if(ENABLE_MEMPROF)
 
     add_custom_target(profile
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config ${CMAKE_BUILD_TYPE}
-        COMMAND ${CACHEGRIND_EXECUTABLE} --tool=cachegrind --branch-sim=yes --cachegrind-out-file="${CACHEGRIND_REPORT_DIR}/cachegrind.out" ./main
+        COMMAND ${CACHEGRIND_EXECUTABLE} 
+                --tool=cachegrind 
+                --cache-sim=yes
+                --I1=32768,8,64
+                --D1=32768,8,64
+                --LL=8388608,16,64
+                --branch-sim=yes 
+                --cachegrind-out-file="${CACHEGRIND_REPORT_DIR}/cachegrind.out"
+                $<TARGET_FILE:main>
         DEPENDS main
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Building and running the program with Cachegrind profiling."
     )
 endif()
