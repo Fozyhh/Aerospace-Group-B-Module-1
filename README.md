@@ -56,3 +56,11 @@ PS: It is not ideal to run both profiling and memcheck together as Gprof messes 
 
 Run using: 
 `` python3 vizualisation.py ``
+
+## Doxygen
+In order to generate the full documentation of the codebase, you first need to have doxygen installed via ```console sudo apt install doxygen ```
+Then you can generate the doc by running the following command in the `doc/` directory: 
+```console
+doxygen doxyfile
+```
+You can then see the documentation by viewing the index.html file in your browser.
