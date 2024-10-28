@@ -9,6 +9,16 @@ Handles boundary conditions for the computational domain.
 
 {\ttfamily \#include $<$boundary.\+hpp$>$}
 
+
+
+Collaboration diagram for Boundary\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=143pt]{classBoundary__coll__graph}
+\end{center}
+\end{figure}
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -24,6 +34,31 @@ double \mbox{\hyperlink{classBoundary_ac01a2df6dd3a0596573038bec9a4a2a8}{approxi
 \begin{DoxyCompactList}\small\item\em Approximates boundary value for w-\/velocity component. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classBoundary_a951b41eee590dbdb86790a44ce4b4056}{add\+Function}} (size\+\_\+t direction, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$ x)
 \begin{DoxyCompactList}\small\item\em Adds a boundary function for a specific direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structGrid}{Grid}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classBoundary_a62aba1a1fba480ee8b1598580348abfa}{grid}}
+\item 
+const unsigned int \& \mbox{\hyperlink{classBoundary_a3cebeca40fbda5d03bac6250b699643b}{nx}}
+\item 
+const unsigned int \& \mbox{\hyperlink{classBoundary_a7cf2c5737342ffec54436456e370d853}{ny}}
+\item 
+const unsigned int \& \mbox{\hyperlink{classBoundary_accc44fad6e9ae283bb4204b165d67154}{nz}}
+\item 
+const double \mbox{\hyperlink{classBoundary_a076d86b1663545b8d707a29994a6c955}{dx}}
+\item 
+const double \mbox{\hyperlink{classBoundary_a03f9004682ad580b9104f039d2625d62}{dy}}
+\item 
+const double \mbox{\hyperlink{classBoundary_af6dcbd00ec1ecf06d9103054c8a33e5b}{dz}}
+\item 
+const double \mbox{\hyperlink{classBoundary_aed83286769c9ee5979566d7622cffc45}{prec}}
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$ $>$ \mbox{\hyperlink{classBoundary_a4e91a1849f5ed8cf4602d1c78ecd49cb}{boundary\+\_\+value\+\_\+u}}
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$ $>$ \mbox{\hyperlink{classBoundary_a79d237834f514bbc72f677b2783877ff}{boundary\+\_\+value\+\_\+v}}
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}} $>$ $>$ \mbox{\hyperlink{classBoundary_a44c70bd03c1968c2297e0bd6eeb1e670}{boundary\+\_\+value\+\_\+w}}
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -168,7 +203,76 @@ Updates all boundary values at the given time.
 \end{DoxyParams}
 
 
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classBoundary_a4e91a1849f5ed8cf4602d1c78ecd49cb}\label{classBoundary_a4e91a1849f5ed8cf4602d1c78ecd49cb} 
+\index{Boundary@{Boundary}!boundary\_value\_u@{boundary\_value\_u}}
+\index{boundary\_value\_u@{boundary\_value\_u}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{boundary\_value\_u}{boundary\_value\_u}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}}$>$ $>$ Boundary\+::boundary\+\_\+value\+\_\+u\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a79d237834f514bbc72f677b2783877ff}\label{classBoundary_a79d237834f514bbc72f677b2783877ff} 
+\index{Boundary@{Boundary}!boundary\_value\_v@{boundary\_value\_v}}
+\index{boundary\_value\_v@{boundary\_value\_v}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{boundary\_value\_v}{boundary\_value\_v}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}}$>$ $>$ Boundary\+::boundary\+\_\+value\+\_\+v\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a44c70bd03c1968c2297e0bd6eeb1e670}\label{classBoundary_a44c70bd03c1968c2297e0bd6eeb1e670} 
+\index{Boundary@{Boundary}!boundary\_value\_w@{boundary\_value\_w}}
+\index{boundary\_value\_w@{boundary\_value\_w}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{boundary\_value\_w}{boundary\_value\_w}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}}$>$ $>$ Boundary\+::boundary\+\_\+value\+\_\+w\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a076d86b1663545b8d707a29994a6c955}\label{classBoundary_a076d86b1663545b8d707a29994a6c955} 
+\index{Boundary@{Boundary}!dx@{dx}}
+\index{dx@{dx}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{dx}{dx}}
+{\footnotesize\ttfamily const double Boundary\+::dx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a03f9004682ad580b9104f039d2625d62}\label{classBoundary_a03f9004682ad580b9104f039d2625d62} 
+\index{Boundary@{Boundary}!dy@{dy}}
+\index{dy@{dy}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{dy}{dy}}
+{\footnotesize\ttfamily const double Boundary\+::dy\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_af6dcbd00ec1ecf06d9103054c8a33e5b}\label{classBoundary_af6dcbd00ec1ecf06d9103054c8a33e5b} 
+\index{Boundary@{Boundary}!dz@{dz}}
+\index{dz@{dz}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{dz}{dz}}
+{\footnotesize\ttfamily const double Boundary\+::dz\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a62aba1a1fba480ee8b1598580348abfa}\label{classBoundary_a62aba1a1fba480ee8b1598580348abfa} 
+\index{Boundary@{Boundary}!grid@{grid}}
+\index{grid@{grid}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{grid}{grid}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structGrid}{Grid}}\texorpdfstring{$\ast$}{*} Boundary\+::grid\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a3cebeca40fbda5d03bac6250b699643b}\label{classBoundary_a3cebeca40fbda5d03bac6250b699643b} 
+\index{Boundary@{Boundary}!nx@{nx}}
+\index{nx@{nx}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{nx}{nx}}
+{\footnotesize\ttfamily const unsigned int\& Boundary\+::nx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_a7cf2c5737342ffec54436456e370d853}\label{classBoundary_a7cf2c5737342ffec54436456e370d853} 
+\index{Boundary@{Boundary}!ny@{ny}}
+\index{ny@{ny}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{ny}{ny}}
+{\footnotesize\ttfamily const unsigned int\& Boundary\+::ny\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_accc44fad6e9ae283bb4204b165d67154}\label{classBoundary_accc44fad6e9ae283bb4204b165d67154} 
+\index{Boundary@{Boundary}!nz@{nz}}
+\index{nz@{nz}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{nz}{nz}}
+{\footnotesize\ttfamily const unsigned int\& Boundary\+::nz\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classBoundary_aed83286769c9ee5979566d7622cffc45}\label{classBoundary_aed83286769c9ee5979566d7622cffc45} 
+\index{Boundary@{Boundary}!prec@{prec}}
+\index{prec@{prec}!Boundary@{Boundary}}
+\doxysubsubsection{\texorpdfstring{prec}{prec}}
+{\footnotesize\ttfamily const double Boundary\+::prec\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{boundary_8hpp}{boundary.\+hpp}}\item 
-/workspaces/aerospace-\/group-\/b-\/module-\/1/src/boundary.\+cpp\end{DoxyCompactItemize}
+/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/includes/\mbox{\hyperlink{boundary_8hpp}{boundary.\+hpp}}\item 
+/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/src/\mbox{\hyperlink{boundary_8cpp}{boundary.\+cpp}}\end{DoxyCompactItemize}

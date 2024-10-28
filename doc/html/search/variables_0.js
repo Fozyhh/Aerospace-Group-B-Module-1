@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['func_0',['func',['../classDirichlet.html#a3f1875d0b8a1c4f2167679a68c130179',1,'Dirichlet']]]
+  ['axis_0',['axis',['../namespacemem__profile.html#a759319ce770c09da26d7559fe4c3d028',1,'mem_profile']]]
 ];

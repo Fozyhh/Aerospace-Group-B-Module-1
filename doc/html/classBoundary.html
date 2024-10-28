@@ -9,10 +9,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -46,6 +50,23 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classBoundary.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -67,10 +88,10 @@ $(function() {
 </div>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classBoundary-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Boundary Class Reference</div></div>
 </div><!--header-->
@@ -80,6 +101,16 @@ $(function() {
  <a href="classBoundary.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="boundary_8hpp_source.html">boundary.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for Boundary:</div>
+<div class="dyncontent">
+<div class="center"><img src="classBoundary__coll__graph.png" border="0" usemap="#aBoundary_coll__map" alt="Collaboration graph"/></div>
+<map name="aBoundary_coll__map" id="aBoundary_coll__map">
+<area shape="rect" title="Handles boundary conditions for the computational domain." alt="" coords="5,93,89,119"/>
+<area shape="rect" href="structGrid.html" title="Represents a 3D grid for fluid simulation." alt="" coords="23,5,72,31"/>
+<area shape="poly" title=" " alt="" coords="50,45,50,93,45,93,45,45"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -101,6 +132,31 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a951b41eee590dbdb86790a44ce4b4056" id="r_a951b41eee590dbdb86790a44ce4b4056"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a951b41eee590dbdb86790a44ce4b4056">addFunction</a> (size_t direction, std::shared_ptr&lt; <a class="el" href="classBoundaryFunction.html">BoundaryFunction</a> &gt; x)</td></tr>
 <tr class="memdesc:a951b41eee590dbdb86790a44ce4b4056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a boundary function for a specific direction.  <br /></td></tr>
 <tr class="separator:a951b41eee590dbdb86790a44ce4b4056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a62aba1a1fba480ee8b1598580348abfa" id="r_a62aba1a1fba480ee8b1598580348abfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGrid.html">Grid</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a62aba1a1fba480ee8b1598580348abfa">grid</a></td></tr>
+<tr class="separator:a62aba1a1fba480ee8b1598580348abfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cebeca40fbda5d03bac6250b699643b" id="r_a3cebeca40fbda5d03bac6250b699643b"><td class="memItemLeft" align="right" valign="top">const unsigned int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a3cebeca40fbda5d03bac6250b699643b">nx</a></td></tr>
+<tr class="separator:a3cebeca40fbda5d03bac6250b699643b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cf2c5737342ffec54436456e370d853" id="r_a7cf2c5737342ffec54436456e370d853"><td class="memItemLeft" align="right" valign="top">const unsigned int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a7cf2c5737342ffec54436456e370d853">ny</a></td></tr>
+<tr class="separator:a7cf2c5737342ffec54436456e370d853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc44fad6e9ae283bb4204b165d67154" id="r_accc44fad6e9ae283bb4204b165d67154"><td class="memItemLeft" align="right" valign="top">const unsigned int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#accc44fad6e9ae283bb4204b165d67154">nz</a></td></tr>
+<tr class="separator:accc44fad6e9ae283bb4204b165d67154"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a076d86b1663545b8d707a29994a6c955" id="r_a076d86b1663545b8d707a29994a6c955"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a076d86b1663545b8d707a29994a6c955">dx</a></td></tr>
+<tr class="separator:a076d86b1663545b8d707a29994a6c955"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03f9004682ad580b9104f039d2625d62" id="r_a03f9004682ad580b9104f039d2625d62"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a03f9004682ad580b9104f039d2625d62">dy</a></td></tr>
+<tr class="separator:a03f9004682ad580b9104f039d2625d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6dcbd00ec1ecf06d9103054c8a33e5b" id="r_af6dcbd00ec1ecf06d9103054c8a33e5b"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#af6dcbd00ec1ecf06d9103054c8a33e5b">dz</a></td></tr>
+<tr class="separator:af6dcbd00ec1ecf06d9103054c8a33e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed83286769c9ee5979566d7622cffc45" id="r_aed83286769c9ee5979566d7622cffc45"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#aed83286769c9ee5979566d7622cffc45">prec</a></td></tr>
+<tr class="separator:aed83286769c9ee5979566d7622cffc45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e91a1849f5ed8cf4602d1c78ecd49cb" id="r_a4e91a1849f5ed8cf4602d1c78ecd49cb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBoundaryFunction.html">BoundaryFunction</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a4e91a1849f5ed8cf4602d1c78ecd49cb">boundary_value_u</a></td></tr>
+<tr class="separator:a4e91a1849f5ed8cf4602d1c78ecd49cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79d237834f514bbc72f677b2783877ff" id="r_a79d237834f514bbc72f677b2783877ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBoundaryFunction.html">BoundaryFunction</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a79d237834f514bbc72f677b2783877ff">boundary_value_v</a></td></tr>
+<tr class="separator:a79d237834f514bbc72f677b2783877ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44c70bd03c1968c2297e0bd6eeb1e670" id="r_a44c70bd03c1968c2297e0bd6eeb1e670"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBoundaryFunction.html">BoundaryFunction</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBoundary.html#a44c70bd03c1968c2297e0bd6eeb1e670">boundary_value_w</a></td></tr>
+<tr class="separator:a44c70bd03c1968c2297e0bd6eeb1e670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles boundary conditions for the computational domain. </p>
@@ -398,14 +454,261 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a4e91a1849f5ed8cf4602d1c78ecd49cb" name="a4e91a1849f5ed8cf4602d1c78ecd49cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e91a1849f5ed8cf4602d1c78ecd49cb">&#9670;&#160;</a></span>boundary_value_u</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBoundaryFunction.html">BoundaryFunction</a>&gt; &gt; Boundary::boundary_value_u</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a79d237834f514bbc72f677b2783877ff" name="a79d237834f514bbc72f677b2783877ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79d237834f514bbc72f677b2783877ff">&#9670;&#160;</a></span>boundary_value_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBoundaryFunction.html">BoundaryFunction</a>&gt; &gt; Boundary::boundary_value_v</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44c70bd03c1968c2297e0bd6eeb1e670" name="a44c70bd03c1968c2297e0bd6eeb1e670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44c70bd03c1968c2297e0bd6eeb1e670">&#9670;&#160;</a></span>boundary_value_w</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBoundaryFunction.html">BoundaryFunction</a>&gt; &gt; Boundary::boundary_value_w</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a076d86b1663545b8d707a29994a6c955" name="a076d86b1663545b8d707a29994a6c955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a076d86b1663545b8d707a29994a6c955">&#9670;&#160;</a></span>dx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double Boundary::dx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a03f9004682ad580b9104f039d2625d62" name="a03f9004682ad580b9104f039d2625d62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03f9004682ad580b9104f039d2625d62">&#9670;&#160;</a></span>dy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double Boundary::dy</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af6dcbd00ec1ecf06d9103054c8a33e5b" name="af6dcbd00ec1ecf06d9103054c8a33e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6dcbd00ec1ecf06d9103054c8a33e5b">&#9670;&#160;</a></span>dz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double Boundary::dz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62aba1a1fba480ee8b1598580348abfa" name="a62aba1a1fba480ee8b1598580348abfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62aba1a1fba480ee8b1598580348abfa">&#9670;&#160;</a></span>grid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGrid.html">Grid</a>* Boundary::grid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3cebeca40fbda5d03bac6250b699643b" name="a3cebeca40fbda5d03bac6250b699643b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cebeca40fbda5d03bac6250b699643b">&#9670;&#160;</a></span>nx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int&amp; Boundary::nx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7cf2c5737342ffec54436456e370d853" name="a7cf2c5737342ffec54436456e370d853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cf2c5737342ffec54436456e370d853">&#9670;&#160;</a></span>ny</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int&amp; Boundary::ny</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="accc44fad6e9ae283bb4204b165d67154" name="accc44fad6e9ae283bb4204b165d67154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc44fad6e9ae283bb4204b165d67154">&#9670;&#160;</a></span>nz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int&amp; Boundary::nz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed83286769c9ee5979566d7622cffc45" name="aed83286769c9ee5979566d7622cffc45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed83286769c9ee5979566d7622cffc45">&#9670;&#160;</a></span>prec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double Boundary::prec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/workspaces/aerospace-group-b-module-1/includes/<a class="el" href="boundary_8hpp_source.html">boundary.hpp</a></li>
-<li>/workspaces/aerospace-group-b-module-1/src/<b>boundary.cpp</b></li>
+<li>/home/simon/repos/Aerospace-Group-B-Module-1/includes/<a class="el" href="boundary_8hpp_source.html">boundary.hpp</a></li>
+<li>/home/simon/repos/Aerospace-Group-B-Module-1/src/<a class="el" href="boundary_8cpp.html">boundary.cpp</a></li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classBoundary.html">Boundary</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
 </body>
 </html>

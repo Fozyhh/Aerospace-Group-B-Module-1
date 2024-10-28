@@ -1,0 +1,26 @@
+\doxysection{/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/scripts/vizualisation.py File Reference}
+\hypertarget{vizualisation_8py}{}\label{vizualisation_8py}\index{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/vizualisation.py@{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/vizualisation.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacevizualisation}{vizualisation}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{vizualisation.\+data}} = np.\+genfromtxt("{}../resources/error.\+log"{}, delimiter="{},"{})
+\item 
+\mbox{\hyperlink{namespacevizualisation_a75be71f38bdb2857bcef19a10b44c155}{vizualisation.\+time}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 0\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{vizualisation.\+iter}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 1\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}{vizualisation.\+error}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 2\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}{vizualisation.\+ref}} = \mbox{\hyperlink{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}{error}}\mbox{[}0\mbox{]} / (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}}\mbox{[}1\mbox{]} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)
+\item 
+\mbox{\hyperlink{namespacevizualisation_a64deef93de95de58fd569000203f4d9c}{vizualisation.\+second\+\_\+order}} = \mbox{\hyperlink{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}{ref}} \texorpdfstring{$\ast$}{*} (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)
+\item 
+\mbox{\hyperlink{namespacevizualisation_adc7b32eab92f965be2bf4142baa4ff31}{vizualisation.\+figsize}}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a79f0de8b64a3a1b00dab8e766b7726a8}{vizualisation.\+label}}
+\end{DoxyCompactItemize}

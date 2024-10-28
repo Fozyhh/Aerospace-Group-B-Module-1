@@ -1,0 +1,96 @@
+\doxysection{cpu\+\_\+profile Namespace Reference}
+\hypertarget{namespacecpu__profile}{}\label{namespacecpu__profile}\index{cpu\_profile@{cpu\_profile}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacecpu__profile_ab625fc932a584f8f5b661241bea7e337}{gprof\+\_\+report}} = \textquotesingle{}../resources/cpuprof\+\_\+reports/gprof\+\_\+analysis.\+txt\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}} = f.\+readlines()
+\item 
+\mbox{\hyperlink{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}{header\+\_\+idx}} = next(i \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} i, line in enumerate(\mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}) if line.\+strip().startswith(\textquotesingle{}\%\textquotesingle{}))
+\item 
+int \mbox{\hyperlink{namespacecpu__profile_a516070a17c5fb9514ffcf3ac95fb19dc}{start\+\_\+idx}} = \mbox{\hyperlink{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}{header\+\_\+idx}} + 1
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_afcc7cefa3ca04bf0bd6df5d8ce8f89dd}{data\+\_\+lines}} = \mbox{[}line \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} line in \mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}\mbox{[}start\+\_\+idx\+:\mbox{]} if line.\+strip()\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_af76030f1adf5ed0aaed798adfb84e25e}{pattern}} = re.\+compile(r\textquotesingle{}\textbackslash{}s\texorpdfstring{$\ast$}{*}(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}S+)\textquotesingle{})
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_a1bb43ee0e42435b5da5b5527834004fe}{data}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a12a4823d17274e1d770aa31cf6599f41}{match}} = pattern.\+match(line)
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a93fbecab7be6b89ffe76b30f384753c7}{df}}
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_a5f58711ccbe69e41b7774cb04dba4a0f}{numeric\+\_\+cols}} = \mbox{[}\textquotesingle{}\%\+\_\+time\textquotesingle{}, \textquotesingle{}cumulative\+\_\+seconds\textquotesingle{}, \textquotesingle{}self\+\_\+seconds\textquotesingle{}, \textquotesingle{}calls\textquotesingle{}, \textquotesingle{}self\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}, \textquotesingle{}total\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacecpu__profile_a1bb43ee0e42435b5da5b5527834004fe}\label{namespacecpu__profile_a1bb43ee0e42435b5da5b5527834004fe} 
+\index{cpu\_profile@{cpu\_profile}!data@{data}}
+\index{data@{data}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily list cpu\+\_\+profile.\+data = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespacecpu__profile_afcc7cefa3ca04bf0bd6df5d8ce8f89dd}\label{namespacecpu__profile_afcc7cefa3ca04bf0bd6df5d8ce8f89dd} 
+\index{cpu\_profile@{cpu\_profile}!data\_lines@{data\_lines}}
+\index{data\_lines@{data\_lines}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{data\_lines}{data\_lines}}
+{\footnotesize\ttfamily list cpu\+\_\+profile.\+data\+\_\+lines = \mbox{[}line \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} line in \mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}\mbox{[}start\+\_\+idx\+:\mbox{]} if line.\+strip()\mbox{]}}
+
+\Hypertarget{namespacecpu__profile_a93fbecab7be6b89ffe76b30f384753c7}\label{namespacecpu__profile_a93fbecab7be6b89ffe76b30f384753c7} 
+\index{cpu\_profile@{cpu\_profile}!df@{df}}
+\index{df@{df}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{df}{df}}
+{\footnotesize\ttfamily cpu\+\_\+profile.\+df}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ pd.DataFrame(data,\ columns=[}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{'\%\_time'},\ \textcolor{stringliteral}{'cumulative\_seconds'},\ \textcolor{stringliteral}{'self\_seconds'},}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'calls'},\ \textcolor{stringliteral}{'self\_Ts\_per\_call'},\ \textcolor{stringliteral}{'total\_Ts\_per\_call'},\ \textcolor{stringliteral}{'function\_name'}}
+\DoxyCodeLine{00004\ ])}
+
+\end{DoxyCode}
+\Hypertarget{namespacecpu__profile_ab625fc932a584f8f5b661241bea7e337}\label{namespacecpu__profile_ab625fc932a584f8f5b661241bea7e337} 
+\index{cpu\_profile@{cpu\_profile}!gprof\_report@{gprof\_report}}
+\index{gprof\_report@{gprof\_report}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{gprof\_report}{gprof\_report}}
+{\footnotesize\ttfamily str cpu\+\_\+profile.\+gprof\+\_\+report = \textquotesingle{}../resources/cpuprof\+\_\+reports/gprof\+\_\+analysis.\+txt\textquotesingle{}}
+
+\Hypertarget{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}\label{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813} 
+\index{cpu\_profile@{cpu\_profile}!header\_idx@{header\_idx}}
+\index{header\_idx@{header\_idx}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{header\_idx}{header\_idx}}
+{\footnotesize\ttfamily cpu\+\_\+profile.\+header\+\_\+idx = next(i \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} i, line in enumerate(\mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}) if line.\+strip().startswith(\textquotesingle{}\%\textquotesingle{}))}
+
+\Hypertarget{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}\label{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce} 
+\index{cpu\_profile@{cpu\_profile}!lines@{lines}}
+\index{lines@{lines}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{lines}{lines}}
+{\footnotesize\ttfamily cpu\+\_\+profile.\+lines = f.\+readlines()}
+
+\Hypertarget{namespacecpu__profile_a12a4823d17274e1d770aa31cf6599f41}\label{namespacecpu__profile_a12a4823d17274e1d770aa31cf6599f41} 
+\index{cpu\_profile@{cpu\_profile}!match@{match}}
+\index{match@{match}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{match}{match}}
+{\footnotesize\ttfamily cpu\+\_\+profile.\+match = pattern.\+match(line)}
+
+\Hypertarget{namespacecpu__profile_a5f58711ccbe69e41b7774cb04dba4a0f}\label{namespacecpu__profile_a5f58711ccbe69e41b7774cb04dba4a0f} 
+\index{cpu\_profile@{cpu\_profile}!numeric\_cols@{numeric\_cols}}
+\index{numeric\_cols@{numeric\_cols}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{numeric\_cols}{numeric\_cols}}
+{\footnotesize\ttfamily list cpu\+\_\+profile.\+numeric\+\_\+cols = \mbox{[}\textquotesingle{}\%\+\_\+time\textquotesingle{}, \textquotesingle{}cumulative\+\_\+seconds\textquotesingle{}, \textquotesingle{}self\+\_\+seconds\textquotesingle{}, \textquotesingle{}calls\textquotesingle{}, \textquotesingle{}self\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}, \textquotesingle{}total\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}\mbox{]}}
+
+\Hypertarget{namespacecpu__profile_af76030f1adf5ed0aaed798adfb84e25e}\label{namespacecpu__profile_af76030f1adf5ed0aaed798adfb84e25e} 
+\index{cpu\_profile@{cpu\_profile}!pattern@{pattern}}
+\index{pattern@{pattern}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{pattern}{pattern}}
+{\footnotesize\ttfamily cpu\+\_\+profile.\+pattern = re.\+compile(r\textquotesingle{}\textbackslash{}s\texorpdfstring{$\ast$}{*}(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}S+)\textquotesingle{})}
+
+\Hypertarget{namespacecpu__profile_a516070a17c5fb9514ffcf3ac95fb19dc}\label{namespacecpu__profile_a516070a17c5fb9514ffcf3ac95fb19dc} 
+\index{cpu\_profile@{cpu\_profile}!start\_idx@{start\_idx}}
+\index{start\_idx@{start\_idx}!cpu\_profile@{cpu\_profile}}
+\doxysubsubsection{\texorpdfstring{start\_idx}{start\_idx}}
+{\footnotesize\ttfamily int cpu\+\_\+profile.\+start\+\_\+idx = \mbox{\hyperlink{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}{header\+\_\+idx}} + 1}
+

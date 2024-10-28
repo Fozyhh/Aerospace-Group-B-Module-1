@@ -1,0 +1,30 @@
+\doxysection{/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/scripts/cpu\+\_\+profile.py File Reference}
+\hypertarget{cpu__profile_8py}{}\label{cpu__profile_8py}\index{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/cpu\_profile.py@{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/cpu\_profile.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacecpu__profile}{cpu\+\_\+profile}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacecpu__profile_ab625fc932a584f8f5b661241bea7e337}{cpu\+\_\+profile.\+gprof\+\_\+report}} = \textquotesingle{}../resources/cpuprof\+\_\+reports/gprof\+\_\+analysis.\+txt\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{cpu\+\_\+profile.\+lines}} = f.\+readlines()
+\item 
+\mbox{\hyperlink{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}{cpu\+\_\+profile.\+header\+\_\+idx}} = next(i \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} i, line in enumerate(\mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}) if line.\+strip().startswith(\textquotesingle{}\%\textquotesingle{}))
+\item 
+int \mbox{\hyperlink{namespacecpu__profile_a516070a17c5fb9514ffcf3ac95fb19dc}{cpu\+\_\+profile.\+start\+\_\+idx}} = \mbox{\hyperlink{namespacecpu__profile_abd13005cbc2281a28a3f2bc435e12813}{header\+\_\+idx}} + 1
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_afcc7cefa3ca04bf0bd6df5d8ce8f89dd}{cpu\+\_\+profile.\+data\+\_\+lines}} = \mbox{[}line \mbox{\hyperlink{boundary_8cpp_a2c78d3d38e9b661205de5a3f8bd037e0}{for}} line in \mbox{\hyperlink{namespacecpu__profile_a9e31d66b059c93fdb3bc7f4b192fc0ce}{lines}}\mbox{[}start\+\_\+idx\+:\mbox{]} if line.\+strip()\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_af76030f1adf5ed0aaed798adfb84e25e}{cpu\+\_\+profile.\+pattern}} = re.\+compile(r\textquotesingle{}\textbackslash{}s\texorpdfstring{$\ast$}{*}(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}d+\textbackslash{}.\textbackslash{}d+)\textbackslash{}s+(\textbackslash{}S+)\textquotesingle{})
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_a1bb43ee0e42435b5da5b5527834004fe}{cpu\+\_\+profile.\+data}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a12a4823d17274e1d770aa31cf6599f41}{cpu\+\_\+profile.\+match}} = pattern.\+match(line)
+\item 
+\mbox{\hyperlink{namespacecpu__profile_a93fbecab7be6b89ffe76b30f384753c7}{cpu\+\_\+profile.\+df}}
+\item 
+list \mbox{\hyperlink{namespacecpu__profile_a5f58711ccbe69e41b7774cb04dba4a0f}{cpu\+\_\+profile.\+numeric\+\_\+cols}} = \mbox{[}\textquotesingle{}\%\+\_\+time\textquotesingle{}, \textquotesingle{}cumulative\+\_\+seconds\textquotesingle{}, \textquotesingle{}self\+\_\+seconds\textquotesingle{}, \textquotesingle{}calls\textquotesingle{}, \textquotesingle{}self\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}, \textquotesingle{}total\+\_\+\+Ts\+\_\+per\+\_\+call\textquotesingle{}\mbox{]}
+\end{DoxyCompactItemize}

@@ -5,14 +5,18 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HPC for Aerospace Group B - Module 1: /workspaces/aerospace-group-b-module-1/includes/boundary.hpp Source File</title>
+<title>HPC for Aerospace Group B - Module 1: /home/simon/repos/Aerospace-Group-B-Module-1/includes/boundary.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -51,6 +55,23 @@ $(function() {
 $(document).ready(function() { init_codefold(0); });
 /* @license-end */
 </script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('boundary_8hpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -72,11 +93,6 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_09e761304027c904456130627fd4dcf5.html">includes</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">boundary.hpp</div></div>
 </div><!--header-->
@@ -95,16 +111,16 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_class" href="structGrid.html">Grid</a>* grid;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;nx;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;ny;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;nz;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> dx,dy,dz;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> prec;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classBoundary.html#a62aba1a1fba480ee8b1598580348abfa">   25</a></span>    <a class="code hl_class" href="structGrid.html">Grid</a>* <a class="code hl_variable" href="classBoundary.html#a62aba1a1fba480ee8b1598580348abfa">grid</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classBoundary.html#a3cebeca40fbda5d03bac6250b699643b">   26</a></span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="classBoundary.html#a3cebeca40fbda5d03bac6250b699643b">nx</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classBoundary.html#a7cf2c5737342ffec54436456e370d853">   27</a></span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="classBoundary.html#a7cf2c5737342ffec54436456e370d853">ny</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classBoundary.html#accc44fad6e9ae283bb4204b165d67154">   28</a></span>    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="classBoundary.html#accc44fad6e9ae283bb4204b165d67154">nz</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classBoundary.html#a076d86b1663545b8d707a29994a6c955">   29</a></span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="classBoundary.html#a076d86b1663545b8d707a29994a6c955">dx</a>,<a class="code hl_variable" href="classBoundary.html#a03f9004682ad580b9104f039d2625d62">dy</a>,<a class="code hl_variable" href="classBoundary.html#af6dcbd00ec1ecf06d9103054c8a33e5b">dz</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classBoundary.html#aed83286769c9ee5979566d7622cffc45">   30</a></span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="classBoundary.html#aed83286769c9ee5979566d7622cffc45">prec</a>;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; boundary_value_u;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; boundary_value_v;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; boundary_value_w;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classBoundary.html#a4e91a1849f5ed8cf4602d1c78ecd49cb">   32</a></span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; <a class="code hl_variable" href="classBoundary.html#a4e91a1849f5ed8cf4602d1c78ecd49cb">boundary_value_u</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classBoundary.html#a79d237834f514bbc72f677b2783877ff">   33</a></span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; <a class="code hl_variable" href="classBoundary.html#a79d237834f514bbc72f677b2783877ff">boundary_value_v</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classBoundary.html#a44c70bd03c1968c2297e0bd6eeb1e670">   34</a></span>    std::vector&lt;std::shared_ptr&lt;BoundaryFunction&gt;&gt; <a class="code hl_variable" href="classBoundary.html#a44c70bd03c1968c2297e0bd6eeb1e670">boundary_value_w</a>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    </div>
@@ -125,18 +141,33 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassBoundary_html"><div class="ttname"><a href="classBoundary.html">Boundary</a></div><div class="ttdoc">Handles boundary conditions for the computational domain.</div><div class="ttdef"><b>Definition</b> boundary.hpp:22</div></div>
+<div class="ttc" id="aclassBoundary_html_a03f9004682ad580b9104f039d2625d62"><div class="ttname"><a href="classBoundary.html#a03f9004682ad580b9104f039d2625d62">Boundary::dy</a></div><div class="ttdeci">const double dy</div><div class="ttdef"><b>Definition</b> boundary.hpp:29</div></div>
+<div class="ttc" id="aclassBoundary_html_a076d86b1663545b8d707a29994a6c955"><div class="ttname"><a href="classBoundary.html#a076d86b1663545b8d707a29994a6c955">Boundary::dx</a></div><div class="ttdeci">const double dx</div><div class="ttdef"><b>Definition</b> boundary.hpp:29</div></div>
 <div class="ttc" id="aclassBoundary_html_a103d9eb344f3820373bf6b1fbfb2b693"><div class="ttname"><a href="classBoundary.html#a103d9eb344f3820373bf6b1fbfb2b693">Boundary::update_boundary</a></div><div class="ttdeci">void update_boundary(double t)</div><div class="ttdoc">Updates all boundary values at the given time.</div><div class="ttdef"><b>Definition</b> boundary.cpp:14</div></div>
+<div class="ttc" id="aclassBoundary_html_a3cebeca40fbda5d03bac6250b699643b"><div class="ttname"><a href="classBoundary.html#a3cebeca40fbda5d03bac6250b699643b">Boundary::nx</a></div><div class="ttdeci">const unsigned int &amp; nx</div><div class="ttdef"><b>Definition</b> boundary.hpp:26</div></div>
+<div class="ttc" id="aclassBoundary_html_a44c70bd03c1968c2297e0bd6eeb1e670"><div class="ttname"><a href="classBoundary.html#a44c70bd03c1968c2297e0bd6eeb1e670">Boundary::boundary_value_w</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; BoundaryFunction &gt; &gt; boundary_value_w</div><div class="ttdef"><b>Definition</b> boundary.hpp:34</div></div>
+<div class="ttc" id="aclassBoundary_html_a4e91a1849f5ed8cf4602d1c78ecd49cb"><div class="ttname"><a href="classBoundary.html#a4e91a1849f5ed8cf4602d1c78ecd49cb">Boundary::boundary_value_u</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; BoundaryFunction &gt; &gt; boundary_value_u</div><div class="ttdef"><b>Definition</b> boundary.hpp:32</div></div>
+<div class="ttc" id="aclassBoundary_html_a62aba1a1fba480ee8b1598580348abfa"><div class="ttname"><a href="classBoundary.html#a62aba1a1fba480ee8b1598580348abfa">Boundary::grid</a></div><div class="ttdeci">Grid * grid</div><div class="ttdef"><b>Definition</b> boundary.hpp:25</div></div>
+<div class="ttc" id="aclassBoundary_html_a79d237834f514bbc72f677b2783877ff"><div class="ttname"><a href="classBoundary.html#a79d237834f514bbc72f677b2783877ff">Boundary::boundary_value_v</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; BoundaryFunction &gt; &gt; boundary_value_v</div><div class="ttdef"><b>Definition</b> boundary.hpp:33</div></div>
+<div class="ttc" id="aclassBoundary_html_a7cf2c5737342ffec54436456e370d853"><div class="ttname"><a href="classBoundary.html#a7cf2c5737342ffec54436456e370d853">Boundary::ny</a></div><div class="ttdeci">const unsigned int &amp; ny</div><div class="ttdef"><b>Definition</b> boundary.hpp:27</div></div>
 <div class="ttc" id="aclassBoundary_html_a951b41eee590dbdb86790a44ce4b4056"><div class="ttname"><a href="classBoundary.html#a951b41eee590dbdb86790a44ce4b4056">Boundary::addFunction</a></div><div class="ttdeci">void addFunction(size_t direction, std::shared_ptr&lt; BoundaryFunction &gt; x)</div><div class="ttdoc">Adds a boundary function for a specific direction.</div><div class="ttdef"><b>Definition</b> boundary.cpp:194</div></div>
 <div class="ttc" id="aclassBoundary_html_ac01a2df6dd3a0596573038bec9a4a2a8"><div class="ttname"><a href="classBoundary.html#ac01a2df6dd3a0596573038bec9a4a2a8">Boundary::approximate_boundary_w</a></div><div class="ttdeci">double approximate_boundary_w(size_t x, size_t y, size_t z, double t, size_t face)</div><div class="ttdoc">Approximates boundary value for w-velocity component.</div><div class="ttdef"><b>Definition</b> boundary.cpp:185</div></div>
 <div class="ttc" id="aclassBoundary_html_ac51b238fd7c003e25f252860bd09ac5a"><div class="ttname"><a href="classBoundary.html#ac51b238fd7c003e25f252860bd09ac5a">Boundary::approximate_boundary_u</a></div><div class="ttdeci">double approximate_boundary_u(size_t x, size_t y, size_t z, double t, size_t face)</div><div class="ttdoc">Approximates boundary value for u-velocity component.</div><div class="ttdef"><b>Definition</b> boundary.cpp:165</div></div>
+<div class="ttc" id="aclassBoundary_html_accc44fad6e9ae283bb4204b165d67154"><div class="ttname"><a href="classBoundary.html#accc44fad6e9ae283bb4204b165d67154">Boundary::nz</a></div><div class="ttdeci">const unsigned int &amp; nz</div><div class="ttdef"><b>Definition</b> boundary.hpp:28</div></div>
+<div class="ttc" id="aclassBoundary_html_aed83286769c9ee5979566d7622cffc45"><div class="ttname"><a href="classBoundary.html#aed83286769c9ee5979566d7622cffc45">Boundary::prec</a></div><div class="ttdeci">const double prec</div><div class="ttdef"><b>Definition</b> boundary.hpp:30</div></div>
 <div class="ttc" id="aclassBoundary_html_aef81ed1e7d2829a482ed7119ab6b0468"><div class="ttname"><a href="classBoundary.html#aef81ed1e7d2829a482ed7119ab6b0468">Boundary::approximate_boundary_v</a></div><div class="ttdeci">double approximate_boundary_v(size_t x, size_t y, size_t z, double t, size_t face)</div><div class="ttdoc">Approximates boundary value for v-velocity component.</div><div class="ttdef"><b>Definition</b> boundary.cpp:175</div></div>
+<div class="ttc" id="aclassBoundary_html_af6dcbd00ec1ecf06d9103054c8a33e5b"><div class="ttname"><a href="classBoundary.html#af6dcbd00ec1ecf06d9103054c8a33e5b">Boundary::dz</a></div><div class="ttdeci">const double dz</div><div class="ttdef"><b>Definition</b> boundary.hpp:29</div></div>
 <div class="ttc" id="agrid_8hpp_html"><div class="ttname"><a href="grid_8hpp.html">grid.hpp</a></div><div class="ttdoc">Grid structure definition.</div></div>
 <div class="ttc" id="astructGrid_html"><div class="ttname"><a href="structGrid.html">Grid</a></div><div class="ttdoc">Represents a 3D grid for fluid simulation.</div><div class="ttdef"><b>Definition</b> grid.hpp:20</div></div>
 <div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utility classes for boundary conditions and exact solutions.</div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_09e761304027c904456130627fd4dcf5.html">includes</a></li><li class="navelem"><a class="el" href="boundary_8hpp.html">boundary.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
 </body>
 </html>

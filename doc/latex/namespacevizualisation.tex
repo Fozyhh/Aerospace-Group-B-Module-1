@@ -1,0 +1,72 @@
+\doxysection{vizualisation Namespace Reference}
+\hypertarget{namespacevizualisation}{}\label{namespacevizualisation}\index{vizualisation@{vizualisation}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}} = np.\+genfromtxt("{}../resources/error.\+log"{}, delimiter="{},"{})
+\item 
+\mbox{\hyperlink{namespacevizualisation_a75be71f38bdb2857bcef19a10b44c155}{time}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 0\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 1\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}{error}} = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 2\mbox{]}
+\item 
+\mbox{\hyperlink{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}{ref}} = \mbox{\hyperlink{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}{error}}\mbox{[}0\mbox{]} / (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}}\mbox{[}1\mbox{]} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)
+\item 
+\mbox{\hyperlink{namespacevizualisation_a64deef93de95de58fd569000203f4d9c}{second\+\_\+order}} = \mbox{\hyperlink{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}{ref}} \texorpdfstring{$\ast$}{*} (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)
+\item 
+\mbox{\hyperlink{namespacevizualisation_adc7b32eab92f965be2bf4142baa4ff31}{figsize}}
+\item 
+\mbox{\hyperlink{namespacevizualisation_a79f0de8b64a3a1b00dab8e766b7726a8}{label}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}\label{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11} 
+\index{vizualisation@{vizualisation}!data@{data}}
+\index{data@{data}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{data}{data}}
+{\footnotesize\ttfamily vizualisation.\+data = np.\+genfromtxt("{}../resources/error.\+log"{}, delimiter="{},"{})}
+
+\Hypertarget{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}\label{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c} 
+\index{vizualisation@{vizualisation}!error@{error}}
+\index{error@{error}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{error}{error}}
+{\footnotesize\ttfamily vizualisation.\+error = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 2\mbox{]}}
+
+\Hypertarget{namespacevizualisation_adc7b32eab92f965be2bf4142baa4ff31}\label{namespacevizualisation_adc7b32eab92f965be2bf4142baa4ff31} 
+\index{vizualisation@{vizualisation}!figsize@{figsize}}
+\index{figsize@{figsize}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{figsize}{figsize}}
+{\footnotesize\ttfamily vizualisation.\+figsize}
+
+\Hypertarget{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}\label{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129} 
+\index{vizualisation@{vizualisation}!iter@{iter}}
+\index{iter@{iter}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{iter}{iter}}
+{\footnotesize\ttfamily vizualisation.\+iter = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 1\mbox{]}}
+
+\Hypertarget{namespacevizualisation_a79f0de8b64a3a1b00dab8e766b7726a8}\label{namespacevizualisation_a79f0de8b64a3a1b00dab8e766b7726a8} 
+\index{vizualisation@{vizualisation}!label@{label}}
+\index{label@{label}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{label}{label}}
+{\footnotesize\ttfamily vizualisation.\+label}
+
+\Hypertarget{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}\label{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0} 
+\index{vizualisation@{vizualisation}!ref@{ref}}
+\index{ref@{ref}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{ref}{ref}}
+{\footnotesize\ttfamily vizualisation.\+ref = \mbox{\hyperlink{namespacevizualisation_a3054298ef56d6630bc87909961abdb4c}{error}}\mbox{[}0\mbox{]} / (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}}\mbox{[}1\mbox{]} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)}
+
+\Hypertarget{namespacevizualisation_a64deef93de95de58fd569000203f4d9c}\label{namespacevizualisation_a64deef93de95de58fd569000203f4d9c} 
+\index{vizualisation@{vizualisation}!second\_order@{second\_order}}
+\index{second\_order@{second\_order}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{second\_order}{second\_order}}
+{\footnotesize\ttfamily vizualisation.\+second\+\_\+order = \mbox{\hyperlink{namespacevizualisation_afae92b1e4699e4b1c29bcbb58c9cc6e0}{ref}} \texorpdfstring{$\ast$}{*} (\mbox{\hyperlink{namespacevizualisation_afb4e30e3731d2c0e04099a293a6c0129}{iter}} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} 2)}
+
+\Hypertarget{namespacevizualisation_a75be71f38bdb2857bcef19a10b44c155}\label{namespacevizualisation_a75be71f38bdb2857bcef19a10b44c155} 
+\index{vizualisation@{vizualisation}!time@{time}}
+\index{time@{time}!vizualisation@{vizualisation}}
+\doxysubsubsection{\texorpdfstring{time}{time}}
+{\footnotesize\ttfamily vizualisation.\+time = \mbox{\hyperlink{namespacevizualisation_a4b3ee6ddb978d7dae3c6e9dc8bc7ae11}{data}}\mbox{[}\+:, 0\mbox{]}}
+

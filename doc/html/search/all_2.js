@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['b_20module_201_0',['Aerospace-Group-B-Module-1',['../md__2workspaces_2aerospace-group-b-module-1_2README.html',1,'']]],
-  ['boundary_1',['boundary',['../classBoundary.html',1,'Boundary'],['../classBoundary.html#af023ad8940ca642022a53aa95a73695d',1,'Boundary::Boundary()']]],
-  ['boundary_2ehpp_2',['boundary.hpp',['../boundary_8hpp.html',1,'']]],
-  ['boundaryfunction_3',['BoundaryFunction',['../classBoundaryFunction.html',1,'']]],
-  ['build_4',['build',['../md__2workspaces_2aerospace-group-b-module-1_2README.html#autotoc_md4',1,'CPU profiling build'],['../md__2workspaces_2aerospace-group-b-module-1_2README.html#autotoc_md6',1,'Memcheck build'],['../md__2workspaces_2aerospace-group-b-module-1_2README.html#autotoc_md5',1,'Memory profiling build'],['../md__2workspaces_2aerospace-group-b-module-1_2README.html#autotoc_md3',1,'Normal build']]]
+  ['addfunction_0',['addFunction',['../classBoundary.html#a951b41eee590dbdb86790a44ce4b4056',1,'Boundary']]],
+  ['aerospace_20group_20b_20module_201_1',['Aerospace-Group-B-Module-1',['../md__2home_2simon_2repos_2Aerospace-Group-B-Module-1_2README.html',1,'']]],
+  ['and_20memory_20check_2',['CPU Profiling, Memory Profiling and Memory check',['../md__2home_2simon_2repos_2Aerospace-Group-B-Module-1_2README.html#autotoc_md1',1,'']]],
+  ['apply_5fboundary_5fconditions_3',['apply_boundary_conditions',['../classIcoNS.html#afa62d773fd1999dbf6a91d2d988552cc',1,'IcoNS']]],
+  ['approximate_5fboundary_5fu_4',['approximate_boundary_u',['../classBoundary.html#ac51b238fd7c003e25f252860bd09ac5a',1,'Boundary']]],
+  ['approximate_5fboundary_5fv_5',['approximate_boundary_v',['../classBoundary.html#aef81ed1e7d2829a482ed7119ab6b0468',1,'Boundary']]],
+  ['approximate_5fboundary_5fw_6',['approximate_boundary_w',['../classBoundary.html#ac01a2df6dd3a0596573038bec9a4a2a8',1,'Boundary']]],
+  ['architecture_5fid_7',['architecture_id',['../build-cpuprof_2CMakeFiles_23_828_83_2CompilerIdC_2CMakeCCompilerId_8c.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCCompilerId.c'],['../build-cpuprof_2CMakeFiles_23_828_83_2CompilerIdCXX_2CMakeCXXCompilerId_8cpp.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCXXCompilerId.cpp'],['../build-memcheck_2CMakeFiles_23_828_83_2CompilerIdC_2CMakeCCompilerId_8c.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCCompilerId.c'],['../build-memcheck_2CMakeFiles_23_828_83_2CompilerIdCXX_2CMakeCXXCompilerId_8cpp.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCXXCompilerId.cpp'],['../build-memprof_2CMakeFiles_23_828_83_2CompilerIdC_2CMakeCCompilerId_8c.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCCompilerId.c'],['../build-memprof_2CMakeFiles_23_828_83_2CompilerIdCXX_2CMakeCXXCompilerId_8cpp.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCXXCompilerId.cpp'],['../build_2CMakeFiles_23_828_83_2CompilerIdC_2CMakeCCompilerId_8c.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCCompilerId.c'],['../build_2CMakeFiles_23_828_83_2CompilerIdCXX_2CMakeCXXCompilerId_8cpp.html#aba35d0d200deaeb06aee95ca297acb28',1,'ARCHITECTURE_ID:&#160;CMakeCXXCompilerId.cpp']]],
+  ['axis_8',['axis',['../namespacemem__profile.html#a759319ce770c09da26d7559fe4c3d028',1,'mem_profile']]]
 ];

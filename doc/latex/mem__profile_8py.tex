@@ -1,0 +1,38 @@
+\doxysection{/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/scripts/mem\+\_\+profile.py File Reference}
+\hypertarget{mem__profile_8py}{}\label{mem__profile_8py}\index{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/mem\_profile.py@{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/scripts/mem\_profile.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacemem__profile}{mem\+\_\+profile}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacemem__profile_af2962b38cb00ec3a059b782551dcbaa8}{mem\+\_\+profile.\+content}} = file.\+read()
+\item 
+dict \mbox{\hyperlink{namespacemem__profile_a44ab6057671061e66c99af4293510427}{mem\+\_\+profile.\+functions}} = \{\}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a8517b66c7c3f314c054a5fc9c79c55b9}{mem\+\_\+profile.\+lines}} = content.\+strip().split(\textquotesingle{}\textbackslash{}n\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacemem__profile_aaac72936dad01125d9389be65d071f39}{mem\+\_\+profile.\+current\+\_\+file}} = None
+\item 
+\mbox{\hyperlink{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}{mem\+\_\+profile.\+current\+\_\+function}} = None
+\item 
+\mbox{\hyperlink{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}{mem\+\_\+profile.\+parts}} = line.\+strip().split()
+\item 
+\mbox{\hyperlink{namespacemem__profile_a207d084e9605277b4516a79f03651384}{mem\+\_\+profile.\+metrics}} = list(map(int, \mbox{\hyperlink{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}{parts}}\mbox{[}1\+:\mbox{]}))
+\item 
+str \mbox{\hyperlink{namespacemem__profile_a3d09c3e4ac6a3e924b38b229e8e22729}{mem\+\_\+profile.\+function\+\_\+key}} = f"{}\{\mbox{\hyperlink{namespacemem__profile_aaac72936dad01125d9389be65d071f39}{current\+\_\+file}}\}\+:\{\mbox{\hyperlink{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}{current\+\_\+function}}\}"{}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a1eb4255675d5ee2f4bef358d3d3d9199}{mem\+\_\+profile.\+cache\+\_\+df}} = pd.\+Data\+Frame.\+from\+\_\+dict(\mbox{\hyperlink{namespacemem__profile_a44ab6057671061e66c99af4293510427}{functions}}, orient=\textquotesingle{}index\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacemem__profile_a759319ce770c09da26d7559fe4c3d028}{mem\+\_\+profile.\+axis}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_acb88f0bab972669bc0021f3412e93711}{mem\+\_\+profile.\+cache\+\_\+sorted}} = cache\+\_\+df.\+sort\+\_\+values(by=\textquotesingle{}total\+\_\+cache\+\_\+misses\textquotesingle{}, ascending=False)
+\item 
+\mbox{\hyperlink{namespacemem__profile_a00d2e077ffaa63e0d5ef4ac172d8c40f}{mem\+\_\+profile.\+figsize}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a94ab16002e8c117ca3a46866946639d0}{mem\+\_\+profile.\+color}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a567dd66c803776f2d8a60b3a7be82df9}{mem\+\_\+profile.\+rotation}}
+\end{DoxyCompactItemize}

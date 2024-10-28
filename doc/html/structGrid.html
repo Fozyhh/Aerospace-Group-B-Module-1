@@ -9,10 +9,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -46,6 +50,23 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('structGrid.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -67,7 +88,6 @@ $(function() {
 </div>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
@@ -84,35 +104,28 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a187d388703632c05bd08a8c955433b86" id="r_a187d388703632c05bd08a8c955433b86"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a187d388703632c05bd08a8c955433b86">Grid</a> (int nx, int ny, int <a class="el" href="structGrid.html#a47f700be68729d6339e3529f308ebf21">nz</a>)</td></tr>
+<tr class="memitem:a187d388703632c05bd08a8c955433b86" id="r_a187d388703632c05bd08a8c955433b86"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a187d388703632c05bd08a8c955433b86">Grid</a> (int <a class="el" href="structGrid.html#a5361416ad9b5a77e69e0fd43ac9d0a44">nx</a>, int <a class="el" href="structGrid.html#adab54e0dbc5804b663b230b95f5fed1b">ny</a>, int <a class="el" href="structGrid.html#a47f700be68729d6339e3529f308ebf21">nz</a>)</td></tr>
 <tr class="memdesc:a187d388703632c05bd08a8c955433b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a grid with specified dimensions.  <br /></td></tr>
 <tr class="separator:a187d388703632c05bd08a8c955433b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a5361416ad9b5a77e69e0fd43ac9d0a44" id="r_a5361416ad9b5a77e69e0fd43ac9d0a44"><td class="memItemLeft" align="right" valign="top"><a id="a5361416ad9b5a77e69e0fd43ac9d0a44" name="a5361416ad9b5a77e69e0fd43ac9d0a44"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>nx</b></td></tr>
+<tr class="memitem:a5361416ad9b5a77e69e0fd43ac9d0a44" id="r_a5361416ad9b5a77e69e0fd43ac9d0a44"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a5361416ad9b5a77e69e0fd43ac9d0a44">nx</a></td></tr>
 <tr class="separator:a5361416ad9b5a77e69e0fd43ac9d0a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adab54e0dbc5804b663b230b95f5fed1b" id="r_adab54e0dbc5804b663b230b95f5fed1b"><td class="memItemLeft" align="right" valign="top"><a id="adab54e0dbc5804b663b230b95f5fed1b" name="adab54e0dbc5804b663b230b95f5fed1b"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>ny</b></td></tr>
+<tr class="memitem:adab54e0dbc5804b663b230b95f5fed1b" id="r_adab54e0dbc5804b663b230b95f5fed1b"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#adab54e0dbc5804b663b230b95f5fed1b">ny</a></td></tr>
 <tr class="separator:adab54e0dbc5804b663b230b95f5fed1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47f700be68729d6339e3529f308ebf21" id="r_a47f700be68729d6339e3529f308ebf21"><td class="memItemLeft" align="right" valign="top"><a id="a47f700be68729d6339e3529f308ebf21" name="a47f700be68729d6339e3529f308ebf21"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>nz</b></td></tr>
-<tr class="memdesc:a47f700be68729d6339e3529f308ebf21"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of cells in the x,y,z directions. <br /></td></tr>
+<tr class="memitem:a47f700be68729d6339e3529f308ebf21" id="r_a47f700be68729d6339e3529f308ebf21"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a47f700be68729d6339e3529f308ebf21">nz</a></td></tr>
+<tr class="memdesc:a47f700be68729d6339e3529f308ebf21"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of cells in the x,y,z directions.  <br /></td></tr>
 <tr class="separator:a47f700be68729d6339e3529f308ebf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87920f94f9478c10606e9c6eb6bf35c8" id="r_a87920f94f9478c10606e9c6eb6bf35c8"><td class="memItemLeft" align="right" valign="top"><a id="a87920f94f9478c10606e9c6eb6bf35c8" name="a87920f94f9478c10606e9c6eb6bf35c8"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>u</b></td></tr>
+<tr class="memitem:a87920f94f9478c10606e9c6eb6bf35c8" id="r_a87920f94f9478c10606e9c6eb6bf35c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a87920f94f9478c10606e9c6eb6bf35c8">u</a></td></tr>
 <tr class="separator:a87920f94f9478c10606e9c6eb6bf35c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebd3f867b33a55cba599dcc3efc159cf" id="r_aebd3f867b33a55cba599dcc3efc159cf"><td class="memItemLeft" align="right" valign="top"><a id="aebd3f867b33a55cba599dcc3efc159cf" name="aebd3f867b33a55cba599dcc3efc159cf"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>v</b></td></tr>
+<tr class="memitem:aebd3f867b33a55cba599dcc3efc159cf" id="r_aebd3f867b33a55cba599dcc3efc159cf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#aebd3f867b33a55cba599dcc3efc159cf">v</a></td></tr>
 <tr class="separator:aebd3f867b33a55cba599dcc3efc159cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a768c5bc618d2c0b78a5661fbb4acb180" id="r_a768c5bc618d2c0b78a5661fbb4acb180"><td class="memItemLeft" align="right" valign="top"><a id="a768c5bc618d2c0b78a5661fbb4acb180" name="a768c5bc618d2c0b78a5661fbb4acb180"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>w</b></td></tr>
-<tr class="memdesc:a768c5bc618d2c0b78a5661fbb4acb180"><td class="mdescLeft">&#160;</td><td class="mdescRight">velocity values of the grid cells. <br /></td></tr>
+<tr class="memitem:a768c5bc618d2c0b78a5661fbb4acb180" id="r_a768c5bc618d2c0b78a5661fbb4acb180"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#a768c5bc618d2c0b78a5661fbb4acb180">w</a></td></tr>
+<tr class="memdesc:a768c5bc618d2c0b78a5661fbb4acb180"><td class="mdescLeft">&#160;</td><td class="mdescRight">velocity values of the grid cells.  <br /></td></tr>
 <tr class="separator:a768c5bc618d2c0b78a5661fbb4acb180"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeafc8ae143fb9328606cb56fcd60924e" id="r_aeafc8ae143fb9328606cb56fcd60924e"><td class="memItemLeft" align="right" valign="top"><a id="aeafc8ae143fb9328606cb56fcd60924e" name="aeafc8ae143fb9328606cb56fcd60924e"></a>
-std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>p</b></td></tr>
-<tr class="memdesc:aeafc8ae143fb9328606cb56fcd60924e"><td class="mdescLeft">&#160;</td><td class="mdescRight">pressure values of the grid cells. <br /></td></tr>
+<tr class="memitem:aeafc8ae143fb9328606cb56fcd60924e" id="r_aeafc8ae143fb9328606cb56fcd60924e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGrid.html#aeafc8ae143fb9328606cb56fcd60924e">p</a></td></tr>
+<tr class="memdesc:aeafc8ae143fb9328606cb56fcd60924e"><td class="mdescLeft">&#160;</td><td class="mdescRight">pressure values of the grid cells.  <br /></td></tr>
 <tr class="separator:aeafc8ae143fb9328606cb56fcd60924e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -171,13 +184,122 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5361416ad9b5a77e69e0fd43ac9d0a44" name="a5361416ad9b5a77e69e0fd43ac9d0a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5361416ad9b5a77e69e0fd43ac9d0a44">&#9670;&#160;</a></span>nx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int Grid::nx</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adab54e0dbc5804b663b230b95f5fed1b" name="adab54e0dbc5804b663b230b95f5fed1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab54e0dbc5804b663b230b95f5fed1b">&#9670;&#160;</a></span>ny</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int Grid::ny</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a47f700be68729d6339e3529f308ebf21" name="a47f700be68729d6339e3529f308ebf21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47f700be68729d6339e3529f308ebf21">&#9670;&#160;</a></span>nz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int Grid::nz</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>number of cells in the x,y,z directions. </p>
+
+</div>
+</div>
+<a id="aeafc8ae143fb9328606cb56fcd60924e" name="aeafc8ae143fb9328606cb56fcd60924e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeafc8ae143fb9328606cb56fcd60924e">&#9670;&#160;</a></span>p</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; Grid::p</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pressure values of the grid cells. </p>
+
+</div>
+</div>
+<a id="a87920f94f9478c10606e9c6eb6bf35c8" name="a87920f94f9478c10606e9c6eb6bf35c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87920f94f9478c10606e9c6eb6bf35c8">&#9670;&#160;</a></span>u</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; Grid::u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aebd3f867b33a55cba599dcc3efc159cf" name="aebd3f867b33a55cba599dcc3efc159cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd3f867b33a55cba599dcc3efc159cf">&#9670;&#160;</a></span>v</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; Grid::v</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a768c5bc618d2c0b78a5661fbb4acb180" name="a768c5bc618d2c0b78a5661fbb4acb180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a768c5bc618d2c0b78a5661fbb4acb180">&#9670;&#160;</a></span>w</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; Grid::w</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>velocity values of the grid cells. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/workspaces/aerospace-group-b-module-1/includes/<a class="el" href="grid_8hpp_source.html">grid.hpp</a></li>
+<li>/home/simon/repos/Aerospace-Group-B-Module-1/includes/<a class="el" href="grid_8hpp_source.html">grid.hpp</a></li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="structGrid.html">Grid</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
 </body>
 </html>

@@ -9,13 +9,22 @@ Incompressible Navier-\/\+Stokes solver.
 
 {\ttfamily \#include $<$core.\+hpp$>$}
 
+
+
+Collaboration diagram for Ico\+NS\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=295pt]{classIcoNS__coll__graph}
+\end{center}
+\end{figure}
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classIcoNS_a69413fb0952685ec804f17897a9cedd1}{Ico\+NS}} (const double lx, const double ly, const double lz, const unsigned int nx, const unsigned int ny, const unsigned int nz, const double dt, const double T, const double Re, const std\+::string \&input\+\_\+file, const std\+::string \&output\+\_\+file)
+\mbox{\hyperlink{classIcoNS_a69413fb0952685ec804f17897a9cedd1}{Ico\+NS}} (const double \mbox{\hyperlink{classIcoNS_a2aa9a1342c099032cf6101c00c6bd517}{lx}}, const double \mbox{\hyperlink{classIcoNS_a8b49ed3604f4ffdc1cf9d45193257bf5}{ly}}, const double \mbox{\hyperlink{classIcoNS_a55ad89aeb429eb993d07a9308e73c301}{lz}}, const unsigned int \mbox{\hyperlink{classIcoNS_a7284a552a478e3bcd5a37e8ff400bb6d}{nx}}, const unsigned int \mbox{\hyperlink{classIcoNS_aa04829d2d08bb249785dd166243cfec2}{ny}}, const unsigned int \mbox{\hyperlink{classIcoNS_adaafc928f917891520dd9cf21700c91c}{nz}}, const double \mbox{\hyperlink{classIcoNS_a460f24cbd21730bd413012d31d98ca6f}{dt}}, const double \mbox{\hyperlink{classIcoNS_a0b5d64c8960b0bad598bf21d89b2f8f2}{T}}, const double \mbox{\hyperlink{classIcoNS_a541a94150bfa2031d5dd6a77e07db725}{Re}}, const std\+::string \&\mbox{\hyperlink{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}{input\+\_\+file}}, const std\+::string \&\mbox{\hyperlink{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}{output\+\_\+file}})
 \begin{DoxyCompactList}\small\item\em Constructor for the \doxylink{classIcoNS}{Ico\+NS} solver. \end{DoxyCompactList}\item 
-\Hypertarget{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}\label{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6} 
-void {\bfseries preprocessing} ()
+void \mbox{\hyperlink{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}{preprocessing}} ()
 \begin{DoxyCompactList}\small\item\em Initialize the grid and simulation parameters. \end{DoxyCompactList}\item 
 std\+::vector$<$ double $>$ \mbox{\hyperlink{classIcoNS_aa9a1fd4b841130d6c9bfd221f9da105b}{functionF}} (const std\+::vector$<$ double $>$ \&u, const std\+::vector$<$ double $>$ \&v, const std\+::vector$<$ double $>$ \&w, size\+\_\+t i, size\+\_\+t j, size\+\_\+t k, double t)
 \begin{DoxyCompactList}\small\item\em Compute the source term F. \end{DoxyCompactList}\item 
@@ -25,13 +34,11 @@ void \mbox{\hyperlink{classIcoNS_afa62d773fd1999dbf6a91d2d988552cc}{apply\+\_\+b
 \begin{DoxyCompactList}\small\item\em Apply boundary conditions at given time. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3}{solve\+\_\+time\+\_\+step}} (double time)
 \begin{DoxyCompactList}\small\item\em Solve a single time step. \end{DoxyCompactList}\item 
-\Hypertarget{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}\label{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f} 
-void {\bfseries solve} ()
+void \mbox{\hyperlink{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}{solve}} ()
 \begin{DoxyCompactList}\small\item\em Solve the complete problem and save output. \end{DoxyCompactList}\item 
 std\+::vector$<$ double $>$ \mbox{\hyperlink{classIcoNS_a9b079c076b56a413d9b1d5e3279154a7}{functionF}} (const std\+::vector$<$ double $>$ \&u, const std\+::vector$<$ double $>$ \&v, const std\+::vector$<$ double $>$ \&w, size\+\_\+t i, size\+\_\+t j, size\+\_\+t k)
 \begin{DoxyCompactList}\small\item\em Alternative source term computation. \end{DoxyCompactList}\item 
-\Hypertarget{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}\label{classIcoNS_aa54746dc22be49d6a9310ace2cce46db} 
-void {\bfseries solve\+\_\+time\+\_\+step} ()
+void \mbox{\hyperlink{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}{solve\+\_\+time\+\_\+step}} ()
 \begin{DoxyCompactList}\small\item\em Alternative time step solver. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{classIcoNS_a5e7a820eb8ba38f7ecfbda52f89045ad}{error\+\_\+comp\+\_\+X}} (const double t)
 \begin{DoxyCompactList}\small\item\em Compute error in X component. \end{DoxyCompactList}\item 
@@ -41,9 +48,45 @@ double \mbox{\hyperlink{classIcoNS_a32aab26593597cae3970ca51626177d1}{error\+\_\
 \begin{DoxyCompactList}\small\item\em Compute error in Z component. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{classIcoNS_acabf1047b417942c8c8b334e7a01b278}{L2\+\_\+error}} (const double t)
 \begin{DoxyCompactList}\small\item\em Compute the L2 norm of the error. \end{DoxyCompactList}\item 
-\Hypertarget{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08}\label{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08} 
-void {\bfseries output} ()
+void \mbox{\hyperlink{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08}{output}} ()
 \begin{DoxyCompactList}\small\item\em Write results to output file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structGrid}{Grid}} \mbox{\hyperlink{classIcoNS_a8d7b030563b0ca94e8cb0494f3f28522}{grid}}
+\begin{DoxyCompactList}\small\item\em grid of the domain. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classIcoNS_a460f24cbd21730bd413012d31d98ca6f}{dt}}
+\begin{DoxyCompactList}\small\item\em time step. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classIcoNS_a0b5d64c8960b0bad598bf21d89b2f8f2}{T}}
+\begin{DoxyCompactList}\small\item\em final time. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classIcoNS_a541a94150bfa2031d5dd6a77e07db725}{Re}}
+\begin{DoxyCompactList}\small\item\em Reynolds number. \end{DoxyCompactList}\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_a2aa9a1342c099032cf6101c00c6bd517}{lx}}
+\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_a8b49ed3604f4ffdc1cf9d45193257bf5}{ly}}
+\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_a55ad89aeb429eb993d07a9308e73c301}{lz}}
+\begin{DoxyCompactList}\small\item\em lengths of edges of the domain. \end{DoxyCompactList}\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_a7284a552a478e3bcd5a37e8ff400bb6d}{nx}}
+\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_aa04829d2d08bb249785dd166243cfec2}{ny}}
+\item 
+const unsigned int \mbox{\hyperlink{classIcoNS_adaafc928f917891520dd9cf21700c91c}{nz}}
+\begin{DoxyCompactList}\small\item\em number of cells in the x,y,z directions. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classIcoNS_ae77509ca14092c35f1f80a91cbd4685b}{dx}}
+\item 
+const double \mbox{\hyperlink{classIcoNS_adbe9754a77696a09279742df95d9c6de}{dy}}
+\item 
+const double \mbox{\hyperlink{classIcoNS_a3b849adc42fb1afc7d1d732a0a34bda2}{dz}}
+\begin{DoxyCompactList}\small\item\em cell sizes in the x,y,z directions. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBoundary}{Boundary}} \mbox{\hyperlink{classIcoNS_a20128b80a96e41bcbc00a8d40009baca}{boundary}}
+\item 
+\mbox{\hyperlink{classExactSolution}{Exact\+Solution}} \mbox{\hyperlink{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237}{exact\+\_\+solution}}
+\begin{DoxyCompactList}\small\item\em exact solution. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}{input\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em input file. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}{output\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em output file. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -259,10 +302,50 @@ Compute the L2 norm of the error.
 \begin{DoxyReturn}{Returns}
 L2 norm value 
 \end{DoxyReturn}
+\Hypertarget{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08}\label{classIcoNS_aa1632c7cc22ff9b014977c45653b1e08} 
+\index{IcoNS@{IcoNS}!output@{output}}
+\index{output@{output}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{output()}{output()}}
+{\footnotesize\ttfamily void Ico\+NS\+::output (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Write results to output file. 
+
+\Hypertarget{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}\label{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6} 
+\index{IcoNS@{IcoNS}!preprocessing@{preprocessing}}
+\index{preprocessing@{preprocessing}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{preprocessing()}{preprocessing()}}
+{\footnotesize\ttfamily void Ico\+NS\+::preprocessing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialize the grid and simulation parameters. 
+
+\Hypertarget{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}\label{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f} 
+\index{IcoNS@{IcoNS}!solve@{solve}}
+\index{solve@{solve}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily void Ico\+NS\+::solve (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Solve the complete problem and save output. 
+
+\Hypertarget{classIcoNS_aa54746dc22be49d6a9310ace2cce46db}\label{classIcoNS_aa54746dc22be49d6a9310ace2cce46db} 
+\index{IcoNS@{IcoNS}!solve\_time\_step@{solve\_time\_step}}
+\index{solve\_time\_step@{solve\_time\_step}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{solve\_time\_step()}{solve\_time\_step()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Ico\+NS\+::solve\+\_\+time\+\_\+step (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Alternative time step solver. 
+
 \Hypertarget{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3}\label{classIcoNS_abeb7a6de5cb4a5124583f9c0127ea3d3} 
 \index{IcoNS@{IcoNS}!solve\_time\_step@{solve\_time\_step}}
 \index{solve\_time\_step@{solve\_time\_step}!IcoNS@{IcoNS}}
-\doxysubsubsection{\texorpdfstring{solve\_time\_step()}{solve\_time\_step()}}
+\doxysubsubsection{\texorpdfstring{solve\_time\_step()}{solve\_time\_step()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily void Ico\+NS\+::solve\+\_\+time\+\_\+step (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
 
 
@@ -276,7 +359,152 @@ Solve a single time step.
 \end{DoxyParams}
 
 
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classIcoNS_a20128b80a96e41bcbc00a8d40009baca}\label{classIcoNS_a20128b80a96e41bcbc00a8d40009baca} 
+\index{IcoNS@{IcoNS}!boundary@{boundary}}
+\index{boundary@{boundary}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{boundary}{boundary}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBoundary}{Boundary}} Ico\+NS\+::boundary\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a460f24cbd21730bd413012d31d98ca6f}\label{classIcoNS_a460f24cbd21730bd413012d31d98ca6f} 
+\index{IcoNS@{IcoNS}!dt@{dt}}
+\index{dt@{dt}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dt}{dt}}
+{\footnotesize\ttfamily const double Ico\+NS\+::dt\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+time step. 
+
+\Hypertarget{classIcoNS_ae77509ca14092c35f1f80a91cbd4685b}\label{classIcoNS_ae77509ca14092c35f1f80a91cbd4685b} 
+\index{IcoNS@{IcoNS}!dx@{dx}}
+\index{dx@{dx}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dx}{dx}}
+{\footnotesize\ttfamily const double Ico\+NS\+::dx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_adbe9754a77696a09279742df95d9c6de}\label{classIcoNS_adbe9754a77696a09279742df95d9c6de} 
+\index{IcoNS@{IcoNS}!dy@{dy}}
+\index{dy@{dy}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dy}{dy}}
+{\footnotesize\ttfamily const double Ico\+NS\+::dy\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a3b849adc42fb1afc7d1d732a0a34bda2}\label{classIcoNS_a3b849adc42fb1afc7d1d732a0a34bda2} 
+\index{IcoNS@{IcoNS}!dz@{dz}}
+\index{dz@{dz}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dz}{dz}}
+{\footnotesize\ttfamily const double Ico\+NS\+::dz\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+cell sizes in the x,y,z directions. 
+
+\Hypertarget{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237}\label{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237} 
+\index{IcoNS@{IcoNS}!exact\_solution@{exact\_solution}}
+\index{exact\_solution@{exact\_solution}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{exact\_solution}{exact\_solution}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classExactSolution}{Exact\+Solution}} Ico\+NS\+::exact\+\_\+solution\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+exact solution. 
+
+\Hypertarget{classIcoNS_a8d7b030563b0ca94e8cb0494f3f28522}\label{classIcoNS_a8d7b030563b0ca94e8cb0494f3f28522} 
+\index{IcoNS@{IcoNS}!grid@{grid}}
+\index{grid@{grid}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{grid}{grid}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structGrid}{Grid}} Ico\+NS\+::grid\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+grid of the domain. 
+
+\Hypertarget{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}\label{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704} 
+\index{IcoNS@{IcoNS}!input\_file@{input\_file}}
+\index{input\_file@{input\_file}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{input\_file}{input\_file}}
+{\footnotesize\ttfamily std\+::string Ico\+NS\+::input\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+input file. 
+
+\Hypertarget{classIcoNS_a2aa9a1342c099032cf6101c00c6bd517}\label{classIcoNS_a2aa9a1342c099032cf6101c00c6bd517} 
+\index{IcoNS@{IcoNS}!lx@{lx}}
+\index{lx@{lx}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{lx}{lx}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::lx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a8b49ed3604f4ffdc1cf9d45193257bf5}\label{classIcoNS_a8b49ed3604f4ffdc1cf9d45193257bf5} 
+\index{IcoNS@{IcoNS}!ly@{ly}}
+\index{ly@{ly}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{ly}{ly}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::ly\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a55ad89aeb429eb993d07a9308e73c301}\label{classIcoNS_a55ad89aeb429eb993d07a9308e73c301} 
+\index{IcoNS@{IcoNS}!lz@{lz}}
+\index{lz@{lz}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{lz}{lz}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::lz\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+lengths of edges of the domain. 
+
+\Hypertarget{classIcoNS_a7284a552a478e3bcd5a37e8ff400bb6d}\label{classIcoNS_a7284a552a478e3bcd5a37e8ff400bb6d} 
+\index{IcoNS@{IcoNS}!nx@{nx}}
+\index{nx@{nx}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{nx}{nx}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::nx\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_aa04829d2d08bb249785dd166243cfec2}\label{classIcoNS_aa04829d2d08bb249785dd166243cfec2} 
+\index{IcoNS@{IcoNS}!ny@{ny}}
+\index{ny@{ny}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{ny}{ny}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::ny\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_adaafc928f917891520dd9cf21700c91c}\label{classIcoNS_adaafc928f917891520dd9cf21700c91c} 
+\index{IcoNS@{IcoNS}!nz@{nz}}
+\index{nz@{nz}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{nz}{nz}}
+{\footnotesize\ttfamily const unsigned int Ico\+NS\+::nz\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+number of cells in the x,y,z directions. 
+
+\Hypertarget{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}\label{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0} 
+\index{IcoNS@{IcoNS}!output\_file@{output\_file}}
+\index{output\_file@{output\_file}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{output\_file}{output\_file}}
+{\footnotesize\ttfamily std\+::string Ico\+NS\+::output\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+output file. 
+
+\Hypertarget{classIcoNS_a541a94150bfa2031d5dd6a77e07db725}\label{classIcoNS_a541a94150bfa2031d5dd6a77e07db725} 
+\index{IcoNS@{IcoNS}!Re@{Re}}
+\index{Re@{Re}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Re}{Re}}
+{\footnotesize\ttfamily const double Ico\+NS\+::\+Re\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Reynolds number. 
+
+\Hypertarget{classIcoNS_a0b5d64c8960b0bad598bf21d89b2f8f2}\label{classIcoNS_a0b5d64c8960b0bad598bf21d89b2f8f2} 
+\index{IcoNS@{IcoNS}!T@{T}}
+\index{T@{T}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{T}{T}}
+{\footnotesize\ttfamily const double Ico\+NS\+::T\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+final time. 
+
+
+
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{core_8hpp}{core.\+hpp}}\item 
-/workspaces/aerospace-\/group-\/b-\/module-\/1/src/core.\+cpp\end{DoxyCompactItemize}
+/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/includes/\mbox{\hyperlink{core_8hpp}{core.\+hpp}}\item 
+/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/src/\mbox{\hyperlink{core_8cpp}{core.\+cpp}}\end{DoxyCompactItemize}

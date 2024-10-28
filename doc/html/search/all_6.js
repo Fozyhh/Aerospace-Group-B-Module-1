@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['func_0',['func',['../classDirichlet.html#a3f1875d0b8a1c4f2167679a68c130179',1,'Dirichlet']]],
-  ['functionf_1',['functionf',['../classIcoNS.html#aa9a1fd4b841130d6c9bfd221f9da105b',1,'IcoNS::functionF(const std::vector&lt; double &gt; &amp;u, const std::vector&lt; double &gt; &amp;v, const std::vector&lt; double &gt; &amp;w, size_t i, size_t j, size_t k, double t)'],['../classIcoNS.html#a9b079c076b56a413d9b1d5e3279154a7',1,'IcoNS::functionF(const std::vector&lt; double &gt; &amp;u, const std::vector&lt; double &gt; &amp;v, const std::vector&lt; double &gt; &amp;w, size_t i, size_t j, size_t k)']]],
-  ['functiong_2',['functionG',['../classIcoNS.html#af79f894b2b6dd5d6b738b047d0a18a09',1,'IcoNS']]],
-  ['functionzero_3',['FunctionZero',['../classFunctionZero.html',1,'']]]
+  ['error_0',['error',['../namespacevizualisation.html#a3054298ef56d6630bc87909961abdb4c',1,'vizualisation']]],
+  ['error_20plot_20python_20script_1',['Error plot python script',['../md__2home_2simon_2repos_2Aerospace-Group-B-Module-1_2README.html#autotoc_md7',1,'']]],
+  ['error_5fcomp_5fx_2',['error_comp_X',['../classIcoNS.html#a5e7a820eb8ba38f7ecfbda52f89045ad',1,'IcoNS']]],
+  ['error_5fcomp_5fy_3',['error_comp_Y',['../classIcoNS.html#ad4cafa59815e757eb782a871a1d039ad',1,'IcoNS']]],
+  ['error_5fcomp_5fz_4',['error_comp_Z',['../classIcoNS.html#a32aab26593597cae3970ca51626177d1',1,'IcoNS']]],
+  ['exact_5fsolution_5',['exact_solution',['../classIcoNS.html#ab5c0e706a33b6b9f6e2dc9e78a953237',1,'IcoNS']]],
+  ['exactsolution_6',['ExactSolution',['../classExactSolution.html',1,'']]]
 ];

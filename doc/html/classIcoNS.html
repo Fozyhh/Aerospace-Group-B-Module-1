@@ -9,10 +9,14 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
-<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -46,6 +50,23 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classIcoNS.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -67,10 +88,10 @@ $(function() {
 </div>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classIcoNS-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">IcoNS Class Reference</div></div>
 </div><!--header-->
@@ -80,15 +101,29 @@ $(function() {
  <a href="classIcoNS.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="core_8hpp_source.html">core.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for IcoNS:</div>
+<div class="dyncontent">
+<div class="center"><img src="classIcoNS__coll__graph.png" border="0" usemap="#aIcoNS_coll__map" alt="Collaboration graph"/></div>
+<map name="aIcoNS_coll__map" id="aIcoNS_coll__map">
+<area shape="rect" title="Incompressible Navier&#45;Stokes solver." alt="" coords="75,181,134,207"/>
+<area shape="rect" href="structGrid.html" title="Represents a 3D grid for fluid simulation." alt="" coords="5,5,55,31"/>
+<area shape="poly" title=" " alt="" coords="24,44,17,80,18,99,23,118,35,137,51,154,85,179,82,183,47,158,31,140,18,120,13,100,12,80,19,43"/>
+<area shape="rect" href="classBoundary.html" title="Handles boundary conditions for the computational domain." alt="" coords="63,93,147,119"/>
+<area shape="poly" title=" " alt="" coords="51,39,96,91,92,95,47,43"/>
+<area shape="poly" title=" " alt="" coords="107,133,107,181,102,181,102,133"/>
+<area shape="rect" href="classExactSolution.html" title="Provides analytical solutions for the problem." alt="" coords="171,93,281,119"/>
+<area shape="poly" title=" " alt="" coords="209,131,177,160,134,184,131,179,174,155,205,127"/>
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a69413fb0952685ec804f17897a9cedd1" id="r_a69413fb0952685ec804f17897a9cedd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a69413fb0952685ec804f17897a9cedd1">IcoNS</a> (const double lx, const double ly, const double lz, const unsigned int nx, const unsigned int ny, const unsigned int nz, const double dt, const double T, const double Re, const std::string &amp;input_file, const std::string &amp;output_file)</td></tr>
+<tr class="memitem:a69413fb0952685ec804f17897a9cedd1" id="r_a69413fb0952685ec804f17897a9cedd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a69413fb0952685ec804f17897a9cedd1">IcoNS</a> (const double <a class="el" href="classIcoNS.html#a2aa9a1342c099032cf6101c00c6bd517">lx</a>, const double <a class="el" href="classIcoNS.html#a8b49ed3604f4ffdc1cf9d45193257bf5">ly</a>, const double <a class="el" href="classIcoNS.html#a55ad89aeb429eb993d07a9308e73c301">lz</a>, const unsigned int <a class="el" href="classIcoNS.html#a7284a552a478e3bcd5a37e8ff400bb6d">nx</a>, const unsigned int <a class="el" href="classIcoNS.html#aa04829d2d08bb249785dd166243cfec2">ny</a>, const unsigned int <a class="el" href="classIcoNS.html#adaafc928f917891520dd9cf21700c91c">nz</a>, const double <a class="el" href="classIcoNS.html#a460f24cbd21730bd413012d31d98ca6f">dt</a>, const double <a class="el" href="classIcoNS.html#a0b5d64c8960b0bad598bf21d89b2f8f2">T</a>, const double <a class="el" href="classIcoNS.html#a541a94150bfa2031d5dd6a77e07db725">Re</a>, const std::string &amp;<a class="el" href="classIcoNS.html#a4376d65c607ccaf4a3308ecd8be6c704">input_file</a>, const std::string &amp;<a class="el" href="classIcoNS.html#ac41d20384a133a9a6bd7eb1bf9cee3c0">output_file</a>)</td></tr>
 <tr class="memdesc:a69413fb0952685ec804f17897a9cedd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="classIcoNS.html" title="Incompressible Navier-Stokes solver.">IcoNS</a> solver.  <br /></td></tr>
 <tr class="separator:a69413fb0952685ec804f17897a9cedd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a205000492d7d4e3e4a84fd5e456e75e6" id="r_a205000492d7d4e3e4a84fd5e456e75e6"><td class="memItemLeft" align="right" valign="top"><a id="a205000492d7d4e3e4a84fd5e456e75e6" name="a205000492d7d4e3e4a84fd5e456e75e6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>preprocessing</b> ()</td></tr>
-<tr class="memdesc:a205000492d7d4e3e4a84fd5e456e75e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the grid and simulation parameters. <br /></td></tr>
+<tr class="memitem:a205000492d7d4e3e4a84fd5e456e75e6" id="r_a205000492d7d4e3e4a84fd5e456e75e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a205000492d7d4e3e4a84fd5e456e75e6">preprocessing</a> ()</td></tr>
+<tr class="memdesc:a205000492d7d4e3e4a84fd5e456e75e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the grid and simulation parameters.  <br /></td></tr>
 <tr class="separator:a205000492d7d4e3e4a84fd5e456e75e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9a1fd4b841130d6c9bfd221f9da105b" id="r_aa9a1fd4b841130d6c9bfd221f9da105b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#aa9a1fd4b841130d6c9bfd221f9da105b">functionF</a> (const std::vector&lt; double &gt; &amp;u, const std::vector&lt; double &gt; &amp;v, const std::vector&lt; double &gt; &amp;w, size_t i, size_t j, size_t k, double t)</td></tr>
 <tr class="memdesc:aa9a1fd4b841130d6c9bfd221f9da105b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the source term F.  <br /></td></tr>
@@ -102,16 +137,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>preprocessing</b> ()<
 <tr class="memitem:abeb7a6de5cb4a5124583f9c0127ea3d3" id="r_abeb7a6de5cb4a5124583f9c0127ea3d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#abeb7a6de5cb4a5124583f9c0127ea3d3">solve_time_step</a> (double time)</td></tr>
 <tr class="memdesc:abeb7a6de5cb4a5124583f9c0127ea3d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve a single time step.  <br /></td></tr>
 <tr class="separator:abeb7a6de5cb4a5124583f9c0127ea3d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae84085f1f561f08a5ca4e93e1934192f" id="r_ae84085f1f561f08a5ca4e93e1934192f"><td class="memItemLeft" align="right" valign="top"><a id="ae84085f1f561f08a5ca4e93e1934192f" name="ae84085f1f561f08a5ca4e93e1934192f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>solve</b> ()</td></tr>
-<tr class="memdesc:ae84085f1f561f08a5ca4e93e1934192f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the complete problem and save output. <br /></td></tr>
+<tr class="memitem:ae84085f1f561f08a5ca4e93e1934192f" id="r_ae84085f1f561f08a5ca4e93e1934192f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#ae84085f1f561f08a5ca4e93e1934192f">solve</a> ()</td></tr>
+<tr class="memdesc:ae84085f1f561f08a5ca4e93e1934192f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the complete problem and save output.  <br /></td></tr>
 <tr class="separator:ae84085f1f561f08a5ca4e93e1934192f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b079c076b56a413d9b1d5e3279154a7" id="r_a9b079c076b56a413d9b1d5e3279154a7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a9b079c076b56a413d9b1d5e3279154a7">functionF</a> (const std::vector&lt; double &gt; &amp;u, const std::vector&lt; double &gt; &amp;v, const std::vector&lt; double &gt; &amp;w, size_t i, size_t j, size_t k)</td></tr>
 <tr class="memdesc:a9b079c076b56a413d9b1d5e3279154a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alternative source term computation.  <br /></td></tr>
 <tr class="separator:a9b079c076b56a413d9b1d5e3279154a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa54746dc22be49d6a9310ace2cce46db" id="r_aa54746dc22be49d6a9310ace2cce46db"><td class="memItemLeft" align="right" valign="top"><a id="aa54746dc22be49d6a9310ace2cce46db" name="aa54746dc22be49d6a9310ace2cce46db"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>solve_time_step</b> ()</td></tr>
-<tr class="memdesc:aa54746dc22be49d6a9310ace2cce46db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alternative time step solver. <br /></td></tr>
+<tr class="memitem:aa54746dc22be49d6a9310ace2cce46db" id="r_aa54746dc22be49d6a9310ace2cce46db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#aa54746dc22be49d6a9310ace2cce46db">solve_time_step</a> ()</td></tr>
+<tr class="memdesc:aa54746dc22be49d6a9310ace2cce46db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alternative time step solver.  <br /></td></tr>
 <tr class="separator:aa54746dc22be49d6a9310ace2cce46db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e7a820eb8ba38f7ecfbda52f89045ad" id="r_a5e7a820eb8ba38f7ecfbda52f89045ad"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a5e7a820eb8ba38f7ecfbda52f89045ad">error_comp_X</a> (const double t)</td></tr>
 <tr class="memdesc:a5e7a820eb8ba38f7ecfbda52f89045ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute error in X component.  <br /></td></tr>
@@ -125,10 +158,56 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>solve_time_step</b> (
 <tr class="memitem:acabf1047b417942c8c8b334e7a01b278" id="r_acabf1047b417942c8c8b334e7a01b278"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#acabf1047b417942c8c8b334e7a01b278">L2_error</a> (const double t)</td></tr>
 <tr class="memdesc:acabf1047b417942c8c8b334e7a01b278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the L2 norm of the error.  <br /></td></tr>
 <tr class="separator:acabf1047b417942c8c8b334e7a01b278"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1632c7cc22ff9b014977c45653b1e08" id="r_aa1632c7cc22ff9b014977c45653b1e08"><td class="memItemLeft" align="right" valign="top"><a id="aa1632c7cc22ff9b014977c45653b1e08" name="aa1632c7cc22ff9b014977c45653b1e08"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>output</b> ()</td></tr>
-<tr class="memdesc:aa1632c7cc22ff9b014977c45653b1e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write results to output file. <br /></td></tr>
+<tr class="memitem:aa1632c7cc22ff9b014977c45653b1e08" id="r_aa1632c7cc22ff9b014977c45653b1e08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#aa1632c7cc22ff9b014977c45653b1e08">output</a> ()</td></tr>
+<tr class="memdesc:aa1632c7cc22ff9b014977c45653b1e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write results to output file.  <br /></td></tr>
 <tr class="separator:aa1632c7cc22ff9b014977c45653b1e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a8d7b030563b0ca94e8cb0494f3f28522" id="r_a8d7b030563b0ca94e8cb0494f3f28522"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGrid.html">Grid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a8d7b030563b0ca94e8cb0494f3f28522">grid</a></td></tr>
+<tr class="memdesc:a8d7b030563b0ca94e8cb0494f3f28522"><td class="mdescLeft">&#160;</td><td class="mdescRight">grid of the domain.  <br /></td></tr>
+<tr class="separator:a8d7b030563b0ca94e8cb0494f3f28522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a460f24cbd21730bd413012d31d98ca6f" id="r_a460f24cbd21730bd413012d31d98ca6f"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a460f24cbd21730bd413012d31d98ca6f">dt</a></td></tr>
+<tr class="memdesc:a460f24cbd21730bd413012d31d98ca6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">time step.  <br /></td></tr>
+<tr class="separator:a460f24cbd21730bd413012d31d98ca6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5d64c8960b0bad598bf21d89b2f8f2" id="r_a0b5d64c8960b0bad598bf21d89b2f8f2"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a0b5d64c8960b0bad598bf21d89b2f8f2">T</a></td></tr>
+<tr class="memdesc:a0b5d64c8960b0bad598bf21d89b2f8f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">final time.  <br /></td></tr>
+<tr class="separator:a0b5d64c8960b0bad598bf21d89b2f8f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a541a94150bfa2031d5dd6a77e07db725" id="r_a541a94150bfa2031d5dd6a77e07db725"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a541a94150bfa2031d5dd6a77e07db725">Re</a></td></tr>
+<tr class="memdesc:a541a94150bfa2031d5dd6a77e07db725"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reynolds number.  <br /></td></tr>
+<tr class="separator:a541a94150bfa2031d5dd6a77e07db725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa9a1342c099032cf6101c00c6bd517" id="r_a2aa9a1342c099032cf6101c00c6bd517"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a2aa9a1342c099032cf6101c00c6bd517">lx</a></td></tr>
+<tr class="separator:a2aa9a1342c099032cf6101c00c6bd517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b49ed3604f4ffdc1cf9d45193257bf5" id="r_a8b49ed3604f4ffdc1cf9d45193257bf5"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a8b49ed3604f4ffdc1cf9d45193257bf5">ly</a></td></tr>
+<tr class="separator:a8b49ed3604f4ffdc1cf9d45193257bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55ad89aeb429eb993d07a9308e73c301" id="r_a55ad89aeb429eb993d07a9308e73c301"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a55ad89aeb429eb993d07a9308e73c301">lz</a></td></tr>
+<tr class="memdesc:a55ad89aeb429eb993d07a9308e73c301"><td class="mdescLeft">&#160;</td><td class="mdescRight">lengths of edges of the domain.  <br /></td></tr>
+<tr class="separator:a55ad89aeb429eb993d07a9308e73c301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7284a552a478e3bcd5a37e8ff400bb6d" id="r_a7284a552a478e3bcd5a37e8ff400bb6d"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a7284a552a478e3bcd5a37e8ff400bb6d">nx</a></td></tr>
+<tr class="separator:a7284a552a478e3bcd5a37e8ff400bb6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa04829d2d08bb249785dd166243cfec2" id="r_aa04829d2d08bb249785dd166243cfec2"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#aa04829d2d08bb249785dd166243cfec2">ny</a></td></tr>
+<tr class="separator:aa04829d2d08bb249785dd166243cfec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaafc928f917891520dd9cf21700c91c" id="r_adaafc928f917891520dd9cf21700c91c"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#adaafc928f917891520dd9cf21700c91c">nz</a></td></tr>
+<tr class="memdesc:adaafc928f917891520dd9cf21700c91c"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of cells in the x,y,z directions.  <br /></td></tr>
+<tr class="separator:adaafc928f917891520dd9cf21700c91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae77509ca14092c35f1f80a91cbd4685b" id="r_ae77509ca14092c35f1f80a91cbd4685b"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#ae77509ca14092c35f1f80a91cbd4685b">dx</a></td></tr>
+<tr class="separator:ae77509ca14092c35f1f80a91cbd4685b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbe9754a77696a09279742df95d9c6de" id="r_adbe9754a77696a09279742df95d9c6de"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#adbe9754a77696a09279742df95d9c6de">dy</a></td></tr>
+<tr class="separator:adbe9754a77696a09279742df95d9c6de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b849adc42fb1afc7d1d732a0a34bda2" id="r_a3b849adc42fb1afc7d1d732a0a34bda2"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a3b849adc42fb1afc7d1d732a0a34bda2">dz</a></td></tr>
+<tr class="memdesc:a3b849adc42fb1afc7d1d732a0a34bda2"><td class="mdescLeft">&#160;</td><td class="mdescRight">cell sizes in the x,y,z directions.  <br /></td></tr>
+<tr class="separator:a3b849adc42fb1afc7d1d732a0a34bda2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20128b80a96e41bcbc00a8d40009baca" id="r_a20128b80a96e41bcbc00a8d40009baca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBoundary.html">Boundary</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a20128b80a96e41bcbc00a8d40009baca">boundary</a></td></tr>
+<tr class="separator:a20128b80a96e41bcbc00a8d40009baca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5c0e706a33b6b9f6e2dc9e78a953237" id="r_ab5c0e706a33b6b9f6e2dc9e78a953237"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classExactSolution.html">ExactSolution</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#ab5c0e706a33b6b9f6e2dc9e78a953237">exact_solution</a></td></tr>
+<tr class="memdesc:ab5c0e706a33b6b9f6e2dc9e78a953237"><td class="mdescLeft">&#160;</td><td class="mdescRight">exact solution.  <br /></td></tr>
+<tr class="separator:ab5c0e706a33b6b9f6e2dc9e78a953237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4376d65c607ccaf4a3308ecd8be6c704" id="r_a4376d65c607ccaf4a3308ecd8be6c704"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#a4376d65c607ccaf4a3308ecd8be6c704">input_file</a></td></tr>
+<tr class="memdesc:a4376d65c607ccaf4a3308ecd8be6c704"><td class="mdescLeft">&#160;</td><td class="mdescRight">input file.  <br /></td></tr>
+<tr class="separator:a4376d65c607ccaf4a3308ecd8be6c704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac41d20384a133a9a6bd7eb1bf9cee3c0" id="r_ac41d20384a133a9a6bd7eb1bf9cee3c0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIcoNS.html#ac41d20384a133a9a6bd7eb1bf9cee3c0">output_file</a></td></tr>
+<tr class="memdesc:ac41d20384a133a9a6bd7eb1bf9cee3c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">output file.  <br /></td></tr>
+<tr class="separator:ac41d20384a133a9a6bd7eb1bf9cee3c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Incompressible Navier-Stokes solver. </p>
@@ -568,8 +647,84 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>output</b> ()</td></t
 
 </div>
 </div>
+<a id="aa1632c7cc22ff9b014977c45653b1e08" name="aa1632c7cc22ff9b014977c45653b1e08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1632c7cc22ff9b014977c45653b1e08">&#9670;&#160;</a></span>output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IcoNS::output </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write results to output file. </p>
+
+</div>
+</div>
+<a id="a205000492d7d4e3e4a84fd5e456e75e6" name="a205000492d7d4e3e4a84fd5e456e75e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205000492d7d4e3e4a84fd5e456e75e6">&#9670;&#160;</a></span>preprocessing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IcoNS::preprocessing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize the grid and simulation parameters. </p>
+
+</div>
+</div>
+<a id="ae84085f1f561f08a5ca4e93e1934192f" name="ae84085f1f561f08a5ca4e93e1934192f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84085f1f561f08a5ca4e93e1934192f">&#9670;&#160;</a></span>solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IcoNS::solve </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve the complete problem and save output. </p>
+
+</div>
+</div>
+<a id="aa54746dc22be49d6a9310ace2cce46db" name="aa54746dc22be49d6a9310ace2cce46db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54746dc22be49d6a9310ace2cce46db">&#9670;&#160;</a></span>solve_time_step() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IcoNS::solve_time_step </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Alternative time step solver. </p>
+
+</div>
+</div>
 <a id="abeb7a6de5cb4a5124583f9c0127ea3d3" name="abeb7a6de5cb4a5124583f9c0127ea3d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abeb7a6de5cb4a5124583f9c0127ea3d3">&#9670;&#160;</a></span>solve_time_step()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb7a6de5cb4a5124583f9c0127ea3d3">&#9670;&#160;</a></span>solve_time_step() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -594,14 +749,413 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>output</b> ()</td></t
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a20128b80a96e41bcbc00a8d40009baca" name="a20128b80a96e41bcbc00a8d40009baca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20128b80a96e41bcbc00a8d40009baca">&#9670;&#160;</a></span>boundary</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBoundary.html">Boundary</a> IcoNS::boundary</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a460f24cbd21730bd413012d31d98ca6f" name="a460f24cbd21730bd413012d31d98ca6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a460f24cbd21730bd413012d31d98ca6f">&#9670;&#160;</a></span>dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::dt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>time step. </p>
+
+</div>
+</div>
+<a id="ae77509ca14092c35f1f80a91cbd4685b" name="ae77509ca14092c35f1f80a91cbd4685b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae77509ca14092c35f1f80a91cbd4685b">&#9670;&#160;</a></span>dx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::dx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adbe9754a77696a09279742df95d9c6de" name="adbe9754a77696a09279742df95d9c6de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbe9754a77696a09279742df95d9c6de">&#9670;&#160;</a></span>dy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::dy</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3b849adc42fb1afc7d1d732a0a34bda2" name="a3b849adc42fb1afc7d1d732a0a34bda2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b849adc42fb1afc7d1d732a0a34bda2">&#9670;&#160;</a></span>dz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::dz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>cell sizes in the x,y,z directions. </p>
+
+</div>
+</div>
+<a id="ab5c0e706a33b6b9f6e2dc9e78a953237" name="ab5c0e706a33b6b9f6e2dc9e78a953237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5c0e706a33b6b9f6e2dc9e78a953237">&#9670;&#160;</a></span>exact_solution</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classExactSolution.html">ExactSolution</a> IcoNS::exact_solution</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>exact solution. </p>
+
+</div>
+</div>
+<a id="a8d7b030563b0ca94e8cb0494f3f28522" name="a8d7b030563b0ca94e8cb0494f3f28522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d7b030563b0ca94e8cb0494f3f28522">&#9670;&#160;</a></span>grid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGrid.html">Grid</a> IcoNS::grid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>grid of the domain. </p>
+
+</div>
+</div>
+<a id="a4376d65c607ccaf4a3308ecd8be6c704" name="a4376d65c607ccaf4a3308ecd8be6c704"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4376d65c607ccaf4a3308ecd8be6c704">&#9670;&#160;</a></span>input_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string IcoNS::input_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>input file. </p>
+
+</div>
+</div>
+<a id="a2aa9a1342c099032cf6101c00c6bd517" name="a2aa9a1342c099032cf6101c00c6bd517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa9a1342c099032cf6101c00c6bd517">&#9670;&#160;</a></span>lx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::lx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b49ed3604f4ffdc1cf9d45193257bf5" name="a8b49ed3604f4ffdc1cf9d45193257bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b49ed3604f4ffdc1cf9d45193257bf5">&#9670;&#160;</a></span>ly</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::ly</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55ad89aeb429eb993d07a9308e73c301" name="a55ad89aeb429eb993d07a9308e73c301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55ad89aeb429eb993d07a9308e73c301">&#9670;&#160;</a></span>lz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::lz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>lengths of edges of the domain. </p>
+
+</div>
+</div>
+<a id="a7284a552a478e3bcd5a37e8ff400bb6d" name="a7284a552a478e3bcd5a37e8ff400bb6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7284a552a478e3bcd5a37e8ff400bb6d">&#9670;&#160;</a></span>nx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::nx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa04829d2d08bb249785dd166243cfec2" name="aa04829d2d08bb249785dd166243cfec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa04829d2d08bb249785dd166243cfec2">&#9670;&#160;</a></span>ny</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::ny</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adaafc928f917891520dd9cf21700c91c" name="adaafc928f917891520dd9cf21700c91c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaafc928f917891520dd9cf21700c91c">&#9670;&#160;</a></span>nz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int IcoNS::nz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>number of cells in the x,y,z directions. </p>
+
+</div>
+</div>
+<a id="ac41d20384a133a9a6bd7eb1bf9cee3c0" name="ac41d20384a133a9a6bd7eb1bf9cee3c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac41d20384a133a9a6bd7eb1bf9cee3c0">&#9670;&#160;</a></span>output_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string IcoNS::output_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>output file. </p>
+
+</div>
+</div>
+<a id="a541a94150bfa2031d5dd6a77e07db725" name="a541a94150bfa2031d5dd6a77e07db725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a541a94150bfa2031d5dd6a77e07db725">&#9670;&#160;</a></span>Re</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::Re</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reynolds number. </p>
+
+</div>
+</div>
+<a id="a0b5d64c8960b0bad598bf21d89b2f8f2" name="a0b5d64c8960b0bad598bf21d89b2f8f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5d64c8960b0bad598bf21d89b2f8f2">&#9670;&#160;</a></span>T</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double IcoNS::T</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>final time. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/workspaces/aerospace-group-b-module-1/includes/<a class="el" href="core_8hpp_source.html">core.hpp</a></li>
-<li>/workspaces/aerospace-group-b-module-1/src/<b>core.cpp</b></li>
+<li>/home/simon/repos/Aerospace-Group-B-Module-1/includes/<a class="el" href="core_8hpp_source.html">core.hpp</a></li>
+<li>/home/simon/repos/Aerospace-Group-B-Module-1/src/<a class="el" href="core_8cpp.html">core.cpp</a></li>
 </ul>
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classIcoNS.html">IcoNS</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
 </body>
 </html>

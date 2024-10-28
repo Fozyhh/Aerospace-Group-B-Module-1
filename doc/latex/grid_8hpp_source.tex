@@ -1,5 +1,5 @@
 \doxysection{grid.\+hpp}
-\hypertarget{grid_8hpp_source}{}\label{grid_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp}}
+\hypertarget{grid_8hpp_source}{}\label{grid_8hpp_source}\index{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/includes/grid.hpp@{/home/simon/repos/Aerospace-\/Group-\/B-\/Module-\/1/includes/grid.hpp}}
 \mbox{\hyperlink{grid_8hpp}{Go to the documentation of this file.}}
 \begin{DoxyCode}{0}
 \DoxyCodeLine{00001\ }
@@ -11,16 +11,16 @@
 \DoxyCodeLine{00012\ }
 \DoxyCodeLine{00019\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structGrid}{Grid}}}
 \DoxyCodeLine{00020\ \{}
-\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ nx,\ ny,\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}};\ \ \ \ \ }
-\DoxyCodeLine{00022\ \ \ \ \ std::vector<double>\ u,\ v,\ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}};\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}},\ \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}},\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}};\ \ \ \ \ }
+\DoxyCodeLine{00022\ \ \ \ \ std::vector<double>\ \mbox{\hyperlink{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}{u}},\ \mbox{\hyperlink{structGrid_aebd3f867b33a55cba599dcc3efc159cf}{v}},\ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}};\ }
 \DoxyCodeLine{00023\ \ \ \ \ std::vector<double>\ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}};\ \ \ \ \ \ \ }
 \DoxyCodeLine{00024\ }
-\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}}(\textcolor{keywordtype}{int}\ nx,\ \textcolor{keywordtype}{int}\ ny,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})\ :\ nx(nx),\ ny(ny),\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}(\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})}
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}}(\textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}},\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})\ :\ \mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}(\mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}),\ \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}(\mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}),\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}(\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})}
 \DoxyCodeLine{00032\ \ \ \ \ \{}
-\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ u.resize(nx\ *\ (ny+1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
-\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ v.resize((nx+1)\ *\ ny\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
-\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}}.resize((nx+1)\ *\ (ny+1)\ *\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}});}
-\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}}.resize((nx\ +\ 1)\ *\ (ny\ +\ 1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}\ +\ 1));}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}{u}}.resize(\mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}\ *\ (\mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}+1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_aebd3f867b33a55cba599dcc3efc159cf}{v}}.resize((\mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}+1)\ *\ \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}+1));}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}}.resize((\mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}+1)\ *\ (\mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}+1)\ *\ \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}});}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}}.resize((\mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}\ +\ 1)\ *\ (\mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}\ +\ 1)\ *\ (\mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}\ +\ 1));}
 \DoxyCodeLine{00037\ \ \ \ \ \}}
 \DoxyCodeLine{00038\ \};}
 \DoxyCodeLine{00039\ }

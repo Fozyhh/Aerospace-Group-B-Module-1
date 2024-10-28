@@ -12,31 +12,24 @@ Represents a 3D grid for fluid simulation.
 \doxysubsubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}} (int nx, int ny, int \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})
+\mbox{\hyperlink{structGrid_a187d388703632c05bd08a8c955433b86}{Grid}} (int \mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}, int \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}, int \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}})
 \begin{DoxyCompactList}\small\item\em Constructs a grid with specified dimensions. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\Hypertarget{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}\label{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44} 
-unsigned int {\bfseries nx}
+unsigned int \mbox{\hyperlink{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}{nx}}
 \item 
-\Hypertarget{structGrid_adab54e0dbc5804b663b230b95f5fed1b}\label{structGrid_adab54e0dbc5804b663b230b95f5fed1b} 
-unsigned int {\bfseries ny}
+unsigned int \mbox{\hyperlink{structGrid_adab54e0dbc5804b663b230b95f5fed1b}{ny}}
 \item 
-\Hypertarget{structGrid_a47f700be68729d6339e3529f308ebf21}\label{structGrid_a47f700be68729d6339e3529f308ebf21} 
-unsigned int {\bfseries nz}
+unsigned int \mbox{\hyperlink{structGrid_a47f700be68729d6339e3529f308ebf21}{nz}}
 \begin{DoxyCompactList}\small\item\em number of cells in the x,y,z directions. \end{DoxyCompactList}\item 
-\Hypertarget{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}\label{structGrid_a87920f94f9478c10606e9c6eb6bf35c8} 
-std\+::vector$<$ double $>$ {\bfseries u}
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}{u}}
 \item 
-\Hypertarget{structGrid_aebd3f867b33a55cba599dcc3efc159cf}\label{structGrid_aebd3f867b33a55cba599dcc3efc159cf} 
-std\+::vector$<$ double $>$ {\bfseries v}
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structGrid_aebd3f867b33a55cba599dcc3efc159cf}{v}}
 \item 
-\Hypertarget{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}\label{structGrid_a768c5bc618d2c0b78a5661fbb4acb180} 
-std\+::vector$<$ double $>$ {\bfseries w}
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}{w}}
 \begin{DoxyCompactList}\small\item\em velocity values of the grid cells. \end{DoxyCompactList}\item 
-\Hypertarget{structGrid_aeafc8ae143fb9328606cb56fcd60924e}\label{structGrid_aeafc8ae143fb9328606cb56fcd60924e} 
-std\+::vector$<$ double $>$ {\bfseries p}
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structGrid_aeafc8ae143fb9328606cb56fcd60924e}{p}}
 \begin{DoxyCompactList}\small\item\em pressure values of the grid cells. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -67,6 +60,63 @@ Constructs a grid with specified dimensions.
 \end{DoxyParams}
 
 
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44}\label{structGrid_a5361416ad9b5a77e69e0fd43ac9d0a44} 
+\index{Grid@{Grid}!nx@{nx}}
+\index{nx@{nx}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{nx}{nx}}
+{\footnotesize\ttfamily unsigned int Grid\+::nx}
+
+\Hypertarget{structGrid_adab54e0dbc5804b663b230b95f5fed1b}\label{structGrid_adab54e0dbc5804b663b230b95f5fed1b} 
+\index{Grid@{Grid}!ny@{ny}}
+\index{ny@{ny}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{ny}{ny}}
+{\footnotesize\ttfamily unsigned int Grid\+::ny}
+
+\Hypertarget{structGrid_a47f700be68729d6339e3529f308ebf21}\label{structGrid_a47f700be68729d6339e3529f308ebf21} 
+\index{Grid@{Grid}!nz@{nz}}
+\index{nz@{nz}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{nz}{nz}}
+{\footnotesize\ttfamily unsigned int Grid\+::nz}
+
+
+
+number of cells in the x,y,z directions. 
+
+\Hypertarget{structGrid_aeafc8ae143fb9328606cb56fcd60924e}\label{structGrid_aeafc8ae143fb9328606cb56fcd60924e} 
+\index{Grid@{Grid}!p@{p}}
+\index{p@{p}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{p}{p}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Grid\+::p}
+
+
+
+pressure values of the grid cells. 
+
+\Hypertarget{structGrid_a87920f94f9478c10606e9c6eb6bf35c8}\label{structGrid_a87920f94f9478c10606e9c6eb6bf35c8} 
+\index{Grid@{Grid}!u@{u}}
+\index{u@{u}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{u}{u}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Grid\+::u}
+
+\Hypertarget{structGrid_aebd3f867b33a55cba599dcc3efc159cf}\label{structGrid_aebd3f867b33a55cba599dcc3efc159cf} 
+\index{Grid@{Grid}!v@{v}}
+\index{v@{v}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{v}{v}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Grid\+::v}
+
+\Hypertarget{structGrid_a768c5bc618d2c0b78a5661fbb4acb180}\label{structGrid_a768c5bc618d2c0b78a5661fbb4acb180} 
+\index{Grid@{Grid}!w@{w}}
+\index{w@{w}!Grid@{Grid}}
+\doxysubsubsection{\texorpdfstring{w}{w}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Grid\+::w}
+
+
+
+velocity values of the grid cells. 
+
+
+
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{grid_8hpp}{grid.\+hpp}}\end{DoxyCompactItemize}
+/home/simon/repos/\+Aerospace-\/\+Group-\/\+B-\/\+Module-\/1/includes/\mbox{\hyperlink{grid_8hpp}{grid.\+hpp}}\end{DoxyCompactItemize}

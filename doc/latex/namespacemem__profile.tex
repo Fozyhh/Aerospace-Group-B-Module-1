@@ -1,0 +1,120 @@
+\doxysection{mem\+\_\+profile Namespace Reference}
+\hypertarget{namespacemem__profile}{}\label{namespacemem__profile}\index{mem\_profile@{mem\_profile}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacemem__profile_af2962b38cb00ec3a059b782551dcbaa8}{content}} = file.\+read()
+\item 
+dict \mbox{\hyperlink{namespacemem__profile_a44ab6057671061e66c99af4293510427}{functions}} = \{\}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a8517b66c7c3f314c054a5fc9c79c55b9}{lines}} = content.\+strip().split(\textquotesingle{}\textbackslash{}n\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacemem__profile_aaac72936dad01125d9389be65d071f39}{current\+\_\+file}} = None
+\item 
+\mbox{\hyperlink{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}{current\+\_\+function}} = None
+\item 
+\mbox{\hyperlink{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}{parts}} = line.\+strip().split()
+\item 
+\mbox{\hyperlink{namespacemem__profile_a207d084e9605277b4516a79f03651384}{metrics}} = list(map(int, \mbox{\hyperlink{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}{parts}}\mbox{[}1\+:\mbox{]}))
+\item 
+str \mbox{\hyperlink{namespacemem__profile_a3d09c3e4ac6a3e924b38b229e8e22729}{function\+\_\+key}} = f"{}\{\mbox{\hyperlink{namespacemem__profile_aaac72936dad01125d9389be65d071f39}{current\+\_\+file}}\}\+:\{\mbox{\hyperlink{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}{current\+\_\+function}}\}"{}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a1eb4255675d5ee2f4bef358d3d3d9199}{cache\+\_\+df}} = pd.\+Data\+Frame.\+from\+\_\+dict(\mbox{\hyperlink{namespacemem__profile_a44ab6057671061e66c99af4293510427}{functions}}, orient=\textquotesingle{}index\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacemem__profile_a759319ce770c09da26d7559fe4c3d028}{axis}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_acb88f0bab972669bc0021f3412e93711}{cache\+\_\+sorted}} = cache\+\_\+df.\+sort\+\_\+values(by=\textquotesingle{}total\+\_\+cache\+\_\+misses\textquotesingle{}, ascending=False)
+\item 
+\mbox{\hyperlink{namespacemem__profile_a00d2e077ffaa63e0d5ef4ac172d8c40f}{figsize}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a94ab16002e8c117ca3a46866946639d0}{color}}
+\item 
+\mbox{\hyperlink{namespacemem__profile_a567dd66c803776f2d8a60b3a7be82df9}{rotation}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacemem__profile_a759319ce770c09da26d7559fe4c3d028}\label{namespacemem__profile_a759319ce770c09da26d7559fe4c3d028} 
+\index{mem\_profile@{mem\_profile}!axis@{axis}}
+\index{axis@{axis}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{axis}{axis}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+axis}
+
+\Hypertarget{namespacemem__profile_a1eb4255675d5ee2f4bef358d3d3d9199}\label{namespacemem__profile_a1eb4255675d5ee2f4bef358d3d3d9199} 
+\index{mem\_profile@{mem\_profile}!cache\_df@{cache\_df}}
+\index{cache\_df@{cache\_df}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{cache\_df}{cache\_df}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+cache\+\_\+df = pd.\+Data\+Frame.\+from\+\_\+dict(\mbox{\hyperlink{namespacemem__profile_a44ab6057671061e66c99af4293510427}{functions}}, orient=\textquotesingle{}index\textquotesingle{})}
+
+\Hypertarget{namespacemem__profile_acb88f0bab972669bc0021f3412e93711}\label{namespacemem__profile_acb88f0bab972669bc0021f3412e93711} 
+\index{mem\_profile@{mem\_profile}!cache\_sorted@{cache\_sorted}}
+\index{cache\_sorted@{cache\_sorted}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{cache\_sorted}{cache\_sorted}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+cache\+\_\+sorted = cache\+\_\+df.\+sort\+\_\+values(by=\textquotesingle{}total\+\_\+cache\+\_\+misses\textquotesingle{}, ascending=False)}
+
+\Hypertarget{namespacemem__profile_a94ab16002e8c117ca3a46866946639d0}\label{namespacemem__profile_a94ab16002e8c117ca3a46866946639d0} 
+\index{mem\_profile@{mem\_profile}!color@{color}}
+\index{color@{color}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{color}{color}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+color}
+
+\Hypertarget{namespacemem__profile_af2962b38cb00ec3a059b782551dcbaa8}\label{namespacemem__profile_af2962b38cb00ec3a059b782551dcbaa8} 
+\index{mem\_profile@{mem\_profile}!content@{content}}
+\index{content@{content}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{content}{content}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+content = file.\+read()}
+
+\Hypertarget{namespacemem__profile_aaac72936dad01125d9389be65d071f39}\label{namespacemem__profile_aaac72936dad01125d9389be65d071f39} 
+\index{mem\_profile@{mem\_profile}!current\_file@{current\_file}}
+\index{current\_file@{current\_file}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{current\_file}{current\_file}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+current\+\_\+file = None}
+
+\Hypertarget{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}\label{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835} 
+\index{mem\_profile@{mem\_profile}!current\_function@{current\_function}}
+\index{current\_function@{current\_function}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{current\_function}{current\_function}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+current\+\_\+function = None}
+
+\Hypertarget{namespacemem__profile_a00d2e077ffaa63e0d5ef4ac172d8c40f}\label{namespacemem__profile_a00d2e077ffaa63e0d5ef4ac172d8c40f} 
+\index{mem\_profile@{mem\_profile}!figsize@{figsize}}
+\index{figsize@{figsize}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{figsize}{figsize}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+figsize}
+
+\Hypertarget{namespacemem__profile_a3d09c3e4ac6a3e924b38b229e8e22729}\label{namespacemem__profile_a3d09c3e4ac6a3e924b38b229e8e22729} 
+\index{mem\_profile@{mem\_profile}!function\_key@{function\_key}}
+\index{function\_key@{function\_key}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{function\_key}{function\_key}}
+{\footnotesize\ttfamily str mem\+\_\+profile.\+function\+\_\+key = f"{}\{\mbox{\hyperlink{namespacemem__profile_aaac72936dad01125d9389be65d071f39}{current\+\_\+file}}\}\+:\{\mbox{\hyperlink{namespacemem__profile_adfe68edeb5d0afb16d813e13f11bd835}{current\+\_\+function}}\}"{}}
+
+\Hypertarget{namespacemem__profile_a44ab6057671061e66c99af4293510427}\label{namespacemem__profile_a44ab6057671061e66c99af4293510427} 
+\index{mem\_profile@{mem\_profile}!functions@{functions}}
+\index{functions@{functions}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{functions}{functions}}
+{\footnotesize\ttfamily dict mem\+\_\+profile.\+functions = \{\}}
+
+\Hypertarget{namespacemem__profile_a8517b66c7c3f314c054a5fc9c79c55b9}\label{namespacemem__profile_a8517b66c7c3f314c054a5fc9c79c55b9} 
+\index{mem\_profile@{mem\_profile}!lines@{lines}}
+\index{lines@{lines}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{lines}{lines}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+lines = content.\+strip().split(\textquotesingle{}\textbackslash{}n\textquotesingle{})}
+
+\Hypertarget{namespacemem__profile_a207d084e9605277b4516a79f03651384}\label{namespacemem__profile_a207d084e9605277b4516a79f03651384} 
+\index{mem\_profile@{mem\_profile}!metrics@{metrics}}
+\index{metrics@{metrics}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{metrics}{metrics}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+metrics = list(map(int, \mbox{\hyperlink{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}{parts}}\mbox{[}1\+:\mbox{]}))}
+
+\Hypertarget{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395}\label{namespacemem__profile_a6068ca35e993ad908b101dcf5a122395} 
+\index{mem\_profile@{mem\_profile}!parts@{parts}}
+\index{parts@{parts}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{parts}{parts}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+parts = line.\+strip().split()}
+
+\Hypertarget{namespacemem__profile_a567dd66c803776f2d8a60b3a7be82df9}\label{namespacemem__profile_a567dd66c803776f2d8a60b3a7be82df9} 
+\index{mem\_profile@{mem\_profile}!rotation@{rotation}}
+\index{rotation@{rotation}!mem\_profile@{mem\_profile}}
+\doxysubsubsection{\texorpdfstring{rotation}{rotation}}
+{\footnotesize\ttfamily mem\+\_\+profile.\+rotation}
+
