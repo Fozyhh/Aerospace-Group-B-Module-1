@@ -10,17 +10,15 @@
 #include <string>
 #include <cmath>
 
-
 class IcoNS
 {
 public:
-  
-
   IcoNS(const double lx, const double ly, const double lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
         const double dt, const double T, const double Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
+        boundary(grid, dx, dy, dz),
         dt(dt),
         T(T),
         Re(Re),
@@ -34,19 +32,18 @@ public:
         dy(ly / ny),
         dz(lz / nz),
         input_file(input_file),
-        output_file(output_file),
-        boundary(grid,dx,dy,dz)
-  {}
+        output_file(output_file)
+  {
+  }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-
   std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  std::vector<double> functionG(size_t i, size_t j, size_t k, double t); // compute the source term.
+  std::vector<double> functionG(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
 
   void apply_boundary_conditions(double time); // apply the boundary conditions.
-  void solve_time_step( double time ); // solve a time step.
-  void solve(); // solve the problem saving the ouput.
+  void solve_time_step(double time);           // solve a time step.
+  void solve();                                // solve the problem saving the ouput.
 
   std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
                                 size_t i, size_t j, size_t k);
@@ -60,22 +57,18 @@ public:
 
   void output(); // write the output file.
 
-
 private:
-    Grid grid;                     // grid of the domain.
-    const double dt;               // time step.
-    const double T;                // final time.
-    const double Re;               // Reynolds number.
-    const unsigned int lx, ly, lz; // lengths of edges of the domain.
-    const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-    const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-    Boundary boundary;
-    ExactSolution exact_solution;  // exact solution.
-    std::string input_file;        // input file.
-    std::string output_file;       // output file.
-
+  Grid grid; // grid of the domain.
+  Boundary boundary;
+  ExactSolution exact_solution;  // exact solution.
+  const double dt;               // time step.
+  const double T;                // final time.
+  const double Re;               // Reynolds number.
+  const unsigned int lx, ly, lz; // lengths of edges of the domain.
+  const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
+  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+  std::string input_file;        // input file.
+  std::string output_file;       // output file.
 };
 
-
 #endif // CORE_HPP
-
