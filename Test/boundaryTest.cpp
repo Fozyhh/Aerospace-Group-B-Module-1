@@ -3,13 +3,13 @@
 #include "../includes/grid.hpp"
 #include "../includes/utils.hpp"
 
-#define nx 10
-#define ny 10
-#define nz 10
+#define nx 5
+#define ny 5
+#define nz 5
 
-#define dx 0.01
-#define dy 0.01
-#define dz 0.01
+#define dx 1
+#define dy 1
+#define dz 1
 
 
 int main(int argc, char const *argv[])
@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
         {
             for (double k = 0; k < nz+1; k++)
             {
-                std::cout << i << j << k << "(" << grid.u[i*(ny+1)*(nz+1) + j*(nz) +k] << ")-(" << sol.value_x(i+0.5,j,k,t) << ") ";
+                std::cout << i << j << k << "(" << grid.u[i*(ny+1)*(nz+1) + j*(nz+1) +k] << ")-(" << sol.value_x(i+dx/2.0,j,k,t) << ") ";
             }
             std::cout << std::endl;
         }
