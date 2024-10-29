@@ -176,36 +176,36 @@ void Boundary::update_boundary(double t){
 
 // Performs the approximation of the component u that isn't precisely on the boundary.
 double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t,size_t face) {
-    double dv = ((boundary_value_v[face]->value(x, y + prec, z,t)) -
-                ((boundary_value_v[face]->value(x, y - prec, z,t)))) / (2*prec);
+    double dv = ((boundary_value_v[face]->value(x, y , z,t)) -
+                ((boundary_value_v[face]->value(x, y - 1, z,t)))) / (2*prec);
 
-    double dw =  ((boundary_value_w[face]->value(x, y, z + prec ,t)) -
-                 ((boundary_value_w[face]->value(x, y, z - prec,t)))) / (2*prec);
+    double dw =  ((boundary_value_w[face]->value(x, y, z ,t)) -
+                 ((boundary_value_w[face]->value(x, y, z - 1,t)))) / (2*prec);
     
-    return  boundary_value_u[face]->value(x, y, z, t) - (dv + dw) * (dx/2);
+    return  boundary_value_u[face]->value(x-0.5, y, z, t) - (dv + dw) * (dx/2);
 }
 
 
 // Performs the approximation of the component v that isn't precisely on the boundary.
 double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t,size_t face) {
-    double du = ((boundary_value_u[face]->value(x + prec, y, z,t)) -
-                ((boundary_value_u[face]->value(x - prec, y, z,t)))) / (2*prec);
+    double du = ((boundary_value_u[face]->value(x , y, z,t)) -
+                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (2*prec);
     
-    double dw =  ((boundary_value_w[face]->value(x, y, z + prec,t)) -
-                 ((boundary_value_w[face]->value(x, y, z - prec,t)))) / (2*prec);
+    double dw =  ((boundary_value_w[face]->value(x, y, z,t)) -
+                 ((boundary_value_w[face]->value(x, y, z - 1,t)))) / (2*prec);
 
-    return  boundary_value_v[face]->value(x, y, z, t) - (du + dw) * (dy/2);
+    return  boundary_value_v[face]->value(x, y-0.5, z, t) - (du + dw) * (dy/2);
 }
 
 
 // Performs the approximation of the component w that isn't precisely on the boundary.
 double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t,size_t face) {
-    double du = ((boundary_value_u[face]->value(x + prec, y, z,t)) -
-                ((boundary_value_u[face]->value(x - prec, y, z,t)))) / (2*prec);
+    double du = ((boundary_value_u[face]->value(x, y, z,t)) -
+                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (2*prec);
     
-    double dv = ((boundary_value_v[face]->value(x, y + prec, z,t)) -
-                ((boundary_value_v[face]->value(x, y - prec, z,t)))) / (2*prec);
-    return  boundary_value_w[face]->value(x, y, z, t) - (du + dv) * (dz/2);
+    double dv = ((boundary_value_v[face]->value(x, y, z,t)) -
+                ((boundary_value_v[face]->value(x, y - 1, z,t)))) / (2*prec);
+    return  boundary_value_w[face]->value(x, y, z-0.5, t) - (du + dv) * (dz/2);
 }
 
 void Boundary::addFunction(size_t direction, std::shared_ptr<BoundaryFunction> x){
