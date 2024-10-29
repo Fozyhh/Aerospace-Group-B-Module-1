@@ -39,17 +39,17 @@ class ExactSolution
 {
   // Place holder implementation for now
 public:
-  double value_x(size_t x, size_t y, size_t z, double t) const
+  double value_x(double x, double y, double z, double t) const
   {
     return std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
   }
 
-  double value_y(size_t x, size_t y, size_t z, double t) const
+  double value_y(double x, double y, double z, double t) const
   {
     return std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
   }
 
-  double value_z(size_t x, size_t y, size_t z, double t) const
+  double value_z(double x, double y, double z, double t) const
   {
     return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
   }

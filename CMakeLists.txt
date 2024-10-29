@@ -47,6 +47,8 @@ set(SOURCES
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
+#add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
+#target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
 # Create report directories if profiling or memory checks are enabled
 if(ENABLE_CPUPROF)
