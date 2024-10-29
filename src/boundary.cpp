@@ -8,7 +8,7 @@ grid(grid_)
 ,dx(dx_)
 ,dy(dy_)
 ,dz(dz_)
-,prec(1.0/2.0)
+,prec(0.5)
 {}
 
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
@@ -37,7 +37,7 @@ void Boundary::update_boundary(double t){
         {
             grid.v[j*(nz+1) + k] = boundary_value_v[face]->value(0,j,k,t);
             grid.w[j*nz + k] = boundary_value_w[face]->value(0,j,k,t); 
-            grid.u[j*(nz+1) + k] = approximate_boundary_u(0,j,k,t,face);
+            grid.u[j*(nz+1) + k] = approximate_boundary_u(0,j,k,t,face,1);
         }
         grid.v[j*(nz+1) + nz] = boundary_value_v[face]->value(0,j,nz,t);
     }
@@ -68,7 +68,7 @@ void Boundary::update_boundary(double t){
         {
             grid.v[nx*ny*(nz+1) + j*(nz+1) + k] = boundary_value_v[face]->value(nx,j,k,t);
             grid.w[nx*(ny+1)*nz + j*nz + k] = boundary_value_w[face]->value(nx,j,k,t); 
-            grid.u[(nx-1)*(ny+1)*(nz+1) + j*(nz+1) + k] = approximate_boundary_u(nx,j,k,t,face);
+            grid.u[(nx-1)*(ny+1)*(nz+1) + j*(nz+1) + k] = approximate_boundary_u(nx,j,k,t,face,-1);
         }
         grid.v[nx*ny*(nz+1) + j*(nz+1) + nz] = boundary_value_v[face]->value(nx,j,nz,t);
     }
@@ -96,7 +96,7 @@ void Boundary::update_boundary(double t){
         {
             grid.u[i * (ny+1) * (nz+1) + k] = boundary_value_u[face]->value(i,0,k,t);
             grid.w[i * (ny+1) * nz + k] = boundary_value_w[face]->value(i,0,k,t);
-            grid.v[i * ny * (nz+1) + k] = approximate_boundary_v(i,0,k,t,face);
+            grid.v[i * ny * (nz+1) + k] = approximate_boundary_v(i,0,k,t,face,1);
         }
     }
 
@@ -118,7 +118,7 @@ void Boundary::update_boundary(double t){
         {
             grid.u[ny * (nz + 1) + (ny+1) * (nz+1) * i + k] = boundary_value_u[face]->value(i,ny,k,t);
             grid.w[ny * nz + i * (ny+1) * nz + k] = boundary_value_w[face]->value(i,ny,k,t);
-            grid.v[(ny-1) * (nz+1) + ny * (nz+1) * i + k] = approximate_boundary_v(i,ny,k,t,face);
+            grid.v[(ny-1) * (nz+1) + ny * (nz+1) * i + k] = approximate_boundary_v(i,ny,k,t,face,-1);
         }
     }
 
@@ -141,7 +141,7 @@ void Boundary::update_boundary(double t){
         {   
             grid.u[(ny+1) * (nz+1) * i + j*(nz+1)] = boundary_value_u[face]->value(i,j,0,t);
             grid.v[ny * (nz+1) * i + j*(nz+1)] = boundary_value_v[face]->value(i,j,0,t); 
-            grid.w[(ny+1) * nz * i + j*nz] = approximate_boundary_w(i,j,0,t,face);
+            grid.w[(ny+1) * nz * i + j*nz] = approximate_boundary_w(i,j,0,t,face,1);
         }
         grid.u[(ny+1) * (nz+1) * i + ny*(nz+1)] = boundary_value_u[face]->value(i,ny,0,t);
     }
@@ -165,7 +165,7 @@ void Boundary::update_boundary(double t){
         {
             grid.u[(ny+1) * (nz+1) * i + j*(nz+1) + nz] = boundary_value_u[face]->value(i,j,nz,t);
             grid.v[ny * (nz+1) * i + j*(nz+1) + nz] = boundary_value_v[face]->value(i,j,nz,t); 
-            grid.w[(ny+1) * nz * i + j*nz + (nz - 1)] = approximate_boundary_w(i,j,nz,t,face);
+            grid.w[(ny+1) * nz * i + j*nz + (nz - 1)] = approximate_boundary_w(i,j,nz,t,face,-1);
         }
         grid.u[(ny+1) * (nz+1) * i + ny*(nz+1) + nz] = boundary_value_u[face]->value(i,ny,nz,t);
     }
@@ -175,37 +175,41 @@ void Boundary::update_boundary(double t){
 
 
 // Performs the approximation of the component u that isn't precisely on the boundary.
-double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t,size_t face) {
-    double dv = ((boundary_value_v[face]->value(x, y , z, t)) -
-                ((boundary_value_v[face]->value(x, y - 1.0, z, t))));
-
-    double dw =  ((boundary_value_w[face]->value(x, y , z ,t)) -
-                 ((boundary_value_w[face]->value(x, y , z - 1.0 , t))));
+double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t,size_t face,int side) {
     
-    return  boundary_value_u[face]->value((x-0.5), y, z, t) - ((dv + dw) * (dx/2.0));
+    double dv = (boundary_value_v[face]->value(x, y , z, t) - boundary_value_v[face]->value(x, y - (2*prec), z, t) ) / (2*prec);
+
+    double dw = (boundary_value_w[face]->value(x, y , z ,t) - boundary_value_w[face]->value(x, y , z - (2*prec) , t)) / (2*prec);
+    
+    if(x==4 && y==1 && z== 1)
+    {
+        std::cout << "dv:" << dv << " dw:" << dw <<std::endl;
+    }
+
+    return  boundary_value_u[face]->value((x-prec), y, z, t) - (dv + dw) * 0.5*side;
 }
 
 
 // Performs the approximation of the component v that isn't precisely on the boundary.
-double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t,size_t face) {
+double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t,size_t face, int side) {
     double du = ((boundary_value_u[face]->value(x , y, z,t)) -
-                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (2*prec);
+                ((boundary_value_u[face]->value(x - (2*prec), y, z,t)))) / (2*prec);
     
     double dw =  ((boundary_value_w[face]->value(x, y, z,t)) -
-                 ((boundary_value_w[face]->value(x, y, z - 1,t)))) / (2*prec);
+                 ((boundary_value_w[face]->value(x, y, z - (2*prec),t)))) / (2*prec);
 
-    return  boundary_value_v[face]->value(x, y-0.5, z, t) - (du + dw) * (dy/2);
+    return  boundary_value_v[face]->value(x, y-prec, z, t) - (du + dw) * 0.5*side;
 }
 
 
 // Performs the approximation of the component w that isn't precisely on the boundary.
-double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t,size_t face) {
+double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t,size_t face,int side) {
     double du = ((boundary_value_u[face]->value(x, y, z,t)) -
-                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (2*prec);
+                ((boundary_value_u[face]->value(x - (2*prec), y, z,t)))) / (2*prec);
     
     double dv = ((boundary_value_v[face]->value(x, y, z,t)) -
-                ((boundary_value_v[face]->value(x, y - 1, z,t)))) / (2*prec);
-    return  boundary_value_w[face]->value(x, y, z-0.5, t) - (du + dv) * (dz/2);
+                ((boundary_value_v[face]->value(x, y - (2*prec), z,t)))) / (2*prec);
+    return  boundary_value_w[face]->value(x, y, z-prec, t) - (du + dv) * 0.5*side;
 }
 
 void Boundary::addFunction(size_t direction, std::shared_ptr<BoundaryFunction> x){
