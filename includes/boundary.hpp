@@ -15,15 +15,12 @@ private:
     const unsigned int &ny;
     const unsigned int &nz;
     const double dx,dy,dz;
-    const double prec;
     
-    
-    
-    
-    public:
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
+    public:
+    
 
     
     Boundary(Grid& grid_,double dx_, double dy_,double dz_);
