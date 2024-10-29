@@ -3,9 +3,9 @@
 
 int main()
 {
-    const double lx = 1000;
-    const double ly = 1000;
-    const double lz = 1000;
+    const double lx = 1;
+    const double ly = 1;
+    const double lz = 1;
     const unsigned int nx = 64;
     const unsigned int ny = 64;
     const unsigned int nz = 64;

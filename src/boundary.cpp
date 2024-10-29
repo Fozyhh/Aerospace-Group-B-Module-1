@@ -8,14 +8,12 @@ grid(grid_)
 ,dx(dx_)
 ,dy(dy_)
 ,dz(dz_)
-,prec(0.5)
 {}
 
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
 // For each boundary node, it takes the exact value dor each component from the input and updates them.
 // It also updates those values that are not directly on a face, but need an approximation.
 void Boundary::update_boundary(double t){
-
     // Each face is numbered from 0 to 5 and we treat every face separately
 
 

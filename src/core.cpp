@@ -131,16 +131,10 @@ std::vector<double> IcoNS::functionF(const std::vector<double> &u, const std::ve
     std::vector<double> g(3);
     g = functionG(i, j, k, t);
     
- 
-    //std::cout << "check 2.63: " << i <<"-" << j << "-" << k << std::endl;
-      //      std::cout.flush();
     f[0] = -(u[lu] * (u[lu + nz * ny] - u[lu - nz * ny]) / (2.0 * dx) +
              (v[lv] + v[lv + (ny - 1) * nz] + v[lv - nz] + v[lv + nz * (ny - 1) - nz]) / 4.0 * (u[lu + nz] - u[lu - nz]) / (2.0 * dy) +
              (w[lw] + w[lw + ny * (nz - 1)] + w[lw - 1] + w[lw + ny * (nz - 1) - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * dz)) +
            1 / Re * ((u[lu + ny * nz] - 2 * u[lu] + u[lu - ny * nz]) / (dx * dx) + (u[lu + nz] - 2 * u[lu] + u[lu - nz]) / (dy * dy) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (dz * dz)) + g[0];
-    
-    //std::cout << "check 2.64" << std::endl;
-      //      std::cout.flush();
 
     f[1] = -((u[lu] + u[lu + nz] + u[lu - ny * nz] + u[lu - ny * nz + nz]) / 4.0 * (v[lv + (ny - 1) * nz] - v[lv - (ny - 1) * nz] / (2.0 * dx)) +
              v[lv] * (v[lv + nz] - v[lv - nz]) / (2.0 * dy) +
