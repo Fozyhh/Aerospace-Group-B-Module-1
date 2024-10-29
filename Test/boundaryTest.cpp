@@ -3,26 +3,30 @@
 #include "../includes/grid.hpp"
 #include "../includes/utils.hpp"
 
-#define nx 4
-#define ny 4
-#define nz 4
+#define nx 10
+#define ny 10
+#define nz 10
+
+#define dx 0.01
+#define dy 0.01
+#define dz 0.01
+
 
 int main(int argc, char const *argv[])
 {
     Grid grid(nx,ny,nz);
     ExactSolution sol;
 
-    Boundary b(grid,1,1,1);
+    Boundary b(grid,dx,dy,dz);
 
-    double prec=0.5;
     auto u_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return std::sin(x + prec) *std::cos(y)*std::sin(z)*std::sin(t);
+        return std::sin(x + (dx/2.0)) *std::cos(y)*std::sin(z)*std::sin(t);
     });
     auto v_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return std::cos(x) *std::sin(y+prec)*std::sin(z)*std::sin(t);
+        return std::cos(x) *std::sin(y+(dy/2.0))*std::sin(z)*std::sin(t);
     });
     auto w_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return 2*std::cos(x) *std::cos(y)*std::cos(z+prec)*std::sin(t);
+        return 2*std::cos(x) *std::cos(y)*std::cos(z+(dz/2.0))*std::sin(t);
     });
     
     for (size_t i = 0; i < 6/*nfaces*/; i++)
@@ -40,13 +44,13 @@ int main(int argc, char const *argv[])
 
 
     //std::cout <<"-" << sol.value_x(3.5,1,1,0.5) << std::endl << std::endl;
-    for (double i = 0; i < nx+1; i++)
+    for (double i = 0; i < nx; i++)
     {
         for (double j = 0; j < ny+1; j++)
         {
-            for (double k = 0; k < nz; k++)
+            for (double k = 0; k < nz+1; k++)
             {
-                std::cout << i << j << k << "(" << grid.w[i*(ny+1)*(nz) + j*(nz) +k] << ")-(" << sol.value_z(i,j,k+0.5,t) << ") ";
+                std::cout << i << j << k << "(" << grid.u[i*(ny+1)*(nz+1) + j*(nz) +k] << ")-(" << sol.value_x(i+0.5,j,k,t) << ") ";
             }
             std::cout << std::endl;
         }
