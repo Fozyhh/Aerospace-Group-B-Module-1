@@ -28,6 +28,7 @@ private:
     
     Boundary(Grid& grid_,double dx_, double dy_,double dz_);
     void update_boundary(double t);
+    void update_boundary(std::vector<double> Yx,std::vector<double> Yy,std::vector<double> Yz, double t);
 
     double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
     double approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face);

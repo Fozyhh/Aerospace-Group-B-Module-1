@@ -69,7 +69,8 @@ void IcoNS::solve()
     std::ofstream error_log("../resources/error.log");
 
     while (time < T)
-    {  
+    {   
+        boundary.update_boundary(time);
         solve_time_step(time);
         time += dt;
         // output();

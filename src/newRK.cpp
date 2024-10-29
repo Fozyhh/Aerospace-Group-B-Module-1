@@ -45,7 +45,7 @@ void IcoNS::solve_time_step(double time)
         }
     }
 
-    boundary.update_boundary(time + 64.0 / 120.0 * dt);
+    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * dt);
 
     for (size_t i = 1; i < nx - 1; i++)
     {
@@ -86,7 +86,7 @@ void IcoNS::solve_time_step(double time)
         }
     }
 
-    boundary.update_boundary(time + 80.0 / 120.0 * dt);
+    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * dt);
 
     for (size_t i = 1; i < nx - 1; i++)
     {
