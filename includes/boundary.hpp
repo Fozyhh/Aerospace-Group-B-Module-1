@@ -17,13 +17,13 @@ private:
     const double dx,dy,dz;
     const double prec;
     
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
-
+    
     
     
     public:
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
 
     
     Boundary(Grid& grid_,double dx_, double dy_,double dz_);
