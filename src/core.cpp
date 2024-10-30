@@ -25,37 +25,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         boundary.addFunction(1, v_func);
         boundary.addFunction(2, w_func);
     }
-
-    /*auto zero = std::make_shared<FunctionZero>();
-    auto frontface_u = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(x * t); });
-
-    auto frontface_v = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(y * t); });
-
-    auto frontface_w = std::make_shared<Dirichlet>([](double x, double y, double z, double t)
-                                                   { return std::sin(z * t); });
-
-    std::cout << "vector building" << std::endl;
-    // Order: left, right, front, back, lower, upper
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, frontface_u);
-    boundary.addFunction(0, frontface_u);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(0, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, frontface_v);
-    boundary.addFunction(1, frontface_v);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(1, zero);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, frontface_w);
-    boundary.addFunction(2, frontface_w);
-    boundary.addFunction(2, zero);
-    boundary.addFunction(2, zero);*/
 }
 
 void IcoNS::solve()
@@ -66,8 +35,8 @@ void IcoNS::solve()
     std::ofstream error_log("../resources/error.log");
 
     while (time < T)
-    {   
-        boundary.update_boundary(grid.u,grid.v,grid.w,time);
+    {
+        boundary.update_boundary(grid.u, grid.v, grid.w, time);
         solve_time_step(time);
         time += dt;
         // output();
@@ -76,7 +45,6 @@ void IcoNS::solve()
         i++;
     }
 }
-
 
 double IcoNS::L2_error(const double t)
 {
