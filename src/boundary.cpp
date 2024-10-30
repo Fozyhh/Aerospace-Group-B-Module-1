@@ -14,7 +14,6 @@ grid(grid_)
 // For each boundary node, it takes the exact value dor each component from the input and updates them.
 // It also updates those values that are not directly on a face, but need an approximation.
 void Boundary::update_boundary(double t){
-
     // Each face is numbered from 0 to 5 and we treat every face separately
 
 
