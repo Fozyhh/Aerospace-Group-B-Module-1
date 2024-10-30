@@ -18,7 +18,7 @@ public:
         const double dt, const double T, const double Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
-        boundary(grid, lx/nx, ly/ny, lz/nz),
+        boundary(nx, ny, nz, lx/nx, ly/ny, lz/nz),
         dt(dt),
         T(T),
         Re(Re),
@@ -38,17 +38,16 @@ public:
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  std::vector<double> functionG(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
+  double functionF_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionF_v(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionF_w(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionG_u(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
+  double functionG_v(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
+  double functionG_w(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
 
   void apply_boundary_conditions(double time); // apply the boundary conditions.
   void solve_time_step(double time);           // solve a time step.
   void solve();                                // solve the problem saving the ouput.
-
-  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
-                                size_t i, size_t j, size_t k);
-
-  void solve_time_step(); // solve a time step.
 
   double error_comp_X(const double t);
   double error_comp_Y(const double t);
@@ -64,7 +63,7 @@ private:
   const double dt;               // time step.
   const double T;                // final time.
   const double Re;               // Reynolds number.
-  const unsigned int lx, ly, lz; // lengths of edges of the domain.
+  const double lx, ly, lz; // lengths of edges of the domain.
   const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
   const double dx, dy, dz;       // cell sizes in the x,y,z directions.
   std::string input_file;        // input file.
