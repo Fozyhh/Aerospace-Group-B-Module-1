@@ -18,7 +18,7 @@ public:
         const double dt, const double T, const double Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
-        boundary(grid, dx, dy, dz),
+        boundary(nx, ny, nz, dx, dy, dz),
         dt(dt),
         T(T),
         Re(Re),

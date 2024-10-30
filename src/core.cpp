@@ -70,7 +70,7 @@ void IcoNS::solve()
 
     while (time < T)
     {   
-        boundary.update_boundary(time);
+        boundary.update_boundary(grid.u,grid.v,grid.w,time);
         solve_time_step(time);
         time += dt;
         // output();

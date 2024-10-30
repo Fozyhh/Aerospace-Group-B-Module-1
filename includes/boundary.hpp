@@ -10,10 +10,10 @@ class Boundary
 {
     
 private:
-    Grid& grid;
-    const unsigned int &nx;
-    const unsigned int &ny;
-    const unsigned int &nz;
+    //Grid& grid;
+    const unsigned int nx;
+    const unsigned int ny;
+    const unsigned int nz;
     const double dx,dy,dz;
     const double prec;
     
@@ -26,8 +26,8 @@ private:
     public:
 
     
-    Boundary(Grid& grid_,double dx_, double dy_,double dz_);
-    void update_boundary(double t);
+    Boundary(int nx, int ny, int nz,double dx_, double dy_,double dz_);
+    //void update_boundary(double t);
     void update_boundary(std::vector<double> Yx,std::vector<double> Yy,std::vector<double> Yz, double t);
 
     double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face);
