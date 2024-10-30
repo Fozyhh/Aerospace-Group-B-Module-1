@@ -20,13 +20,13 @@ int main(int argc, char const *argv[])
     Boundary b(grid,dx,dy,dz);
 
     auto u_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return std::sin(x + (dx/2.0)) *std::cos(y)*std::sin(z)*std::sin(t);
+        return std::sin((x + 1.0/2.0) * dx) *std::cos(y * dy)*std::sin(z * dz)*std::sin(t);
     });
     auto v_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return std::cos(x) *std::sin(y+(dy/2.0))*std::sin(z)*std::sin(t);
+        return std::cos(x * dx) *std::sin((y + 1.0/2.0) * dy)*std::sin(z * dz)*std::sin(t);
     });
     auto w_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return 2*std::cos(x) *std::cos(y)*std::cos(z+(dz/2.0))*std::sin(t);
+        return 2*std::cos(x * dx) *std::cos(y * dy)*std::cos((z + 1.0/2.0) * dz)*std::sin(t);
     });
     
     for (size_t i = 0; i < 6/*nfaces*/; i++)
@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
     }
     double t =0.5;
 
-    std::cout << "u0b:" << b.boundary_value_u[0]->value(3.5, 1, 1, t) << sol.value_x(4,1,1,0.5) << std::endl;
+    //std::cout << "u0b:" << b.boundary_value_u[0]->value(3.5, 1, 1, t) << sol.value_x(4,1,1,0.5) << std::endl;
 
     b.update_boundary(t);
 
@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
         {
             for (double k = 0; k < nz+1; k++)
             {
-                std::cout << i << j << k << "(" << grid.u[i*(ny+1)*(nz+1) + j*(nz+1) +k] << ")-(" << sol.value_x(i+dx/2.0,j,k,t) << ") ";
+                std::cout << i << j << k << "(" << grid.u[i*(ny+1)*(nz+1) + j*(nz+1) +k] << ")-(" << sol.value_x((i + 1.0/2.0 ) *dx,j * dy,k *dz,t) << ") ";
             }
             std::cout << std::endl;
         }

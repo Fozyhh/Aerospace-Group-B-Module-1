@@ -8,7 +8,6 @@ grid(grid_)
 ,dx(dx_)
 ,dy(dy_)
 ,dz(dz_)
-,prec(0.5)
 {}
 
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
