@@ -18,6 +18,7 @@ public:
         const double dt, const double T, const double Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
+        boundary(grid, lx/nx, ly/ny, lz/nz),
         dt(dt),
         T(T),
         Re(Re),
@@ -30,7 +31,6 @@ public:
         dx(lx / nx),
         dy(ly / ny),
         dz(lz / nz),
-        boundary(grid, (lx/nx), (ly/ny), (lz/nz)),
         input_file(input_file),
         output_file(output_file)
   {

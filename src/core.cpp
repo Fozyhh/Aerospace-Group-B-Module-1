@@ -48,14 +48,13 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     
     // boundary
     auto u_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        //std::cout << "Uboundary at: " << x <<","<<y<<","<<z <<"," << t <<"="<<std::sin(x*dx) *std::cos(y*dy)*std::sin(z*dz)*std::sin(t) << std::endl;
-        return std::sin(x*dx) *std::cos(y*dy)*std::sin(z*dz)*std::sin(t);
+        return std::sin((x + 1.0/2.0) * dx) *std::cos(y * dy)*std::sin(z * dz)*std::sin(t);
     });
     auto v_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return std::cos(x*dx) *std::sin(y*dy)*std::sin(z*dz)*std::sin(t);
+        return std::cos(x * dx) *std::sin((y + 1.0/2.0) * dy)*std::sin(z * dz)*std::sin(t);
     });
     auto w_func= std::make_shared<Dirichlet>([&](double x, double y, double z, double t){
-        return 2*std::cos(x*dx) *std::cos(y*dy)*std::cos(z*dz)*std::sin(t);
+        return 2*std::cos(x * dx) *std::cos(y * dy)*std::cos((z + 1.0/2.0) * dz)*std::sin(t);
     });
     
     for (size_t i = 0; i < 6/*nfaces*/; i++)
