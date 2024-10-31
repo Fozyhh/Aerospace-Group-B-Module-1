@@ -33,7 +33,7 @@ public:
         dz(lz / nz),
         input_file(input_file),
         output_file(output_file),
-        exact_solution(dx, dy, dz)
+        exact_solution(lx/nx, ly/ny, lz/nz)
   {
   }
 
