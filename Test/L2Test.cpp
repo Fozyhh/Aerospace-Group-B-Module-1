@@ -1,65 +1,65 @@
+# include <iostream>
+# include "../includes/core.hpp"
+# include "../includes/utils.hpp"
+# include "../includes/grid.hpp"
+# include "../includes/boundary.hpp"
+# define nx 10
+# define ny 10
+# define nz 10
+# define dx 0.1
+# define dy 0.1
+# define dz 0.1
+# define Re 200.0
+# define dt 0.1
+# define T 1.0
+# define lx 1
+# define ly 1
+# define lz 1
+# define t 85.0
 
-#include <cmath>
-
-#include "core.hpp"
-#include <math.h>
-
-#include <fstream>
-#include <string>
-#include <memory>
-
-void IcoNS::preprocessing(/*std::string &input_file*/)
-
+int main()
 {
-    // boundary
-    auto u_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return std::sin((x + 1.0 / 2.0) * dx) * std::cos(y * dy) * std::sin(z * dz) * std::sin(t); });
-    auto v_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return std::cos(x * dx) * std::sin((y + 1.0 / 2.0) * dy) * std::sin(z * dz) * std::sin(t); });
-    auto w_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return 2 * std::cos(x * dx) * std::cos(y * dy) * std::cos((z + 1.0 / 2.0) * dz) * std::sin(t); });
-
-    for (size_t i = 0; i < 6 /*nfaces*/; i++)
+    //IcoNS icoNS(lx, ly, lz, nx, ny, nz, dt, T, Re, "input.txt", "output.txt");
+    Grid grid(nx, ny, nz);
+    ExactSolution exact_solution(dx, dy, dz);
+    for (size_t i = 0; i < nx; i++)
     {
-        boundary.addFunction(0, u_func);
-        boundary.addFunction(1, v_func);
-        boundary.addFunction(2, w_func);
+        for (size_t j = 0; j < ny+1; j++)
+        {
+            for (size_t k = 0; k < nz+1; k++)
+            {
+                grid.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] = exact_solution.value_x(i+0.5, j, k,t);
+            }
+        }
     }
-}
 
-void IcoNS::solve()
-{
-    double time = 0.0;
-    int i = 0;
-
-    std::ofstream error_log("../resources/error.log");
-
-    while (time < T)
+    for (size_t i = 0; i < nx+1; i++)
     {
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
-        solve_time_step(time);
-        time += dt;
-        // output();
-        std::cout << time << "," << i << "," << L2_error(time) << std::endl;
-        // csv file w/ "," delimiter: time step, iter, L2_error
-        i++;
+        for (size_t j = 0; j < ny; j++)
+        {
+            for (size_t k = 0; k < nz+1; k++)
+            {
+                grid.v[i*ny*(nz+1) + j*(nz+1) + k] = exact_solution.value_y(i, j+0.5, k,t);
+            }
+        }
     }
-}
 
-double IcoNS::L2_error(const double t)
-{
+    for (size_t i = 0; i < nx+1; i++)
+    {
+        for (size_t j = 0; j < ny+1; j++)
+        {
+            for (size_t k = 0; k < nz; k++)
+            {
+                grid.w[i*(ny+1)*nz + j*nz + k] = exact_solution.value_z(i, j, k+0.5,t);
+            }
+        }
+    }
+
+    
+
     double error = 0.0;
-
-    error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
-
-    return sqrt(error);
-}
-
-double IcoNS::error_comp_X(const double t)
 {
-    double error = 0.0;
+    
 
     // first slice (left face)
     {
@@ -211,12 +211,11 @@ double IcoNS::error_comp_X(const double t)
                   (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), ny, nz, t)) *
                   dx * dy * dz / 8);
     }
-    return error;
+    std::cout << error << std::endl;
 }
 
-double IcoNS::error_comp_Y(const double t)
 {
-    double error = 0.0;
+    
 
     // first slice (left face)
     {
@@ -368,12 +367,11 @@ double IcoNS::error_comp_Y(const double t)
                   (grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1) + nz] - exact_solution.value_y(nx, (ny - 0.5), nz, t)) *
                   dx * dy * dz / 8);
     }
-    return error;
+    std::cout << error << std::endl;
 }
 
-double IcoNS::error_comp_Z(const double t)
 {
-    double error = 0.0;
+    
     // first slice (left face)
     {
         error += ((grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *
@@ -525,9 +523,10 @@ double IcoNS::error_comp_Z(const double t)
                   dx * dy * dz / 8);
     }
 
-    return error;
+    std::cout << error << std::endl;
+}
+    
 }
 
-void IcoNS::output()
-{
-}
+    
+
