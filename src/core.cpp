@@ -13,17 +13,17 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 {
     // boundary
     auto u_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return std::sin((x + 1.0 / 2.0) * dx) * std::cos(y * dy) * std::sin(z * dz) * std::sin(t); });
+                                              { return std::sin((x + 0.5) * dx) * std::cos(y * dy) * std::sin(z * dz) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return std::cos(x * dx) * std::sin((y + 1.0 / 2.0) * dy) * std::sin(z * dz) * std::sin(t); });
+                                              { return std::cos(x * dx) * std::sin((y + 0.5) * dy) * std::sin(z * dz) * std::sin(t); });
     auto w_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
-                                              { return 2 * std::cos(x * dx) * std::cos(y * dy) * std::cos((z + 1.0 / 2.0) * dz) * std::sin(t); });
+                                              { return 2 * (std::cos(x * dx) * std::cos(y * dy) * std::cos((z + 0.5) * dz) * std::sin(t)); });
 
     for (size_t i = 0; i < 6 /*nfaces*/; i++)
     {
-        boundary.addFunction(0, u_func);
-        boundary.addFunction(1, v_func);
-        boundary.addFunction(2, w_func);
+        boundary.addFunction(U, u_func);
+        boundary.addFunction(V, v_func);
+        boundary.addFunction(W, w_func);
     }
 }
 
@@ -35,14 +35,21 @@ void IcoNS::solve()
     std::ofstream error_log("../resources/error.log");
 
     while (time < T)
-    {
+    {   
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
         solve_time_step(time);
-        time += dt;
         // output();
-        std::cout << time << "," << i << "," << L2_error(time) << std::endl;
+        
+        /*Check::Confront(grid,exact_solution,time,U);
+        int p;
+        std::cin >> p;*/
+
+        
+        time += dt;
+        error_log << time << "," << i << "," << L2_error(time) << std::endl;
         // csv file w/ "," delimiter: time step, iter, L2_error
         i++;
+        
     }
 }
 

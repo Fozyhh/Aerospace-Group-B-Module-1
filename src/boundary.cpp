@@ -12,7 +12,7 @@ nx(nx)
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
 // For each boundary node, it takes the exact value dor each component from the input and updates them.
 // It also updates those values that are not directly on a face, but need an approximation.
-void Boundary::update_boundary(std::vector<double> Yx,std::vector<double> Yy,std::vector<double> Yz, double t){
+void Boundary::update_boundary(std::vector<double>& Yx,std::vector<double>& Yy,std::vector<double>& Yz, double t){
 
     // Each face is numbered from 0 to 5 and we treat every face separately
     // LEFT FACE
@@ -171,45 +171,44 @@ void Boundary::update_boundary(std::vector<double> Yx,std::vector<double> Yy,std
 // Performs the approximation of the component u that isn't precisely on the boundary.
 double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t,size_t face,int side) {
     
-    double dv = (boundary_value_v[face]->value(x, y , z, t) - boundary_value_v[face]->value(x, y - (dy), z, t) ) / (2*(dy/2.0));
+    double dv = (boundary_value_v[face]->value(x, y , z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t) ) / dy;
+    double dw = (boundary_value_w[face]->value(x, y , z ,t) - boundary_value_w[face]->value(x, y , z - 1.0 , t)) / dz;
 
-    double dw = (boundary_value_w[face]->value(x, y , z ,t) - boundary_value_w[face]->value(x, y , z - (dz) , t)) / (2*(dz/2.0));
-
-    return  boundary_value_u[face]->value((x-(dx/2.0)), y, z, t) - (dv + dw) * (dx/2)*side;
+    return  boundary_value_u[face]->value((x-0.5/*(dx/2.0)*/), y, z, t) - (dv + dw) * (dx/2)*side;
 }
 
 
 // Performs the approximation of the component v that isn't precisely on the boundary.
 double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t,size_t face, int side) {
     double du = ((boundary_value_u[face]->value(x , y, z,t)) -
-                ((boundary_value_u[face]->value(x - (dx), y, z,t)))) / (dx);
+                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (dx);
     
     double dw =  ((boundary_value_w[face]->value(x, y, z,t)) -
-                 ((boundary_value_w[face]->value(x, y, z - (dz),t)))) / (dz);
+                 ((boundary_value_w[face]->value(x, y, z - 1,t)))) / (dz);
 
-    return  boundary_value_v[face]->value(x, y-(dy/2.0), z, t) - (du + dw) * (dy/2.0)*side;
+    return  boundary_value_v[face]->value(x, y-0.5, z, t) - (du + dw) * (dy/2.0)*side;
 }
 
 
 // Performs the approximation of the component w that isn't precisely on the boundary.
 double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t,size_t face,int side) {
     double du = ((boundary_value_u[face]->value(x, y, z,t)) -
-                ((boundary_value_u[face]->value(x - (dx), y, z,t)))) / (dx);
+                ((boundary_value_u[face]->value(x - 1.0, y, z,t)))) / (dx);
     
     double dv = ((boundary_value_v[face]->value(x, y, z,t)) -
-                ((boundary_value_v[face]->value(x, y - (dy), z,t)))) / (dy);
-    return  boundary_value_w[face]->value(x, y, z-(dz/2), t) - (du + dv) * (dz/2)*side;
+                ((boundary_value_v[face]->value(x, y - 1.0, z,t)))) / (dy);
+    return  boundary_value_w[face]->value(x, y, z-0.5, t) - (du + dv) * (dz/2)*side;
 }
 
-void Boundary::addFunction(size_t direction, std::shared_ptr<BoundaryFunction> x){
+void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x){
       switch(direction){
-          case 0:
+          case U:
               boundary_value_u.push_back(x);
               break;
-          case 1:
+          case V:
               boundary_value_v.push_back(x);
               break;
-          case 2:
+          case W:
               boundary_value_w.push_back(x);
               break;
       }

@@ -6,6 +6,13 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include "grid.hpp"
+
+enum Direction{
+  U,
+  V,
+  W
+};
 
 class BoundaryFunction
 {
@@ -60,4 +67,72 @@ private:
   double dx, dy, dz;
 };
 
+/**
+ * @brief Class containing methods to make controls on our program
+ *        Will be unused in a final implementation
+ * 
+ */
+class Check
+{
+private:
+  /* data */
+public:
+  Check(/* args */);
+  
+  /**
+   * @brief Confronts the state of the grid with the exact solution at a given timestep
+   *        How to read: Every cell is rappresented as xyz(GridValue)-(ExactValue)
+   *        Printed in 2d squares starting from left face and then moving one step in i direction for each slice of the cube
+   * 
+   * @param grid Whole grid at time t
+   * @param exact Exact solution(With dx,dy,dz correct)
+   * @param t Timestep to print at
+   * @param d Direction you want to show(U,V,W)
+   */
+  static void Confront(Grid& grid, ExactSolution& exact, double t, Direction d){
+    //U
+    if (d==U){
+      for (double i = 0; i < grid.nx; i++)
+      {
+          for (double j = 0; j < grid.ny+1; j++)
+          {
+              for (double k = 0; k < grid.nz+1; k++)
+              {
+                  std::cout << i << j << k << "(" << grid.u[i*(grid.ny+1)*(grid.nz+1) + j*(grid.nz+1) +k] << ")-(" << exact.value_x(i + 0.5,j,k,t) << ") ";
+              }
+              std::cout << std::endl;
+          }
+          std::cout << std::endl;
+      }
+    }else if(d==V){
+    //V
+      for (double i = 0; i < grid.nx+1; i++)
+      {
+          for (double j = 0; j < grid.ny; j++)
+          {
+              for (double k = 0; k < grid.nz+1; k++)
+              {
+                  std::cout << i << j << k << "(" << grid.v[i*(grid.ny)*(grid.nz+1) + j*(grid.nz+1) +k] << ")-(" << exact.value_y(i,j+0.5,k,t) << ") ";
+              }
+              std::cout << std::endl;
+          }
+          std::cout << std::endl;
+      }
+    }else{
+    //W
+      for (double i = 0; i < grid.nx; i++)
+      {
+          for (double j = 0; j < grid.ny+1; j++)
+          {
+              for (double k = 0; k < grid.nz; k++)
+              {
+                  std::cout << i << j << k << "(" << grid.w[i*(grid.ny+1)*(grid.nz) + j*(grid.nz) +k] << ")-(" << exact.value_z(i,j,k+0.5,t) << ") ";
+              }
+              std::cout << std::endl;
+          }
+          std::cout << std::endl;
+      }
+    }
+  }
+};
 #endif
