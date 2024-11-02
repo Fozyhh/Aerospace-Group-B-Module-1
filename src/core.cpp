@@ -36,18 +36,16 @@ void IcoNS::solve()
 
     while (time < T)
     {   
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
-        solve_time_step(time);
-        // output();
-        
         /*Check::Confront(grid,exact_solution,time,U);
         int p;
         std::cin >> p;*/
+        boundary.update_boundary(grid.u, grid.v, grid.w, time);
 
-        
-        time += dt;
-        error_log << time << "," << i << "," << L2_error(time) << std::endl;
         // csv file w/ "," delimiter: time step, iter, L2_error
+        error_log << time << "," << i << "," << L2_error(time) << std::endl;
+        solve_time_step(time);
+        // output();
+        time += dt;
         i++;
         
     }
