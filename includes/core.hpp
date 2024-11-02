@@ -13,42 +13,26 @@
 class IcoNS
 {
 public:
-  IcoNS(const double lx, const double ly, const double lz,
-        const unsigned int nx, const unsigned int ny, const unsigned int nz,
-        const double dt, const double T, const double Re,
-        const std::string &input_file, const std::string &output_file)
-      : grid(nx, ny, nz),
-        boundary(nx, ny, nz, lx/nx, ly/ny, lz/nz),
-        dt(dt),
-        T(T),
-        Re(Re),
-        lx(lx),
-        ly(ly),
-        lz(lz),
-        nx(nx),
-        ny(ny),
-        nz(nz),
-        dx(lx / nx),
-        dy(ly / ny),
-        dz(lz / nz),
-        input_file(input_file),
-        output_file(output_file),
-        exact_solution(lx/nx, ly/ny, lz/nz)
+  IcoNS(const std::string &input_file, const std::string &output_file)
+      : input_file(input_file),
+        output_file(output_file)
   {
   }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  double functionF_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_v(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_w(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionG_u(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
-  double functionG_v(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
-  double functionG_w(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
+  double functionF_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t);                                                                          // compute the source term.
+  double functionF_v(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t);                                                                          // compute the source term.
+  double functionF_w(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t);                                                                          // compute the source term.
+  double functionF_u(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionF_v(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionF_w(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
+  double functionG_u(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
+  double functionG_v(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
+  double functionG_w(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
 
-  void apply_boundary_conditions(double time); // apply the boundary conditions.
-  void solve_time_step(double time);           // solve a time step.
-  void solve();                                // solve the problem saving the ouput.
+  void solve_time_step(double time); // solve a time step.
+  void solve();                      // solve the problem saving the ouput.
 
   double error_comp_X(const double t);
   double error_comp_Y(const double t);
@@ -60,15 +44,15 @@ public:
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;
-  ExactSolution exact_solution;  // exact solution.
-  const double dt;               // time step.
-  const double T;                // final time.
-  const double Re;               // Reynolds number.
-  const double lx, ly, lz; // lengths of edges of the domain.
-  const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-  std::string input_file;        // input file.
-  std::string output_file;       // output file.
+  ExactSolution exact_solution;
+  std::array<double, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
+  std::array<double, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
+  std::array<double, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
+  std::array<double, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
+  std::array<double, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
+  std::array<double, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
+  std::string input_file;  // input file.
+  std::string output_file; // output file.
 };
 
 #endif // CORE_HPP
