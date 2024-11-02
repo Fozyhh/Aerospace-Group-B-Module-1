@@ -151,13 +151,13 @@ double IcoNS::functionF_v(const std::vector<double> &u, const std::vector<double
     size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
     size_t lw = i * (ny+1) * nz + j * nz + k;
 
-    return -((u[lu] + u[lu + (nz+1)] + u[lu - (ny+1) * (nz+1)] + u[lu - (ny+1) * (nz+1) + (nz+1)]) / 4.0 * (v[lv + ny * (nz+1)] - v[lv - ny * (nz+1)] / (2.0 * dx)) +
+    return -((u[lu] + u[lu + (nz+1)] + u[lu - (ny+1) * (nz+1)] + u[lu - (ny+1) * (nz+1) + (nz+1)]) / 4.0 * ((v[lv + ny * (nz+1)] - v[lv - ny * (nz+1)]) / (2.0 * dx)) +
             v[lv] * (v[lv + (nz+1)] - v[lv - (nz+1)]) / (2.0 * dy) +
             (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
             (1.0 / Re) * ((v[lv + ny * (nz + 1)] - 2.0 * v[lv] + v[lv - ny * (nz + 1)]) / (dx * dx) +
                 (v[lv + (nz+1)] - 2.0 * v[lv] + v[lv - (nz+1)]) / (dy * dy) +
                 (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (dz * dz)) +
-            functionG_v(i, j, k, t);
+                functionG_v(i, j, k, t);
 }
 
 double IcoNS::functionF_w(const std::vector<double> &u, const std::vector<double> &v,
