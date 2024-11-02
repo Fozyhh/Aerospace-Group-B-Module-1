@@ -108,7 +108,7 @@ void IcoNS::solve_time_step(double time)
             for (size_t k = 1; k < nz; k++)
             {
                 grid.v[i * ny * (nz+1) + j * (nz+1) + k] = Y3_y[i * ny * (nz+1) + j * (nz+1) + k] +
-                    90.0 / 120.0 * dt * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80 / 120 * dt) -
+                    90.0 / 120.0 * dt * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * dt) -
                     50.0 / 120.0 * dt * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
             }
         }
@@ -121,7 +121,7 @@ void IcoNS::solve_time_step(double time)
             for (size_t k = 1; k < nz - 1; k++)
             {
                 grid.w[i * (ny+1) * nz + j * nz + k] = Y3_z[i * (ny+1) * nz + j * nz + k] +
-                    90.0 / 120.0 * dt * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80 / 120 * dt) -
+                    90.0 / 120.0 * dt * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * dt) -
                     50.0 / 120.0 * dt * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
             }
         }
@@ -153,8 +153,8 @@ double IcoNS::functionF_v(const std::vector<double> &u, const std::vector<double
 
     return -((u[lu] + u[lu + (nz+1)] + u[lu - (ny+1) * (nz+1)] + u[lu - (ny+1) * (nz+1) + (nz+1)]) / 4.0 * (v[lv + ny * (nz+1)] - v[lv - ny * (nz+1)] / (2.0 * dx)) +
             v[lv] * (v[lv + (nz+1)] - v[lv - (nz+1)]) / (2.0 * dy) +
-            (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 + (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
-            1 / Re * ((v[lv + ny * (nz + 1)] - 2.0 * v[lv] + v[lv - ny * (nz + 1)]) / (dx * dx) +
+            (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
+            (1.0 / Re) * ((v[lv + ny * (nz + 1)] - 2.0 * v[lv] + v[lv - ny * (nz + 1)]) / (dx * dx) +
                 (v[lv + (nz+1)] - 2.0 * v[lv] + v[lv - (nz+1)]) / (dy * dy) +
                 (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (dz * dz)) +
             functionG_v(i, j, k, t);
@@ -170,7 +170,7 @@ double IcoNS::functionF_w(const std::vector<double> &u, const std::vector<double
     return -((u[lu] + u[lu - (ny+1) * (nz+1)] + u[lu + 1] + u[lu - (nz+1) * (ny+1) + 1]) / 4.0 * (w[lw + (ny+1) * nz] - w[lw - (ny+1) * nz]) / (2.0 * dx) +
             (v[lv + 1] + v[lv - (nz+1) + 1] + v[lv] + v[lv - (nz+1)]) / 4.0 * (w[lw + nz] - w[lw - nz]) / (2.0 * dy) +
             w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * dz)) +
-            1 / Re * ((w[lw + (ny+1) * nz] - 2.0 * w[lw] + w[lw - (ny+1) * nz]) / (dx * dx) +
+            (1.0 / Re) * ((w[lw + (ny+1) * nz] - 2.0 * w[lw] + w[lw - (ny+1) * nz]) / (dx * dx) +
                 (w[lw + nz] - 2.0 * w[lw] + w[lw - nz]) / (dy * dy) +
                 (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (dz * dz)) +
             functionG_w(i, j, k, t);
@@ -190,11 +190,13 @@ double IcoNS::functionG_v(size_t i, size_t j, size_t k, double t)
     double x = i * dx;
     double y = j * dy + dy / 2;
     double z = k * dz;
-    return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) - std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
+    return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) - 
+           std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
            3.0 / Re * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
 }
+
     
 double IcoNS::functionG_w(size_t i, size_t j, size_t k, double t)
 {

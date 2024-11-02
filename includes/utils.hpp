@@ -120,7 +120,7 @@ public:
       }
     }else{
     //W
-      for (double i = 0; i < grid.nx; i++)
+      for (double i = 0; i < grid.nx+1; i++)
       {
           for (double j = 0; j < grid.ny+1; j++)
           {
