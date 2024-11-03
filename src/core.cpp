@@ -77,6 +77,7 @@ void IcoNS::solve()
         error_log << time << "," << i << ","  << L2_error(time) << std::endl;
         i++;
     }
+    std::cout << L2_error(time) << std::endl;
 }
 
 double IcoNS::L2_error(const double t)
