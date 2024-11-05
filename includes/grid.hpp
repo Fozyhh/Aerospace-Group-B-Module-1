@@ -6,11 +6,13 @@
 #include <iostream>
 #include <vector>
 
+#define Real float
+
 struct Grid
 {
     unsigned int nx, ny, nz;     // number of cells in the x,y,z directions.
-    std::vector<double> u, v, w; // velocity values of the grid cells.
-    std::vector<double> p;       // pressure values of the grid cells.
+    std::vector<Real> u, v, w; // velocity values of the grid cells.
+    std::vector<Real> p;       // pressure values of the grid cells.
 
     Grid(int nx, int ny, int nz) : nx(nx), ny(ny), nz(nz)
     {

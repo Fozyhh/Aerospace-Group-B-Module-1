@@ -2,12 +2,12 @@
 
 void IcoNS::solve_time_step(double time)
 {
-    std::vector<double> Y2_x(nx * (ny+1) * (nz+1));
-    std::vector<double> Y2_y((nx+1) * ny * (nz+1));
-    std::vector<double> Y2_z((nx+1) * (ny+1) * nz);
-    std::vector<double> Y3_x(nx * (ny+1) * (nz+1));
-    std::vector<double> Y3_y((nx+1) * ny * (nz+1));
-    std::vector<double> Y3_z((nx+1) * (ny+1) * nz);
+    std::vector<Real> Y2_x(nx * (ny+1) * (nz+1));
+    std::vector<Real> Y2_y((nx+1) * ny * (nz+1));
+    std::vector<Real> Y2_z((nx+1) * (ny+1) * nz);
+    std::vector<Real> Y3_x(nx * (ny+1) * (nz+1));
+    std::vector<Real> Y3_y((nx+1) * ny * (nz+1));
+    std::vector<Real> Y3_z((nx+1) * (ny+1) * nz);
 
     for (size_t i = 1; i < nx - 1; i++)
     {
@@ -44,9 +44,9 @@ void IcoNS::solve_time_step(double time)
             }
         }
     }
-
+    
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * dt);
-
+    
     for (size_t i = 1; i < nx - 1; i++)
     {
         for (size_t j = 1; j < ny; j++)
@@ -85,9 +85,9 @@ void IcoNS::solve_time_step(double time)
             }
         }
     }
-
+    
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * dt);
-
+    
     for (size_t i = 1; i < nx - 1; i++)
     {
         for (size_t j = 1; j < ny; j++)
@@ -126,10 +126,11 @@ void IcoNS::solve_time_step(double time)
             }
         }
     }
+    
 }
 
-double IcoNS::functionF_u(const std::vector<double> &u, const std::vector<double> &v,
-                                     const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v,
+                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
     size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
@@ -138,14 +139,14 @@ double IcoNS::functionF_u(const std::vector<double> &u, const std::vector<double
     return -(u[lu] * (u[lu + (ny+1) * (nz+1)] - u[lu - (ny+1) * (nz+1)]) / (2.0 * dx) +
             (v[lv] + v[lv + ny * (nz+1)] + v[lv - (nz+1)] + v[lv + ny * (nz+1) - (nz+1)]) / 4.0 * (u[lu + (nz+1)] - u[lu - (nz+1)]) / (2.0 * dy) +
             (w[lw] + w[lw + (ny+1) * nz] + w[lw - 1] + w[lw + (ny+1) * nz - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * dz)) +
-            1 / Re * ((u[lu + (ny+1) * (nz+1)] - 2 * u[lu] + u[lu - (ny+1) * (nz+1)]) / (dx * dx) +
+            (1.0 / Re) * ((u[lu + (ny+1) * (nz+1)] - 2 * u[lu] + u[lu - (ny+1) * (nz+1)]) / (dx * dx) +
                 (u[lu + (nz+1)] - 2 * u[lu] + u[lu - (nz+1)]) / (dy * dy) +
                 (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (dz * dz)) +
             functionG_u(i, j, k, t);
 }
 
-double IcoNS::functionF_v(const std::vector<double> &u, const std::vector<double> &v,
-                                     const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v,
+                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
     size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
@@ -153,15 +154,15 @@ double IcoNS::functionF_v(const std::vector<double> &u, const std::vector<double
 
     return -((u[lu] + u[lu + (nz+1)] + u[lu - (ny+1) * (nz+1)] + u[lu - (ny+1) * (nz+1) + (nz+1)]) / 4.0 * ((v[lv + ny * (nz+1)] - v[lv - ny * (nz+1)]) / (2.0 * dx)) +
             v[lv] * (v[lv + (nz+1)] - v[lv - (nz+1)]) / (2.0 * dy) +
-            (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
+            (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 * (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
             (1.0 / Re) * ((v[lv + ny * (nz + 1)] - 2.0 * v[lv] + v[lv - ny * (nz + 1)]) / (dx * dx) +
                 (v[lv + (nz+1)] - 2.0 * v[lv] + v[lv - (nz+1)]) / (dy * dy) +
                 (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (dz * dz)) +
                 functionG_v(i, j, k, t);
 }
 
-double IcoNS::functionF_w(const std::vector<double> &u, const std::vector<double> &v,
-                                     const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v,
+                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
     size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
@@ -177,19 +178,23 @@ double IcoNS::functionF_w(const std::vector<double> &u, const std::vector<double
 }
 
 
-double IcoNS::functionG_u(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * dx + dx / 2;
-    double y = j * dy;
-    double z = k * dz;
-    return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t) + std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) - std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) + 3.0 / Re * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+    Real x = i * dx + dx / 2;
+    Real y = j * dy;
+    Real z = k * dz;
+    return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t)+
+           std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
+           std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
+           2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) + 
+           3.0 / Re * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
 }
 
-double IcoNS::functionG_v(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * dx;
-    double y = j * dy + dy / 2;
-    double z = k * dz;
+    Real x = i * dx;
+    Real y = j * dy + dy / 2;
+    Real z = k * dz;
     return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) - 
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
@@ -198,14 +203,16 @@ double IcoNS::functionG_v(size_t i, size_t j, size_t k, double t)
 }
 
     
-double IcoNS::functionG_w(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * dx;
-    double y = j * dy;
-    double z = k * dz + dz / 2;
-    return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) - 2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
+    Real x = i * dx;
+    Real y = j * dy;
+    Real z = k * dz + dz / 2;
+    return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) -
+           2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
-           4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) + 6.0 / Re * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
+           4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) + 
+           6.0 / Re * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
 }
 
 

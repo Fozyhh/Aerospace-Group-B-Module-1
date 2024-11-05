@@ -8,15 +8,35 @@
 #include <string>
 #include <memory>
 
+
+#define VERBOSE
+#ifdef VERBOSE
+    #include <chrono>
+#endif
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
+    #ifdef VERBOSE
+        std::cout << "*************************************************" << std::endl;
+        std::cout << "Incompressible Navier-Stokes equation Solver" << std::endl << std::endl << std::endl;
+
+        std::cout << "Solving for a Mesh of physical dimension (" << lx << "," << ly << "," << lz <<") meters." << std::endl
+        << "Number of partitions: " << nx << " nx, " << ny << " ny, "<< nz << " nz." << std::endl
+        << "Dimension of a single cell:(" << dx <<"," << dy << "," << dz <<")." <<std::endl
+        << "Reynolds number: " << Re << std::endl
+        << "Total lenght of simulation: " << T << " seconds, whit a time step of " << dt << " seconds." << std::endl
+
+        << "------------------------------------------------------------" << std::endl << std::endl
+        <<"Reading Initial condition from file: Not implemented yet, setting all to 0." << std::endl
+        <<"Reading Boundary conditions from file: Not implemented yet, using default ones" <<std::endl;        
+        std::cout << "*************************************************" << std::endl << std::endl;
+    #endif
     // boundary
-    auto u_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::sin((x + 0.5) * dx) * std::cos(y * dy) * std::sin(z * dz) * std::sin(t); });
-    auto v_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * dx) * std::sin((y + 0.5) * dy) * std::sin(z * dz) * std::sin(t); });
-    auto w_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return 2 * (std::cos(x * dx) * std::cos(y * dy) * std::cos((z + 0.5) * dz) * std::sin(t)); });
 
     for (size_t i = 0; i < 6 /*nfaces*/; i++)
@@ -29,43 +49,68 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 void IcoNS::solve()
 {
+    Real error = 0.0;
     double time = 0.0;
     int i = 0;
 
     std::ofstream error_log("../resources/error.log");
-
+    #ifdef VERBOSE
+    std::cout << "Starting solver" << std::endl;
+    auto start =std::chrono::high_resolution_clock::now();
+    #endif
     while (time < T)
     {   
-        /*Check::Confront(grid,exact_solution,time,U);
-        int p;
-        std::cin >> p;*/
+        
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
-
-        // csv file w/ "," delimiter: time step, iter, L2_error
-        error_log << time << "," << i << "," << L2_error(time) << std::endl;
+        //Check::Confront(grid,exact_solution,time,W); int p;std::cin >> p;
+        error = L2_error(time);
+        #ifdef VERBOSE
+            std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
+            auto tss =std::chrono::high_resolution_clock::now();
+        #endif
+        error_log << time << "," << i << "," << error << std::endl;
         solve_time_step(time);
         // output();
         time += dt;
         i++;
+        #ifdef VERBOSE
+        auto tse =std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = tse-tss; 
+        std::cout << std::endl << "Time: " << duration.count() << std::endl;
+        std::cout << "Time per cell: " << duration.count() / (nx*ny*nz) << std::endl;
+        #endif
         
     }
+    error = L2_error(time);
+    error_log << time << "," << i << "," << error << std::endl;
+    #ifdef VERBOSE
+        std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
+        auto end =std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end-start; 
+        std::cout << std::endl << "Time: " << duration.count() << std::endl;
+        
+    #endif
 }
 
-double IcoNS::L2_error(const double t)
+Real IcoNS::L2_error(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
 
     error += error_comp_X(t);
     error += error_comp_Y(t);
     error += error_comp_Z(t);
 
+    /*std::cout << error_comp_X(t) << std::endl;
+    std::cout << error_comp_Y(t) << std::endl;
+    std::cout << error_comp_Z(t) << std::endl << std::endl;*/
+
     return sqrt(error);
 }
 
-double IcoNS::error_comp_X(const double t)
+Real IcoNS::error_comp_X(const Real t)
 {
-    double error = 0.0;
-
+    Real error = 0.0;
+    
     // first slice (left face)
     {
         error += ((grid.u[0] - exact_solution.value_x(0.5, 0, 0, t)) *
@@ -219,9 +264,9 @@ double IcoNS::error_comp_X(const double t)
     return error;
 }
 
-double IcoNS::error_comp_Y(const double t)
+Real IcoNS::error_comp_Y(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
 
     // first slice (left face)
     {
@@ -376,9 +421,9 @@ double IcoNS::error_comp_Y(const double t)
     return error;
 }
 
-double IcoNS::error_comp_Z(const double t)
+Real IcoNS::error_comp_Z(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
     // first slice (left face)
     {
         error += ((grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *

@@ -13,9 +13,9 @@
 class IcoNS
 {
 public:
-  IcoNS(const double lx, const double ly, const double lz,
+  IcoNS(const Real lx, const Real ly, const Real lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
-        const double dt, const double T, const double Re,
+        const double dt, const double T, const Real Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
         boundary(nx, ny, nz, lx/nx, ly/ny, lz/nz),
@@ -39,21 +39,21 @@ public:
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  double functionF_u(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_v(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_w(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionG_u(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
-  double functionG_v(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
-  double functionG_w(size_t i, size_t j, size_t k, double t);                                                                                           // compute the source term.
+  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
+  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
+  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
 
   void apply_boundary_conditions(double time); // apply the boundary conditions.
   void solve_time_step(double time);           // solve a time step.
   void solve();                                // solve the problem saving the ouput.
 
-  double error_comp_X(const double t);
-  double error_comp_Y(const double t);
-  double error_comp_Z(const double t);
-  double L2_error(const double t); // compute the L2 norm
+  Real error_comp_X(const Real t);
+  Real error_comp_Y(const Real t);
+  Real error_comp_Z(const Real t);
+  Real L2_error(const Real t); // compute the L2 norm
 
   void output(); // write the output file.
 
@@ -63,10 +63,10 @@ private:
   ExactSolution exact_solution;  // exact solution.
   const double dt;               // time step.
   const double T;                // final time.
-  const double Re;               // Reynolds number.
-  const double lx, ly, lz; // lengths of edges of the domain.
+  const Real Re;               // Reynolds number.
+  const Real lx, ly, lz; // lengths of edges of the domain.
   const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
+  const Real dx, dy, dz;       // cell sizes in the x,y,z directions.
   std::string input_file;        // input file.
   std::string output_file;       // output file.
 };

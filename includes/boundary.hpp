@@ -13,7 +13,8 @@ private:
     const unsigned int nx;
     const unsigned int ny;
     const unsigned int nz;
-    const double dx,dy,dz;
+    const Real dx,dy,dz;
+    //const long Real precision;
 
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
@@ -22,13 +23,13 @@ private:
     
 
     
-    Boundary(int nx, int ny, int nz,double dx_, double dy_,double dz_);
-    //void update_boundary(double t);
-    void update_boundary(std::vector<double>& Yx,std::vector<double>& Yy,std::vector<double>& Yz, double t);
+    Boundary(int nx, int ny, int nz,Real dx_, Real dy_,Real dz_);
+    //void update_boundary(long Real t);
+    void update_boundary(std::vector<Real>& Yx,std::vector<Real>& Yy,std::vector<Real>& Yz, Real t);
 
-    double approximate_boundary_u(size_t x, size_t y, size_t z,double t,size_t face, int side);
-    double approximate_boundary_v(size_t x, size_t y, size_t z,double t,size_t face, int side);
-    double approximate_boundary_w(size_t x, size_t y, size_t z,double t,size_t face, int side);
+    Real approximate_boundary_u(size_t x, size_t y, size_t z,Real t,size_t face, int side);
+    Real approximate_boundary_v(size_t x, size_t y, size_t z,Real t,size_t face, int side);
+    Real approximate_boundary_w(size_t x, size_t y, size_t z,Real t,size_t face, int side);
 
     void addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x);
 };
