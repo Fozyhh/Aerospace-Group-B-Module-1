@@ -121,52 +121,6 @@ void IcoNS::solve_time_step(double time)
     }
 }
 
-double IcoNS::functionF_u(const std::vector<double> &u, const std::vector<double> &v,
-                          const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
-{
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
-
-    return -(u[lu] * (u[lu + (NY + 1) * (NZ + 1)] - u[lu - (NY + 1) * (NZ + 1)]) / (2.0 * DX) +
-             (v[lv] + v[lv + NY * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + NY * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
-             (w[lw] + w[lw + (NY + 1) * NZ] + w[lw - 1] + w[lw + (NY + 1) * NZ - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
-           1 / RE * ((u[lu + (NY + 1) * (NZ + 1)] - 2 * u[lu] + u[lu - (NY + 1) * (NZ + 1)]) / (DX * DX) + (u[lu + (NZ + 1)] - 2 * u[lu] + u[lu - (NZ + 1)]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
-           functionG_u(i, j, k, t);
-}
-
-double IcoNS::functionF_v(const std::vector<double> &u, const std::vector<double> &v,
-                          const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
-{
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
-
-    return -((u[lu] + u[lu + (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1) + (NZ + 1)]) / 4.0 * ((v[lv + NY * (NZ + 1)] - v[lv - NY * (NZ + 1)]) / (2.0 * DX)) +
-             v[lv] * (v[lv + (NZ + 1)] - v[lv - (NZ + 1)]) / (2.0 * DY) +
-             (w[lw] + w[lw - 1] + w[lw + (NY + 1)] + w[lw + (NY + 1) - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
-           (1.0 / RE) * ((v[lv + NY * (NZ + 1)] - 2.0 * v[lv] + v[lv - NY * (NZ + 1)]) / (DX * DX) +
-                         (v[lv + (NZ + 1)] - 2.0 * v[lv] + v[lv - (NZ + 1)]) / (DY * DY) +
-                         (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
-           functionG_v(i, j, k, t);
-}
-
-double IcoNS::functionF_w(const std::vector<double> &u, const std::vector<double> &v,
-                          const std::vector<double> &w, size_t i, size_t j, size_t k, double t)
-{
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
-
-    return -((u[lu] + u[lu - (NY + 1) * (NZ + 1)] + u[lu + 1] + u[lu - (NZ + 1) * (NY + 1) + 1]) / 4.0 * (w[lw + (NY + 1) * NZ] - w[lw - (NY + 1) * NZ]) / (2.0 * DX) +
-             (v[lv + 1] + v[lv - (NZ + 1) + 1] + v[lv] + v[lv - (NZ + 1)]) / 4.0 * (w[lw + NZ] - w[lw - NZ]) / (2.0 * DY) +
-             w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
-           (1.0 / RE) * ((w[lw + (NY + 1) * NZ] - 2.0 * w[lw] + w[lw - (NY + 1) * NZ]) / (DX * DX) +
-                         (w[lw + NZ] - 2.0 * w[lw] + w[lw - NZ]) / (DY * DY) +
-                         (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
-           functionG_w(i, j, k, t);
-}
-
 double IcoNS::functionF_u(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t)
 {
     size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;

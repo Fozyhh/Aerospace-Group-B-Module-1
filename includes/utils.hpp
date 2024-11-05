@@ -45,7 +45,6 @@ public:
 
 class ExactSolution
 {
-  // Place holder implementation for now
 public:
   double value_x(double x, double y, double z, double t) const
   {
