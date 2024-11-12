@@ -12,11 +12,11 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
     // boundary
-    auto u_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
-    auto v_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
-    auto w_func = std::make_shared<Dirichlet>([&](double x, double y, double z, double t)
+    auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
 
     for (size_t i = 0; i < 6 /*nfaces*/; i++)
@@ -29,7 +29,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 void IcoNS::solve()
 {
-    double time = 0.0;
+    Real time = 0.0;
     int i = 0;
 
     std::ofstream error_log("../resources/error.log");
@@ -50,9 +50,9 @@ void IcoNS::solve()
     }
 }
 
-double IcoNS::L2_error(const double t)
+Real IcoNS::L2_error(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
 
     error += error_comp_X(t);
     error += error_comp_Y(t);
@@ -61,9 +61,9 @@ double IcoNS::L2_error(const double t)
     return sqrt(error);
 }
 
-double IcoNS::error_comp_X(const double t)
+Real IcoNS::error_comp_X(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
 
     // first slice (left face)
     {
@@ -218,9 +218,9 @@ double IcoNS::error_comp_X(const double t)
     return error;
 }
 
-double IcoNS::error_comp_Y(const double t)
+Real IcoNS::error_comp_Y(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
 
     // first slice (left face)
     {
@@ -375,9 +375,9 @@ double IcoNS::error_comp_Y(const double t)
     return error;
 }
 
-double IcoNS::error_comp_Z(const double t)
+Real IcoNS::error_comp_Z(const Real t)
 {
-    double error = 0.0;
+    Real error = 0.0;
     // first slice (left face)
     {
         error += ((grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *

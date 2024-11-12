@@ -21,20 +21,20 @@ public:
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  double functionF_u(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_v(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionF_w(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t); // compute the source term.
-  double functionG_u(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
-  double functionG_v(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
-  double functionG_w(size_t i, size_t j, size_t k, double t);                                                                                                                                                                    // compute the source term.
+  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
+  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
+  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
 
   void solve();                      // solve the problem saving the ouput.
-  void solve_time_step(double time); // solve a time step.
+  void solve_time_step(Real time); // solve a time step.
 
-  double error_comp_X(const double t);
-  double error_comp_Y(const double t);
-  double error_comp_Z(const double t);
-  double L2_error(const double t); // compute the L2 norm
+  Real error_comp_X(const Real t);
+  Real error_comp_Y(const Real t);
+  Real error_comp_Z(const Real t);
+  Real L2_error(const Real t); // compute the L2 norm
 
   void output(); // write the output file.
 
@@ -42,12 +42,12 @@ private:
   Grid grid; // grid of the domain.
   Boundary boundary;
   ExactSolution exact_solution;
-  std::array<double, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
-  std::array<double, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
-  std::array<double, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
-  std::array<double, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
-  std::array<double, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
-  std::array<double, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
+  std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
+  std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
+  std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
+  std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
+  std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
+  std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
 };

@@ -18,13 +18,13 @@ enum Direction
 class BoundaryFunction
 {
 public:
-  virtual double value(double x, double y, double z, double t) = 0;
+  virtual Real value(Real x, Real y, Real z, Real t) = 0;
 };
 
 class FunctionZero : public BoundaryFunction
 {
 public:
-  double value(double /*x*/, double /*y*/, double /*z*/, double /*t*/) override
+  Real value(Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/) override
   {
     return 0;
   }
@@ -33,11 +33,11 @@ public:
 class Dirichlet : public BoundaryFunction
 {
 public:
-  std::function<double(double, double, double, double)> func;
+  std::function<Real(Real, Real, Real, Real)> func;
 
-  Dirichlet(std::function<double(double, double, double, double)> func_) : func(func_) {};
+  Dirichlet(std::function<Real(Real, Real, Real, Real)> func_) : func(func_) {};
 
-  double value(double x, double y, double z, double t) override
+  Real value(Real x, Real y, Real z, Real t) override
   {
     return func(x, y, z, t);
   }
@@ -46,17 +46,17 @@ public:
 class ExactSolution
 {
 public:
-  double value_x(double x, double y, double z, double t) const
+  Real value_x(Real x, Real y, Real z, Real t) const
   {
     return std::sin(x * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t);
   }
 
-  double value_y(double x, double y, double z, double t) const
+  Real value_y(Real x, Real y, Real z, Real t) const
   {
     return std::cos(x * DX) * std::sin(y * DY) * std::sin(z * DZ) * std::sin(t);
   }
 
-  double value_z(double x, double y, double z, double t) const
+  Real value_z(Real x, Real y, Real z, Real t) const
   {
     return 2 * std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
   }
@@ -84,16 +84,16 @@ public:
    * @param t Timestep to print at
    * @param d Direction you want to show(U,V,W)
    */
-  static void Confront(Grid &grid, ExactSolution &exact, double t, Direction d)
+  static void Confront(Grid &grid, ExactSolution &exact, Real t, Direction d)
   {
     // U
     if (d == U)
     {
-      for (double i = 0; i < NX; i++)
+      for (Real i = 0; i < NX; i++)
       {
-        for (double j = 0; j < NY + 1; j++)
+        for (Real j = 0; j < NY + 1; j++)
         {
-          for (double k = 0; k < NZ + 1; k++)
+          for (Real k = 0; k < NZ + 1; k++)
           {
             std::cout << i << j << k << "(" << grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] << ")-(" << exact.value_x(i + 0.5, j, k, t) << ") ";
           }
@@ -105,11 +105,11 @@ public:
     else if (d == V)
     {
       // V
-      for (double i = 0; i < NX + 1; i++)
+      for (Real i = 0; i < NX + 1; i++)
       {
-        for (double j = 0; j < NY; j++)
+        for (Real j = 0; j < NY; j++)
         {
-          for (double k = 0; k < NZ + 1; k++)
+          for (Real k = 0; k < NZ + 1; k++)
           {
             std::cout << i << j << k << "(" << grid.v[i * (NY) * (NZ + 1) + j * (NZ + 1) + k] << ")-(" << exact.value_y(i, j + 0.5, k, t) << ") ";
           }
@@ -121,11 +121,11 @@ public:
     else
     {
       // W
-      for (double i = 0; i < NX + 1; i++)
+      for (Real i = 0; i < NX + 1; i++)
       {
-        for (double j = 0; j < NY + 1; j++)
+        for (Real j = 0; j < NY + 1; j++)
         {
-          for (double k = 0; k < NZ; k++)
+          for (Real k = 0; k < NZ; k++)
           {
             std::cout << i << j << k << "(" << grid.w[i * (NY + 1) * (NZ) + j * (NZ) + k] << ")-(" << exact.value_z(i, j, k + 0.5, t) << ") ";
           }

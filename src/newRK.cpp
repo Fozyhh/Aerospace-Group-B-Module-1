@@ -1,6 +1,6 @@
 #include "core.hpp"
 
-void IcoNS::solve_time_step(double time)
+void IcoNS::solve_time_step(Real time)
 {
     for (size_t i = 1; i < NX - 1; i++)
     {
@@ -121,7 +121,7 @@ void IcoNS::solve_time_step(double time)
     }
 }
 
-double IcoNS::functionF_u(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
@@ -134,7 +134,7 @@ double IcoNS::functionF_u(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, 
            functionG_u(i, j, k, t);
 }
 
-double IcoNS::functionF_v(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
@@ -149,7 +149,7 @@ double IcoNS::functionF_v(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, 
            functionG_v(i, j, k, t);
 }
 
-double IcoNS::functionF_w(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, const std::array<double, (NX + 1) * NY *(NZ + 1)> &v, const std::array<double, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
@@ -164,22 +164,22 @@ double IcoNS::functionF_w(const std::array<double, NX *(NY + 1) * (NZ + 1)> &u, 
            functionG_w(i, j, k, t);
 }
 
-double IcoNS::functionG_u(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * DX + DX / 2;
-    double y = j * DY;
-    double z = k * DZ;
+    Real x = i * DX + DX / 2;
+    Real y = j * DY;
+    Real z = k * DZ;
     return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t) +
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
            std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
            3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
 }
 
-double IcoNS::functionG_v(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * DX;
-    double y = j * DY + DY / 2;
-    double z = k * DZ;
+    Real x = i * DX;
+    Real y = j * DY + DY / 2;
+    Real z = k * DZ;
     return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) -
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
@@ -187,11 +187,11 @@ double IcoNS::functionG_v(size_t i, size_t j, size_t k, double t)
            3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
 }
 
-double IcoNS::functionG_w(size_t i, size_t j, size_t k, double t)
+Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
 {
-    double x = i * DX;
-    double y = j * DY;
-    double z = k * DZ + DZ / 2;
+    Real x = i * DX;
+    Real y = j * DY;
+    Real z = k * DZ + DZ / 2;
     return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) - 2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) + 6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);

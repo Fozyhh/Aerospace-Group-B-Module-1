@@ -3,7 +3,7 @@
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
 // For each boundary node, it takes the exact value dor each component from the input and updates them.
 // It also updates those values that are not directly on a face, but need an approximation.
-void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy, std::vector<double> &Yz, double t)
+void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
 
     // Each face is numbered from 0 to 5 and we treat every face separately
@@ -159,7 +159,7 @@ void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy,
  * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
-void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<double, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<double, (NX + 1) * (NY + 1) * NZ> &Yz, double t)
+void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t)
 {
 /*
     // Each face is numbered from 0 to 5 and we treat every face separately
@@ -499,11 +499,11 @@ void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, 
  * 
  * @return the approximate value.
 */
-double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t, size_t face, int side)
+Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
 
-    double dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
-    double dw = (boundary_value_w[face]->value(x, y, z, t) - boundary_value_w[face]->value(x, y, z - 1.0, t)) / DZ;
+    Real dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
+    Real dw = (boundary_value_w[face]->value(x, y, z, t) - boundary_value_w[face]->value(x, y, z - 1.0, t)) / DZ;
 
     return boundary_value_u[face]->value((x - 0.5 /*(DX/2.0)*/), y, z, t) - (dv + dw) * (DX / 2) * side;
 }
@@ -518,13 +518,13 @@ double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t, 
  * 
  * @return the approximate value.
 */
-double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t, size_t face, int side)
+Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
-    double du = ((boundary_value_u[face]->value(x, y, z, t)) -
+    Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
                  ((boundary_value_u[face]->value(x - 1, y, z, t)))) /
                 (DX);
 
-    double dw = ((boundary_value_w[face]->value(x, y, z, t)) -
+    Real dw = ((boundary_value_w[face]->value(x, y, z, t)) -
                  ((boundary_value_w[face]->value(x, y, z - 1, t)))) /
                 (DZ);
 
@@ -541,13 +541,13 @@ double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t, 
  * 
  * @return the approximate value.
 */
-double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t, size_t face, int side)
+Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
-    double du = ((boundary_value_u[face]->value(x, y, z, t)) -
+    Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
                  ((boundary_value_u[face]->value(x - 1.0, y, z, t)))) /
                 (DX);
 
-    double dv = ((boundary_value_v[face]->value(x, y, z, t)) -
+    Real dv = ((boundary_value_v[face]->value(x, y, z, t)) -
                  ((boundary_value_v[face]->value(x, y - 1.0, z, t)))) /
                 (DY);
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;

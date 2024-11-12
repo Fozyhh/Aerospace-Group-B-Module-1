@@ -10,14 +10,16 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+#define Real double
+
 /// @brief Physical length of the domain in the x-direction.
-constexpr double LX = 1.0;
+constexpr Real LX = 1.0;
 
 /// @brief Physical length of the domain in the y-direction.
-constexpr double LY = 1.0;
+constexpr Real LY = 1.0;
 
 /// @brief Physical length of the domain in the z-direction.
-constexpr double LZ = 1.0;
+constexpr Real LZ = 1.0;
 
 /// @brief Number of cells in the x-direction.
 constexpr int NX = 50;
@@ -29,21 +31,21 @@ constexpr int NY = 50;
 constexpr int NZ = 50;
 
 /// @brief Space discretization step size in the x-direction.
-constexpr double DX = LX / NX;
+constexpr Real DX = LX / NX;
 
 /// @brief Space discretization step size in the y-direction.
-constexpr double DY = LY / NY;
+constexpr Real DY = LY / NY;
 
 /// @brief Space discretization step size in the z-direction.
-constexpr double DZ = LZ / NZ;
+constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr double DT = 0.001;
+constexpr Real DT = 0.001;
 
 /// @brief Total time interval for the simulation.
-constexpr double T = 0.5;
+constexpr Real T = 0.5;
 
 /// @brief Reynolds number for the simulation.
-constexpr double RE = 1000.0;
+constexpr Real RE = 1000.0;
 
 #endif // CONFIG_HPP

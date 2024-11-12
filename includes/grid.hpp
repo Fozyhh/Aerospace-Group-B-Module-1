@@ -18,10 +18,10 @@
  */
 struct Grid
 {
-    std::array<double, NX *(NY + 1) * (NZ + 1)> u{};
-    std::array<double, (NX + 1) * NY *(NZ + 1)> v{};
-    std::array<double, (NX + 1) * (NY + 1) * NZ> w{};
-    std::array<double, (NX + 1) * (NY + 1) * (NZ + 1)> p{};
+    std::array<Real, NX *(NY + 1) * (NZ + 1)> u{};
+    std::array<Real, (NX + 1) * NY *(NZ + 1)> v{};
+    std::array<Real, (NX + 1) * (NY + 1) * NZ> w{};
+    std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> p{};
 };
 
 #endif // GRID_HPP
