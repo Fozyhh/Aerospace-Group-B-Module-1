@@ -6,8 +6,6 @@
 void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy, std::vector<double> &Yz, double t)
 {
 
-    std::cout << "CIAO" << std::endl;
-
     // Each face is numbered from 0 to 5 and we treat every face separately
     // LEFT FACE
 
@@ -151,6 +149,16 @@ void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy,
     }
 }
 
+
+/**
+ * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each 
+ * requested time t, calculating the approximated ones too.
+ * 
+ * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
+ * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
+ * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
+ * @param t Time of the time discretization we are considering.
+*/
 void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<double, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<double, (NX + 1) * (NY + 1) * NZ> &Yz, double t)
 {
 /*
@@ -481,7 +489,16 @@ void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, 
     }
 }
 
-// Performs the approximation of the component u that isn't precisely on the boundary.
+/**
+ * @brief Calculate the approximate value of the x velocity in a given point.
+ * 
+ * @param x,y,z Coordinates of the position in the 3D mesh.
+ * @param t Time of the time discretization we are considering.
+ * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
+ * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
+ * 
+ * @return the approximate value.
+*/
 double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t, size_t face, int side)
 {
 
@@ -491,7 +508,16 @@ double Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, double t, 
     return boundary_value_u[face]->value((x - 0.5 /*(DX/2.0)*/), y, z, t) - (dv + dw) * (DX / 2) * side;
 }
 
-// Performs the approximation of the component v that isn't precisely on the boundary.
+/**
+ * @brief Calculate the approximate value of the y velocity in a given point.
+ * 
+ * @param x,y,z Coordinates of the position in the 3D mesh.
+ * @param t Time of the time discretization we are considering.
+ * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
+ * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
+ * 
+ * @return the approximate value.
+*/
 double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t, size_t face, int side)
 {
     double du = ((boundary_value_u[face]->value(x, y, z, t)) -
@@ -505,7 +531,16 @@ double Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, double t, 
     return boundary_value_v[face]->value(x, y - 0.5, z, t) - (du + dw) * (DY / 2.0) * side;
 }
 
-// Performs the approximation of the component w that isn't precisely on the boundary.
+/**
+ * @brief Calculate the approximate value of the z velocity in a given point.
+ * 
+ * @param x,y,z Coordinates of the position in the 3D mesh.
+ * @param t Time of the time discretization we are considering.
+ * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
+ * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
+ * 
+ * @return the approximate value.
+*/
 double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t, size_t face, int side)
 {
     double du = ((boundary_value_u[face]->value(x, y, z, t)) -
@@ -518,6 +553,12 @@ double Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, double t, 
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
 
+/**
+ * @brief Add the given function to the selected direction.
+ * 
+ * @param direction Direction U (length), V (width) or W (height) of the boundary.
+ * @param x Function to assign to the boundary
+*/
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
 {
     switch (direction)
