@@ -6,6 +6,8 @@
 void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy, std::vector<double> &Yz, double t)
 {
 
+    std::cout << "CIAO" << std::endl;
+
     // Each face is numbered from 0 to 5 and we treat every face separately
     // LEFT FACE
 
@@ -151,7 +153,7 @@ void Boundary::update_boundary(std::vector<double> &Yx, std::vector<double> &Yy,
 
 void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<double, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<double, (NX + 1) * (NY + 1) * NZ> &Yz, double t)
 {
-
+/*
     // Each face is numbered from 0 to 5 and we treat every face separately
     // LEFT FACE
 
@@ -292,6 +294,190 @@ void Boundary::update_boundary(std::array<double, NX *(NY + 1) * (NZ + 1)> &Yx, 
             Yz[(NY + 1) * NZ * i + j * NZ + (NZ - 1)] = approximate_boundary_w(i, j, NZ, t, face, -1);
         }
         Yx[(NY + 1) * (NZ + 1) * i + NY * (NZ + 1) + NZ] = boundary_value_u[face]->value(i, NY, NZ, t);
+    }
+*/
+
+    size_t face, i, j, k;
+    // X
+    // LEFT FACE
+    face = 2;
+    for (size_t k=0; k < NZ+1; k++)
+    {
+        Yx[k] = boundary_value_u[face]->value(0,0,k,t);
+    }
+
+    for (size_t j=1; j < NY; j++)
+    {
+        face = 4;
+        Yx[j*(NZ+1)] = boundary_value_u[face]->value(0,j,0,t);
+        face = 0;
+        for(size_t k = 1; k < NZ; k++)
+        {
+            Yx[j*(NZ+1) + k] = approximate_boundary_u(0,j,k,t,face,1);
+        }
+        face = 5;
+        Yx[j*(NZ+1) + NZ] = boundary_value_u[face]->value(0,j,NZ,t);
+    }
+
+    face = 3;
+    for (size_t k=0; k < NZ+1; k++)
+    {
+        Yx[NY * (NZ+1) + k] = boundary_value_u[face]->value(0,NY,k,t);
+    }
+
+    // MIDDLE POINTS
+    for (size_t i=1; i < NX-1; i++)
+    {
+        face = 2;
+        for (size_t k=0; k < NZ+1; k++)
+        {
+            Yx[i * (NY+1) * (NZ+1) + k] = boundary_value_u[face]->value(i,0,k,t);
+        }
+        
+        for (size_t j=1; j < NY; j++)
+        {
+            face = 4;
+            Yx[(NY+1) * (NZ+1) * i + j*(NZ+1)] = boundary_value_u[face]->value(i,j,0,t);
+
+            face = 5;
+            Yx[(NY+1) * (NZ+1) * i + j*(NZ+1) + NZ] = boundary_value_u[face]->value(i,j,NZ,t);
+        }
+
+        face = 3;
+        for (size_t k=0; k < NZ+1; k++)
+        {
+            Yx[NY * (NZ + 1) + (NY+1) * (NZ+1) * i + k] = boundary_value_u[face]->value(i,NY,k,t);
+        }
+    }
+
+    // RIGHT FACE
+    face = 2;
+    for (size_t k=0; k < NZ+1; k++)
+    {
+        Yx[(NX-1) * (NY+1) * (NZ+1) + k] = boundary_value_u[face]->value(NX-1,0,k,t);
+    }
+
+    for (size_t j=1; j < NY; j++)
+    {
+        face = 4;
+        Yx[(NX-1) * (NY+1) * (NZ+1) + j*(NZ+1)] = boundary_value_u[face]->value(NX-1,j,0,t);
+
+        face = 1;
+        for(size_t k = 1; k < NZ; k++)
+        {
+            Yx[(NX-1)*(NY+1)*(NZ+1) + j*(NZ+1) + k] = approximate_boundary_u(NX,j,k,t,face,-1);
+        }
+
+        face = 5;
+        Yx[(NX-1) * (NY+1) * (NZ+1) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(NX-1,j,NZ,t);
+    }
+
+    face = 3;
+    for (size_t k=0; k < NZ+1; k++)
+    {
+        Yx[(NX-1) * (NY+1) * (NZ+1) + NY*(NZ+1) + k] = boundary_value_u[face]->value(NX-1,NY,k,t);
+    }
+
+
+    // Y
+    // LEFT FACE
+    face = 0;
+    for (size_t j = 0; j < NY; j++)
+    {
+        for(size_t k = 0; k < NZ+1; k++)
+        {
+            Yy[j*(NZ+1) + k] = boundary_value_v[face]->value(0,j,k,t);
+        }
+    }
+
+    // MIDDLE POINTS
+    for (size_t i=1; i < NX; i++)
+    {
+        face = 4;
+        Yy[NY * (NZ+1) * i] = boundary_value_v[face]->value(i,0,0,t); 
+        face = 2;
+        for (size_t k=1; k < NZ; k++)
+        {
+            Yy[i * NY * (NZ+1) + k] = approximate_boundary_v(i,0,k,t,face,1);
+        }
+        face = 5;
+        Yy[NY * (NZ+1) * i + NZ] = boundary_value_v[face]->value(i,0,NZ,t); 
+
+        for (size_t j=1; j < NY-1; j++)
+        {
+            face = 4;
+            Yy[NY * (NZ+1) * i + j*(NZ+1)] = boundary_value_v[face]->value(i,j,0,t); 
+
+            face = 5;
+            Yy[NY * (NZ+1) * i + j*(NZ+1) + NZ] = boundary_value_v[face]->value(i,j,NZ,t); 
+        }
+        
+        face = 4;
+        Yy[NY * (NZ+1) * i + (NY-1)*(NZ+1)] = boundary_value_v[face]->value(i,NY-1,0,t); 
+        face = 3;
+        for(size_t k = 1; k < NZ; k++)
+        {
+            Yy[(NY-1) * (NZ+1) + NY * (NZ+1) * i + k] = approximate_boundary_v(i,NY,k,t,face,-1);
+        }
+        face = 5;
+        Yy[NY * (NZ+1) * i + (NY-1)*(NZ+1) + NZ] = boundary_value_v[face]->value(i,NY-1,NZ,t); 
+    }
+
+    // RIGHT FACE
+    face = 1;
+    for (size_t j = 0; j < NY; j++)
+    {
+        for(size_t k = 0; k < NZ+1; k++)
+        {
+            Yy[NX*NY*(NZ+1) + j*(NZ+1) + k] = boundary_value_v[face]->value(NX,j,k,t);
+        }
+    }
+
+
+    // Z
+    // LEFT FACE 
+    face = 0;
+    for (size_t j = 0; j < NY+1; j++)
+    {
+        for(size_t k = 0; k < NZ; k++)
+        {
+            Yz[j*NZ + k] = boundary_value_w[face]->value(0,j,k,t); 
+        }
+    }
+
+    // MIDDLE POINTS
+    for (size_t i=1; i < NX; i++)
+    {
+        face = 2;
+        for (size_t k=0; k < NZ; k++)
+        {
+            Yz[i * (NY+1) * NZ + k] = boundary_value_w[face]->value(i,0,k,t);
+        }
+
+        for(size_t j = 1; j < NY; j++)
+        {
+            face = 4;
+            Yz[(NY+1) * NZ * i + j*NZ] = approximate_boundary_w(i,j,0,t,face,1);
+            
+            face = 5;
+            Yz[(NY+1) * NZ * i + j*NZ + (NZ - 1)] = approximate_boundary_w(i,j,NZ,t,face,-1);
+        }
+
+        face = 3;
+        for(size_t k = 0; k < NZ+1; k++)
+        {
+            Yz[NY * NZ + i * (NY+1) * NZ + k] = boundary_value_w[face]->value(i,NY,k,t);
+        }
+    }
+
+    // RIGHT FACE
+    face = 1;
+    for (size_t j = 0; j < NY+1; j++)
+    {
+        for(size_t k = 0; k < NZ; k++)
+        {
+            Yz[NX*(NY+1)*NZ + j*NZ + k] = boundary_value_w[face]->value(NX,j,k,t); 
+        }
     }
 }
 
