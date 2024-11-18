@@ -4,6 +4,8 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+#include "utils.hpp"
+#include "boundary.hpp"
 #include "grid.hpp"
 #include <string>
 #include <cmath>
@@ -11,31 +13,12 @@
 class IcoNS
 {
 public:
-  class ExactSolution
-  {
-    // Place holder implementation for now
-  public:
-    double value_x(size_t x, size_t y, size_t z, double t) const
-    {
-      return std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
-    }
-
-    double value_y(size_t x, size_t y, size_t z, double t) const
-    {
-      return std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
-    }
-
-    double value_z(size_t x, size_t y, size_t z, double t) const
-    {
-      return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
-    }
-  };
-
-  IcoNS(const double lx, const double ly, const double lz,
+  IcoNS(const Real lx, const Real ly, const Real lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
-        const double dt, const double T, const double Re,
+        const double dt, const double T, const Real Re,
         const std::string &input_file, const std::string &output_file)
       : grid(nx, ny, nz),
+        boundary(nx, ny, nz, lx/nx, ly/ny, lz/nz),
         dt(dt),
         T(T),
         Re(Re),
@@ -49,37 +32,44 @@ public:
         dy(ly / ny),
         dz(lz / nz),
         input_file(input_file),
-        output_file(output_file)
+        output_file(output_file),
+        exact_solution(lx/nx, ly/ny, lz/nz)
   {
   }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  void solve(); // solve the problem saving the ouput.
+  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
+  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
+  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
 
-  std::vector<double> functionF(const std::vector<double> &u, const std::vector<double> &v, const std::vector<double> &w,
-                                size_t i, size_t j, size_t k);
+  void apply_boundary_conditions(double time); // apply the boundary conditions.
+  void solve_time_step(double time);           // solve a time step.
+  void solve();                                // solve the problem saving the ouput.
 
-  void solve_time_step(); // solve a time step.
-
-  double error_comp_X(const double t);
-  double error_comp_Y(const double t);
-  double error_comp_Z(const double t);
-  double L2_error(const double t); // compute the L2 norm
+  Real error_comp_X(const Real t);
+  Real error_comp_Y(const Real t);
+  Real error_comp_Z(const Real t);
+  Real L2_error(const Real t); // compute the L2 norm
+  Real L2_error2(const Real t); // compute the L2 norm
 
   void output(); // write the output file.
 
 private:
-  Grid grid;                     // grid of the problem.
+  Grid grid; // grid of the domain.
+  Boundary boundary;
+  ExactSolution exact_solution;  // exact solution.
   const double dt;               // time step.
   const double T;                // final time.
-  const double Re;               // Reynolds number.
-  const unsigned int lx, ly, lz; // lengths of edges of the domain.
+  const Real Re;               // Reynolds number.
+  const Real lx, ly, lz; // lengths of edges of the domain.
   const unsigned int nx, ny, nz; // number of cells in the x,y,z directions.
-  const double dx, dy, dz;       // cell sizes in the x,y,z directions.
-  ExactSolution exact_solution;  // exact solution.
+  const Real dx, dy, dz;       // cell sizes in the x,y,z directions.
   std::string input_file;        // input file.
   std::string output_file;       // output file.
 };
 
-#endif
+#endif // CORE_HPP

@@ -1,9 +1,20 @@
-#include "../includes/core.hpp"
+#include <iostream>
+#include "core.hpp"
+
 
 int main()
 {
-    IcoNS icoNS(100, 100, 100, 100, 100, 100, 0.01, 10.0, 400.0, "input.txt", "output.txt");
-
+    const float lx = 1;
+    const float ly = 1;
+    const float lz = 1;
+    const unsigned int nx = 60;
+    const unsigned int ny = 60;
+    const unsigned int nz = 60;
+    const double dt = 0.01;
+    const double T = 1.0;
+    const float Re = 400.0;
+    IcoNS icoNS(lx, ly, lz, nx, ny, nz, dt, T, Re, "input.txt", "output.txt");
+    icoNS.preprocessing();
     icoNS.solve();
 
     return 0;
