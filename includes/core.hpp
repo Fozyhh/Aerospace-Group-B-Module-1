@@ -57,9 +57,9 @@ public:
   Real error_comp_Z(const Real t);
   Real L2_error(const Real t); // compute the L2 norm
 
-  void output_u(const std::string& filename, Grid& grid); // write the output file.
-  void output_v(const std::string& filename, Grid& grid); // write the output file.
-  void output_w(const std::string& filename, Grid& grid); // write the output file.
+  void output_u(const std::string& filename, Grid& print); // write the output file.
+  void output_v(const std::string& filename, Grid& print); // write the output file.
+  void output_w(const std::string& filename, Grid& print); // write the output file.
 
 private:
   Grid grid; // grid of the domain.

@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 
-#define OUTPUT
+//#define OUTPUT
 #define OUTPUTERROR
 //#define VERBOSE
 #ifdef VERBOSE
@@ -63,18 +63,6 @@ void IcoNS::solve()
     #endif
     while (time < T)
     {   
-        
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
-        //Check::Confront(grid,exact_solution,time,W); int p;std::cin >> p;
-        error = L2_error(time);
-        #ifdef VERBOSE
-            std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
-            auto tss =std::chrono::high_resolution_clock::now();
-        #endif
-        error_log << time << "," << i << "," << error << std::endl;
-        solve_time_step(time);
-        // output();
-
         #ifdef OUTPUT
             std::string filenameerroru = "../resources/paraview/u/" + std::to_string(time) +".vtk";
             std::string filenameerrorv = "../resources/paraview/v/" + std::to_string(time) +".vtk";
@@ -130,6 +118,19 @@ void IcoNS::solve()
                 output_w(filenameerrorw, ERROR);
             }
         #endif
+        
+        boundary.update_boundary(grid.u, grid.v, grid.w, time);
+        //Check::Confront(grid,exact_solution,time,W); int p;std::cin >> p;
+        error = L2_error(time);
+        #ifdef VERBOSE
+            std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
+            auto tss =std::chrono::high_resolution_clock::now();
+        #endif
+        error_log << time << "," << i << "," << error << std::endl;
+        solve_time_step(time);
+        // output();
+
+        
         time += dt;
         i++;
         #ifdef VERBOSE
@@ -151,7 +152,7 @@ void IcoNS::solve()
     #endif
 }
 
-void IcoNS::output_u(const std::string& filename, Grid& grid) {
+void IcoNS::output_u(const std::string& filename, Grid& print) {
         
         std::filesystem::path filepath(filename);
         std::filesystem::create_directories(filepath.parent_path());
@@ -166,21 +167,30 @@ void IcoNS::output_u(const std::string& filename, Grid& grid) {
         file << "3D structured grid\n";
         file << "ASCII\n";
         file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << grid.nx << " " << grid.ny + 1 << " " << grid.nz + 1 << "\n";
+        file << "DIMENSIONS " << print.nx << " " << print.ny + 1 << " " << print.nz + 1 << "\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (grid.nx) * (grid.ny + 1) * (grid.nz + 1) << "\n";
+        file << "POINT_DATA " << (print.nx) * (print.ny + 1) * (print.nz + 1) << "\n";
 
         // Stampa delle velocità U
         file << "SCALARS velocity_u double 1\n";
         file << "LOOKUP_TABLE default\n";
-        for (size_t i = 0; i < grid.u.size(); ++i) {
-            file << grid.u[i] << "\n";
+        
+        for(size_t k = 0 ; k < nz+1 ; k++){
+            for (size_t j = 0; j < ny+1; j++)
+            {
+                for (int i = nx-1; i >= 0; i--)
+                {   
+                    file << print.u[i*(ny+1)*(nz+1) + j * (nz+1) + k] << "\n";
+                }
+                
+            }
         }
+
         file.close();
         std::cout << "File " << filename << " scritto con successo." << std::endl;
     }
-    void IcoNS::output_v(const std::string& filename, Grid& grid) {
+    void IcoNS::output_v(const std::string& filename, Grid& print) {
         
         std::filesystem::path filepath(filename);
         std::filesystem::create_directories(filepath.parent_path());
@@ -195,22 +205,33 @@ void IcoNS::output_u(const std::string& filename, Grid& grid) {
         file << "3D structured grid\n";
         file << "ASCII\n";
         file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << grid.nx +1 << " " << grid.ny  << " " << grid.nz + 1 << "\n";
+        file << "DIMENSIONS " << print.nx +1 << " " << print.ny  << " " << print.nz + 1 << "\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (grid.nx+1) * (grid.ny) * (grid.nz + 1) << "\n";
+        file << "POINT_DATA " << (print.nx+1) * (print.ny) * (print.nz + 1) << "\n";
 
         // Stampa delle velocità V
         file << "SCALARS velocity_v double 1\n";
         file << "LOOKUP_TABLE default\n";
-        for (size_t i = 0; i < grid.v.size(); ++i) {
-            file << grid.v[i] << "\n";
+        for(int k = nz ; k >= 0 ; k--)
+        {
+            for (size_t j = 0; j < ny; j++)
+            {
+                for (size_t i = 0; i <nx +1; i++)
+                {   
+                    file << print.v[i*(ny)*(nz+1) + j * (nz+1) + k] << "\n";
+                }
+                
+            }
         }
+        // for (size_t i = 0; i < print.v.size(); ++i) {
+        //     file << print.v[i] << "\n";
+        // }
 
         file.close();
         std::cout << "File " << filename << " scritto con successo." << std::endl;
     }
-    void IcoNS::output_w(const std::string& filename, Grid& grid) {
+    void IcoNS::output_w(const std::string& filename, Grid& print) {
         
         std::filesystem::path filepath(filename);
         std::filesystem::create_directories(filepath.parent_path());
@@ -225,16 +246,24 @@ void IcoNS::output_u(const std::string& filename, Grid& grid) {
         file << "3D structured grid\n";
         file << "ASCII\n";
         file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << grid.nx +1 << " " << grid.ny + 1 << " " << grid.nz  << "\n";
+        file << "DIMENSIONS " << print.nx +1 << " " << print.ny + 1 << " " << print.nz  << "\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (grid.nx+1) * (grid.ny + 1) * (grid.nz ) << "\n";
+        file << "POINT_DATA " << (print.nx+1) * (print.ny + 1) * (print.nz ) << "\n";
 
         // Stampa delle velocità W
         file << "SCALARS velocity_w double 1\n";
         file << "LOOKUP_TABLE default\n";
-        for (size_t i = 0; i < grid.w.size(); ++i) {
-            file << grid.w[i] << "\n";
+        for(int k = nz-1 ; k >= 0 ; k--)
+        {
+            for (size_t j = 0; j < ny+1; j++)
+            {
+                for (size_t i = 0; i <nx +1; i++)
+                {   
+                    file << print.w[i*(ny+1)*(nz) + j * (nz) + k] << "\n";
+                }
+                
+            }
         }
 
         file.close();
