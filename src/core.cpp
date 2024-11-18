@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 
-//#define OUTPUT
+#define OUTPUT
 #define OUTPUTERROR
 //#define VERBOSE
 #ifdef VERBOSE
@@ -76,9 +76,9 @@ void IcoNS::solve()
         // output();
 
         #ifdef OUTPUT
-            std::string filenameerroru = "../resources/paraviewerror/u/" + std::to_string(time) +".vtk";
-            std::string filenameerrorv = "../resources/paraviewerror/v/" + std::to_string(time) +".vtk";
-            std::string filenameerrorw = "../resources/paraviewerror/w/" + std::to_string(time) +".vtk";
+            std::string filenameerroru = "../resources/paraview/u/" + std::to_string(time) +".vtk";
+            std::string filenameerrorv = "../resources/paraview/v/" + std::to_string(time) +".vtk";
+            std::string filenameerrorw = "../resources/paraview/w/" + std::to_string(time) +".vtk";
             output_u(filenameerroru, grid);
             output_v(filenameerrorv, grid);
             output_w(filenameerrorw, grid);
