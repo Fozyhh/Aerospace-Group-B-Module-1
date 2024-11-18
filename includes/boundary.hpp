@@ -14,7 +14,7 @@ private:
     const unsigned int ny;
     const unsigned int nz;
     const Real dx,dy,dz;
-    //const long Real precision;
+    const Real precision;
 
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;

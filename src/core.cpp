@@ -76,12 +76,18 @@ void IcoNS::solve()
         // output();
 
         #ifdef OUTPUT
-            std::string filename = "../resources/paraview/" + std::to_string(time) +".vtk";
-            output(filename, grid);
+            std::string filenameerroru = "../resources/paraviewerror/u/" + std::to_string(time) +".vtk";
+            std::string filenameerrorv = "../resources/paraviewerror/v/" + std::to_string(time) +".vtk";
+            std::string filenameerrorw = "../resources/paraviewerror/w/" + std::to_string(time) +".vtk";
+            output_u(filenameerroru, grid);
+            output_v(filenameerrorv, grid);
+            output_w(filenameerrorw, grid);
         #endif
         #ifdef OUTPUTERROR
             if(i%5== 0){
-                std::string filenameerror = "../resources/paraviewerror/" + std::to_string(time) +".vtk";
+                std::string filenameerroru = "../resources/paraviewerror/u/" + std::to_string(time) +".vtk";
+                std::string filenameerrorv = "../resources/paraviewerror/v/" + std::to_string(time) +".vtk";
+                std::string filenameerrorw = "../resources/paraviewerror/w/" + std::to_string(time) +".vtk";
                 for (size_t i = 0; i < nx; i++)
                 {
                     for (size_t j = 0; j < ny+1; j++)
@@ -119,7 +125,9 @@ void IcoNS::solve()
                     
                 }
                 
-                output(filenameerror, grid);
+                output_u(filenameerroru, grid);
+                output_v(filenameerrorv, grid);
+                output_w(filenameerrorw, grid);
             }
         #endif
         time += dt;
@@ -143,7 +151,7 @@ void IcoNS::solve()
     #endif
 }
 
-void IcoNS::output(const std::string& filename, Grid& grid) {
+void IcoNS::output_u(const std::string& filename, Grid& grid) {
         
         std::filesystem::path filepath(filename);
         std::filesystem::create_directories(filepath.parent_path());
@@ -169,6 +177,28 @@ void IcoNS::output(const std::string& filename, Grid& grid) {
         for (size_t i = 0; i < grid.u.size(); ++i) {
             file << grid.u[i] << "\n";
         }
+        file.close();
+        std::cout << "File " << filename << " scritto con successo." << std::endl;
+    }
+    void IcoNS::output_v(const std::string& filename, Grid& grid) {
+        
+        std::filesystem::path filepath(filename);
+        std::filesystem::create_directories(filepath.parent_path());
+        
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file for writing: " << filename << std::endl;
+            return;
+        }
+
+        file << "# vtk DataFile Version 3.0\n";
+        file << "3D structured grid\n";
+        file << "ASCII\n";
+        file << "DATASET STRUCTURED_POINTS\n";
+        file << "DIMENSIONS " << grid.nx +1 << " " << grid.ny  << " " << grid.nz + 1 << "\n";
+        file << "ORIGIN 0 0 0\n";
+        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
+        file << "POINT_DATA " << (grid.nx+1) * (grid.ny) * (grid.nz + 1) << "\n";
 
         // Stampa delle velocità V
         file << "SCALARS velocity_v double 1\n";
@@ -177,19 +207,35 @@ void IcoNS::output(const std::string& filename, Grid& grid) {
             file << grid.v[i] << "\n";
         }
 
+        file.close();
+        std::cout << "File " << filename << " scritto con successo." << std::endl;
+    }
+    void IcoNS::output_w(const std::string& filename, Grid& grid) {
+        
+        std::filesystem::path filepath(filename);
+        std::filesystem::create_directories(filepath.parent_path());
+        
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file for writing: " << filename << std::endl;
+            return;
+        }
+
+        file << "# vtk DataFile Version 3.0\n";
+        file << "3D structured grid\n";
+        file << "ASCII\n";
+        file << "DATASET STRUCTURED_POINTS\n";
+        file << "DIMENSIONS " << grid.nx +1 << " " << grid.ny + 1 << " " << grid.nz  << "\n";
+        file << "ORIGIN 0 0 0\n";
+        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
+        file << "POINT_DATA " << (grid.nx+1) * (grid.ny + 1) * (grid.nz ) << "\n";
+
         // Stampa delle velocità W
         file << "SCALARS velocity_w double 1\n";
         file << "LOOKUP_TABLE default\n";
         for (size_t i = 0; i < grid.w.size(); ++i) {
             file << grid.w[i] << "\n";
         }
-
-        // // Stampa della pressione P
-        // file << "SCALARS pressure double 1\n";
-        // file << "LOOKUP_TABLE default\n";
-        // for (size_t i = 0; i < grid.p.size(); ++i) {
-        //     file << grid.p[i] << "\n";
-        // }
 
         file.close();
         std::cout << "File " << filename << " scritto con successo." << std::endl;

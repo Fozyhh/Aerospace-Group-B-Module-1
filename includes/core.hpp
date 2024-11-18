@@ -9,6 +9,7 @@
 #include "grid.hpp"
 #include <string>
 #include <cmath>
+#include <filesystem>
 
 class IcoNS
 {
@@ -16,7 +17,7 @@ public:
   IcoNS(const Real lx, const Real ly, const Real lz,
         const unsigned int nx, const unsigned int ny, const unsigned int nz,
         const double dt, const double T, const Real Re,
-        const std::string &input_file, const std::string &output_file)
+        const std::string &input_file, const std::string &output_file,const std::string& error_file_)
       : grid(nx, ny, nz),
         boundary(nx, ny, nz, lx/nx, ly/ny, lz/nz),
         dt(dt),
@@ -33,6 +34,7 @@ public:
         dz(lz / nz),
         input_file(input_file),
         output_file(output_file),
+        error_file(error_file_),
         exact_solution(lx/nx, ly/ny, lz/nz)
   {
   }
@@ -40,7 +42,7 @@ public:
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
   Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std:: vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
   Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                           // compute the source term.
@@ -55,7 +57,9 @@ public:
   Real error_comp_Z(const Real t);
   Real L2_error(const Real t); // compute the L2 norm
 
-  void output(); // write the output file.
+  void output_u(const std::string& filename, Grid& grid); // write the output file.
+  void output_v(const std::string& filename, Grid& grid); // write the output file.
+  void output_w(const std::string& filename, Grid& grid); // write the output file.
 
 private:
   Grid grid; // grid of the domain.
@@ -69,6 +73,7 @@ private:
   const Real dx, dy, dz;       // cell sizes in the x,y,z directions.
   std::string input_file;        // input file.
   std::string output_file;       // output file.
+  std::string error_file;
 };
 
 #endif // CORE_HPP
