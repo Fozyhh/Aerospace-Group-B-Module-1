@@ -125,9 +125,9 @@ void IcoNS::solve()
                     
                 }
                 
-                output_u(filenameerroru, grid);
-                output_v(filenameerrorv, grid);
-                output_w(filenameerrorw, grid);
+                output_u(filenameerroru, ERROR);
+                output_v(filenameerrorv, ERROR);
+                output_w(filenameerrorw, ERROR);
             }
         #endif
         time += dt;
