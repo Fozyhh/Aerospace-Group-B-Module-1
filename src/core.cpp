@@ -8,8 +8,9 @@
 #include <string>
 #include <memory>
 
-
-#define VERBOSE
+//#define OUTPUT
+#define OUTPUTERROR
+//#define VERBOSE
 #ifdef VERBOSE
     #include <chrono>
 #endif
@@ -52,8 +53,10 @@ void IcoNS::solve()
     Real error = 0.0;
     double time = 0.0;
     int i = 0;
-
-    std::ofstream error_log("../resources/error.log");
+    #ifdef OUTPUTERROR
+    Grid ERROR(grid);
+    #endif
+    std::ofstream error_log("../resources/" + error_file);
     #ifdef VERBOSE
     std::cout << "Starting solver" << std::endl;
     auto start =std::chrono::high_resolution_clock::now();
@@ -71,6 +74,54 @@ void IcoNS::solve()
         error_log << time << "," << i << "," << error << std::endl;
         solve_time_step(time);
         // output();
+
+        #ifdef OUTPUT
+            std::string filename = "../resources/paraview/" + std::to_string(time) +".vtk";
+            output(filename, grid);
+        #endif
+        #ifdef OUTPUTERROR
+            if(i%5== 0){
+                std::string filenameerror = "../resources/paraviewerror/" + std::to_string(time) +".vtk";
+                for (size_t i = 0; i < nx; i++)
+                {
+                    for (size_t j = 0; j < ny+1; j++)
+                    {
+                        for (size_t k = 0; k < nz +1; k++)
+                        {
+                            ERROR.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] = grid.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] - exact_solution.value_x(i+0.5,j,k,time);
+                        }
+                        
+                    }
+                    
+                }
+                for (size_t i = 0; i < nx+1; i++)
+                {
+                    for (size_t j = 0; j < ny; j++)
+                    {
+                        for (size_t k = 0; k < nz +1; k++)
+                        {
+                            ERROR.v[i*(ny)*(nz+1) + j*(nz+1) + k] = grid.v[i*(ny)*(nz+1) + j*(nz+1) + k] - exact_solution.value_y(i,j+0.5,k,time);
+                        }
+                        
+                    }
+                    
+                }
+                for (size_t i = 0; i < nx + 1; i++)
+                {
+                    for (size_t j = 0; j < ny+1; j++)
+                    {
+                        for (size_t k = 0; k < nz; k++)
+                        {
+                            ERROR.w[i*(ny+1)*(nz) + j*(nz) + k] = grid.w[i*(ny+1)*(nz) + j*(nz) + k] - exact_solution.value_z(i,j,k+0.5,time);
+                        }
+                        
+                    }
+                    
+                }
+                
+                output(filenameerror, grid);
+            }
+        #endif
         time += dt;
         i++;
         #ifdef VERBOSE
@@ -91,6 +142,58 @@ void IcoNS::solve()
         
     #endif
 }
+
+void IcoNS::output(const std::string& filename, Grid& grid) {
+        
+        std::filesystem::path filepath(filename);
+        std::filesystem::create_directories(filepath.parent_path());
+        
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error opening file for writing: " << filename << std::endl;
+            return;
+        }
+
+        file << "# vtk DataFile Version 3.0\n";
+        file << "3D structured grid\n";
+        file << "ASCII\n";
+        file << "DATASET STRUCTURED_POINTS\n";
+        file << "DIMENSIONS " << grid.nx << " " << grid.ny + 1 << " " << grid.nz + 1 << "\n";
+        file << "ORIGIN 0 0 0\n";
+        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
+        file << "POINT_DATA " << (grid.nx) * (grid.ny + 1) * (grid.nz + 1) << "\n";
+
+        // Stampa delle velocità U
+        file << "SCALARS velocity_u double 1\n";
+        file << "LOOKUP_TABLE default\n";
+        for (size_t i = 0; i < grid.u.size(); ++i) {
+            file << grid.u[i] << "\n";
+        }
+
+        // Stampa delle velocità V
+        file << "SCALARS velocity_v double 1\n";
+        file << "LOOKUP_TABLE default\n";
+        for (size_t i = 0; i < grid.v.size(); ++i) {
+            file << grid.v[i] << "\n";
+        }
+
+        // Stampa delle velocità W
+        file << "SCALARS velocity_w double 1\n";
+        file << "LOOKUP_TABLE default\n";
+        for (size_t i = 0; i < grid.w.size(); ++i) {
+            file << grid.w[i] << "\n";
+        }
+
+        // // Stampa della pressione P
+        // file << "SCALARS pressure double 1\n";
+        // file << "LOOKUP_TABLE default\n";
+        // for (size_t i = 0; i < grid.p.size(); ++i) {
+        //     file << grid.p[i] << "\n";
+        // }
+
+        file.close();
+        std::cout << "File " << filename << " scritto con successo." << std::endl;
+    }
 
 Real IcoNS::L2_error(const Real t)
 {
@@ -578,6 +681,6 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
-void IcoNS::output()
-{
-}
+// void IcoNS::output()
+// {
+// }

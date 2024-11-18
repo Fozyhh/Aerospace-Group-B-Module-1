@@ -7,7 +7,7 @@ nx(nx)
 ,dx(dx_)
 ,dy(dy_)
 ,dz(dz_)
-//,precision(0.1)
+,precision(0.1)
 {}
 
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
@@ -171,7 +171,8 @@ void Boundary::update_boundary(std::vector<Real>& Yx,std::vector<Real>& Yy,std::
 
 // Performs the approximation of the component u that isn't precisely on the boundary.
 Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t,size_t face,int side) {
-    
+    // return side == 1 ? boundary_value_u[face]->value(x,y,z,t) : boundary_value_u[face]->value(x- 1.0,y,z,t);
+
     Real dv = (boundary_value_v[face]->value(x, y , z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t) ) / (dy*1);
     Real dw = (boundary_value_w[face]->value(x, y , z ,t) - boundary_value_w[face]->value(x, y , z - 1.0 , t)) / dz;
     
@@ -179,18 +180,20 @@ Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t,size_
     // Real dv = (boundary_value_v[face]->value(x, y-(0.5-precision) , z, t) - boundary_value_v[face]->value(x, y - (0.5+precision), z, t) ) / (dy*2*precision);
     // Real dw = (boundary_value_w[face]->value(x, y , z-(0.5-precision) ,t) - boundary_value_w[face]->value(x, y , z - (0.5+precision) , t)) / (dz*2*precision);
 
-
-    return  boundary_value_u[face]->value((x-0.5/*(dx/2.0)*/), y, z, t) - (dv + dw) * (dx/2)*side;
+    return  boundary_value_u[face]->value((x-0.5), y, z, t) - (dv + dw) * (dx/2)*side;
+    
+    
 }
 
 
 // Performs the approximation of the component v that isn't precisely on the boundary.
 Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t,size_t face, int side) {
+    // return side == 1 ? boundary_value_v[face]->value(x,y,z,t) : boundary_value_v[face]->value(x,y-1.0,z,t);
     Real du = ((boundary_value_u[face]->value(x , y, z,t)) -
-                ((boundary_value_u[face]->value(x - 1, y, z,t)))) / (dx);
+                ((boundary_value_u[face]->value(x - 1.0, y, z,t)))) / (dx);
     
     Real dw =  ((boundary_value_w[face]->value(x, y, z,t)) -
-                 ((boundary_value_w[face]->value(x, y, z - 1,t)))) / (dz);
+                 ((boundary_value_w[face]->value(x, y, z - 1.0,t)))) / (dz);
 
     // Real du = ((boundary_value_u[face]->value(x - (0.5 - precision), y , z,t)) -
     //             ((boundary_value_u[face]->value(x - (0.5 + precision), y, z,t)))) / (dx*2*precision);
@@ -199,22 +202,25 @@ Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t,size_
     //              ((boundary_value_w[face]->value(x, y, z - (0.5 + precision),t)))) / (dz*2*precision);
 
     return  boundary_value_v[face]->value(x, y-0.5, z, t) - (du + dw) * (dy/2.0)*side;
+    
 }
 
 
 // Performs the approximation of the component w that isn't precisely on the boundary.
 Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t,size_t face,int side) {
+    // return side == 1 ? boundary_value_w[face]->value(x,y,z,t) : boundary_value_w[face]->value(x,y,z - 1.0,t);
     Real du = ((boundary_value_u[face]->value(x, y, z,t)) -
                 (boundary_value_u[face]->value(x - 1.0, y, z,t))) / dx;
     
     Real dv = ((boundary_value_v[face]->value(x, y , z,t)) -
                 (boundary_value_v[face]->value(x, y - 1.0, z,t))) / dy;
-    // Real du = ((boundary_value_u[face]->value(x - (0.5 - precision), y, z,t)) -
+    // Real du = ((boundary_value_u[face]->value(x - (0.5- precision), y, z,t)) -
     //             ((boundary_value_u[face]->value(x - (0.5 + precision), y, z,t)))) / (dx*2*precision);
     
     // Real dv = ((boundary_value_v[face]->value(x, y - (0.5 - precision), z,t)) -
     //             ((boundary_value_v[face]->value(x, y - (0.5 + precision), z,t)))) / (dy*2*precision);
     return  boundary_value_w[face]->value(x, y, z-0.5, t) - (du + dv) * (dz/2.0)*side;
+    
 }
 
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x){
