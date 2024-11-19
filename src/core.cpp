@@ -63,6 +63,7 @@ void IcoNS::solve()
     #endif
     while (time < T)
     {   
+        boundary.update_boundary(grid.u, grid.v, grid.w, time);
         #ifdef OUTPUT
             std::string filenameerroru = "../resources/paraview/u/" + std::to_string(time) +".vtk";
             std::string filenameerrorv = "../resources/paraview/v/" + std::to_string(time) +".vtk";
@@ -118,7 +119,7 @@ void IcoNS::solve()
             }
         #endif
         
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
+        
         //Check::Confront(grid,exact_solution,time,W); int p;std::cin >> p;
         error = L2_error(time);
         #ifdef VERBOSE
