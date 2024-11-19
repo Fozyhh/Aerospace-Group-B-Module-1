@@ -82,11 +82,10 @@ void IcoNS::solve()
                     {
                         for (size_t k = 0; k < nz +1; k++)
                         {
-                            ERROR.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] = grid.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] - exact_solution.value_x(i+0.5,j,k,time);
+                            ERROR.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] = std::abs(grid.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] - exact_solution.value_x(i+0.5,j,k,time));
                         }
                         
-                    }
-                    
+                    }   
                 }
                 for (size_t i = 0; i < nx+1; i++)
                 {
@@ -94,7 +93,7 @@ void IcoNS::solve()
                     {
                         for (size_t k = 0; k < nz +1; k++)
                         {
-                            ERROR.v[i*(ny)*(nz+1) + j*(nz+1) + k] = grid.v[i*(ny)*(nz+1) + j*(nz+1) + k] - exact_solution.value_y(i,j+0.5,k,time);
+                            ERROR.v[i*(ny)*(nz+1) + j*(nz+1) + k] = std::abs(grid.v[i*(ny)*(nz+1) + j*(nz+1) + k] - exact_solution.value_y(i,j+0.5,k,time));
                         }
                         
                     }
@@ -102,11 +101,11 @@ void IcoNS::solve()
                 }
                 for (size_t i = 0; i < nx + 1; i++)
                 {
-                    for (size_t j = 0; j < ny+1; j++)
+                    for (size_t j = 0; j < ny + 1; j++)
                     {
                         for (size_t k = 0; k < nz; k++)
                         {
-                            ERROR.w[i*(ny+1)*(nz) + j*(nz) + k] = grid.w[i*(ny+1)*(nz) + j*(nz) + k] - exact_solution.value_z(i,j,k+0.5,time);
+                            ERROR.w[i*(ny+1)*(nz) + j*(nz) + k] = std::abs(grid.w[i*(ny+1)*(nz) + j*(nz) + k] - exact_solution.value_z(i,j,k+0.5,time)  );
                         }
                         
                     }
