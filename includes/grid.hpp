@@ -4,23 +4,26 @@
 #define GRID_HPP
 
 #include <iostream>
-#include <vector>
+#include <array>
+#include "config.hpp"
 
-#define Real float
 
+/**
+ * @brief Structure representing the grid of the domain.
+ *
+ * This class represents the staggered grid used for discretizing the domain. It contains the
+ * velocities in the x, y, and z directions, and the pressure field. The grid is staggered in the
+ * sense that the velocities are stored at the faces of the cells, while the pressure is stored at
+ * grid vertices.
+ *
+ */
 struct Grid
 {
-    unsigned int nx, ny, nz;     // number of cells in the x,y,z directions.
-    std::vector<Real> u, v, w; // velocity values of the grid cells.
-    std::vector<Real> p;       // pressure values of the grid cells.
+    std::array<Real, NX *(NY + 1) * (NZ + 1)> u{};
+    std::array<Real, (NX + 1) * NY *(NZ + 1)> v{};
+    std::array<Real, (NX + 1) * (NY + 1) * NZ> w{};
+    std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> p{};
 
-    Grid(int nx, int ny, int nz) : nx(nx), ny(ny), nz(nz)
-    {
-        u.resize(nx * (ny+1) * (nz+1));
-        v.resize((nx+1) * ny * (nz+1));
-        w.resize((nx+1) * (ny+1) * nz);
-        p.resize((nx + 1) * (ny + 1) * (nz + 1));
-    }
 };
 
 #endif // GRID_HPP

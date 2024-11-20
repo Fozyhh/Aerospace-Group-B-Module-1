@@ -1,218 +1,208 @@
 #include "core.hpp"
 
-void IcoNS::solve_time_step(double time)
+void IcoNS::solve_time_step(Real time)
 {
-    std::vector<Real> Y2_x(nx * (ny+1) * (nz+1));
-    std::vector<Real> Y2_y((nx+1) * ny * (nz+1));
-    std::vector<Real> Y2_z((nx+1) * (ny+1) * nz);
-    std::vector<Real> Y3_x(nx * (ny+1) * (nz+1));
-    std::vector<Real> Y3_y((nx+1) * ny * (nz+1));
-    std::vector<Real> Y3_z((nx+1) * (ny+1) * nz);
+    for (size_t i = 1; i < NX - 1; i++)
 
-    for (size_t i = 1; i < nx - 1; i++)
     {
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                Y2_x[i * (ny+1) * (nz+1) + j * (nz+1) + k] = grid.u[i * (ny+1) * (nz+1) + j * (nz+1) + k] +
-                            64.0 / 120.0 * dt * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
+                Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] +
+                                                                   64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    for (size_t i = 1; i < NX; i++)
     {
-        for (size_t j = 1; j < ny - 1; j++)
+        for (size_t j = 1; j < NY - 1; j++)
         {
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                Y2_y[i * ny * (nz+1) + j * (nz+1) + k] = grid.v[i * ny * (nz+1) + j * (nz+1) + k] +
-                            64.0 / 120.0 * dt * functionF_v(grid.u, grid.v, grid.w, i, j, k, time);
+                Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] +
+                                                             64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    for (size_t i = 1; i < NX; i++)
     {
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            for (size_t k = 1; k < nz - 1; k++)
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                Y2_z[i * (ny+1) * nz + j * nz + k] = grid.w[i * (ny+1) * nz + j * nz + k] +
-                            64.0 / 120.0 * dt * functionF_w(grid.u, grid.v, grid.w, i, j, k, time);
-            }
-        }
-    }
-    
-    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * dt);
-    
-    for (size_t i = 1; i < nx - 1; i++)
-    {
-        for (size_t j = 1; j < ny; j++)
-        {
-            for (size_t k = 1; k < nz; k++)
-            {
-                Y3_x[i * (ny+1) * (nz+1) + j * (nz+1) + k] = Y2_x[i * (ny+1) * (nz+1) + j * (nz+1) + k] +
-                    50.0 / 120.0 * dt * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt) -
-                    34.0 / 120.0 * dt * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
+                Y2_z[i * (NY + 1) * NZ + j * NZ + k] = grid.w[i * (NY + 1) * NZ + j * NZ + k] +
+                                                       64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+
+    for (size_t i = 1; i < NX - 1; i++)
+
     {
-        for (size_t j = 1; j < ny - 1; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                Y3_y[i * ny * (nz+1) + j * (nz+1) + k] = Y2_y[i * ny * (nz+1) + j * (nz+1) + k] +
-                    50.0 / 120.0 * dt * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt) -
-                    34.0 / 120.0 * dt * functionF_v(grid.u, grid.v, grid.w, i, j, k, time);
+                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] +
+                                                                   50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
+                                                                   34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    for (size_t i = 1; i < NX; i++)
     {
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY - 1; j++)
         {
-            for (size_t k = 1; k < nz - 1; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                Y3_z[i * (ny+1) * nz + j * nz + k] = Y2_z[i * (ny+1) * nz + j * nz + k] +
-                    50.0 / 120.0 * dt * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt) -
-                    34.0 / 120.0 * dt * functionF_w(grid.u, grid.v, grid.w, i, j, k, time);
-            }
-        }
-    }
-    
-    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * dt);
-    
-    for (size_t i = 1; i < nx - 1; i++)
-    {
-        for (size_t j = 1; j < ny; j++)
-        {
-            for (size_t k = 1; k < nz; k++)
-            {
-                grid.u[i * (ny+1) * (nz+1) + j * (nz+1) + k] = Y3_x[i * (ny+1) * (nz+1) + j * (nz+1) + k] +
-                    90.0 / 120.0 * dt * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * dt) -
-                    50.0 / 120.0 * dt * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
+                Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] +
+                                                             50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
+                                                             34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    for (size_t i = 1; i < NX; i++)
     {
-        for (size_t j = 1; j < ny - 1; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                grid.v[i * ny * (nz+1) + j * (nz+1) + k] = Y3_y[i * ny * (nz+1) + j * (nz+1) + k] +
-                    90.0 / 120.0 * dt * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * dt) -
-                    50.0 / 120.0 * dt * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
+                Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[i * (NY + 1) * NZ + j * NZ + k] +
+                                                       50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
+                                                       34.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time);
             }
         }
     }
 
-    for (size_t i = 1; i < nx; i++)
+    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+
+    for (size_t i = 1; i < NX - 1; i++)
+
     {
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            for (size_t k = 1; k < nz - 1; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                grid.w[i * (ny+1) * nz + j * nz + k] = Y3_z[i * (ny+1) * nz + j * nz + k] +
-                    90.0 / 120.0 * dt * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * dt) -
-                    50.0 / 120.0 * dt * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * dt);
+                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] +
+                                                                     90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
+                                                                     50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT);
+            }
+        }
+    }
+
+    for (size_t i = 1; i < NX; i++)
+    {
+        for (size_t j = 1; j < NY - 1; j++)
+        {
+            for (size_t k = 1; k < NZ; k++)
+            {
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] +
+                                                               90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
+                                                               50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT);
+            }
+        }
+    }
+
+    for (size_t i = 1; i < NX; i++)
+    {
+        for (size_t j = 1; j < NY; j++)
+        {
+            for (size_t k = 1; k < NZ - 1; k++)
+            {
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[i * (NY + 1) * NZ + j * NZ + k] +
+                                                         90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
+                                                         50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT);
             }
         }
     }
     
 }
 
-Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v,
-                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
-{
-    size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
-    size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
-    size_t lw = i * (ny+1) * nz + j * nz + k;
 
-    return -(u[lu] * (u[lu + (ny+1) * (nz+1)] - u[lu - (ny+1) * (nz+1)]) / (2.0 * dx) +
-            (v[lv] + v[lv + ny * (nz+1)] + v[lv - (nz+1)] + v[lv + ny * (nz+1) - (nz+1)]) / 4.0 * (u[lu + (nz+1)] - u[lu - (nz+1)]) / (2.0 * dy) +
-            (w[lw] + w[lw + (ny+1) * nz] + w[lw - 1] + w[lw + (ny+1) * nz - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * dz)) +
-            (1.0 / Re) * ((u[lu + (ny+1) * (nz+1)] - 2 * u[lu] + u[lu - (ny+1) * (nz+1)]) / (dx * dx) +
-                (u[lu + (nz+1)] - 2 * u[lu] + u[lu - (nz+1)]) / (dy * dy) +
-                (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (dz * dz)) +
-            functionG_u(i, j, k, t);
+Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+{
+    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
+
+    return -(u[lu] * (u[lu + (NY + 1) * (NZ + 1)] - u[lu - (NY + 1) * (NZ + 1)]) / (2.0 * DX) +
+             (v[lv] + v[lv + NY * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + NY * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
+             (w[lw] + w[lw + (NY + 1) * NZ] + w[lw - 1] + w[lw + (NY + 1) * NZ - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
+           1 / RE * ((u[lu + (NY + 1) * (NZ + 1)] - 2 * u[lu] + u[lu - (NY + 1) * (NZ + 1)]) / (DX * DX) + (u[lu + (NZ + 1)] - 2 * u[lu] + u[lu - (NZ + 1)]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
+           functionG_u(i, j, k, t);
 }
 
-Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v,
-                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
-    size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
-    size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
-    size_t lw = i * (ny+1) * nz + j * nz + k;
+    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
 
-    return -((u[lu] + u[lu + (nz+1)] + u[lu - (ny+1) * (nz+1)] + u[lu - (ny+1) * (nz+1) + (nz+1)]) / 4.0 * ((v[lv + ny * (nz+1)] - v[lv - ny * (nz+1)]) / (2.0 * dx)) +
-            v[lv] * (v[lv + (nz+1)] - v[lv - (nz+1)]) / (2.0 * dy) +
-            (w[lw] + w[lw - 1] + w[lw + (ny+1)] + w[lw + (ny+1) - 1]) / 4.0 * (v[lv + 1] - v[lv - 1]) / (2.0 * dz)) +
-            (1.0 / Re) * ((v[lv + ny * (nz + 1)] - 2.0 * v[lv] + v[lv - ny * (nz + 1)]) / (dx * dx) +
-                (v[lv + (nz+1)] - 2.0 * v[lv] + v[lv - (nz+1)]) / (dy * dy) +
-                (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (dz * dz)) +
-                functionG_v(i, j, k, t);
+    return -((u[lu] + u[lu + (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1) + (NZ + 1)]) / 4.0 * ((v[lv + NY * (NZ + 1)] - v[lv - NY * (NZ + 1)]) / (2.0 * DX)) +
+             v[lv] * (v[lv + (NZ + 1)] - v[lv - (NZ + 1)]) / (2.0 * DY) +
+             (w[lw] + w[lw - 1] + w[lw + (NY + 1)] + w[lw + (NY + 1) - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
+           (1.0 / RE) * ((v[lv + NY * (NZ + 1)] - 2.0 * v[lv] + v[lv - NY * (NZ + 1)]) / (DX * DX) +
+                         (v[lv + (NZ + 1)] - 2.0 * v[lv] + v[lv - (NZ + 1)]) / (DY * DY) +
+                         (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
+           functionG_v(i, j, k, t);
 }
 
-Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v,
-                                     const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
-{
-    size_t lu = i * (ny+1) * (nz+1) + j * (nz+1) + k;
-    size_t lv = i * ny * (nz+1) + j * (nz+1) + k;
-    size_t lw = i * (ny+1) * nz + j * nz + k;
+Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 
-    return -((u[lu] + u[lu - (ny+1) * (nz+1)] + u[lu + 1] + u[lu - (nz+1) * (ny+1) + 1]) / 4.0 * (w[lw + (ny+1) * nz] - w[lw - (ny+1) * nz]) / (2.0 * dx) +
-            (v[lv + 1] + v[lv - (nz+1) + 1] + v[lv] + v[lv - (nz+1)]) / 4.0 * (w[lw + nz] - w[lw - nz]) / (2.0 * dy) +
-            w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * dz)) +
-            (1.0 / Re) * ((w[lw + (ny+1) * nz] - 2.0 * w[lw] + w[lw - (ny+1) * nz]) / (dx * dx) +
-                (w[lw + nz] - 2.0 * w[lw] + w[lw - nz]) / (dy * dy) +
-                (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (dz * dz)) +
-            functionG_w(i, j, k, t);
+{
+    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
+
+    return -((u[lu] + u[lu - (NY + 1) * (NZ + 1)] + u[lu + 1] + u[lu - (NZ + 1) * (NY + 1) + 1]) / 4.0 * (w[lw + (NY + 1) * NZ] - w[lw - (NY + 1) * NZ]) / (2.0 * DX) +
+             (v[lv + 1] + v[lv - (NZ + 1) + 1] + v[lv] + v[lv - (NZ + 1)]) / 4.0 * (w[lw + NZ] - w[lw - NZ]) / (2.0 * DY) +
+             w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
+           (1.0 / RE) * ((w[lw + (NY + 1) * NZ] - 2.0 * w[lw] + w[lw - (NY + 1) * NZ]) / (DX * DX) +
+                         (w[lw + NZ] - 2.0 * w[lw] + w[lw - NZ]) / (DY * DY) +
+                         (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
+           functionG_w(i, j, k, t);
 }
 
 
 Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
 {
-    Real x = i * dx + dx / 2;
-    Real y = j * dy;
-    Real z = k * dz;
-    return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t)+
+    Real x = i * DX + DX / 2;
+    Real y = j * DY;
+    Real z = k * DZ;
+    return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t) +
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
-           std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
-           2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) + 
-           3.0 / Re * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+           std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
+           3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+
 }
 
 Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
 {
-    Real x = i * dx;
-    Real y = j * dy + dy / 2;
-    Real z = k * dz;
-    return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) - 
+    Real x = i * DX;
+    Real y = j * DY + DY / 2;
+    Real z = k * DZ;
+    return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) -
+
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / Re * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
 }
 
-    
+
 Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
 {
-    Real x = i * dx;
-    Real y = j * dy;
-    Real z = k * dz + dz / 2;
-    return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) -
-           2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
+    Real x = i * DX;
+    Real y = j * DY;
+    Real z = k * DZ + DZ / 2;
+    return 2 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) - 2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
-           4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) + 
-           6.0 / Re * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
+           4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) + 6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
 }
-
-

@@ -34,11 +34,12 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     #endif
     // boundary
     auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return std::sin((x + 0.5) * dx) * std::cos(y * dy) * std::sin(z * dz) * std::sin(t); });
+
+                                              { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return std::cos(x * dx) * std::sin((y + 0.5) * dy) * std::sin(z * dz) * std::sin(t); });
+                                              { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
     auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return 2 * (std::cos(x * dx) * std::cos(y * dy) * std::cos((z + 0.5) * dz) * std::sin(t)); });
+                                              { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
 
     for (size_t i = 0; i < 6 /*nfaces*/; i++)
     {
@@ -50,8 +51,8 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
 void IcoNS::solve()
 {
-    Real error = 0.0;
-    double time = 0.0;
+    Real time = 0.0;
+
     int i = 0;
     #ifdef OUTPUTERROR
     Grid ERROR(grid);
@@ -62,84 +63,20 @@ void IcoNS::solve()
     auto start =std::chrono::high_resolution_clock::now();
     #endif
     while (time < T)
-    {   
+
+    {
+        /*Check::Confront(grid,exact_solution,time,U);
+        int p;
+        std::cin >> p;*/
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
-        #ifdef OUTPUT
-            std::string filenameerroru = "../resources/paraview/u/" + std::to_string(time) +".vtk";
-            std::string filenameerrorv = "../resources/paraview/v/" + std::to_string(time) +".vtk";
-            std::string filenameerrorw = "../resources/paraview/w/" + std::to_string(time) +".vtk";
-            output_u(filenameerroru, grid);
-            output_v(filenameerrorv, grid);
-            output_w(filenameerrorw, grid);
-        #endif
-        #ifdef OUTPUTERROR
-            if(i%5== 0){
-                std::string filenameerroru = "../resources/paraviewerror/u/" + std::to_string(time) +".vtk";
-                std::string filenameerrorv = "../resources/paraviewerror/v/" + std::to_string(time) +".vtk";
-                std::string filenameerrorw = "../resources/paraviewerror/w/" + std::to_string(time) +".vtk";
-                for (size_t i = 0; i < nx; i++)
-                {
-                    for (size_t j = 0; j < ny+1; j++)
-                    {
-                        for (size_t k = 0; k < nz +1; k++)
-                        {
-                            ERROR.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] = std::abs(grid.u[i*(ny+1)*(nz+1) + j*(nz+1) + k] - exact_solution.value_x(i+0.5,j,k,time));
-                        }
-                        
-                    }   
-                }
-                for (size_t i = 0; i < nx+1; i++)
-                {
-                    for (size_t j = 0; j < ny; j++)
-                    {
-                        for (size_t k = 0; k < nz +1; k++)
-                        {
-                            ERROR.v[i*(ny)*(nz+1) + j*(nz+1) + k] = std::abs(grid.v[i*(ny)*(nz+1) + j*(nz+1) + k] - exact_solution.value_y(i,j+0.5,k,time));
-                        }
-                        
-                    }
-                    
-                }
-                for (size_t i = 0; i < nx + 1; i++)
-                {
-                    for (size_t j = 0; j < ny + 1; j++)
-                    {
-                        for (size_t k = 0; k < nz; k++)
-                        {
-                            ERROR.w[i*(ny+1)*(nz) + j*(nz) + k] = std::abs(grid.w[i*(ny+1)*(nz) + j*(nz) + k] - exact_solution.value_z(i,j,k+0.5,time)  );
-                        }
-                        
-                    }
-                    
-                }
-                
-                output_u(filenameerroru, ERROR);
-                output_v(filenameerrorv, ERROR);
-                output_w(filenameerrorw, ERROR);
-            }
-        #endif
-        
-        
-        //Check::Confront(grid,exact_solution,time,W); int p;std::cin >> p;
-        error = L2_error(time);
-        #ifdef VERBOSE
-            std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
-            auto tss =std::chrono::high_resolution_clock::now();
-        #endif
-        error_log << time << "," << i << "," << error << std::endl;
+
+        // csv file w/ "," delimiter: time step, iter, L2_error
+        std::cout << time << "," << i << "," << L2_error(time) << std::endl;
         solve_time_step(time);
         // output();
-
-        
-        time += dt;
+        time += DT;
         i++;
-        #ifdef VERBOSE
-        auto tse =std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = tse-tss; 
-        std::cout << std::endl << "Time: " << duration.count() << std::endl;
-        std::cout << "Time per cell: " << duration.count() / (nx*ny*nz) << std::endl;
-        #endif
-        
+
     }
     error = L2_error(time);
     error_log << time << "," << i << "," << error << std::endl;
@@ -151,124 +88,6 @@ void IcoNS::solve()
         
     #endif
 }
-
-void IcoNS::output_u(const std::string& filename, Grid& print) {
-        
-        std::filesystem::path filepath(filename);
-        std::filesystem::create_directories(filepath.parent_path());
-        
-        std::ofstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Error opening file for writing: " << filename << std::endl;
-            return;
-        }
-
-        file << "# vtk DataFile Version 3.0\n";
-        file << "3D structured grid\n";
-        file << "ASCII\n";
-        file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << print.nx << " " << print.ny + 1 << " " << print.nz + 1 << "\n";
-        file << "ORIGIN 0 0 0\n";
-        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (print.nx) * (print.ny + 1) * (print.nz + 1) << "\n";
-
-        // Stampa delle velocità U
-        file << "SCALARS velocity_u double 1\n";
-        file << "LOOKUP_TABLE default\n";
-        
-        for(size_t k = 0 ; k < nz+1 ; k++){
-            for (size_t j = 0; j < ny+1; j++)
-            {
-                for (int i = nx-1; i >= 0; i--)
-                {   
-                    file << print.u[i*(ny+1)*(nz+1) + j * (nz+1) + k] << "\n";
-                }
-                
-            }
-        }
-
-        file.close();
-        std::cout << "File " << filename << " scritto con successo." << std::endl;
-    }
-    void IcoNS::output_v(const std::string& filename, Grid& print) {
-        
-        std::filesystem::path filepath(filename);
-        std::filesystem::create_directories(filepath.parent_path());
-        
-        std::ofstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Error opening file for writing: " << filename << std::endl;
-            return;
-        }
-
-        file << "# vtk DataFile Version 3.0\n";
-        file << "3D structured grid\n";
-        file << "ASCII\n";
-        file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << print.nx +1 << " " << print.ny  << " " << print.nz + 1 << "\n";
-        file << "ORIGIN 0 0 0\n";
-        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (print.nx+1) * (print.ny) * (print.nz + 1) << "\n";
-
-        // Stampa delle velocità V
-        file << "SCALARS velocity_v double 1\n";
-        file << "LOOKUP_TABLE default\n";
-        for(int k = nz ; k >= 0 ; k--)
-        {
-            for (size_t j = 0; j < ny; j++)
-            {
-                for (size_t i = 0; i <nx +1; i++)
-                {   
-                    file << print.v[i*(ny)*(nz+1) + j * (nz+1) + k] << "\n";
-                }
-                
-            }
-        }
-        // for (size_t i = 0; i < print.v.size(); ++i) {
-        //     file << print.v[i] << "\n";
-        // }
-
-        file.close();
-        std::cout << "File " << filename << " scritto con successo." << std::endl;
-    }
-    void IcoNS::output_w(const std::string& filename, Grid& print) {
-        
-        std::filesystem::path filepath(filename);
-        std::filesystem::create_directories(filepath.parent_path());
-        
-        std::ofstream file(filename);
-        if (!file.is_open()) {
-            std::cerr << "Error opening file for writing: " << filename << std::endl;
-            return;
-        }
-
-        file << "# vtk DataFile Version 3.0\n";
-        file << "3D structured grid\n";
-        file << "ASCII\n";
-        file << "DATASET STRUCTURED_POINTS\n";
-        file << "DIMENSIONS " << print.nx +1 << " " << print.ny + 1 << " " << print.nz  << "\n";
-        file << "ORIGIN 0 0 0\n";
-        file << "SPACING " << dx << " " << dy << " " << dz << "\n";
-        file << "POINT_DATA " << (print.nx+1) * (print.ny + 1) * (print.nz ) << "\n";
-
-        // Stampa delle velocità W
-        file << "SCALARS velocity_w double 1\n";
-        file << "LOOKUP_TABLE default\n";
-        for(int k = nz-1 ; k >= 0 ; k--)
-        {
-            for (size_t j = 0; j < ny+1; j++)
-            {
-                for (size_t i = 0; i <nx +1; i++)
-                {   
-                    file << print.w[i*(ny+1)*(nz) + j * (nz) + k] << "\n";
-                }
-                
-            }
-        }
-
-        file.close();
-        std::cout << "File " << filename << " scritto con successo." << std::endl;
-    }
 
 Real IcoNS::L2_error(const Real t)
 {
@@ -288,156 +107,156 @@ Real IcoNS::L2_error(const Real t)
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-    
+
     // first slice (left face)
     {
         error += ((grid.u[0] - exact_solution.value_x(0.5, 0, 0, t)) *
                   (grid.u[0] - exact_solution.value_x(0.5, 0, 0, t)) *
-                  dx * dy * dz / 8);
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
             error += ((grid.u[k] - exact_solution.value_x(0.5, 0, k, t)) *
                       (grid.u[k] - exact_solution.value_x(0.5, 0, k, t)) *
-                      dx * dy * dz / 4);
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[nz] - exact_solution.value_x(0.5, 0, nz, t)) *
-                  (grid.u[nz] - exact_solution.value_x(0.5, 0, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
+                  (grid.u[NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            error += ((grid.u[j * (nz + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
-                      (grid.u[j * (nz + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz; k++)
+            error += ((grid.u[j * (NZ + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
+                      (grid.u[j * (NZ + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.u[j * (nz + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
-                          (grid.u[j * (nz + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[j * (NZ + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
+                          (grid.u[j * (NZ + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.u[j * (nz + 1) + nz] - exact_solution.value_x(0.5, j, nz, t)) *
-                      (grid.u[j * (nz + 1) + nz] - exact_solution.value_x(0.5, j, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[j * (NZ + 1) + NZ] - exact_solution.value_x(0.5, j, NZ, t)) *
+                      (grid.u[j * (NZ + 1) + NZ] - exact_solution.value_x(0.5, j, NZ, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[ny * (nz + 1)] - exact_solution.value_x(0.5, ny, 0, t)) *
-                  (grid.u[ny * (nz + 1)] - exact_solution.value_x(0.5, ny, 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[NY * (NZ + 1)] - exact_solution.value_x(0.5, NY, 0, t)) *
+                  (grid.u[NY * (NZ + 1)] - exact_solution.value_x(0.5, NY, 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.u[ny * (nz + 1) + k] - exact_solution.value_x(0.5, ny, k, t)) *
-                      (grid.u[ny * (nz + 1) + k] - exact_solution.value_x(0.5, ny, k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[NY * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
+                      (grid.u[NY * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[ny * (nz + 1) + nz] - exact_solution.value_x(0.5, ny, nz, t)) *
-                  (grid.u[ny * (nz + 1) + nz] - exact_solution.value_x(0.5, ny, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[NY * (NZ + 1) + NZ] - exact_solution.value_x(0.5, NY, NZ, t)) *
+                  (grid.u[NY * (NZ + 1) + NZ] - exact_solution.value_x(0.5, NY, NZ, t)) *
+                  DX * DY * DZ / 8);
     }
 
     // middle slices
     {
-        for (size_t i = 1; i < nx - 1; i++)
+        for (size_t i = 1; i < NX - 1; i++)
         {
-            error += ((grid.u[i * (ny + 1) * (nz + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
-                      (grid.u[i * (ny + 1) * (nz + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[i * (NY + 1) * (NZ + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
+                      (grid.u[i * (NY + 1) * (NZ + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.u[i * (ny + 1) * (nz + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
-                          (grid.u[i * (ny + 1) * (nz + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
+                          (grid.u[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.u[i * (ny + 1) * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, 0, nz, t)) *
-                      (grid.u[i * (ny + 1) * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, 0, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, 0, NZ, t)) *
+                      (grid.u[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, 0, NZ, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < ny; j++)
+            for (size_t j = 1; j < NY; j++)
             {
-                error += ((grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
-                          (grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
+                          (grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
+                          DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < nz; k++)
+                for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
-                              (grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
-                              dx * dy * dz);
+                    error += ((grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
+                              (grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
+                              DX * DY * DZ);
                 }
 
-                error += ((grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, j, nz, t)) *
-                          (grid.u[i * (ny + 1) * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, j, nz, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, j, NZ, t)) *
+                          (grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, j, NZ, t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1)] - exact_solution.value_x(i + 0.5, ny, 0, t)) *
-                      (grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1)] - exact_solution.value_x(i + 0.5, ny, 0, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x(i + 0.5, NY, 0, t)) *
+                      (grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x(i + 0.5, NY, 0, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1) + k] - exact_solution.value_x(i + 0.5, ny, k, t)) *
-                          (grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1) + k] - exact_solution.value_x(i + 0.5, ny, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, NY, k, t)) *
+                          (grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, NY, k, t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, ny, nz, t)) *
-                      (grid.u[i * (ny + 1) * (nz + 1) + ny * (nz + 1) + nz] - exact_solution.value_x(i + 0.5, ny, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, NY, NZ, t)) *
+                      (grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, NY, NZ, t)) *
+                      DX * DY * DZ / 4);
         }
     }
 
     // last slice (right face)
     {
-        error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1)] - exact_solution.value_x((nx - 0.5), 0, 0, t)) *
-                  (grid.u[(nx - 1) * (ny + 1) * (nz + 1)] - exact_solution.value_x((nx - 0.5), 0, 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
+                  (grid.u[(NX - 1) * (NY + 1) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), 0, k, t)) *
-                      (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), 0, k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
+                      (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), 0, nz, t)) *
-                  (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), 0, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
+                  (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1)] - exact_solution.value_x((nx - 0.5), j, 0, t)) *
-                      (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1)] - exact_solution.value_x((nx - 0.5), j, 0, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz; k++)
+            error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j, 0, t)) *
+                      (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), j, k, t)) *
-                          (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), j, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j, k, t)) *
+                          (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), j, nz, t)) *
-                      (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), j, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), j, NZ, t)) *
+                      (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), j, NZ, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1)] - exact_solution.value_x((nx - 0.5), ny, 0, t)) *
-                  (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1)] - exact_solution.value_x((nx - 0.5), ny, 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                  (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), ny, k, t)) *
-                      (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1) + k] - exact_solution.value_x((nx - 0.5), ny, k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                      (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), ny, nz, t)) *
-                  (grid.u[(nx - 1) * (ny + 1) * (nz + 1) + ny * (nz + 1) + nz] - exact_solution.value_x((nx - 0.5), ny, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                  (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                  DX * DY * DZ / 8);
     }
     return error;
 }
@@ -450,151 +269,151 @@ Real IcoNS::error_comp_Y(const Real t)
     {
         error += ((grid.v[0] - exact_solution.value_y(0, 0.5, 0, t)) *
                   (grid.v[0] - exact_solution.value_y(0, 0.5, 0, t)) *
-                  dx * dy * dz / 8);
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
             error += ((grid.v[k] - exact_solution.value_y(0, 0.5, k, t)) *
                       (grid.v[k] - exact_solution.value_y(0, 0.5, k, t)) *
-                      dx * dy * dz / 4);
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[nz] - exact_solution.value_y(0, 0.5, nz, t)) *
-                  (grid.v[nz] - exact_solution.value_y(0, 0.5, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[NZ] - exact_solution.value_y(0, 0.5, NZ, t)) *
+                  (grid.v[NZ] - exact_solution.value_y(0, 0.5, NZ, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny - 1; j++)
+        for (size_t j = 1; j < NY - 1; j++)
         {
-            error += ((grid.v[j * (nz + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
-                      (grid.v[j * (nz + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz; k++)
+            error += ((grid.v[j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
+                      (grid.v[j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.v[j * (nz + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
-                          (grid.v[j * (nz + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
+                          (grid.v[j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.v[j * (nz + 1) + nz] - exact_solution.value_y(0, j + 0.5, nz, t)) *
-                      (grid.v[j * (nz + 1) + nz] - exact_solution.value_y(0, j + 0.5, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[j * (NZ + 1) + NZ] - exact_solution.value_y(0, j + 0.5, NZ, t)) *
+                      (grid.v[j * (NZ + 1) + NZ] - exact_solution.value_y(0, j + 0.5, NZ, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[(ny - 1) * (nz + 1)] - exact_solution.value_y(0, (ny - 0.5), 0, t)) *
-                  (grid.v[(ny - 1) * (nz + 1)] - exact_solution.value_y(0, (ny - 0.5), 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[(NY - 1) * (NZ + 1)] - exact_solution.value_y(0, (NY - 0.5), 0, t)) *
+                  (grid.v[(NY - 1) * (NZ + 1)] - exact_solution.value_y(0, (NY - 0.5), 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.v[(ny - 1) * (nz + 1) + k] - exact_solution.value_y(0, (ny - 0.5), k, t)) *
-                      (grid.v[(ny - 1) * (nz + 1) + k] - exact_solution.value_y(0, (ny - 0.5), k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[(NY - 1) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
+                      (grid.v[(NY - 1) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[(ny - 1) * (nz + 1) + nz] - exact_solution.value_y(0, (ny - 0.5), nz, t)) *
-                  (grid.v[(ny - 1) * (nz + 1) + nz] - exact_solution.value_y(0, (ny - 0.5), nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[(NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(0, (NY - 0.5), NZ, t)) *
+                  (grid.v[(NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(0, (NY - 0.5), NZ, t)) *
+                  DX * DY * DZ / 8);
     }
 
     // middle slices
     {
-        for (size_t i = 1; i < nx; i++)
+        for (size_t i = 1; i < NX; i++)
         {
-            error += ((grid.v[i * ny * (nz + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
-                      (grid.v[i * ny * (nz + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[i * NY * (NZ + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
+                      (grid.v[i * NY * (NZ + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.v[i * ny * (nz + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
-                          (grid.v[i * ny * (nz + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[i * NY * (NZ + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
+                          (grid.v[i * NY * (NZ + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.v[i * ny * (nz + 1) + nz] - exact_solution.value_y(i, 0.5, nz, t)) *
-                      (grid.v[i * ny * (nz + 1) + nz] - exact_solution.value_y(i, 0.5, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[i * NY * (NZ + 1) + NZ] - exact_solution.value_y(i, 0.5, NZ, t)) *
+                      (grid.v[i * NY * (NZ + 1) + NZ] - exact_solution.value_y(i, 0.5, NZ, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < ny - 1; j++)
+            for (size_t j = 1; j < NY - 1; j++)
             {
-                error += ((grid.v[i * ny * (nz + 1) + j * (nz + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
-                          (grid.v[i * ny * (nz + 1) + j * (nz + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[i * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
+                          (grid.v[i * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
+                          DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < nz; k++)
+                for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid.v[i * ny * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
-                              (grid.v[i * ny * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
-                              dx * dy * dz);
+                    error += ((grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
+                              (grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
+                              DX * DY * DZ);
                 }
 
-                error += ((grid.v[i * ny * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_y(i, j + 0.5, nz, t)) *
-                          (grid.v[i * ny * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_y(i, j + 0.5, nz, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_y(i, j + 0.5, NZ, t)) *
+                          (grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_y(i, j + 0.5, NZ, t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1)] - exact_solution.value_y(i, (ny - 0.5), 0, t)) *
-                      (grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1)] - exact_solution.value_y(i, (ny - 0.5), 0, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(i, (NY - 0.5), 0, t)) *
+                      (grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(i, (NY - 0.5), 0, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz; k++)
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1) + k] - exact_solution.value_y(i, (ny - 0.5), k, t)) *
-                          (grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1) + k] - exact_solution.value_y(i, (ny - 0.5), k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(i, (NY - 0.5), k, t)) *
+                          (grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(i, (NY - 0.5), k, t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1) + nz] - exact_solution.value_y(i, (ny - 0.5), nz, t)) *
-                      (grid.v[i * ny * (nz + 1) + (ny - 1) * (nz + 1) + nz] - exact_solution.value_y(i, (ny - 0.5), nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(i, (NY - 0.5), NZ, t)) *
+                      (grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(i, (NY - 0.5), NZ, t)) *
+                      DX * DY * DZ / 4);
         }
     }
 
     // last slice (right face)
     {
-        error += ((grid.v[nx * ny * (nz + 1)] - exact_solution.value_y(nx, 0.5, 0, t)) *
-                  (grid.v[nx * ny * (nz + 1)] - exact_solution.value_y(nx, 0.5, 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[NX * NY * (NZ + 1)] - exact_solution.value_y(NX, 0.5, 0, t)) *
+                  (grid.v[NX * NY * (NZ + 1)] - exact_solution.value_y(NX, 0.5, 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.v[nx * ny * (nz + 1) + k] - exact_solution.value_y(nx, 0.5, k, t)) *
-                      (grid.v[nx * ny * (nz + 1) + k] - exact_solution.value_y(nx, 0.5, k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[NX * NY * (NZ + 1) + k] - exact_solution.value_y(NX, 0.5, k, t)) *
+                      (grid.v[NX * NY * (NZ + 1) + k] - exact_solution.value_y(NX, 0.5, k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[nx * ny * (nz + 1) + nz] - exact_solution.value_y(nx, 0.5, nz, t)) *
-                  (grid.v[nx * ny * (nz + 1) + nz] - exact_solution.value_y(nx, 0.5, nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[NX * NY * (NZ + 1) + NZ] - exact_solution.value_y(NX, 0.5, NZ, t)) *
+                  (grid.v[NX * NY * (NZ + 1) + NZ] - exact_solution.value_y(NX, 0.5, NZ, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny - 1; j++)
+        for (size_t j = 1; j < NY - 1; j++)
         {
-            error += ((grid.v[nx * ny * (nz + 1) + j * (nz + 1)] - exact_solution.value_y(nx, j + 0.5, 0, t)) *
-                      (grid.v[nx * ny * (nz + 1) + j * (nz + 1)] - exact_solution.value_y(nx, j + 0.5, 0, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz; k++)
+            error += ((grid.v[NX * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5, 0, t)) *
+                      (grid.v[NX * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
             {
-                error += ((grid.v[nx * ny * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_y(nx, j + 0.5, k, t)) *
-                          (grid.v[nx * ny * (nz + 1) + j * (nz + 1) + k] - exact_solution.value_y(nx, j + 0.5, k, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5, k, t)) *
+                          (grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5, k, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.v[nx * ny * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_y(nx, j + 0.5, nz, t)) *
-                      (grid.v[nx * ny * (nz + 1) + j * (nz + 1) + nz] - exact_solution.value_y(nx, j + 0.5, nz, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_y(NX, j + 0.5, NZ, t)) *
+                      (grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_y(NX, j + 0.5, NZ, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1)] - exact_solution.value_y(nx, (ny - 0.5), 0, t)) *
-                  (grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1)] - exact_solution.value_y(nx, (ny - 0.5), 0, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
+                  (grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz; k++)
+        for (size_t k = 1; k < NZ; k++)
         {
-            error += ((grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1) + k] - exact_solution.value_y(nx, (ny - 0.5), k, t)) *
-                      (grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1) + k] - exact_solution.value_y(nx, (ny - 0.5), k, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
+                      (grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1) + nz] - exact_solution.value_y(nx, (ny - 0.5), nz, t)) *
-                  (grid.v[nx * ny * (nz + 1) + (ny - 1) * (nz + 1) + nz] - exact_solution.value_y(nx, (ny - 0.5), nz, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(NX, (NY - 0.5), NZ, t)) *
+                  (grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + NZ] - exact_solution.value_y(NX, (NY - 0.5), NZ, t)) *
+                  DX * DY * DZ / 8);
     }
     return error;
 }
@@ -606,151 +425,151 @@ Real IcoNS::error_comp_Z(const Real t)
     {
         error += ((grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *
                   (grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *
-                  dx * dy * dz / 8);
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz - 1; k++)
+        for (size_t k = 1; k < NZ - 1; k++)
         {
             error += ((grid.w[k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
                       (grid.w[k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
-                      dx * dy * dz / 4);
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[nz - 1] - exact_solution.value_z(0, 0, nz - 0.5, t)) *
-                  (grid.w[nz - 1] - exact_solution.value_z(0, 0, nz - 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NZ - 1] - exact_solution.value_z(0, 0, NZ - 0.5, t)) *
+                  (grid.w[NZ - 1] - exact_solution.value_z(0, 0, NZ - 0.5, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            error += ((grid.w[j * nz] - exact_solution.value_z(0, j, 0.5, t)) *
-                      (grid.w[j * nz] - exact_solution.value_z(0, j, 0.5, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz - 1; k++)
+            error += ((grid.w[j * NZ] - exact_solution.value_z(0, j, 0.5, t)) *
+                      (grid.w[j * NZ] - exact_solution.value_z(0, j, 0.5, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                error += ((grid.w[j * nz + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
-                          (grid.w[j * nz + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[j * NZ + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
+                          (grid.w[j * NZ + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.w[j * nz + nz - 1] - exact_solution.value_z(0, j, nz - 0.5, t)) *
-                      (grid.w[j * nz + nz - 1] - exact_solution.value_z(0, j, nz - 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[j * NZ + NZ - 1] - exact_solution.value_z(0, j, NZ - 0.5, t)) *
+                      (grid.w[j * NZ + NZ - 1] - exact_solution.value_z(0, j, NZ - 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[ny * nz] - exact_solution.value_z(0, ny, 0.5, t)) *
-                  (grid.w[ny * nz] - exact_solution.value_z(0, ny, 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NY * NZ] - exact_solution.value_z(0, NY, 0.5, t)) *
+                  (grid.w[NY * NZ] - exact_solution.value_z(0, NY, 0.5, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz - 1; k++)
+        for (size_t k = 1; k < NZ - 1; k++)
         {
-            error += ((grid.w[ny * nz + k] - exact_solution.value_z(0, ny, k + 0.5, t)) *
-                      (grid.w[ny * nz + k] - exact_solution.value_z(0, ny, k + 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[NY * NZ + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
+                      (grid.w[NY * NZ + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[ny * nz + nz - 1] - exact_solution.value_z(0, ny, nz - 0.5, t)) *
-                  (grid.w[ny * nz + nz - 1] - exact_solution.value_z(0, ny, nz - 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NY * NZ + NZ - 1] - exact_solution.value_z(0, NY, NZ - 0.5, t)) *
+                  (grid.w[NY * NZ + NZ - 1] - exact_solution.value_z(0, NY, NZ - 0.5, t)) *
+                  DX * DY * DZ / 8);
     }
 
     // middle slices
     {
-        for (size_t i = 1; i < nx; i++)
+        for (size_t i = 1; i < NX; i++)
         {
-            error += ((grid.w[i * (ny + 1) * nz] - exact_solution.value_z(i, 0, 0.5, t)) *
-                      (grid.w[i * (ny + 1) * nz] - exact_solution.value_z(i, 0, 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[i * (NY + 1) * NZ] - exact_solution.value_z(i, 0, 0.5, t)) *
+                      (grid.w[i * (NY + 1) * NZ] - exact_solution.value_z(i, 0, 0.5, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz - 1; k++)
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                error += ((grid.w[i * (ny + 1) * nz + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
-                          (grid.w[i * (ny + 1) * nz + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[i * (NY + 1) * NZ + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
+                          (grid.w[i * (NY + 1) * NZ + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.w[i * (ny + 1) * nz + nz - 1] - exact_solution.value_z(i, 0, nz - 0.5, t)) *
-                      (grid.w[i * (ny + 1) * nz + nz - 1] - exact_solution.value_z(i, 0, nz - 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[i * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(i, 0, NZ - 0.5, t)) *
+                      (grid.w[i * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(i, 0, NZ - 0.5, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < ny; j++)
+            for (size_t j = 1; j < NY; j++)
             {
-                error += ((grid.w[i * (ny + 1) * nz + j * nz] - exact_solution.value_z(i, j, 0.5, t)) *
-                          (grid.w[i * (ny + 1) * nz + j * nz] - exact_solution.value_z(i, j, 0.5, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[i * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(i, j, 0.5, t)) *
+                          (grid.w[i * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(i, j, 0.5, t)) *
+                          DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < nz - 1; k++)
+                for (size_t k = 1; k < NZ - 1; k++)
                 {
-                    error += ((grid.w[i * (ny + 1) * nz + j * nz + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
-                              (grid.w[i * (ny + 1) * nz + j * nz + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
-                              dx * dy * dz);
+                    error += ((grid.w[i * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
+                              (grid.w[i * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
+                              DX * DY * DZ);
                 }
 
-                error += ((grid.w[i * (ny + 1) * nz + j * nz + nz - 1] - exact_solution.value_z(i, j, (nz - 0.5), t)) *
-                          (grid.w[i * (ny + 1) * nz + j * nz + nz - 1] - exact_solution.value_z(i, j, (nz - 0.5), t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[i * (NY + 1) * NZ + j * NZ + NZ - 1] - exact_solution.value_z(i, j, (NZ - 0.5), t)) *
+                          (grid.w[i * (NY + 1) * NZ + j * NZ + NZ - 1] - exact_solution.value_z(i, j, (NZ - 0.5), t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.w[i * (ny + 1) * nz + ny * nz] - exact_solution.value_z(i, ny, 0.5, t)) *
-                      (grid.w[i * (ny + 1) * nz + ny * nz] - exact_solution.value_z(i, ny, 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[i * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(i, NY, 0.5, t)) *
+                      (grid.w[i * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(i, NY, 0.5, t)) *
+                      DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < nz - 1; k++)
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                error += ((grid.w[i * (ny + 1) * nz + ny * nz + k] - exact_solution.value_z(i, ny, k + 0.5, t)) *
-                          (grid.w[i * (ny + 1) * nz + ny * nz + k] - exact_solution.value_z(i, ny, k + 0.5, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[i * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(i, NY, k + 0.5, t)) *
+                          (grid.w[i * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(i, NY, k + 0.5, t)) *
+                          DX * DY * DZ / 2);
             }
 
-            error += ((grid.w[i * (ny + 1) * nz + ny * nz + nz - 1] - exact_solution.value_z(i, ny, nz - 0.5, t)) *
-                      (grid.w[i * (ny + 1) * nz + ny * nz + nz - 1] - exact_solution.value_z(i, ny, nz - 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[i * (NY + 1) * NZ + NY * NZ + NZ - 1] - exact_solution.value_z(i, NY, NZ - 0.5, t)) *
+                      (grid.w[i * (NY + 1) * NZ + NY * NZ + NZ - 1] - exact_solution.value_z(i, NY, NZ - 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
     }
 
     // last slice (right face)
     {
-        error += ((grid.w[nx * (ny + 1) * nz] - exact_solution.value_z(nx, 0, 0.5, t)) *
-                  (grid.w[nx * (ny + 1) * nz] - exact_solution.value_z(nx, 0, 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NX * (NY + 1) * NZ] - exact_solution.value_z(NX, 0, 0.5, t)) *
+                  (grid.w[NX * (NY + 1) * NZ] - exact_solution.value_z(NX, 0, 0.5, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz - 1; k++)
+        for (size_t k = 1; k < NZ - 1; k++)
         {
-            error += ((grid.w[nx * (ny + 1) * nz + k] - exact_solution.value_z(nx, 0, k + 0.5, t)) *
-                      (grid.w[nx * (ny + 1) * nz + k] - exact_solution.value_z(nx, 0, k + 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[NX * (NY + 1) * NZ + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
+                      (grid.w[NX * (NY + 1) * NZ + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[nx * (ny + 1) * nz + nz - 1] - exact_solution.value_z(nx, 0, nz - 0.5, t)) *
-                  (grid.w[nx * (ny + 1) * nz + nz - 1] - exact_solution.value_z(nx, 0, nz - 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NX * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
+                  (grid.w[NX * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < ny; j++)
+        for (size_t j = 1; j < NY; j++)
         {
-            error += ((grid.w[nx * (ny + 1) * nz + j * nz] - exact_solution.value_z(nx, j, 0.5, t)) *
-                      (grid.w[nx * (ny + 1) * nz + j * nz] - exact_solution.value_z(nx, j, 0.5, t)) *
-                      dx * dy * dz / 4);
-            for (size_t k = 1; k < nz - 1; k++)
+            error += ((grid.w[NX * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(NX, j, 0.5, t)) *
+                      (grid.w[NX * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(NX, j, 0.5, t)) *
+                      DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ - 1; k++)
             {
-                error += ((grid.w[nx * (ny + 1) * nz + j * nz + k] - exact_solution.value_z(nx, j, k + 0.5, t)) *
-                          (grid.w[nx * (ny + 1) * nz + j * nz + k] - exact_solution.value_z(nx, j, k + 0.5, t)) *
-                          dx * dy * dz / 2);
+                error += ((grid.w[NX * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(NX, j, k + 0.5, t)) *
+                          (grid.w[NX * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(NX, j, k + 0.5, t)) *
+                          DX * DY * DZ / 2);
             }
-            error += ((grid.w[nx * (ny + 1) * nz + j * nz + nz - 1] - exact_solution.value_z(nx, j, nz - 0.5, t)) *
-                      (grid.w[nx * (ny + 1) * nz + j * nz + nz - 1] - exact_solution.value_z(nx, j, nz - 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[NX * (NY + 1) * NZ + j * NZ + NZ - 1] - exact_solution.value_z(NX, j, NZ - 0.5, t)) *
+                      (grid.w[NX * (NY + 1) * NZ + j * NZ + NZ - 1] - exact_solution.value_z(NX, j, NZ - 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[nx * (ny + 1) * nz + ny * nz] - exact_solution.value_z(nx, ny, 0.5, t)) *
-                  (grid.w[nx * (ny + 1) * nz + ny * nz] - exact_solution.value_z(nx, ny, 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NX * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(NX, NY, 0.5, t)) *
+                  (grid.w[NX * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(NX, NY, 0.5, t)) *
+                  DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < nz - 1; k++)
+        for (size_t k = 1; k < NZ - 1; k++)
         {
-            error += ((grid.w[nx * (ny + 1) * nz + ny * nz + k] - exact_solution.value_z(nx, ny, k + 0.5, t)) *
-                      (grid.w[nx * (ny + 1) * nz + ny * nz + k] - exact_solution.value_z(nx, ny, k + 0.5, t)) *
-                      dx * dy * dz / 4);
+            error += ((grid.w[NX * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
+                      (grid.w[NX * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
+                      DX * DY * DZ / 4);
         }
 
-        error += ((grid.w[nx * (ny + 1) * nz + ny * nz + nz - 1] - exact_solution.value_z(nx, ny, nz - 0.5, t)) *
-                  (grid.w[nx * (ny + 1) * nz + ny * nz + nz - 1] - exact_solution.value_z(nx, ny, nz - 0.5, t)) *
-                  dx * dy * dz / 8);
+        error += ((grid.w[NX * (NY + 1) * NZ + NY * NZ + NZ - 1] - exact_solution.value_z(NX, NY, NZ - 0.5, t)) *
+                  (grid.w[NX * (NY + 1) * NZ + NY * NZ + NZ - 1] - exact_solution.value_z(NX, NY, NZ - 0.5, t)) *
+                  DX * DY * DZ / 8);
     }
 
     return error;
