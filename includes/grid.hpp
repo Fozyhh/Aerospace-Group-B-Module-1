@@ -7,6 +7,7 @@
 #include <array>
 #include "config.hpp"
 
+
 /**
  * @brief Structure representing the grid of the domain.
  *
@@ -22,6 +23,7 @@ struct Grid
     std::array<Real, (NX + 1) * NY *(NZ + 1)> v{};
     std::array<Real, (NX + 1) * (NY + 1) * NZ> w{};
     std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> p{};
+
 };
 
 #endif // GRID_HPP

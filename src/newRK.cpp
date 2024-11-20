@@ -3,6 +3,7 @@
 void IcoNS::solve_time_step(Real time)
 {
     for (size_t i = 1; i < NX - 1; i++)
+
     {
         for (size_t j = 1; j < NY; j++)
         {
@@ -41,6 +42,7 @@ void IcoNS::solve_time_step(Real time)
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
 
     for (size_t i = 1; i < NX - 1; i++)
+
     {
         for (size_t j = 1; j < NY; j++)
         {
@@ -82,6 +84,7 @@ void IcoNS::solve_time_step(Real time)
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
 
     for (size_t i = 1; i < NX - 1; i++)
+
     {
         for (size_t j = 1; j < NY; j++)
         {
@@ -119,7 +122,9 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+    
 }
+
 
 Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
@@ -150,6 +155,7 @@ Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
 }
 
 Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+
 {
     size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
@@ -164,6 +170,7 @@ Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
            functionG_w(i, j, k, t);
 }
 
+
 Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
 {
     Real x = i * DX + DX / 2;
@@ -173,6 +180,7 @@ Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
            std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
            3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+
 }
 
 Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
@@ -181,11 +189,13 @@ Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
     Real y = j * DY + DY / 2;
     Real z = k * DZ;
     return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) -
+
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
            3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
 }
+
 
 Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
 {

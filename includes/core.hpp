@@ -9,17 +9,22 @@
 #include "grid.hpp"
 #include <string>
 #include <cmath>
+#include <filesystem>
 
 class IcoNS
 {
 public:
+
   IcoNS(const std::string &input_file, const std::string &output_file)
       : input_file(input_file),
         output_file(output_file)
+
+ 
   {
   }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
+
 
   Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
@@ -27,6 +32,7 @@ public:
   Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
+
 
   void solve();                      // solve the problem saving the ouput.
   void solve_time_step(Real time); // solve a time step.
@@ -36,7 +42,9 @@ public:
   Real error_comp_Z(const Real t);
   Real L2_error(const Real t); // compute the L2 norm
 
-  void output(); // write the output file.
+  void output_u(const std::string& filename, Grid& print); // write the output file.
+  void output_v(const std::string& filename, Grid& print); // write the output file.
+  void output_w(const std::string& filename, Grid& print); // write the output file.
 
 private:
   Grid grid; // grid of the domain.
@@ -50,6 +58,7 @@ private:
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
+
 };
 
 #endif // CORE_HPP

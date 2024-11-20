@@ -46,6 +46,7 @@ public:
 class ExactSolution
 {
 public:
+
   Real value_x(Real x, Real y, Real z, Real t) const
   {
     return std::sin(x * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t);
@@ -84,6 +85,7 @@ public:
    * @param t Timestep to print at
    * @param d Direction you want to show(U,V,W)
    */
+
   static void Confront(Grid &grid, ExactSolution &exact, Real t, Direction d)
   {
     // U
@@ -96,6 +98,7 @@ public:
           for (Real k = 0; k < NZ + 1; k++)
           {
             std::cout << i << j << k << "(" << grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] << ")-(" << exact.value_x(i + 0.5, j, k, t) << ") ";
+
           }
           std::cout << std::endl;
         }

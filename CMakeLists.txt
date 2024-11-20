@@ -51,6 +51,11 @@ target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
+add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public
+target_include_directories(conv PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+
+# add_executable(tl2 src/core.cpp src/boundary.cpp src/newRK.cpp Test/L2Test.cpp)
+# target_include_directories(tl2 PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 # Create report directories if profiling or memory checks are enabled
 if(ENABLE_CPUPROF)
     file(MAKE_DIRECTORY "${GPROF_REPORT_DIR}")

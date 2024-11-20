@@ -8,11 +8,33 @@
 #include <string>
 #include <memory>
 
+//#define OUTPUT
+#define OUTPUTERROR
+//#define VERBOSE
+#ifdef VERBOSE
+    #include <chrono>
+#endif
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
+    #ifdef VERBOSE
+        std::cout << "*************************************************" << std::endl;
+        std::cout << "Incompressible Navier-Stokes equation Solver" << std::endl << std::endl << std::endl;
+
+        std::cout << "Solving for a Mesh of physical dimension (" << lx << "," << ly << "," << lz <<") meters." << std::endl
+        << "Number of partitions: " << nx << " nx, " << ny << " ny, "<< nz << " nz." << std::endl
+        << "Dimension of a single cell:(" << dx <<"," << dy << "," << dz <<")." <<std::endl
+        << "Reynolds number: " << Re << std::endl
+        << "Total lenght of simulation: " << T << " seconds, whit a time step of " << dt << " seconds." << std::endl
+
+        << "------------------------------------------------------------" << std::endl << std::endl
+        <<"Reading Initial condition from file: Not implemented yet, setting all to 0." << std::endl
+        <<"Reading Boundary conditions from file: Not implemented yet, using default ones" <<std::endl;        
+        std::cout << "*************************************************" << std::endl << std::endl;
+    #endif
     // boundary
     auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+
                                               { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
@@ -30,11 +52,18 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 void IcoNS::solve()
 {
     Real time = 0.0;
+
     int i = 0;
-
-    std::ofstream error_log("../resources/error.log");
-
+    #ifdef OUTPUTERROR
+    Grid ERROR(grid);
+    #endif
+    std::ofstream error_log("../resources/" + error_file);
+    #ifdef VERBOSE
+    std::cout << "Starting solver" << std::endl;
+    auto start =std::chrono::high_resolution_clock::now();
+    #endif
     while (time < T)
+
     {
         /*Check::Confront(grid,exact_solution,time,U);
         int p;
@@ -47,7 +76,17 @@ void IcoNS::solve()
         // output();
         time += DT;
         i++;
+
     }
+    error = L2_error(time);
+    error_log << time << "," << i << "," << error << std::endl;
+    #ifdef VERBOSE
+        std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
+        auto end =std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end-start; 
+        std::cout << std::endl << "Time: " << duration.count() << std::endl;
+        
+    #endif
 }
 
 Real IcoNS::L2_error(const Real t)
@@ -57,6 +96,10 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_X(t);
     error += error_comp_Y(t);
     error += error_comp_Z(t);
+
+    /*std::cout << error_comp_X(t) << std::endl;
+    std::cout << error_comp_Y(t) << std::endl;
+    std::cout << error_comp_Z(t) << std::endl << std::endl;*/
 
     return sqrt(error);
 }
@@ -532,6 +575,6 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
-void IcoNS::output()
-{
-}
+// void IcoNS::output()
+// {
+// }
