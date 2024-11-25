@@ -1,28 +1,10 @@
 #include "boundary.hpp"
 
-//<<<<<<< v2/array1D
 // The method, which takes as input only the time step, is called by the program at the start of the time step.
 // For each boundary node, it takes the exact value dor each component from the input and updates them.
 // It also updates those values that are not directly on a face, but need an approximation.
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
-//=======
-Boundary::Boundary(int nx, int ny, int nz,Real dx_, Real dy_,Real dz_): 
-nx(nx)
-,ny(ny)
-,nz(nz)
-,dx(dx_)
-,dy(dy_)
-,dz(dz_)
-,precision(0.1)
-{}
-
-// The method, which takes as input only the time step, is called by the program at the start of the time step.
-// For each boundary node, it takes the exact value dor each component from the input and updates them.
-// It also updates those values that are not directly on a face, but need an approximation.
-void Boundary::update_boundary(std::vector<Real>& Yx,std::vector<Real>& Yy,std::vector<Real>& Yz, Real t){
-//>>>>>>> main
-
     // Each face is numbered from 0 to 5 and we treat every face separately
     // LEFT FACE
 

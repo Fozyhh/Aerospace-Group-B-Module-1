@@ -22,7 +22,7 @@ public:
         // Here we will build the eigenvalues array -> Each eigenvalue is constructed considering the corresponding boolean of the direction
     }
 
-    void solvePoisson(std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& F);
+    void solvePoisson(std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& F, std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& dP);
 };
 
 #endif
