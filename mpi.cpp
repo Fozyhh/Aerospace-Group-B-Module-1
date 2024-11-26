@@ -175,21 +175,7 @@ int main(int argc, char **argv)
     // la propria MPI_face (per il momento non è un problema perchè i processi che scambiano dati:
     // 0 e 2, 1 e 3, sono adiacenti e quindi hanno la stessa dimensione di face)
     
-    //TODO: riguardare perchè testata con 2 proc e basta
-    MPI_Datatype MPI_face_x;
-    MPI_Type_vector(1,dim_z* dim_y, res_y, MPI_INT, &MPI_face_x);
-    MPI_Type_commit(&MPI_face_x);
-    // MPI_Status status1;
-
-    // if (neighbors[0] != -2)
-    // {
-    //     MPI_Send(&grid_loc[newDimY * dim_z], 1, MPI_face_x, neighbors[0], rank, cart_comm);
-    // }
-
-    // if (neighbors[2] != -2)
-    // {
-    //     MPI_Recv(&grid_loc[(newDimX - 1) * newDimY * dim_z], 1, MPI_face_x, neighbors[2], neighbors[2], cart_comm, &status1);
-    // }
+    
 
     //LO STRIDE INIZIA A CONTARE DALL INIZIO DEL BLOCCO PRECEDENTE!!!!
     MPI_Datatype MPI_face_y;
@@ -220,8 +206,62 @@ int main(int argc, char **argv)
         MPI_Recv(&grid_loc[dim_z*(dim_y) + (newDimY) * dim_z], 1, MPI_face_y, neighbors[3], neighbors[3], cart_comm, &status3);
     }
 
+    //0 invia a 1
+    MPI_Status status4;
+    if (rank == 0)//(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z], 1, MPI_face_y, neighbors[3], rank, cart_comm);
+    }
+
+    if (rank == 1) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[1], neighbors[1], cart_comm, &status4);
+    }
+
+    // 2 invia a 3
+    MPI_Status status5;
+    if (rank == 2)//(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_y, neighbors[3], rank, cart_comm);
+    }
+
+    if (rank == 3) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_y, neighbors[1], neighbors[1], cart_comm, &status5);
+    }
+
+    //TODO: riguardare perchè testata con 2 proc e basta
+    MPI_Datatype MPI_face_x;
+    MPI_Type_vector(1,dim_z* newDimY, 0, MPI_INT, &MPI_face_x);
+    MPI_Type_commit(&MPI_face_x);
+    MPI_Status status1;
+
+    //0 invia a 2 e 1 invia a 3
+    if (neighbors[2] != -2)
+    {
+        MPI_Send(&grid_loc[(dim_x-1)*newDimY * dim_z], 1, MPI_face_x, neighbors[2], rank, cart_comm);
+    }
+
+    if (neighbors[0] != -2)
+    {
+        MPI_Recv(&grid_loc[0], 1, MPI_face_x, neighbors[0], neighbors[0], cart_comm, &status1);
+    }
+
+    MPI_Status status11;
+
+    //2 a 0 e 3 a 1
+    if (neighbors[0] != -2)
+    {
+        MPI_Send(&grid_loc[newDimY * dim_z], 1, MPI_face_x, neighbors[0], rank, cart_comm);
+    }
+
+    if (neighbors[2] != -2)
+    {
+        MPI_Recv(&grid_loc[(dim_x)*newDimY*dim_z], 1, MPI_face_x, neighbors[2], neighbors[2], cart_comm, &status1);
+    }
+
     MPI_Barrier(cart_comm);
-    if (rank == 2){
+    //if (rank == 1){
         std::cout << " rank: " << rank /*rank << "N0: " << neighbors[0] << " N2: " <<neighbors[2]*/ << std::endl;
         for (int i = 0; i < newDimX; i++)
         {
@@ -235,7 +275,7 @@ int main(int argc, char **argv)
             }
             std::cout << std::endl;
         }
-    }
+    //}
 
     MPI_Barrier(cart_comm);
 
