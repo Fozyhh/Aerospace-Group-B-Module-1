@@ -4,7 +4,6 @@
 
 int main()
 {
-
     IcoNS icoNS("input.txt", "output.txt");
 
     icoNS.preprocessing();
