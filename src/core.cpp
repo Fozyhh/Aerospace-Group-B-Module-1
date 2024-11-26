@@ -9,7 +9,7 @@
 #include <memory>
 
 //#define OUTPUT
-#define OUTPUTERROR
+//#define OUTPUTERROR
 //#define VERBOSE
 #ifdef VERBOSE
     #include <chrono>
@@ -57,7 +57,7 @@ void IcoNS::solve()
     #ifdef OUTPUTERROR
     Grid ERROR(grid);
     #endif
-    std::ofstream error_log("../resources/" + error_file);
+    //std::ofstream error_log("../resources/" + error_file);
     #ifdef VERBOSE
     std::cout << "Starting solver" << std::endl;
     auto start =std::chrono::high_resolution_clock::now();
@@ -78,8 +78,8 @@ void IcoNS::solve()
         i++;
 
     }
-    error = L2_error(time);
-    error_log << time << "," << i << "," << error << std::endl;
+    //error = L2_error(time);
+    //error_log << time << "," << i << "," << error << std::endl;
     #ifdef VERBOSE
         std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
         auto end =std::chrono::high_resolution_clock::now();

@@ -10,19 +10,19 @@ int main()
     const double T = 0.5;
     const float Re = 400.0;
 
-    IcoNS icoNS10(lx, ly, lz, 10, 10, 10, 1/100.0, T, Re, "input.txt", "output.txt","conv/10.txt");
+    IcoNS icoNS10("input.txt", "output.txt");
     icoNS10.preprocessing();
     icoNS10.solve();
 
-    IcoNS icoNS20(lx, ly, lz, 20, 20, 20, 1/200.0, T, Re, "input.txt", "output.txt","conv/20.txt");
+    IcoNS icoNS20("input.txt", "output.txt");
     icoNS20.preprocessing();
     icoNS20.solve();
 
-    IcoNS icoNS50(lx, ly, lz, 50, 50, 50, 1/500.0, T, Re, "input.txt", "output.txt","conv/50.txt");
+    IcoNS icoNS50("input.txt", "output.txt");
     icoNS50.preprocessing();
     icoNS50.solve();
 
-    IcoNS icoNS100(lx, ly, lz, 100, 100, 100, 1/1000.0, T, Re, "input.txt", "output.txt","conv/z100.txt");
+    IcoNS icoNS100("input.txt", "output.txt");
     icoNS100.preprocessing();
     icoNS100.solve();
     return 0;
