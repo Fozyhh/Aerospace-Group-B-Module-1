@@ -1,7 +1,4 @@
 #include "poissonSolver.hpp"
-#include <cmath>
-#include <numbers>
-#include <complex>
 
 void PoissonSolver::solvePoisson(std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& F, std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& dP)
 {

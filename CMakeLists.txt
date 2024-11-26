@@ -42,11 +42,13 @@ set(SOURCES
     src/core.cpp
     src/boundary.cpp
     src/newRK.cpp
+    src/poissonSolver.cpp
 )
 
 # Executable
 add_executable(main ${SOURCES})
-target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} $ENV{HOME}/2Decomp_C)
+target_link_libraries(main $ENV{mkFftwLib} m)
 
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
@@ -56,6 +58,7 @@ target_include_directories(conv PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
 # add_executable(tl2 src/core.cpp src/boundary.cpp src/newRK.cpp Test/L2Test.cpp)
 # target_include_directories(tl2 PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+
 # Create report directories if profiling or memory checks are enabled
 if(ENABLE_CPUPROF)
     file(MAKE_DIRECTORY "${GPROF_REPORT_DIR}")

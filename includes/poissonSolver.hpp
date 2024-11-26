@@ -2,6 +2,11 @@
 #define POISSONSOLVER_HPP
 
 #include "utils.hpp"
+#include <cmath>
+#include <numbers>
+#include <complex>
+#include <fftw3.h>
+#include "C2Decomp.hpp"
 
 class PoissonSolver
 {
