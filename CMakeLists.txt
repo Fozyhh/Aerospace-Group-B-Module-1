@@ -47,7 +47,7 @@ set(SOURCES
 
 # Executable
 add_executable(main ${SOURCES})
-target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} $ENV{HOME}/2Decomp_C)
+target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
 target_link_libraries(main $ENV{mkFftwLib} m)
 
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
