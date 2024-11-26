@@ -7,7 +7,7 @@
 #define NY 4
 #define NZ 4
 
-#define PX 1
+#define PX 2
 #define PY 2
 #define PZ 1
 
@@ -148,15 +148,17 @@ int main(int argc, char **argv)
                 if(k==0 || k==NZ)
                     grid_loc[i * newDimY * dim_z + j * dim_z + k] += 4;
 
-
+                
+                if((rank == 0 || rank ==1) && i == dim_x) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
+                if((rank == 2 || rank== 3) && i == 0) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
                 //Setting ghost points to 0
-                if(rank == 0 && j == dim_y) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                if(rank == 1 && j == 0) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
+                if((rank == 0 || rank ==2) && j == dim_y) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
+                if((rank == 1 || rank ==3) && j == 0) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
             }
         }
     }
-    
-    for (int i = 1; i < newDimX - 0; i++)
+    //may be dim_x instead of newDimX - 1 but that will come with more processes
+    for (int i = 1; i < newDimX - 1; i++)
     {
         for (int j = 1; j < newDimY - 1; j++)
         {
@@ -177,7 +179,7 @@ int main(int argc, char **argv)
     MPI_Datatype MPI_face_x;
     MPI_Type_vector(1,dim_z* dim_y, res_y, MPI_INT, &MPI_face_x);
     MPI_Type_commit(&MPI_face_x);
-    // MPI_Status status;
+    // MPI_Status status1;
 
     // if (neighbors[0] != -2)
     // {
@@ -186,26 +188,40 @@ int main(int argc, char **argv)
 
     // if (neighbors[2] != -2)
     // {
-    //     MPI_Recv(&grid_loc[(newDimX - 1) * newDimY * dim_z], 1, MPI_face_x, neighbors[2], neighbors[2], cart_comm, &status);
+    //     MPI_Recv(&grid_loc[(newDimX - 1) * newDimY * dim_z], 1, MPI_face_x, neighbors[2], neighbors[2], cart_comm, &status1);
     // }
 
     //LO STRIDE INIZIA A CONTARE DALL INIZIO DEL BLOCCO PRECEDENTE!!!!
     MPI_Datatype MPI_face_y;
     MPI_Type_vector(dim_x,dim_z, (dim_y)*dim_z + dim_z, MPI_INT, &MPI_face_y);
     MPI_Type_commit(&MPI_face_y);
-    MPI_Status status;
-    if (neighbors[1] != -2)
+    
+    //processore 1 invia a 0
+    MPI_Status status2;
+    if (rank == 1)//(neighbors[1] != -2)
     {
         MPI_Send(&grid_loc[dim_z], 1, MPI_face_y, neighbors[1], rank, cart_comm);
     }
 
-    if (neighbors[3] != -2)
+    if (rank == 0) //(neighbors[3] != -2)
     {
-        MPI_Recv(&grid_loc[dim_z*(dim_y)], 1, MPI_face_y, neighbors[3], neighbors[3], cart_comm, &status);
+        MPI_Recv(&grid_loc[dim_z*(dim_y)], 1, MPI_face_y, neighbors[3], neighbors[3], cart_comm, &status2);
+    }
+
+    // 3 invia a 2
+    MPI_Status status3;
+    if (rank == 3)//(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_y, neighbors[1], rank, cart_comm);
+    }
+
+    if (rank == 2) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[dim_z*(dim_y) + (newDimY) * dim_z], 1, MPI_face_y, neighbors[3], neighbors[3], cart_comm, &status3);
     }
 
     MPI_Barrier(cart_comm);
-    if (rank == 0){
+    if (rank == 2){
         std::cout << " rank: " << rank /*rank << "N0: " << neighbors[0] << " N2: " <<neighbors[2]*/ << std::endl;
         for (int i = 0; i < newDimX; i++)
         {
@@ -223,31 +239,32 @@ int main(int argc, char **argv)
 
     MPI_Barrier(cart_comm);
 
-    if (rank == 1){
-        std::cout << " rank: " << rank /*rank << "N0: " << neighbors[0] << " N2: " <<neighbors[2]*/ << std::endl;
-        for (int i = 0; i < newDimX; i++)
-        {
-            for (int j = 0; j < newDimY; j++)
-            {
-                for (int k = 0; k < dim_z; k++)
-                {
-                    std::cout << grid_loc[i * newDimY * dim_z + j * dim_z + k] << " ";
-                }
-                std::cout << std::endl;
-            }
-            std::cout << std::endl;
-        }
-    }
+    // if (rank == 1){
+    //     std::cout << " rank: " << rank /*rank << "N0: " << neighbors[0] << " N2: " <<neighbors[2]*/ << std::endl;
+    //     for (int i = 0; i < newDimX; i++)
+    //     {
+    //         for (int j = 0; j < newDimY; j++)
+    //         {
+    //             for (int k = 0; k < dim_z; k++)
+    //             {
+    //                 std::cout << grid_loc[i * newDimY * dim_z + j * dim_z + k] << " ";
+    //             }
+    //             std::cout << std::endl;
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    // }
 
     MPI_Barrier(cart_comm);
 
-    if (rank == 0)
+    if (rank ==0)
     {
         std::cout << "Rank: " << rank << std::endl;
         std::cout << "Dim_x: " << dim_x << " Dim_y: " << dim_y << std::endl;
         std::cout << "Res_x: " << res_x << " Res_y: " << res_y << std::endl;
         std::cout << "NewDimX: " << newDimX << " NewDimY: " << newDimY << std::endl;
         std::cout << "upper neighbour: " << neighbors[1] << " lower: " << neighbors[3] << std::endl;
+        std::cout << "left neighbour: " << neighbors[0] << " right: " << neighbors[2] << std::endl;
         std::cout << "Coords: " << coords[0] << "," << coords[1] << std::endl<< std::endl;
 
     }
@@ -259,6 +276,7 @@ int main(int argc, char **argv)
         std::cout << "Res_x: " << res_x << " Res_y: " << res_y << std::endl;
         std::cout << "NewDimX: " << newDimX << " NewDimY: " << newDimY << std::endl;
         std::cout << "upper neighbour: " << neighbors[1] << " lower: " << neighbors[3] << std::endl;
+        std::cout << "left neighbour: " << neighbors[0] << " right: " << neighbors[2] << std::endl;
         std::cout << "Coords: " << coords[0] << "," << coords[1] << std::endl;
     }   
 
