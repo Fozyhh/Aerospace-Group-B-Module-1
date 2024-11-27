@@ -15,7 +15,7 @@ private:
     const bool periodicX;
     const bool periodicY;
     const bool periodicZ;
-    std::array<Real, (NX+1)*(NY+1)*(NZ+1)> eigenvalues;
+    std::array<Real, NX * NY * NZ> eigenvalues;
 
 
 public: 
@@ -27,7 +27,7 @@ public:
         // Here we will build the eigenvalues array -> Each eigenvalue is constructed considering the corresponding boolean of the direction
     }
 
-    void solvePoisson(std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& F, std::array<Real, (NX+1)*(NY+1)*(NZ+1)>& dP);
+    void solvePoisson(std::array<Real, NX * NY * NZ>& F, fftw_complex *FD);
 };
 
 #endif

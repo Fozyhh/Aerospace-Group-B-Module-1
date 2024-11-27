@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.10)
 # Project name and version
 project(AEROSPACE_PROJECT VERSION 1.0)
 
+
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
+include_directories(PkgConfig::FFTW)
+link_libraries(PkgConfig::FFTW)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -55,6 +61,10 @@ target_link_libraries(main $ENV{mkFftwLib} m)
 
 add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public
 target_include_directories(conv PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+
+add_executable(poisson Test/poissonTest.cpp src/poissonSolver.cpp)
+target_include_directories(poisson PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
+target_link_libraries(poisson $ENV{mkFftwLib} m)
 
 # add_executable(tl2 src/core.cpp src/boundary.cpp src/newRK.cpp Test/L2Test.cpp)
 # target_include_directories(tl2 PRIVATE ${CMAKE_SOURCE_DIR}/includes)
