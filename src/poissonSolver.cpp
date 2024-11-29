@@ -97,29 +97,40 @@ void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1
         }
     }
 
-    // MIDDLE POINTS
-    for(size_t i=1; i<NX+1; i++){
+    // LOWER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t j=0; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] /= sqrt(2.0);
+        }
+    } 
 
+    // FRONT FACE
+    for(size_t i=0; i<NX+1; i++){
         for(size_t k=0; k<NZ+1; k++){
             F[i * (NY+1) * (NZ+1) + k] /= sqrt(2.0);
         }
+    } 
 
-        for(size_t j=1; j<NY+1; j++){
-            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] /= sqrt(2.0);
-            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] /= sqrt(2.0);
-        }
-
-        for(size_t k=0; k<NZ+1; k++){
-            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] /= sqrt(2.0);
-        }
-    }
-
-    //RIGHT FACE
+    // RIGHT FACE
     for(size_t j=0; j<NY+1; j++){
         for(size_t k=0; k<NZ+1; k++){
             F[NX * (NY+1) * (NZ+1) + j * (NZ+1) + k] /= sqrt(2.0);
         }
     }
+
+    // UPPER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t j=0; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] /= sqrt(2.0);
+        }
+    } 
+
+    // LOWER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] /= sqrt(2.0);
+        }
+    } 
 
     // Perform the fft
 
@@ -167,29 +178,40 @@ void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1
         }
     }
 
-    // MIDDLE POINTS
-    for(size_t i=1; i<NX+1; i++){
+    // LOWER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t j=0; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] *= sqrt(2.0);
+        }
+    } 
 
+    // FRONT FACE
+    for(size_t i=0; i<NX+1; i++){
         for(size_t k=0; k<NZ+1; k++){
             F[i * (NY+1) * (NZ+1) + k] *= sqrt(2.0);
         }
+    } 
 
-        for(size_t j=1; j<NY+1; j++){
-            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] *= sqrt(2.0);
-            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] *= sqrt(2.0);
-        }
-
-        for(size_t k=0; k<NZ+1; k++){
-            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] *= sqrt(2.0);
-        }
-    }
-
-    //RIGHT FACE
+    // RIGHT FACE
     for(size_t j=0; j<NY+1; j++){
         for(size_t k=0; k<NZ+1; k++){
             F[NX * (NY+1) * (NZ+1) + j * (NZ+1) + k] *= sqrt(2.0);
         }
     }
+
+    // UPPER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t j=0; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] *= sqrt(2.0);
+        }
+    } 
+
+    // LOWER FACE
+    for(size_t i=0; i<NX+1; i++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] *= sqrt(2.0);
+        }
+    } 
 
     fftw_destroy_plan(neumann);
 
