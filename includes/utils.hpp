@@ -51,18 +51,21 @@ public:
   {
     return std::sin(x * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t);
     //return std::sin(t);
+    //return std::sin(z * DZ) * std::sin(t);
   }
 
   Real value_y(Real x, Real y, Real z, Real t) const
   {
     return std::cos(x * DX) * std::sin(y * DY) * std::sin(z * DZ) * std::sin(t);
     //return std::sin(t);
+    //return std::sin(x * DX) * std::sin(t);
   }
 
   Real value_z(Real x, Real y, Real z, Real t) const
   {
     return 2.0 * std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
     //return std::sin(t);
+    //return std::sin(y * DX) * std::sin(t);
   }
 };
 
