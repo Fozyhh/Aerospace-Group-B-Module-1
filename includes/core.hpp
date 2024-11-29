@@ -26,12 +26,12 @@ public:
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
 
-  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
-  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
-  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
+  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionG_u(int i, int j, int k, Real t);                                                                                                                                                                    // compute the source term.
+  Real functionG_v(int i, int j, int k, Real t);                                                                                                                                                                    // compute the source term.
+  Real functionG_w(int i, int j, int k, Real t);                                                                                                                                                                    // compute the source term.
 
 
   void solve();                      // solve the problem saving the ouput.
