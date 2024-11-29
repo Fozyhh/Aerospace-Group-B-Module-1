@@ -10,8 +10,8 @@
 #include <string>
 #include <cmath>
 #include <filesystem>
-//#define PERIODIC
-#define DIRICHELET
+#define PERIODIC
+//#define DIRICHELET
 
 class IcoNS
 {
@@ -56,11 +56,13 @@ private:
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
-  std::array<Real, ((NX + 1) * (NY + 1) * (NZ + 1))> Y2_p{};
+  std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
+  std::array<Real, ((NX) * (NY) * (NZ))> Sol_p{};
+  std::array<Real, ((NX) * (NY) * (NZ))> Phi_p{};
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
-  std::array<Real, ((NX + 1) * (NY + 1) * (NZ + 1))> Y3_p{};
+  std::array<Real, ((NX) * (NY) * (NZ))> Y3_p{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
 
@@ -69,6 +71,7 @@ private:
     inline size_t indexingPeriodicx(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
     inline size_t indexingPeriodicy(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * NY * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
     inline size_t indexingPeriodicz(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * NZ + ((j + NY) % NY) * NZ + ((k + NZ) % NZ); };
+    inline size_t indexingPeriodicp(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
   #endif
   #ifdef DIRICHELET
     inline size_t indexingDiricheletx(size_t i, size_t j, size_t k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
