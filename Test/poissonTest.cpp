@@ -6,8 +6,6 @@
 
 int main()
 {
-    int N = NX * NY * NZ; // Numero di punti
-
     const bool a = true;
     const bool b = true;
     const bool c = true;
@@ -33,27 +31,11 @@ int main()
         }
     }
 
-    fftw_complex* out = fftw_alloc_complex(NX * NY * NZ);
+    fftw_complex* out = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 
     // F and sol are OK
 
     poissonSolver.solvePoisson(F, out);
-
-    for (size_t i=0; i < NX; i++){
-        for (size_t j=0; j < NY; j++){
-            for (size_t k=0; k < NZ; k++){
-                F[i * (NY) * (NZ) + j * (NZ) + k] = F[i * (NY) * (NZ) + j * (NZ) + k] / N;
-            }
-        }
-    }
-
-    // for (size_t i=0; i < NX; i++){
-    //     for (size_t j=0; j < NY; j++){
-    //         for (size_t k=0; k < NZ; k++){
-    //             std::cout << i << ", " << j << ", " << k << ": " << F[i * (NY) * (NZ) + j * (NZ) + k] << std::endl;
-    //         }
-    //     }
-    // }
 
     double error = 0;
 
