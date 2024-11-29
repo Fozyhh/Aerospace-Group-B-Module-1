@@ -83,3 +83,114 @@ void PoissonSolver::solvePoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_comp
     }
 */
 }
+
+
+
+void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F)
+{
+    // Divide all the boundaries by sqrt(2.0)
+
+    // LEFT FACE
+    for(size_t j=0; j<NY+1; j++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[j * (NZ+1) + k] /= sqrt(2.0);
+        }
+    }
+
+    // MIDDLE POINTS
+    for(size_t i=1; i<NX+1; i++){
+
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + k] /= sqrt(2.0);
+        }
+
+        for(size_t j=1; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] /= sqrt(2.0);
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] /= sqrt(2.0);
+        }
+
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] /= sqrt(2.0);
+        }
+    }
+
+    //RIGHT FACE
+    for(size_t j=0; j<NY+1; j++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[NX * (NY+1) * (NZ+1) + j * (NZ+1) + k] /= sqrt(2.0);
+        }
+    }
+
+    // Perform the fft
+
+    fftw_plan neumann = fftw_plan_r2r_3d(NX+1, NY+1, NZ+1, F.data(), F.data(), FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
+    fftw_execute(neumann);
+
+    for (size_t i=0; i < NX+1; i++){
+        for (size_t j=0; j < NY+1; j++){
+            for (size_t k=0; k < NZ+1; k++){
+
+                std::cout << i+1 << ", " << j+1 << ", " << k+1 << ": " << F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] << std::endl;
+            }   
+        }
+    }
+
+    for (int i = 0; i < NX+1; i++) {
+        for (int j = 0; j < NY+1; j++) {
+            for (int k = 0; k < NZ+1; k++) {
+                F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /
+                    (2 * (std::cos(i * M_PI / (NX)) - 1) +
+                    2 * (std::cos(j * M_PI / (NY)) - 1) +
+                    2 * (std::cos(k * M_PI / (NZ)) - 1));
+            }
+        }
+    }
+    F[0] = 0.0;
+
+    // Normalization
+    double normalization_factor = 1.0 / (2.0 * ((NX+1) * (NY+1) * (NZ+1)) - 1.0);
+    for(int i = 0; i < NX+1; i++) {
+        for (int j = 0; j < NY+1; j++) {
+            for (int k = 0; k < NZ+1; k++) {
+                    F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] *= normalization_factor;
+            }
+        }
+    }
+
+
+    // Multiplicate all the boundaries by sqrt(2.0)
+
+    // LEFT FACE
+    for(size_t j=0; j<NY+1; j++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[j * (NZ+1) + k] *= sqrt(2.0);
+        }
+    }
+
+    // MIDDLE POINTS
+    for(size_t i=1; i<NX+1; i++){
+
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + k] *= sqrt(2.0);
+        }
+
+        for(size_t j=1; j<NY+1; j++){
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1)] *= sqrt(2.0);
+            F[i * (NY+1) * (NZ+1) + j * (NZ+1) + NZ] *= sqrt(2.0);
+        }
+
+        for(size_t k=0; k<NZ+1; k++){
+            F[i * (NY+1) * (NZ+1) + NY * (NZ+1) + k] *= sqrt(2.0);
+        }
+    }
+
+    //RIGHT FACE
+    for(size_t j=0; j<NY+1; j++){
+        for(size_t k=0; k<NZ+1; k++){
+            F[NX * (NY+1) * (NZ+1) + j * (NZ+1) + k] *= sqrt(2.0);
+        }
+    }
+
+    fftw_destroy_plan(neumann);
+
+}
