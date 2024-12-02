@@ -4,14 +4,14 @@
  * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each 
  * requested time t, calculating the approximated ones too.
  * 
- * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
- * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
- * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
+ * @param Yx Boundary x velocities or the Y size_termediate function related to the x direction.
+ * @param Yy Boundary y velocities or the Y size_termediate function related to the y direction.
+ * @param Yz Boundary z velocities or the Y size_termediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
 void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t)
 {
-    size_t face, i, j, k;
+    int face/* , i, j, k */;
     // X
     // LEFT FACE
     face = 2;
@@ -171,11 +171,11 @@ void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, st
         for(size_t j = 1; j < NY; j++)
         {
             face = 4;
-            Yz[(NY+1) * NZ * i + j*NZ] = approximate_boundary_w(i,j,0,t,face,1);
+            Yz[(NY+1) * NZ * i + j*NZ] = approximate_boundary_w(i,j,0,t,face,1);/* boundary_value_w[face]->value(i,j,0,t); */
             
             face = 5;
-            Yz[(NY+1) * NZ * i + j*NZ + (NZ - 1)] = approximate_boundary_w(i,j,NZ,t,face,-1);
-        }
+            Yz[(NY+1) * NZ * i + j*NZ + (NZ - 1)] = approximate_boundary_w(i,j,NZ,t,face,-1); /* boundary_value_w[face]->value(i,j,NZ,t);  */
+        } 
 
         face = 3;
         for(size_t k = 0; k < NZ+1; k++)
@@ -196,7 +196,7 @@ void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, st
 }
 
 /**
- * @brief Calculate the approximate value of the x velocity in a given point.
+ * @brief Calculate the approximate value of the x velocity in a given posize_t.
  * 
  * @param x,y,z Coordinates of the position in the 3D mesh.
  * @param t Time of the time discretization we are considering.
@@ -215,7 +215,7 @@ Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size
 }
 
 /**
- * @brief Calculate the approximate value of the y velocity in a given point.
+ * @brief Calculate the approximate value of the y velocity in a given posize_t.
  * 
  * @param x,y,z Coordinates of the position in the 3D mesh.
  * @param t Time of the time discretization we are considering.
@@ -227,18 +227,17 @@ Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size
 Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
-                 ((boundary_value_u[face]->value(x - 1, y, z, t)))) /
+                 ((boundary_value_u[face]->value(x - 1.0, y, z, t)))) /
                 (DX);
 
     Real dw = ((boundary_value_w[face]->value(x, y, z, t)) -
-                 ((boundary_value_w[face]->value(x, y, z - 1, t)))) /
-                (DZ);
-
+                 ((boundary_value_w[face]->value(x, y, z - 1.0, t)))) /
+                (DZ);    
     return boundary_value_v[face]->value(x, y - 0.5, z, t) - (du + dw) * (DY / 2.0) * side;
 }
 
 /**
- * @brief Calculate the approximate value of the z velocity in a given point.
+ * @brief Calculate the approximate value of the z velocity in a given posize_t.
  * 
  * @param x,y,z Coordinates of the position in the 3D mesh.
  * @param t Time of the time discretization we are considering.
@@ -253,10 +252,8 @@ Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size
                  ((boundary_value_u[face]->value(x - 1.0, y, z, t)))) /
                 (DX);
 
-    Real dv = ((boundary_value_v[face]->value(x, y, z, t)) -
-                 ((boundary_value_v[face]->value(x, y - 1.0, z, t)))) /
-                (DY);
-    return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
+    Real dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
+    return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2.0) * side;
 }
 
 /**

@@ -8,9 +8,10 @@
 #include <string>
 #include <memory>
 
-//#define OUTPUT
-//#define OUTPUTERROR
-//#define VERBOSE
+#define OUTPUT
+#define OUTPUTERROR
+#define VERBOSE
+
 #ifdef VERBOSE
     #include <chrono>
 #endif
@@ -21,11 +22,11 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         std::cout << "*************************************************" << std::endl;
         std::cout << "Incompressible Navier-Stokes equation Solver" << std::endl << std::endl << std::endl;
 
-        std::cout << "Solving for a Mesh of physical dimension (" << lx << "," << ly << "," << lz <<") meters." << std::endl
-        << "Number of partitions: " << nx << " nx, " << ny << " ny, "<< nz << " nz." << std::endl
-        << "Dimension of a single cell:(" << dx <<"," << dy << "," << dz <<")." <<std::endl
-        << "Reynolds number: " << Re << std::endl
-        << "Total lenght of simulation: " << T << " seconds, whit a time step of " << dt << " seconds." << std::endl
+        std::cout << "Solving for a Mesh of physical dimension (" << LX << "," << LY << "," << LZ <<") meters." << std::endl
+        << "Number of partitions: " << NX << " nx, " << NY << " ny, "<< NZ << " nz." << std::endl
+        << "Dimension of a single cell:(" << DX <<"," << DY << "," << DZ <<")." <<std::endl
+        << "Reynolds number: " << RE << std::endl
+        << "Total lenght of simulation: " << T << " seconds, whit a time step of " << DT << " seconds." << std::endl
 
         << "------------------------------------------------------------" << std::endl << std::endl
         <<"Reading Initial condition from file: Not implemented yet, setting all to 0." << std::endl
@@ -34,7 +35,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     #endif
     // boundary
     auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-
                                               { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
@@ -63,15 +63,15 @@ void IcoNS::solve()
     auto start =std::chrono::high_resolution_clock::now();
     #endif
     while (time < T)
-
     {
         /*Check::Confront(grid,exact_solution,time,U);
         int p;
         std::cin >> p;*/
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
+        //boundary.update_boundary(grid.u, grid.v, grid.w, time);
 
         // csv file w/ "," delimiter: time step, iter, L2_error
-        std::cout << time << "," << i << "," << L2_error(time) << std::endl;
+        Real error = L2_error(time);
+        std::cout << time << "," << i << "," << error << std::endl;
         solve_time_step(time);
         // output();
         time += DT;
@@ -97,9 +97,9 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_Y(t);
     error += error_comp_Z(t);
 
-    /*std::cout << error_comp_X(t) << std::endl;
-    std::cout << error_comp_Y(t) << std::endl;
-    std::cout << error_comp_Z(t) << std::endl << std::endl;*/
+    std::cout << "Error along x: " << error_comp_X(t)/l2_norm_x(t) << std::endl;
+    std::cout << "Error along y: " << error_comp_Y(t)/l2_norm_y(t) << std::endl;
+    std::cout << "Error along z: " << error_comp_Z(t)/l2_norm_z(t) << std::endl;
 
     return sqrt(error);
 }
@@ -107,7 +107,7 @@ Real IcoNS::L2_error(const Real t)
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-
+    Real l2_norm = 0.0;
     // first slice (left face)
     {
         error += ((grid.u[0] - exact_solution.value_x(0.5, 0, 0, t)) *
@@ -259,6 +259,441 @@ Real IcoNS::error_comp_X(const Real t)
                   DX * DY * DZ / 8);
     }
     return error;
+}
+
+Real IcoNS::l2_norm_x(const Real t)
+{
+    Real l2_norm = 0.0;
+    // first slice (left face)
+    {
+        l2_norm += ((exact_solution.value_x(0.5, 0, 0, t)) *
+                    (exact_solution.value_x(0.5, 0, 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_x(0.5, 0, k, t)) *
+                        (exact_solution.value_x(0.5, 0, k, t)) *
+                        DX * DY * DZ / 4);
+        }
+        l2_norm += ((exact_solution.value_x(0.5, 0, NZ, t)) *
+                    (exact_solution.value_x(0.5, 0, NZ, t)) *
+                    DX * DY * DZ / 8);
+        for (size_t j = 1; j < NY; j++)
+        {
+            l2_norm += ((exact_solution.value_x(0.5, j, 0, t)) *
+                        (exact_solution.value_x(0.5, j, 0, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
+            {;
+                l2_norm += ((exact_solution.value_x(0.5, j, k, t)) *
+                            (exact_solution.value_x(0.5, j, k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_x(0.5, j, NZ, t)) *
+                        (exact_solution.value_x(0.5, j, NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_x(0.5, NY, 0, t)) *
+                    (exact_solution.value_x(0.5, NY, 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_x(0.5, NY, k, t)) *
+                        (exact_solution.value_x(0.5, NY, k, t)) *
+                        DX * DY * DZ / 2);
+        }
+        l2_norm += ((exact_solution.value_x(0.5, NY, NZ, t)) *
+                    (exact_solution.value_x(0.5, NY, NZ, t)) *
+                    DX * DY * DZ / 8);
+    }
+
+    // middle slices
+    {
+        for (size_t i = 1; i < NX - 1; i++)
+        {
+            l2_norm += ((exact_solution.value_x(i + 0.5, 0, 0, t)) *
+                        (exact_solution.value_x(i + 0.5, 0, 0, t)) *
+                        DX * DY * DZ / 4);
+
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_x(i + 0.5, 0, k, t)) *
+                            (exact_solution.value_x(i + 0.5, 0, k, t)) *
+                            DX * DY * DZ / 2);
+            }
+            l2_norm += ((exact_solution.value_x(i + 0.5, 0, NZ, t)) *
+                        (exact_solution.value_x(i + 0.5, 0, NZ, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t j = 1; j < NY; j++)
+            {
+                l2_norm += ((exact_solution.value_x(i + 0.5, j, 0, t)) *
+                            (exact_solution.value_x(i + 0.5, j, 0, t)) *
+                            DX * DY * DZ / 2);
+                for (size_t k = 1; k < NZ; k++)
+                {
+                    l2_norm += ((exact_solution.value_x(i + 0.5, j, k, t)) *
+                                (exact_solution.value_x(i + 0.5, j, k, t)) *
+                                DX * DY * DZ);
+                }
+                l2_norm += ((exact_solution.value_x(i + 0.5, j, NZ, t)) *
+                            (exact_solution.value_x(i + 0.5, j, NZ, t)) *
+                            DX * DY * DZ / 4);
+            }
+            l2_norm += ((exact_solution.value_x(i + 0.5, NY, 0, t)) *
+                        (exact_solution.value_x(i + 0.5, NY, 0, t)) *
+                        DX * DY * DZ / 4);
+
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_x(i + 0.5, NY, k, t)) *
+                            (exact_solution.value_x(i + 0.5, NY, k, t)) *
+                            DX * DY * DZ / 2);
+            }
+            l2_norm += ((exact_solution.value_x(i + 0.5, NY, NZ, t)) *
+                        (exact_solution.value_x(i + 0.5, NY, NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+    }
+
+    // last slice (right face)
+    {
+        l2_norm += ((exact_solution.value_x((NX - 0.5), 0, 0, t)) *
+                    (exact_solution.value_x((NX - 0.5), 0, 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_x((NX - 0.5), 0, k, t)) *
+                        (exact_solution.value_x((NX - 0.5), 0, k, t)) *
+                        DX * DY * DZ / 4);
+        }
+        l2_norm += ((exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
+                    (exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
+                    DX * DY * DZ / 8);
+        for (size_t j = 1; j < NY; j++)
+        {
+            l2_norm += ((exact_solution.value_x((NX - 0.5), j, 0, t)) *
+                        (exact_solution.value_x((NX - 0.5), j, 0, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_x((NX - 0.5), j, k, t)) *
+                            (exact_solution.value_x((NX - 0.5), j, k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_x((NX - 0.5), j, NZ, t)) *
+                        (exact_solution.value_x((NX - 0.5), j, NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                    (exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                    DX * DY * DZ / 8);
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                        (exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                        DX * DY * DZ / 2);
+        }
+        l2_norm += ((exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                    (exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                    DX * DY * DZ / 8);
+    }
+    return l2_norm;
+}
+
+Real IcoNS::l2_norm_y(const Real t)
+{
+    Real l2_norm = 0.0;
+    // first slice (left face)
+    {
+        l2_norm += ((exact_solution.value_y(0, 0.5, 0, t)) *
+                    (exact_solution.value_y(0, 0.5, 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_y(0, 0.5, k, t)) *
+                        (exact_solution.value_y(0, 0.5, k, t)) *
+                        DX * DY * DZ / 2);
+        }
+        l2_norm += ((exact_solution.value_y(0, 0.5, NZ, t)) *
+                    (exact_solution.value_y(0, 0.5, NZ, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t j = 1; j < NY - 1; j++)
+        {
+            l2_norm += ((exact_solution.value_y(0, j + 0.5, 0, t)) *
+                        (exact_solution.value_y(0, j + 0.5, 0, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_y(0, j + 0.5, k, t)) *
+                            (exact_solution.value_y(0, j + 0.5, k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_y(0, j + 0.5, NZ, t)) *
+                        (exact_solution.value_y(0, j + 0.5, NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_y(0, (NY - 0.5), 0, t)) *
+                    (exact_solution.value_y(0, (NY - 0.5), 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_y(0, (NY - 0.5), k, t)) *
+                        (exact_solution.value_y(0, (NY - 0.5), k, t)) *
+                        DX * DY * DZ / 2);
+        }
+        l2_norm += ((exact_solution.value_y(0, (NY - 0.5), NZ, t)) *
+                    (exact_solution.value_y(0, (NY - 0.5), NZ, t)) *
+                    DX * DY * DZ / 8);
+    }
+
+    // middle slices
+    {
+        for (size_t i = 1; i < NX; i++)
+        {
+            l2_norm += ((exact_solution.value_y(i, 0.5, 0, t)) *
+                        (exact_solution.value_y(i, 0.5, 0, t)) *
+                        DX * DY * DZ / 4);
+
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_y(i, 0.5, k, t)) *
+                            (exact_solution.value_y(i, 0.5, k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_y(i, 0.5, NZ, t)) *
+                        (exact_solution.value_y(i, 0.5, NZ, t)) *
+                        DX * DY * DZ / 8);
+
+            for (size_t j = 1; j < NY - 1; j++)
+            {
+                l2_norm += ((exact_solution.value_y(i, j + 0.5, 0, t)) *
+                            (exact_solution.value_y(i, j + 0.5, 0, t)) *
+                            DX * DY * DZ / 4);
+                for (size_t k = 1; k < NZ; k++)
+                {
+                    l2_norm += ((exact_solution.value_y(i, j + 0.5, k, t)) *
+                                (exact_solution.value_y(i, j + 0.5, k, t)) *
+                                DX * DY * DZ);
+                }
+                l2_norm += ((exact_solution.value_y(i, j + 0.5, NZ, t)) *
+                            (exact_solution.value_y(i, j + 0.5, NZ, t)) *
+                            DX * DY * DZ / 4);
+            }
+            l2_norm += ((exact_solution.value_y(i, (NY - 0.5), 0, t)) *
+                        (exact_solution.value_y(i, (NY - 0.5), 0, t)) *
+                        DX * DY * DZ / 4);
+
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_y(i, (NY - 0.5), k, t)) *
+                            (exact_solution.value_y(i, (NY - 0.5), k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_y(i, (NY - 0.5), NZ, t)) *
+                        (exact_solution.value_y(i, (NY - 0.5), NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+    }
+
+    // last slice (right face)
+    {
+        l2_norm += ((exact_solution.value_y(NX, 0.5, 0, t)) *
+                    (exact_solution.value_y(NX, 0.5, 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_y(NX, 0.5, k, t)) *
+                        (exact_solution.value_y(NX, 0.5, k, t)) *
+                        DX * DY * DZ);
+        }
+        l2_norm += ((exact_solution.value_y(NX, 0.5, NZ, t)) *
+                    (exact_solution.value_y(NX, 0.5, NZ, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t j = 1; j < NY - 1; j++)
+        {
+            l2_norm += ((exact_solution.value_y(NX, j + 0.5, 0, t)) *
+                        (exact_solution.value_y(NX, j + 0.5, 0, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ; k++)
+            {
+                l2_norm += ((exact_solution.value_y(NX, j + 0.5, k, t)) *
+                            (exact_solution.value_y(NX, j + 0.5, k, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_y(NX, j + 0.5, NZ, t)) *
+                        (exact_solution.value_y(NX, j + 0.5, NZ, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
+                    (exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ; k++)
+        {
+            l2_norm += ((exact_solution.value_y(NX, (NY - 0.5), k, t)) *
+                        (exact_solution.value_y(NX, (NY - 0.5), k, t)) *
+                        DX * DY * DZ);
+        }
+        l2_norm += ((exact_solution.value_y(NX, (NY - 0.5), NZ, t)) *
+                    (exact_solution.value_y(NX, (NY - 0.5), NZ, t)) *
+                    DX * DY * DZ / 8);
+    }
+    return l2_norm;
+}
+
+Real IcoNS::l2_norm_z(const Real t)
+{
+    Real l2_norm = 0.0;
+    // first slice (left face)
+    {
+        l2_norm += ((exact_solution.value_z(0, 0, 0.5, t)) *
+                    (exact_solution.value_z(0, 0, 0.5, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ - 1; k++)
+        {
+            l2_norm += ((exact_solution.value_z(0, 0, k + 0.5, t)) *
+                        (exact_solution.value_z(0, 0, k + 0.5, t)) *
+                        DX * DY * DZ / 2);
+        }
+        l2_norm += ((exact_solution.value_z(0, 0, NZ - 0.5, t)) *
+                    (exact_solution.value_z(0, 0, NZ - 0.5, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t j = 1; j < NY; j++)
+        {
+            l2_norm += ((exact_solution.value_z(0, j, 0.5, t)) *
+                        (exact_solution.value_z(0, j, 0.5, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ - 1; k++)
+            {
+                l2_norm += ((exact_solution.value_z(0, j, k + 0.5, t)) *
+                            (exact_solution.value_z(0, j, k + 0.5, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_z(0, j, NZ - 0.5, t)) *
+                        (exact_solution.value_z(0, j, NZ - 0.5, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_z(0, NY, 0.5, t)) *
+                    (exact_solution.value_z(0, NY, 0.5, t)) *
+                    DX * DY * DZ / 4);
+
+        for (size_t k = 1; k < NZ - 1; k++)
+        {
+            l2_norm += ((exact_solution.value_z(0, NY, k + 0.5, t)) *
+                        (exact_solution.value_z(0, NY, k + 0.5, t)) *
+                        DX * DY * DZ);
+        }
+        l2_norm += ((exact_solution.value_z(0, NY, NZ - 0.5, t)) *
+                    (exact_solution.value_z(0, NY, NZ - 0.5, t)) *
+                    DX * DY * DZ / 8);
+    }
+
+    // middle slices
+    {
+        for (size_t i = 1; i < NX; i++)
+        {
+            l2_norm += ((exact_solution.value_z(i, 0, 0.5, t)) *
+                        (exact_solution.value_z(i, 0, 0.5, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ - 1; k++)
+            {
+                l2_norm += ((exact_solution.value_z(i, 0, k + 0.5, t)) *
+                            (exact_solution.value_z(i, 0, k + 0.5, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_z(i, 0, NZ - 0.5, t)) *
+                        (exact_solution.value_z(i, 0, NZ - 0.5, t)) *
+                        DX * DY * DZ / 8);
+
+            for (size_t j = 1; j < NY; j++)
+            {
+                l2_norm += ((exact_solution.value_z(i, j, 0.5, t)) *
+                            (exact_solution.value_z(i, j, 0.5, t)) *
+                            DX * DY * DZ / 4);
+
+                for (size_t k = 1; k < NZ - 1; k++)
+                {
+                    l2_norm += ((exact_solution.value_z(i, j, k + 0.5, t)) *
+                                (exact_solution.value_z(i, j, k + 0.5, t)) *
+                                DX * DY * DZ);
+                }
+                l2_norm += ((exact_solution.value_z(i, j, NZ - 0.5, t)) *
+                            (exact_solution.value_z(i, j, NZ - 0.5, t)) *
+                            DX * DY * DZ / 8);
+            }
+            l2_norm += ((exact_solution.value_z(i, NY, 0.5, t)) *
+                        (exact_solution.value_z(i, NY, 0.5, t)) *
+                        DX * DY * DZ / 4);
+
+            for (size_t k = 1; k < NZ - 1; k++)
+            {
+                l2_norm += ((exact_solution.value_z(i, NY, k + 0.5, t)) *
+                            (exact_solution.value_z(i, NY, k + 0.5, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_z(i, NY, NZ - 0.5, t)) *
+                        (exact_solution.value_z(i, NY, NZ - 0.5, t)) *
+                        DX * DY * DZ / 8);
+        }
+    }
+
+    // last slice (right face)
+    {
+        l2_norm += ((exact_solution.value_z(NX, 0, 0.5, t)) *
+                    (exact_solution.value_z(NX, 0, 0.5, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t k = 1; k < NZ - 1; k++)
+        {
+            l2_norm += ((exact_solution.value_z(NX, 0, k + 0.5, t)) *
+                        (exact_solution.value_z(NX, 0, k + 0.5, t)) *
+                        DX * DY * DZ);
+        }
+        l2_norm += ((exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
+                    (exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
+                    DX * DY * DZ / 8);
+
+        for (size_t j = 1; j < NY; j++)
+        {
+            l2_norm += ((exact_solution.value_z(NX, j, 0.5, t)) *
+                        (exact_solution.value_z(NX, j, 0.5, t)) *
+                        DX * DY * DZ / 4);
+            for (size_t k = 1; k < NZ - 1; k++)
+            {
+                l2_norm += ((exact_solution.value_z(NX, j, k + 0.5, t)) *
+                            (exact_solution.value_z(NX, j, k + 0.5, t)) *
+                            DX * DY * DZ);
+            }
+            l2_norm += ((exact_solution.value_z(NX, j, NZ - 0.5, t)) *
+                        (exact_solution.value_z(NX, j, NZ - 0.5, t)) *
+                        DX * DY * DZ / 8);
+        }
+        l2_norm += ((exact_solution.value_z(NX, NY, 0.5, t)) *
+                    (exact_solution.value_z(NX, NY, 0.5, t)) *
+                    DX * DY * DZ / 4);
+
+        for (size_t k = 1; k < NZ - 1; k++)
+        {
+            l2_norm += ((exact_solution.value_z(NX, NY, k + 0.5, t)) *
+                        (exact_solution.value_z(NX, NY, k + 0.5, t)) *
+                        DX * DY * DZ);
+        }
+        l2_norm += ((exact_solution.value_z(NX, NY, NZ - 0.5, t)) *
+                    (exact_solution.value_z(NX, NY, NZ - 0.5, t)) *
+                    DX * DY * DZ / 8);
+    }
+
+    return l2_norm;
 }
 
 Real IcoNS::error_comp_Y(const Real t)
