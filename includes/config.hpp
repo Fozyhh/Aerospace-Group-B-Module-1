@@ -23,13 +23,13 @@ constexpr Real LY = 2*M_PI;
 constexpr Real LZ = 2*M_PI;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 50;
+constexpr int NX = 8; // 81 cells in each direction gives segmenation fault
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 50;
+constexpr int NY = 8;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 50;
+constexpr int NZ = 8;
 
 /// @brief Space discretization step size in the x-direction.
 constexpr Real DX = LX / NX;
