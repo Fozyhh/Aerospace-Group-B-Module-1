@@ -87,20 +87,20 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
 
 
 
-void PoissonSolver::solveNeumannPoisson(std::array<Real, NX * NY * NZ>& F)
+void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F)
 {
     // dP = dct(dct(dct(F)))
-    fftw_plan neumann = fftw_plan_r2r_3d(NX, NY, NZ, F.data(), F.data(), FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
+    fftw_plan neumann = fftw_plan_r2r_3d(NX+1, NY+1, NZ+1, F.data(), F.data(), FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
     fftw_execute(neumann);
 
     // Devide by the eigenvalues
-    for (int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            for (int k = 0; k < NZ; k++) {
-                F[i * NY * NZ + j * NZ + k] = F[i * NY * NZ + j * NZ + k] /
-                    (2 * (std::cos(i * M_PI / (NX-1)) - 1) +
-                    2 * (std::cos(j * M_PI / (NY-1)) - 1) +
-                    2 * (std::cos(k * M_PI / (NZ-1)) - 1));
+    for (int i = 0; i < NX+1; i++) {
+        for (int j = 0; j < NY+1; j++) {
+            for (int k = 0; k < NZ+1; k++) {
+                F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /
+                    (2 * (std::cos(i * M_PI / (NX)) - 1) +
+                    2 * (std::cos(j * M_PI / (NY)) - 1) +
+                    2 * (std::cos(k * M_PI / (NZ)) - 1));
             }
         }
     }
@@ -110,11 +110,11 @@ void PoissonSolver::solveNeumannPoisson(std::array<Real, NX * NY * NZ>& F)
     fftw_execute(neumann);
 
     // Normalization
-    double normalization_factor = 2.0 * (NX - 1.0) * 2.0 * (NX - 1.0) * 2.0 * (NX - 1.0);
-    for(int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            for (int k = 0; k < NZ; k++) {
-                    F[i * (NY) * (NZ) + j * (NZ) + k] /= normalization_factor;
+    double normalization_factor = 2.0 * (NX) * 2.0 * (NX) * 2.0 * (NX);
+    for(int i = 0; i < NX+1; i++) {
+        for (int j = 0; j < NY+1; j++) {
+            for (int k = 0; k < NZ+1; k++) {
+                    F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /= normalization_factor;
             }
         }
     }
