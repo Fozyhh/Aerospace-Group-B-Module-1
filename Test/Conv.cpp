@@ -24,7 +24,7 @@ int main()
 
     IcoNS icoNS100("input.txt", "output.txt");
     icoNS100.preprocessing();
-    icoNS100.solve(); */
+    icoNS100.solve(); 
 
     IcoNS icoNS("input.txt", "output.txt");
     icoNS.preprocessing();

@@ -1,7 +1,9 @@
 #include "core.hpp"
+#include "poissonSolver.hpp"
 
 void IcoNS::solve_time_step(Real time)
 {
+
 #ifdef PERIODIC
     const size_t start = 0;
 #endif
@@ -17,6 +19,9 @@ void IcoNS::solve_time_step(Real time)
 #ifdef PERIODIC
     const size_t end = 0;
 #endif
+
+    // TODO Should be global 
+    PoissonSolver poissonSolver(true,true,true);
 
     for (size_t i = start; i < NX + end; i++)
     {
@@ -84,6 +89,9 @@ void IcoNS::solve_time_step(Real time)
 
     /////////////////////poisson_solver.solvePoisson(Y2_p);//////////////////////////////////// -> the solution is stored in Sol_p
 
+    
+    poissonSolver.solveDirichletPoisson(Y2_p,helper);
+
     for (size_t i = start; i < NX + end; i++)
     {
         for (size_t j = start; j < NY + 1 + end; j++)
@@ -91,7 +99,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
-                Y2_x[i * NY * NZ + j * NZ + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i + 1, j, k)] - Sol_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                Y2_x[i * NY * NZ + j * NZ + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
 #endif
             }
         }
@@ -104,7 +112,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
-                Y2_y[i * NY * NZ + j * NZ + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j + 1, k)] - Sol_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                Y2_y[i * NY * NZ + j * NZ + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
 #endif
             }
         }
@@ -117,7 +125,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y2_z[i * NY * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j, k + 1)] - Sol_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                Y2_z[i * NY * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
 #endif
             }
         }
@@ -130,7 +138,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Phi_p[i * NY * NZ + j * NZ + k] = Sol_p[indexingPeriodicp(i, j, k)] + grid.p[indexingPeriodicp(i, j, k)];
+                Phi_p[i * NY * NZ + j * NZ + k] = Y2_p[indexingPeriodicp(i, j, k)] + grid.p[indexingPeriodicp(i, j, k)]; // phi^2
 #endif
             }
         }
@@ -216,7 +224,9 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    /////////////////////poisson_solver.solvePoisson(Y3_p);//////////////////////////////////// -> the solution is stored in Sol_p
+    /////////////////////poisson_solver.solvePoisson(Y3_p);//////////////////////////////////// -> the solution is stored in Sol_p=Y3_p
+    // using Y3_p to store solution but we can use Y2_p
+    poissonSolver.solveDirichletPoisson(Y3_p,helper);
 
     for (size_t i = start; i < NX + end; i++)
     {
@@ -225,7 +235,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
-                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i + 1, j, k)] - Sol_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i + 1, j, k)] - Y3_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
 #endif
             }
         }
@@ -238,7 +248,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
-                Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j + 1, k)] - Sol_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j + 1, k)] - Y3_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
 #endif
             }
         }
@@ -251,7 +261,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y3_z[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j, k + 1)] - Sol_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                Y3_z[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j, k + 1)] - Y3_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
 #endif
             }
         }
@@ -264,7 +274,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Phi_p[i * NY * NZ + j * NZ + k] += Sol_p[indexingPeriodicp(i, j, k)];
+                Phi_p[i * NY * NZ + j * NZ + k] += Y3_p[indexingPeriodicp(i, j, k)]; // Phi_p=phi^3
 #endif
             }
         }
@@ -351,7 +361,9 @@ void IcoNS::solve_time_step(Real time)
         }
     }
     /////////////////////poisson_solver.solvePoisson(Y2_p);//////////////////////////////////// -> the solution is stored in Sol_p
-
+    // using Y2_p to store solution
+    poissonSolver.solveDirichletPoisson(Y2_p,helper);
+    
     for(size_t i = start; i < NX + end; i++)
     {
         for(size_t j = start; j < NY + end + 1; j++)
@@ -359,7 +371,7 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
-                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i + 1, j, k)] - Sol_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX); 
+                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX); 
                 #endif
             }
         }
@@ -371,7 +383,7 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
-                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j + 1, k)] - Sol_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY); 
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY); 
                 #endif
             }
         }
@@ -383,19 +395,19 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
-                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * (Sol_p[indexingPeriodicp(i, j, k + 1)] - Sol_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ); 
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ); 
                 #endif
             }
         }
     }
-    for(size_t i = start; i < NX + end; i++)
+    for(size_t i = start; i < NX + end+1; i++)
     {
-        for(size_t j = start; j < NY + end; j++)
+        for(size_t j = start; j < NY + end+1; j++)
         {
-            for(size_t k = start; k < NZ + end; k++)
+            for(size_t k = start; k < NZ + end+1; k++)
             {
                 #ifdef PERIODIC
-                grid.p[i * NY * NZ + j * NZ + k] += Sol_p[indexingPeriodicp(i, j, k)]; 
+                grid.p[i * NY * NZ + j * NZ + k] += Y2_p[indexingPeriodicp(i, j, k)]; 
                 #endif
             }
         }

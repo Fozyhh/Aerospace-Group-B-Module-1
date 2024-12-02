@@ -59,8 +59,8 @@ target_link_libraries(main $ENV{mkFftwLib} m)
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
-add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public
-target_include_directories(conv PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+#add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public
+#target_include_directories(conv PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 
 add_executable(poisson Test/poissonTest.cpp src/poissonSolver.cpp)
 target_include_directories(poisson PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)

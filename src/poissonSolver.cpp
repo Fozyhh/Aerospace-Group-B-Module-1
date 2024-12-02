@@ -1,13 +1,13 @@
 #include "poissonSolver.hpp"
 
-void PoissonSolver::solveDirichletPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F_dP, fftw_complex *FD)
+void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD)
 {
     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
     //C2Decomp *c2d;
     //c2d = new C2Decomp(NX, NY, NZ, 0, 0, periodicBC);
     
     // dP = fft(fft(fft(F)))
-    fftw_plan forward = fftw_plan_dft_r2c_3d(NX+1, NY+1, NZ+1, F_dP.data(), FD, FFTW_ESTIMATE);
+    fftw_plan forward = fftw_plan_dft_r2c_3d(NX, NY, NZ, F_dP.data(), FD, FFTW_ESTIMATE);
     fftw_execute(forward);
     
 /*  if(periodicX){
@@ -30,17 +30,17 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ
 */
 
     // gotta change indexing to accomodate X->Y->Z
-    for (int i = 0; i < NX+1; i++) {
-        for (int j = 0; j < NY+1; j++) {
-            for (int k = 0; k < (NZ+1)/2+1; k++) {
-                FD[i * (NY+1) * ((NZ+1)/2+1) + j * ((NZ+1)/2+1) + k][0] = FD[i * (NY+1) * ((NZ+1)/2+1) + j * ((NZ+1)/2+1) + k][0] /
-                    (2 * (std::cos(2 * i * M_PI / (NX+1)) - 1) +
-                    2 * (std::cos(2 * j * M_PI / (NY+1)) - 1) +
-                    2 * (std::cos(2 * k * M_PI / (NZ+1)) - 1));
-                FD[i * (NY+1) * ((NZ+1)/2+1) + j * ((NZ+1)/2+1) + k][1] = FD[i * (NY+1) * ((NZ+1)/2+1) + j * ((NZ+1)/2+1) + k][1] /
-                    (2 * (std::cos(2 * i * M_PI / (NX+1)) - 1) +
-                    2 * (std::cos(2 * j * M_PI / (NY+1)) - 1) +
-                    2 * (std::cos(2 * k * M_PI / (NZ+1)) - 1));
+    for (int i = 0; i < NX; i++) {
+        for (int j = 0; j < NY; j++) {
+            for (int k = 0; k < (NZ)/2+1; k++) {
+                FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][0] = FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][0] /
+                    (2 * (std::cos(2 * i * M_PI / (NX)) - 1) +
+                    2 * (std::cos(2 * j * M_PI / (NY)) - 1) +
+                    2 * (std::cos(2 * k * M_PI / (NZ)) - 1));
+                FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][1] = FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][1] /
+                    (2 * (std::cos(2 * i * M_PI / (NX)) - 1) +
+                    2 * (std::cos(2 * j * M_PI / (NY)) - 1) +
+                    2 * (std::cos(2 * k * M_PI / (NZ)) - 1));
             }
         }
     }
@@ -48,15 +48,15 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ
     FD[0][1] = 0.0;
 
     // Inverse Fourier transform
-    fftw_plan backward = fftw_plan_dft_c2r_3d(NX+1, NY+1, NZ+1, FD, F_dP.data(), FFTW_ESTIMATE);
+    fftw_plan backward = fftw_plan_dft_c2r_3d(NX, NY, NZ, FD, F_dP.data(), FFTW_ESTIMATE);
     fftw_execute(backward);
 
     // Normalization
-    double normalization_factor = (NX+1) * (NY+1) * (NZ+1);
-    for (size_t i=0; i < NX+1; i++){
-        for (size_t j=0; j < NY+1; j++){
-            for (size_t k=0; k < NZ+1; k++){
-                F_dP[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /= normalization_factor;
+    double normalization_factor = (NX) * (NY) * (NZ);
+    for (size_t i=0; i < NX; i++){
+        for (size_t j=0; j < NY; j++){
+            for (size_t k=0; k < NZ; k++){
+                F_dP[i * (NY) * (NZ) + j * (NZ) + k] /= normalization_factor;
             }
         }
     }

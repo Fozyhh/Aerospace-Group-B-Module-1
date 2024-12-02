@@ -57,6 +57,6 @@ int main()
     writeVTK("velocity_v.vtk", v.data(), NX + 1, NY, NZ + 1, DX, DY, DZ);
     writeVTK("velocity_w.vtk", w.data(), NX + 1, NY + 1, NZ, DX, DY, DZ);
 
-
+    fftw_free(icoNS.helper);
     return 0;
 }

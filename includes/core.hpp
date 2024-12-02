@@ -7,6 +7,7 @@
 #include "utils.hpp"
 #include "boundary.hpp"
 #include "grid.hpp"
+#include <fftw3.h>
 #include <string>
 #include <cmath>
 #include <filesystem>
@@ -49,6 +50,7 @@ public:
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> u_function(){return grid.u;};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> v_function(){return grid.v;};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> w_function(){return grid.w;};
+  fftw_complex* helper = fftw_alloc_complex((NX+1) * (NY+1) * ((NZ+1)/2 + 1));
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;
@@ -57,7 +59,7 @@ private:
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
   std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
-  std::array<Real, ((NX) * (NY) * (NZ))> Sol_p{};
+  //std::array<Real, ((NX) * (NY) * (NZ))> Sol_p{};
   std::array<Real, ((NX) * (NY) * (NZ))> Phi_p{};
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};

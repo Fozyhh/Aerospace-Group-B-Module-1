@@ -70,8 +70,11 @@ void IcoNS::solve()
         //boundary.update_boundary(grid.u, grid.v, grid.w, time);
 
         // csv file w/ "," delimiter: time step, iter, L2_error
+       
         Real error = L2_error(time);
         std::cout << time << "," << i << "," << error << std::endl;
+        
+        
         solve_time_step(time);
         // output();
         time += DT;
@@ -81,10 +84,10 @@ void IcoNS::solve()
     //error = L2_error(time);
     //error_log << time << "," << i << "," << error << std::endl;
     #ifdef VERBOSE
-        std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
-        auto end =std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end-start; 
-        std::cout << std::endl << "Time: " << duration.count() << std::endl;
+        // std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: "<< error << std::endl;
+        // auto end =std::chrono::high_resolution_clock::now();
+        // std::chrono::duration<double> duration = end-start; 
+        // std::cout << std::endl << "Time: " << duration.count() << std::endl;
         
     #endif
 }

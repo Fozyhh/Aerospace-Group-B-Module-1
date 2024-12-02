@@ -15,7 +15,7 @@ int main()
 
     std::array<Real, (NX+1) * (NY+1) * (NZ+1)> F;
     std::array<Real, (NX+1) * (NY+1) * (NZ+1)> sol;
-
+/*
     cout << "Dirichlet test" << endl;    
     for (size_t i=0; i < NX+1; i++){
         for (size_t j=0; j < NY+1; j++){
@@ -52,7 +52,7 @@ int main()
     }
 
     std::cout << sqrt(error) << std::endl;
-
+*/
     cout << "Neumann test" << endl;
     for (size_t i=0; i < NX+1; i++){
         for (size_t j=0; j < NY+1; j++){
@@ -72,7 +72,7 @@ int main()
 
     poissonSolver.solveNeumannPoisson(F);
 
-    error = 0;
+    double error = 0;
 
     for (size_t i=0; i < NX+1; i++){
         for (size_t j=0; j < NY+1; j++){
