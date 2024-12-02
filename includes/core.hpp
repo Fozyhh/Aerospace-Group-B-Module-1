@@ -39,6 +39,7 @@ public:
   Real error_comp_X(const Real t);
   Real error_comp_Y(const Real t);
   Real error_comp_Z(const Real t);
+  Real error_comp_P(const Real t);
   Real l2_norm_x(const Real t);
   Real l2_norm_y(const Real t);
   Real l2_norm_z(const Real t);

@@ -1,9 +1,7 @@
 #include "core.hpp"
-#include "poissonSolver.hpp"
 
 void IcoNS::solve_time_step(Real time)
 {
-
 #ifdef PERIODIC
     const size_t start = 0;
 #endif
@@ -363,7 +361,7 @@ void IcoNS::solve_time_step(Real time)
     /////////////////////poisson_solver.solvePoisson(Y2_p);//////////////////////////////////// -> the solution is stored in Sol_p
     // using Y2_p to store solution
     poissonSolver.solveDirichletPoisson(Y2_p,helper);
-    
+
     for(size_t i = start; i < NX + end; i++)
     {
         for(size_t j = start; j < NY + end + 1; j++)
@@ -527,7 +525,7 @@ Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
     return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t) +
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
            std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2.0 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t) - std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
     /*     return std::sin(z)*std::cos(t) + std::sin(y)*std::sin(t)*std::cos(z)*std::sin(t)+1.0 / RE *std::sin(z)*std::sin(t);
      */
     // return std::cos(t);
@@ -542,7 +540,7 @@ Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t) - std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
     /*     return std::sin(x)*std::cos(t) + std::sin(z)*std::sin(t)*std::cos(x)*std::sin(t)+1.0 / RE *std::sin(x)*std::sin(t);
      */
     // return std::cos(t);
@@ -557,7 +555,7 @@ Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
            2.0 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
+           6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t) + std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
     /*     return std::sin(y)*std::cos(t) + std::sin(x)*std::sin(t)*std::cos(y)*std::sin(t)+1.0 / RE *std::sin(y)*std::sin(t);
      */
     // return std::cos(t);
