@@ -7,7 +7,7 @@
 #define NY 4
 #define NZ 4
 
-#define PX 1
+#define PX 2
 #define PY 2
 #define PZ 1
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     // Create a Cartesian topology (2D)
     MPI_Comm cart_comm;
     int dims[2] = {PX, PY};
-    int periods[2] = {0, 1};
+    int periods[2] = {1, 1};
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
     int dim_x = NX / PX;
@@ -105,30 +105,22 @@ int main(int argc, char **argv)
             {
 
                 // ---> z   
-                // ^
+                // 
                 // | y,  uscente x 
+                // v
                 int glob_address_x = i +coords[0]*dim_x;
-                int glob_address_y =j+ coords[1]*(dim_y-2); // il -1 andrebbe solo nell'ultimo processore dato che ha la dim_y diversa dagli altri(o si fa una var diversa)
-                //boundary points segnati nella griglia
-                // if(glob_address_x == 1 || glob_address_x==NX)
-                //     grid_loc[i * newDimY * dim_z + j * dim_z + k] += 2;
-                if(glob_address_x == 0 || glob_address_x==NX-1)
-                    grid_loc[i * newDimY * dim_z + j * dim_z + k] += 2;
+                int glob_address_y =j+ coords[1]*(dim_y); 
+                
+                if(glob_address_x == 1 || glob_address_x==NX-1)
+                    grid_loc[i * newDimY * dim_z + j * dim_z + k] = 2;
 
-                if(glob_address_y== 1 || glob_address_y==NY)
-                    grid_loc[i * newDimY * dim_z + j * dim_z + k] += 3;
+                if(glob_address_y== 0 || glob_address_y==NY)
+                    grid_loc[i * newDimY * dim_z + j * dim_z + k] = 2;
                 if(k==0 || k==NZ)
-                    grid_loc[i * newDimY * dim_z + j * dim_z + k] += 4;
+                    grid_loc[i * newDimY * dim_z + j * dim_z + k] = 2;
 
-                //if(i==0 || i == dim_x+1) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0; //only x
-                if(j==0 || j==dim_y+1) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;//only y
-                //if((rank == 0 || rank ==1) && i == dim_x) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                // if((rank == 0 ) && i == dim_x) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                // //if((rank == 0 || rank ==1) && i == dim_x) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                // //if((rank == 2 || rank== 3) && i == 0) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                // //Setting ghost points to 0
-                // //if((rank == 0 || rank ==2) && j == dim_y) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
-                // if((rank == 1 || rank ==3) && i/*j*/ == 0) grid_loc[i * newDimY * dim_z + j * dim_z + k] =0;
+
+                if(i==0 || i ==dim_x+1 || j==0 | j==dim_y+1)grid_loc[i * newDimY * dim_z + j * dim_z + k] = 0;
             }
         }
     }
@@ -282,31 +274,30 @@ if(false){
 } 
 
 /*************************** GENERAL CASE ***************************/
-if (true)//isMiddleProcess(coords))
+if (!false)//isMiddleProcess(coords))
 {
-    // TO THE LEFT
+    // TO THE LEFT 
     // (x, y) -> (x-1, y)
     MPI_Status status6;
     if (neighbors[0] != -2)
     {
-        MPI_Send(&grid_loc[newDimY * dim_z /*+ dim_z*/], 1, MPI_face_y, neighbors[0], rank, cart_comm); // caso generale
+        MPI_Send(&grid_loc[newDimY * dim_z + dim_z], 1, MPI_face_y, neighbors[0], rank, cart_comm); // caso generale
         //MPI_Send(&grid_loc[(2*newDimY) * dim_z /*+ dim_z*/], 1, MPI_face_y, neighbors[0], rank, cart_comm); //limite sinistro
     }
     if (neighbors[2] != -2)
     {
-        MPI_Recv(&grid_loc[(dim_x+1)*newDimY*dim_z /*+ dim_z*/], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &status6);
+        MPI_Recv(&grid_loc[(newDimX-1)*newDimY*dim_z], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &status6);
     }
-
     // TO THE RIGHT
     // (x, y) -> (x+1, y)
     MPI_Status status7;
     if (neighbors[2] != -2)
     {
-        //MPI_Send(&grid_loc[(dim_x) * newDimY * dim_z/*+ dim_z */], 1, MPI_face_y, neighbors[2], rank, cart_comm);//caso generale
-        MPI_Send(&grid_loc[(dim_x-1) * newDimY * dim_z/*+ dim_z*/], 1, MPI_face_y, neighbors[2], rank, cart_comm);// limite destro     
+        MPI_Send(&grid_loc[(dim_x) * newDimY * dim_z+ dim_z], 1, MPI_face_y, neighbors[2], rank, cart_comm);//caso generale
+        //MPI_Send(&grid_loc[(dim_x-1) * newDimY * dim_z/*+ dim_z*/], 1, MPI_face_y, neighbors[2], rank, cart_comm);// limite destro     
     }
     if(neighbors[0] != -2){
-        MPI_Recv(&grid_loc[0/*+dim_z*/], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &status7);
+        MPI_Recv(&grid_loc[0+dim_z], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &status7);
     }
 
     // TO THE TOP
@@ -315,12 +306,12 @@ if (true)//isMiddleProcess(coords))
     if (neighbors[1] != -2)
     {
         // First row of the local grid: skip the first face of ghos points, skip the first column of ghost points.
-        MPI_Send(&grid_loc[/*newDimY * dim_z +*/ dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);//general case
+        MPI_Send(&grid_loc[newDimY * dim_z + dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);//general case
         // MPI_Send(&grid_loc[/*newDimY * dim_z +*/ 2*dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);//limite sopra
     }
     if (neighbors[3] != -2)
     {
-        MPI_Recv(&grid_loc[/*newDimY*dim_z +*/ (newDimY-1)*dim_z], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status8);
+        MPI_Recv(&grid_loc[newDimY*dim_z + (newDimY-1)*dim_z], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status8);
     }
 
     // TO THE BOTTOM
@@ -328,16 +319,16 @@ if (true)//isMiddleProcess(coords))
     MPI_Status status9;
     if (neighbors[3] != -2)
     {
-        MPI_Send(&grid_loc[/*dim_z*newDimY +*/ dim_z*(newDimY-2)/*dim_z * (2 * newDimY - 1)*/], 1, MPI_face_x, neighbors[3], rank, cart_comm);//caso generale
+        MPI_Send(&grid_loc[dim_z*newDimY + dim_z*(newDimY-2)], 1, MPI_face_x, neighbors[3], rank, cart_comm);//caso generale
         // MPI_Send(&grid_loc[/*dim_z*newDimY +*/ dim_z*(newDimY-3)/*dim_z * (2 * newDimY - 1)*/], 1, MPI_face_x, neighbors[3], rank, cart_comm);//limite sotto
     }
     if (neighbors[1] != -2)
     {
-        MPI_Recv(&grid_loc[/*dim_z * newDimY+*/0], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status9);
+        MPI_Recv(&grid_loc[dim_z * newDimY+0], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status9);
     }
 }
 
-if (rank == 1){
+if (rank == 3){
         std::cout << " rank: " << rank /*rank << "N0: " << neighbors[0] << " N2: " <<neighbors[2]*/ << std::endl;
         for (int i = 0; i < newDimX; i++)
         {
