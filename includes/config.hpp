@@ -23,13 +23,13 @@ constexpr Real LY = 2*M_PI;
 constexpr Real LZ = 2*M_PI;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 4; // 81 cells in each direction gives segmenation fault
+constexpr int NX = 5; // 81 cells in each direction gives segmenation fault
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 4;
+constexpr int NY = 5;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 4;
+constexpr int NZ = 5;
 
 /// @brief Space discretization step size in the x-direction.
 constexpr Real DX = LX / NX;
@@ -40,15 +40,11 @@ constexpr Real DY = LY / NY;
 /// @brief Space discretization step size in the z-direction.
 constexpr Real DZ = LZ / NZ;
 
-//0.0731884
-//0.0184218
-//0.00462201
-
 /// @brief Time step size for the simulation.
 constexpr Real DT = 0.01;
 
 /// @brief Total time interval for the simulation.
-constexpr Real T = 0.03;
+constexpr Real T = 1.0;
 
 /// @brief Reynolds number for the simulation.
 constexpr Real RE = 400.0;

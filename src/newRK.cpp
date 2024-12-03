@@ -30,7 +30,7 @@ void IcoNS::solve_time_step(Real time)
             {
 #ifdef PERIODIC
                 Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = grid.u[indexingPeriodicx(i, j, k)] + 64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                                   64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i + 1, j, k)] - grid.p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                                                                   64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i + 1, j, k)] - grid.p[indexingPeriodicp(i, j, k)]) / (DX);
 #endif
 #ifdef DIRICHELET
                 Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
@@ -47,7 +47,7 @@ void IcoNS::solve_time_step(Real time)
             {
 #ifdef PERIODIC
                 Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = grid.v[indexingPeriodicy(i, j, k)] + 64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                             64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i, j + 1, k)] - grid.p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                                                             64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i, j + 1, k)] - grid.p[indexingPeriodicp(i, j, k)]) / (DY);
 #endif
 #ifdef DIRICHELET
                 Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time);
@@ -64,7 +64,7 @@ void IcoNS::solve_time_step(Real time)
             {
 #ifdef PERIODIC
                 Y2_z[i * (NY + 1) * NZ + j * NZ + k] = grid.w[indexingPeriodicz(i, j, k)] + 64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i, j, k + 1)] - grid.p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                                                       64.0 / 120.0 * DT * (grid.p[indexingPeriodicp(i, j, k + 1)] - grid.p[indexingPeriodicp(i, j, k)]) / (DZ);
 #endif
 #ifdef DIRICHELET
                 Y2_z[indexingDiricheletz(i, j, k)] = grid.w[indexingDiricheletz(i, j, k)] + 64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time);
@@ -80,7 +80,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i + 1, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (2.0 * DX) + (Y2_y[indexingPeriodicy(i, j + 1, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (2.0 * DY) + (Y2_z[indexingPeriodicz(i, j, k + 1)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (2.0 * DZ));
+                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y2_y[indexingPeriodicy(i, j, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y2_z[indexingPeriodicz(i, j, k)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
 #endif
             }
         }
@@ -98,7 +98,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
-                Y2_x[i * NY * NZ + j * NZ + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX);
 #endif
             }
         }
@@ -111,7 +111,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
-                Y2_y[i * NY * NZ + j * NZ + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY);
 #endif
             }
         }
@@ -124,7 +124,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y2_z[i * NY * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                Y2_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ);
 #endif
             }
         }
@@ -157,7 +157,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[indexingPeriodicx(i, j, k)] +
                                                                    50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                                    34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                                   16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i + 1, j, k)] - Phi_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                                                                   16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i + 1, j, k)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DX);
 #endif
 #ifdef DIRICHELET
                 Y3_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] +
@@ -178,7 +178,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[indexingPeriodicy(i, j, k)] +
                                                              50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                              34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                             16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j + 1, k)] - Phi_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                                                             16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j + 1, k)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DY);
 #endif
 #ifdef DIRICHELET
                 Y3_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] +
@@ -199,7 +199,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] +
                                                        50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                        34.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j, k + 1)] - Phi_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                                                       16.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j, k + 1)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DZ);
 #endif
 #ifdef DIRICHELET
                 Y3_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] +
@@ -217,7 +217,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y3_p[i * NY * NZ + j * NZ + k] = 120.0 / (16.0 * DT) * ((Y3_x[indexingPeriodicx(i + 1, j, k)] - Y3_x[indexingPeriodicx(i - 1, j, k)]) / (2.0 * DX) + (Y3_y[indexingPeriodicy(i, j + 1, k)] - Y3_y[indexingPeriodicy(i, j - 1, k)]) / (2.0 * DY) + (Y3_z[indexingPeriodicz(i, j, k + 1)] - Y3_z[indexingPeriodicz(i, j, k - 1)]) / (2.0 * DZ));
+                Y3_p[i * NY * NZ + j * NZ + k] = 120.0 / (16.0 * DT) * ((Y3_x[indexingPeriodicx(i, j, k)] - Y3_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y3_y[indexingPeriodicy(i, j, k)] - Y3_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y3_z[indexingPeriodicz(i, j, k)] - Y3_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
 #endif
             }
         }
@@ -234,7 +234,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
-                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i + 1, j, k)] - Y3_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i + 1, j, k)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DX);
 #endif
             }
         }
@@ -247,7 +247,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
-                Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j + 1, k)] - Y3_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j + 1, k)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DY);
 #endif
             }
         }
@@ -260,7 +260,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Y3_z[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j, k + 1)] - Y3_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j, k + 1)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DZ);
 #endif
             }
         }
@@ -293,7 +293,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] +
                                                                      90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                                     40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i + 1, j, k)] - Phi_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX);
+                                                                     40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i + 1, j, k)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DX);
 #endif
 #ifdef DIRICHELET
                 grid.u[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
@@ -314,7 +314,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] +
                                                                90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                                50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                               40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j + 1, k)] - Phi_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY);
+                                                               40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j + 1, k)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DY);
 #endif
 #ifdef DIRICHELET
                 grid.v[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] +
@@ -335,7 +335,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.w[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[indexingPeriodicz(i, j, k)] +
                                                          90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                          50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                         40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j, k + 1)] - Phi_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ);
+                                                         40.0 / 120.0 * DT * (Phi_p[indexingPeriodicp(i, j, k + 1)] - Phi_p[indexingPeriodicp(i, j, k)]) / (DZ);
 #endif
 #ifdef DIRICHELET
                 grid.w[i * (NY + 1) * (NZ) + j * (NZ) + k] = Y3_z[indexingDiricheletz(i, j, k)] +
@@ -354,7 +354,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
-                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingPeriodicx(i + 1, j, k)] - grid.u[indexingPeriodicx(i - 1, j, k)]) / (2.0 * DX) + (grid.v[indexingPeriodicy(i, j + 1, k)] - grid.v[indexingPeriodicy(i, j - 1, k)]) / (2.0 * DY) + (grid.w[indexingPeriodicz(i, j, k + 1)] - grid.w[indexingPeriodicz(i, j, k - 1)]) / (2.0 * DZ));
+                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingPeriodicx(i, j, k)] - grid.u[indexingPeriodicx(i - 1, j, k)]) / (DX) + (grid.v[indexingPeriodicy(i, j, k)] - grid.v[indexingPeriodicy(i, j - 1, k)]) / (DY) + (grid.w[indexingPeriodicz(i, j, k)] - grid.w[indexingPeriodicz(i, j, k - 1)]) / (DZ));
                 #endif
             }
         }
@@ -370,7 +370,7 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
-                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i - 1, j, k)]) / (2.0 * DX); 
+                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX); 
                 #endif
             }
         }
@@ -382,7 +382,7 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
-                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j - 1, k)]) / (2.0 * DY); 
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY); 
                 #endif
             }
         }
@@ -394,7 +394,7 @@ void IcoNS::solve_time_step(Real time)
             for(size_t k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
-                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k - 1)]) / (2.0 * DZ); 
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ); 
                 #endif
             }
         }
