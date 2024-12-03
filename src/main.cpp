@@ -43,6 +43,7 @@ int main()
     IcoNS icoNS("input.txt", "output.txt");
 
     icoNS.preprocessing();
+    icoNS.solve();
 
     std::array<Real, NX * (NY + 1) * (NZ + 1)> u;
     std::array<Real, (NX + 1) * NY * (NZ + 1)> v;
@@ -51,7 +52,6 @@ int main()
     u = icoNS.u_function();
     v = icoNS.v_function();
     w = icoNS.w_function();
-    icoNS.solve();
 
     writeVTK("velocity_u.vtk", u.data(), NX, NY + 1, NZ + 1, DX, DY, DZ);
     writeVTK("velocity_v.vtk", v.data(), NX + 1, NY, NZ + 1, DX, DY, DZ);

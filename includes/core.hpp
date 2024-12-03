@@ -70,17 +70,18 @@ private:
   std::string output_file; // output file.
 
 
-  #ifdef PERIODIC
+#ifdef PERIODIC
     inline size_t indexingPeriodicx(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
     inline size_t indexingPeriodicy(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * NY * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
     inline size_t indexingPeriodicz(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * NZ + ((j + NY) % NY) * NZ + ((k + NZ) % NZ); };
     inline size_t indexingPeriodicp(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
-  #endif
-  #ifdef DIRICHELET
+#endif
+  
+#ifdef DIRICHELET
     inline size_t indexingDiricheletx(size_t i, size_t j, size_t k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
     inline size_t indexingDirichelety(size_t i, size_t j, size_t k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
     inline size_t indexingDiricheletz(size_t i, size_t j, size_t k) { return i * (NY + 1) * NZ + j * NZ + k; }
-  #endif
+#endif
 };
 
 #endif // CORE_HPP
