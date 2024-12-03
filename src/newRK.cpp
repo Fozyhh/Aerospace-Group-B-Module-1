@@ -1,4 +1,5 @@
 #include "core.hpp"
+#include "poissonSolver.hpp"
 
 void IcoNS::solve_time_step(Real time)
 {
