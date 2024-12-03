@@ -18,6 +18,17 @@
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
+    for (size_t i = 0; i < NX; i++)
+    {
+        for (size_t j = 0; j < NY; j++)
+        {
+            for (size_t k = 0; k < NZ; k++)
+            {
+                Y3_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
+            }
+        }
+    }
+
 #ifdef VERBOSE
     std::cout << "*************************************************" << std::endl;
         std::cout << "Incompressible Navier-Stokes equation Solver" << std::endl << std::endl << std::endl;
