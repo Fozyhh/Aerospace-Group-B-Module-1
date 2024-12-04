@@ -9,8 +9,12 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 include_directories(PkgConfig::FFTW)
 link_libraries(PkgConfig::FFTW)
 
+find_package(MPI)
+include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(DECOMP_DIR "${CMAKE_SOURCE_DIR}/dependences/2Decomp_C")
 
 # Options for profiling and memory checks
 option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
@@ -51,6 +55,22 @@ set(SOURCES
     src/poissonSolver.cpp
 )
 
+include_directories(${DECOMP_DIR})
+add_library(
+	decomp
+	STATIC
+	${DECOMP_DIR}/C2Decomp.o
+	${DECOMP_DIR}/Alloc.o
+	${DECOMP_DIR}/TransposeX2Y.o
+	${DECOMP_DIR}/TransposeY2Z.o
+	${DECOMP_DIR}/TransposeZ2Y.o
+	${DECOMP_DIR}/TransposeY2X.o
+	${DECOMP_DIR}/MemSplitMerge.cpp
+	${DECOMP_DIR}/IO.o
+	${DECOMP_DIR}/Best2DGrid.o
+	${DECOMP_DIR}/Halo.o
+)
+
 # Executable
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
@@ -64,7 +84,7 @@ target_link_libraries(main $ENV{mkFftwLib} m)
 
 add_executable(poisson Test/poissonTest.cpp src/poissonSolver.cpp)
 target_include_directories(poisson PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
-target_link_libraries(poisson $ENV{mkFftwLib} m)
+target_link_libraries(poisson ${MPI_C_LIBRARIES} $ENV{mkFftwLib} m)
 
 # add_executable(tl2 src/core.cpp src/boundary.cpp src/newRK.cpp Test/L2Test.cpp)
 # target_include_directories(tl2 PRIVATE ${CMAKE_SOURCE_DIR}/includes)

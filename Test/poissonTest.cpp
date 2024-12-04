@@ -2,10 +2,22 @@
 #include <math.h>
 #include "poissonSolver.hpp"
 #include <fftw3.h>
+#include <mpi.h>
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    int ierr, totRank, mpiRank;
+
+    //Initialize MPI
+    ierr = MPI_Init( &argc, &argv);
+
+    //Get the number of processes
+    ierr = MPI_Comm_size(MPI_COMM_WORLD, &totRank);
+
+    //Get the local rank
+    ierr = MPI_Comm_rank(MPI_COMM_WORLD, &mpiRank);
+
     const bool a = true;
     const bool b = true;
     const bool c = true;

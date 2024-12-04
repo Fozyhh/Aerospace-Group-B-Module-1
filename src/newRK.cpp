@@ -273,7 +273,7 @@ void IcoNS::solve_time_step(Real time)
             for (size_t k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                Phi_p[i * NY * NZ + j * NZ + k] += Y3_p[indexingPeriodicp(i, j, k)]; // Phi_p=phi^3
+                Phi_p[i * NY * NZ + j * NZ + k] = Y3_p[indexingPeriodicp(i, j, k)] + Phi_p[indexingPeriodicp(i, j, k)]; // Phi_p=phi^3
 #endif
             }
         }

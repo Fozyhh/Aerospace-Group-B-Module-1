@@ -3,8 +3,8 @@
 void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD)
 {
     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
-    //C2Decomp *c2d;
-    //c2d = new C2Decomp(NX, NY, NZ, 0, 0, periodicBC);
+    // C2Decomp *c2d;
+    // c2d = new C2Decomp(NX, NY, NZ, 0, 0, periodicBC);
     
     // dP = fft(fft(fft(F)))
     fftw_plan forward = fftw_plan_dft_r2c_3d(NX, NY, NZ, F_dP.data(), FD, FFTW_ESTIMATE);
