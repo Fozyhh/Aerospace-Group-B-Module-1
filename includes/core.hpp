@@ -26,12 +26,12 @@ public:
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
-  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                              // compute the source term.
-  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                              // compute the source term.
-  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                              // compute the source term.
+  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
+  Real functionG_u(int i, int j, int k, Real t);                                                                                                                                                              // compute the source term.
+  Real functionG_v(int i, int j, int k, Real t);                                                                                                                                                              // compute the source term.
+  Real functionG_w(int i, int j, int k, Real t);                                                                                                                                                              // compute the source term.
 
   void solve();                    // solve the problem saving the ouput.
   void solve_time_step(Real time); // solve a time step.
@@ -71,16 +71,63 @@ private:
 
 
 #ifdef PERIODIC
-    inline size_t indexingPeriodicx(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
-    inline size_t indexingPeriodicy(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * NY * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
-    inline size_t indexingPeriodicz(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * NZ + ((j + NY) % NY) * NZ + ((k + NZ) % NZ); };
-    inline size_t indexingPeriodicp(size_t i, size_t j, size_t k) { return ((i + NX) % NX) * (NY + 1) * (NZ + 1) + ((j + NY) % NY) * (NZ + 1) + ((k + NZ) % NZ); };
+    inline int indexingPeriodicx(int i, int j, int k) {
+      if(j==-1){
+        j=NY-1;
+      }
+      if(j==(NY+1)){
+        j=1;
+      }
+      if(k==-1){
+        k=NZ-1;
+      }
+      if(k==(NZ+1)){
+        k=1;
+      }
+      return (i%NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    };
+
+    inline int indexingPeriodicy(int i, int j, int k) {
+      if(i==-1){
+        i=NX-1;
+      }
+      if(i==(NX+1)){
+        i=1;
+      }
+      if(k==-1){
+        k=NZ-1;
+      }
+      if(k==(NZ+1)){
+        k=1;
+      }
+      return i * NY * (NZ + 1) + (j%NY) * (NZ + 1) + k;
+    };
+    
+    inline int indexingPeriodicz(int i, int j, int k) {
+      if(i==-1){
+        i=NX-1;
+      }
+      if(i==(NX+1)){
+        i=1;
+      }
+      if(j==-1){
+        j=NY-1;
+      }
+      if(j==(NY+1)){
+        j=1;
+      }
+      return i * (NY + 1) * NZ + j * NZ + (k%NZ);
+    };
+
+    inline int indexingPeriodicp(int i, int j, int k) {
+      return (i%NX) * NY * NZ + (j%NY) * NZ + (k%NZ);
+    };
 #endif
   
 #ifdef DIRICHELET
-    inline size_t indexingDiricheletx(size_t i, size_t j, size_t k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
-    inline size_t indexingDirichelety(size_t i, size_t j, size_t k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
-    inline size_t indexingDiricheletz(size_t i, size_t j, size_t k) { return i * (NY + 1) * NZ + j * NZ + k; }
+    inline int indexingDiricheletx(int i, int j, int k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
+    inline int indexingDirichelety(int i, int j, int k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
+    inline int indexingDiricheletz(int i, int j, int k) { return i * (NY + 1) * NZ + j * NZ + k; }
 #endif
 };
 

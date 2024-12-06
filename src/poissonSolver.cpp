@@ -53,9 +53,9 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
 
     // Normalization
     double normalization_factor = (NX) * (NY) * (NZ);
-    for (size_t i=0; i < NX; i++){
-        for (size_t j=0; j < NY; j++){
-            for (size_t k=0; k < NZ; k++){
+    for (int i=0; i < NX; i++){
+        for (int j=0; j < NY; j++){
+            for (int k=0; k < NZ; k++){
                 F_dP[i * (NY) * (NZ) + j * (NZ) + k] /= normalization_factor;
             }
         }

@@ -18,11 +18,11 @@
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
-    for (size_t i = 0; i < NX; i++)
+    for (int i = 0; i < NX; i++)
     {
-        for (size_t j = 0; j < NY; j++)
+        for (int j = 0; j < NY; j++)
         {
-            for (size_t k = 0; k < NZ; k++)
+            for (int k = 0; k < NZ; k++)
             {
                 Y3_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
             }
@@ -54,7 +54,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
 
-    for (size_t i = 0; i < 6 /*nfaces*/; i++)
+    for (int i = 0; i < 6 /*nfaces*/; i++)
     {
         boundary.addFunction(U, u_func);
         boundary.addFunction(V, v_func);
@@ -128,7 +128,7 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[0] - exact_solution.value_x(0.5, 0, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.u[k] - exact_solution.value_x(0.5, 0, k, t)) *
                       (grid.u[k] - exact_solution.value_x(0.5, 0, k, t)) *
@@ -139,12 +139,12 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             error += ((grid.u[j * (NZ + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
                       (grid.u[j * (NZ + 1)] - exact_solution.value_x(0.5, j, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.u[j * (NZ + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
                           (grid.u[j * (NZ + 1) + k] - exact_solution.value_x(0.5, j, k, t)) *
@@ -159,7 +159,7 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[NY * (NZ + 1)] - exact_solution.value_x(0.5, NY, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.u[NY * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
                       (grid.u[NY * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
@@ -173,13 +173,13 @@ Real IcoNS::error_comp_X(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX - 1; i++)
+        for (int i = 1; i < NX - 1; i++)
         {
             error += ((grid.u[i * (NY + 1) * (NZ + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
                       (grid.u[i * (NY + 1) * (NZ + 1)] - exact_solution.value_x(i + 0.5, 0, 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.u[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
                           (grid.u[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, 0, k, t)) *
@@ -189,13 +189,13 @@ Real IcoNS::error_comp_X(const Real t)
                       (grid.u[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5, 0, NZ, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < NY; j++)
+            for (int j = 1; j < NY; j++)
             {
                 error += ((grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
                           (grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5, j, 0, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
                               (grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, j, k, t)) *
@@ -211,7 +211,7 @@ Real IcoNS::error_comp_X(const Real t)
                       (grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x(i + 0.5, NY, 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, NY, k, t)) *
                           (grid.u[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x(i + 0.5, NY, k, t)) *
@@ -230,7 +230,7 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[(NX - 1) * (NY + 1) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
                       (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
@@ -241,12 +241,12 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j, 0, t)) *
                       (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j, k, t)) *
                           (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j, k, t)) *
@@ -261,7 +261,7 @@ Real IcoNS::error_comp_X(const Real t)
                   (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
                       (grid.u[(NX - 1) * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
@@ -284,7 +284,7 @@ Real IcoNS::l2_norm_x(const Real t)
                     (exact_solution.value_x(0.5, 0, 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_x(0.5, 0, k, t)) *
                         (exact_solution.value_x(0.5, 0, k, t)) *
@@ -293,12 +293,12 @@ Real IcoNS::l2_norm_x(const Real t)
         l2_norm += ((exact_solution.value_x(0.5, 0, NZ, t)) *
                     (exact_solution.value_x(0.5, 0, NZ, t)) *
                     DX * DY * DZ / 8);
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             l2_norm += ((exact_solution.value_x(0.5, j, 0, t)) *
                         (exact_solution.value_x(0.5, j, 0, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 ;
                 l2_norm += ((exact_solution.value_x(0.5, j, k, t)) *
@@ -313,7 +313,7 @@ Real IcoNS::l2_norm_x(const Real t)
                     (exact_solution.value_x(0.5, NY, 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_x(0.5, NY, k, t)) *
                         (exact_solution.value_x(0.5, NY, k, t)) *
@@ -326,13 +326,13 @@ Real IcoNS::l2_norm_x(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX - 1; i++)
+        for (int i = 1; i < NX - 1; i++)
         {
             l2_norm += ((exact_solution.value_x(i + 0.5, 0, 0, t)) *
                         (exact_solution.value_x(i + 0.5, 0, 0, t)) *
                         DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_x(i + 0.5, 0, k, t)) *
                             (exact_solution.value_x(i + 0.5, 0, k, t)) *
@@ -341,12 +341,12 @@ Real IcoNS::l2_norm_x(const Real t)
             l2_norm += ((exact_solution.value_x(i + 0.5, 0, NZ, t)) *
                         (exact_solution.value_x(i + 0.5, 0, NZ, t)) *
                         DX * DY * DZ / 4);
-            for (size_t j = 1; j < NY; j++)
+            for (int j = 1; j < NY; j++)
             {
                 l2_norm += ((exact_solution.value_x(i + 0.5, j, 0, t)) *
                             (exact_solution.value_x(i + 0.5, j, 0, t)) *
                             DX * DY * DZ / 2);
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     l2_norm += ((exact_solution.value_x(i + 0.5, j, k, t)) *
                                 (exact_solution.value_x(i + 0.5, j, k, t)) *
@@ -360,7 +360,7 @@ Real IcoNS::l2_norm_x(const Real t)
                         (exact_solution.value_x(i + 0.5, NY, 0, t)) *
                         DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_x(i + 0.5, NY, k, t)) *
                             (exact_solution.value_x(i + 0.5, NY, k, t)) *
@@ -378,7 +378,7 @@ Real IcoNS::l2_norm_x(const Real t)
                     (exact_solution.value_x((NX - 0.5), 0, 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_x((NX - 0.5), 0, k, t)) *
                         (exact_solution.value_x((NX - 0.5), 0, k, t)) *
@@ -387,12 +387,12 @@ Real IcoNS::l2_norm_x(const Real t)
         l2_norm += ((exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
                     (exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
                     DX * DY * DZ / 8);
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             l2_norm += ((exact_solution.value_x((NX - 0.5), j, 0, t)) *
                         (exact_solution.value_x((NX - 0.5), j, 0, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_x((NX - 0.5), j, k, t)) *
                             (exact_solution.value_x((NX - 0.5), j, k, t)) *
@@ -405,7 +405,7 @@ Real IcoNS::l2_norm_x(const Real t)
         l2_norm += ((exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                     (exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                     DX * DY * DZ / 8);
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_x((NX - 0.5), NY, k, t)) *
                         (exact_solution.value_x((NX - 0.5), NY, k, t)) *
@@ -427,7 +427,7 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(0, 0.5, 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_y(0, 0.5, k, t)) *
                         (exact_solution.value_y(0, 0.5, k, t)) *
@@ -437,12 +437,12 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(0, 0.5, NZ, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY - 1; j++)
+        for (int j = 1; j < NY - 1; j++)
         {
             l2_norm += ((exact_solution.value_y(0, j + 0.5, 0, t)) *
                         (exact_solution.value_y(0, j + 0.5, 0, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_y(0, j + 0.5, k, t)) *
                             (exact_solution.value_y(0, j + 0.5, k, t)) *
@@ -456,7 +456,7 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(0, (NY - 0.5), 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_y(0, (NY - 0.5), k, t)) *
                         (exact_solution.value_y(0, (NY - 0.5), k, t)) *
@@ -469,13 +469,13 @@ Real IcoNS::l2_norm_y(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX; i++)
+        for (int i = 1; i < NX; i++)
         {
             l2_norm += ((exact_solution.value_y(i, 0.5, 0, t)) *
                         (exact_solution.value_y(i, 0.5, 0, t)) *
                         DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_y(i, 0.5, k, t)) *
                             (exact_solution.value_y(i, 0.5, k, t)) *
@@ -485,12 +485,12 @@ Real IcoNS::l2_norm_y(const Real t)
                         (exact_solution.value_y(i, 0.5, NZ, t)) *
                         DX * DY * DZ / 8);
 
-            for (size_t j = 1; j < NY - 1; j++)
+            for (int j = 1; j < NY - 1; j++)
             {
                 l2_norm += ((exact_solution.value_y(i, j + 0.5, 0, t)) *
                             (exact_solution.value_y(i, j + 0.5, 0, t)) *
                             DX * DY * DZ / 4);
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     l2_norm += ((exact_solution.value_y(i, j + 0.5, k, t)) *
                                 (exact_solution.value_y(i, j + 0.5, k, t)) *
@@ -504,7 +504,7 @@ Real IcoNS::l2_norm_y(const Real t)
                         (exact_solution.value_y(i, (NY - 0.5), 0, t)) *
                         DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_y(i, (NY - 0.5), k, t)) *
                             (exact_solution.value_y(i, (NY - 0.5), k, t)) *
@@ -522,7 +522,7 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(NX, 0.5, 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_y(NX, 0.5, k, t)) *
                         (exact_solution.value_y(NX, 0.5, k, t)) *
@@ -532,12 +532,12 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(NX, 0.5, NZ, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY - 1; j++)
+        for (int j = 1; j < NY - 1; j++)
         {
             l2_norm += ((exact_solution.value_y(NX, j + 0.5, 0, t)) *
                         (exact_solution.value_y(NX, j + 0.5, 0, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 l2_norm += ((exact_solution.value_y(NX, j + 0.5, k, t)) *
                             (exact_solution.value_y(NX, j + 0.5, k, t)) *
@@ -551,7 +551,7 @@ Real IcoNS::l2_norm_y(const Real t)
                     (exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             l2_norm += ((exact_solution.value_y(NX, (NY - 0.5), k, t)) *
                         (exact_solution.value_y(NX, (NY - 0.5), k, t)) *
@@ -573,7 +573,7 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(0, 0, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             l2_norm += ((exact_solution.value_z(0, 0, k + 0.5, t)) *
                         (exact_solution.value_z(0, 0, k + 0.5, t)) *
@@ -583,12 +583,12 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(0, 0, NZ - 0.5, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             l2_norm += ((exact_solution.value_z(0, j, 0.5, t)) *
                         (exact_solution.value_z(0, j, 0.5, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 l2_norm += ((exact_solution.value_z(0, j, k + 0.5, t)) *
                             (exact_solution.value_z(0, j, k + 0.5, t)) *
@@ -602,7 +602,7 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(0, NY, 0.5, t)) *
                     DX * DY * DZ / 4);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             l2_norm += ((exact_solution.value_z(0, NY, k + 0.5, t)) *
                         (exact_solution.value_z(0, NY, k + 0.5, t)) *
@@ -615,12 +615,12 @@ Real IcoNS::l2_norm_z(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX; i++)
+        for (int i = 1; i < NX; i++)
         {
             l2_norm += ((exact_solution.value_z(i, 0, 0.5, t)) *
                         (exact_solution.value_z(i, 0, 0.5, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 l2_norm += ((exact_solution.value_z(i, 0, k + 0.5, t)) *
                             (exact_solution.value_z(i, 0, k + 0.5, t)) *
@@ -630,13 +630,13 @@ Real IcoNS::l2_norm_z(const Real t)
                         (exact_solution.value_z(i, 0, NZ - 0.5, t)) *
                         DX * DY * DZ / 8);
 
-            for (size_t j = 1; j < NY; j++)
+            for (int j = 1; j < NY; j++)
             {
                 l2_norm += ((exact_solution.value_z(i, j, 0.5, t)) *
                             (exact_solution.value_z(i, j, 0.5, t)) *
                             DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ - 1; k++)
+                for (int k = 1; k < NZ - 1; k++)
                 {
                     l2_norm += ((exact_solution.value_z(i, j, k + 0.5, t)) *
                                 (exact_solution.value_z(i, j, k + 0.5, t)) *
@@ -650,7 +650,7 @@ Real IcoNS::l2_norm_z(const Real t)
                         (exact_solution.value_z(i, NY, 0.5, t)) *
                         DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 l2_norm += ((exact_solution.value_z(i, NY, k + 0.5, t)) *
                             (exact_solution.value_z(i, NY, k + 0.5, t)) *
@@ -668,7 +668,7 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(NX, 0, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             l2_norm += ((exact_solution.value_z(NX, 0, k + 0.5, t)) *
                         (exact_solution.value_z(NX, 0, k + 0.5, t)) *
@@ -678,12 +678,12 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
                     DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             l2_norm += ((exact_solution.value_z(NX, j, 0.5, t)) *
                         (exact_solution.value_z(NX, j, 0.5, t)) *
                         DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 l2_norm += ((exact_solution.value_z(NX, j, k + 0.5, t)) *
                             (exact_solution.value_z(NX, j, k + 0.5, t)) *
@@ -697,7 +697,7 @@ Real IcoNS::l2_norm_z(const Real t)
                     (exact_solution.value_z(NX, NY, 0.5, t)) *
                     DX * DY * DZ / 4);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             l2_norm += ((exact_solution.value_z(NX, NY, k + 0.5, t)) *
                         (exact_solution.value_z(NX, NY, k + 0.5, t)) *
@@ -721,7 +721,7 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[0] - exact_solution.value_y(0, 0.5, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.v[k] - exact_solution.value_y(0, 0.5, k, t)) *
                       (grid.v[k] - exact_solution.value_y(0, 0.5, k, t)) *
@@ -732,12 +732,12 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[NZ] - exact_solution.value_y(0, 0.5, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY - 1; j++)
+        for (int j = 1; j < NY - 1; j++)
         {
             error += ((grid.v[j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
                       (grid.v[j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.v[j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
                           (grid.v[j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5, k, t)) *
@@ -752,7 +752,7 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[(NY - 1) * (NZ + 1)] - exact_solution.value_y(0, (NY - 0.5), 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.v[(NY - 1) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
                       (grid.v[(NY - 1) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
@@ -766,13 +766,13 @@ Real IcoNS::error_comp_Y(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX; i++)
+        for (int i = 1; i < NX; i++)
         {
             error += ((grid.v[i * NY * (NZ + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
                       (grid.v[i * NY * (NZ + 1)] - exact_solution.value_y(i, 0.5, 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.v[i * NY * (NZ + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
                           (grid.v[i * NY * (NZ + 1) + k] - exact_solution.value_y(i, 0.5, k, t)) *
@@ -782,13 +782,13 @@ Real IcoNS::error_comp_Y(const Real t)
                       (grid.v[i * NY * (NZ + 1) + NZ] - exact_solution.value_y(i, 0.5, NZ, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < NY - 1; j++)
+            for (int j = 1; j < NY - 1; j++)
             {
                 error += ((grid.v[i * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
                           (grid.v[i * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i, j + 0.5, 0, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
                               (grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i, j + 0.5, k, t)) *
@@ -804,7 +804,7 @@ Real IcoNS::error_comp_Y(const Real t)
                       (grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(i, (NY - 0.5), 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(i, (NY - 0.5), k, t)) *
                           (grid.v[i * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(i, (NY - 0.5), k, t)) *
@@ -823,7 +823,7 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[NX * NY * (NZ + 1)] - exact_solution.value_y(NX, 0.5, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.v[NX * NY * (NZ + 1) + k] - exact_solution.value_y(NX, 0.5, k, t)) *
                       (grid.v[NX * NY * (NZ + 1) + k] - exact_solution.value_y(NX, 0.5, k, t)) *
@@ -834,12 +834,12 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[NX * NY * (NZ + 1) + NZ] - exact_solution.value_y(NX, 0.5, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY - 1; j++)
+        for (int j = 1; j < NY - 1; j++)
         {
             error += ((grid.v[NX * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5, 0, t)) *
                       (grid.v[NX * NY * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5, k, t)) *
                           (grid.v[NX * NY * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5, k, t)) *
@@ -854,7 +854,7 @@ Real IcoNS::error_comp_Y(const Real t)
                   (grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1)] - exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
                       (grid.v[NX * NY * (NZ + 1) + (NY - 1) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
@@ -877,7 +877,7 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[0] - exact_solution.value_z(0, 0, 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             error += ((grid.w[k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
                       (grid.w[k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
@@ -888,12 +888,12 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[NZ - 1] - exact_solution.value_z(0, 0, NZ - 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             error += ((grid.w[j * NZ] - exact_solution.value_z(0, j, 0.5, t)) *
                       (grid.w[j * NZ] - exact_solution.value_z(0, j, 0.5, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid.w[j * NZ + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
                           (grid.w[j * NZ + k] - exact_solution.value_z(0, j, k + 0.5, t)) *
@@ -908,7 +908,7 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[NY * NZ] - exact_solution.value_z(0, NY, 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             error += ((grid.w[NY * NZ + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
                       (grid.w[NY * NZ + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
@@ -922,13 +922,13 @@ Real IcoNS::error_comp_Z(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX; i++)
+        for (int i = 1; i < NX; i++)
         {
             error += ((grid.w[i * (NY + 1) * NZ] - exact_solution.value_z(i, 0, 0.5, t)) *
                       (grid.w[i * (NY + 1) * NZ] - exact_solution.value_z(i, 0, 0.5, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid.w[i * (NY + 1) * NZ + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
                           (grid.w[i * (NY + 1) * NZ + k] - exact_solution.value_z(i, 0, k + 0.5, t)) *
@@ -938,13 +938,13 @@ Real IcoNS::error_comp_Z(const Real t)
                       (grid.w[i * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(i, 0, NZ - 0.5, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < NY; j++)
+            for (int j = 1; j < NY; j++)
             {
                 error += ((grid.w[i * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(i, j, 0.5, t)) *
                           (grid.w[i * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(i, j, 0.5, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ - 1; k++)
+                for (int k = 1; k < NZ - 1; k++)
                 {
                     error += ((grid.w[i * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
                               (grid.w[i * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(i, j, k + 0.5, t)) *
@@ -960,7 +960,7 @@ Real IcoNS::error_comp_Z(const Real t)
                       (grid.w[i * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(i, NY, 0.5, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid.w[i * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(i, NY, k + 0.5, t)) *
                           (grid.w[i * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(i, NY, k + 0.5, t)) *
@@ -979,7 +979,7 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[NX * (NY + 1) * NZ] - exact_solution.value_z(NX, 0, 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             error += ((grid.w[NX * (NY + 1) * NZ + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
                       (grid.w[NX * (NY + 1) * NZ + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
@@ -990,12 +990,12 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[NX * (NY + 1) * NZ + NZ - 1] - exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY; j++)
+        for (int j = 1; j < NY; j++)
         {
             error += ((grid.w[NX * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(NX, j, 0.5, t)) *
                       (grid.w[NX * (NY + 1) * NZ + j * NZ] - exact_solution.value_z(NX, j, 0.5, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid.w[NX * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(NX, j, k + 0.5, t)) *
                           (grid.w[NX * (NY + 1) * NZ + j * NZ + k] - exact_solution.value_z(NX, j, k + 0.5, t)) *
@@ -1010,7 +1010,7 @@ Real IcoNS::error_comp_Z(const Real t)
                   (grid.w[NX * (NY + 1) * NZ + NY * NZ] - exact_solution.value_z(NX, NY, 0.5, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ - 1; k++)
+        for (int k = 1; k < NZ - 1; k++)
         {
             error += ((grid.w[NX * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
                       (grid.w[NX * (NY + 1) * NZ + NY * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
@@ -1033,7 +1033,7 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
                       (grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
@@ -1044,12 +1044,12 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[NZ] - exact_solution.value_p(0, 0, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY + 1; j++)
+        for (int j = 1; j < NY + 1; j++)
         {
             error += ((grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
                       (grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
                           (grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
@@ -1064,7 +1064,7 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[NY * (NZ + 1)] - exact_solution.value_p(0, NY, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
                       (grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
@@ -1078,13 +1078,13 @@ Real IcoNS::error_comp_P(const Real t)
 
     // middle slices
     {
-        for (size_t i = 1; i < NX + 1; i++)
+        for (int i = 1; i < NX + 1; i++)
         {
             error += ((grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
                       (grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
                           (grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
@@ -1094,13 +1094,13 @@ Real IcoNS::error_comp_P(const Real t)
                       (grid.p[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(i, 0, NZ, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t j = 1; j < NY + 1; j++)
+            for (int j = 1; j < NY + 1; j++)
             {
                 error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
                           (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
                               (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
@@ -1116,7 +1116,7 @@ Real IcoNS::error_comp_P(const Real t)
                       (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(i, NY, 0, t)) *
                       DX * DY * DZ / 4);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
                           (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
@@ -1135,7 +1135,7 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[NX * (NY + 1) * (NZ + 1)] - exact_solution.value_p(NX, 0, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
                       (grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
@@ -1146,12 +1146,12 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[NX * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(NX, 0, NZ, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t j = 1; j < NY + 1; j++)
+        for (int j = 1; j < NY + 1; j++)
         {
             error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
                       (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
                           (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
@@ -1166,7 +1166,7 @@ Real IcoNS::error_comp_P(const Real t)
                   (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(NX, NY, 0, t)) *
                   DX * DY * DZ / 8);
 
-        for (size_t k = 1; k < NZ; k++)
+        for (int k = 1; k < NZ; k++)
         {
             error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *
                       (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *

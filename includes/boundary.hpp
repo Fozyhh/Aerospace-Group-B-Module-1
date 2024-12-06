@@ -23,9 +23,9 @@ public:
     // override
     void update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t);
 
-    Real approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side);
-    Real approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side);
-    Real approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side);
+    Real approximate_boundary_u(int x, int y, int z, Real t, int face, int side);
+    Real approximate_boundary_v(int x, int y, int z, Real t, int face, int side);
+    Real approximate_boundary_w(int x, int y, int z, Real t, int face, int side);
 
 
     void addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x);

@@ -4,29 +4,29 @@
 void IcoNS::solve_time_step(Real time)
 {
 #ifdef PERIODIC
-    const size_t start = 0;
+    const int start = 0;
 #endif
 
 #ifdef DIRICHELET
-    const size_t start = 1;
+    const int start = 1;
 #endif
 
 #ifdef DIRICHELET
-    const size_t end = -1;
+    const int end = -1;
 #endif
 
 #ifdef PERIODIC
-    const size_t end = 0;
+    const int end = 0;
 #endif
 
     // TODO Should be global 
     PoissonSolver poissonSolver(true,true,true);
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = grid.u[indexingPeriodicx(i, j, k)] + 64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -39,11 +39,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = grid.v[indexingPeriodicy(i, j, k)] + 64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -56,11 +56,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y2_z[i * (NY + 1) * NZ + j * NZ + k] = grid.w[indexingPeriodicz(i, j, k)] + 64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -73,11 +73,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y2_y[indexingPeriodicy(i, j, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y2_z[indexingPeriodicz(i, j, k)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
@@ -91,11 +91,11 @@ void IcoNS::solve_time_step(Real time)
     
     poissonSolver.solveDirichletPoisson(Y2_p,helper);
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX);
@@ -104,11 +104,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY);
@@ -117,11 +117,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y2_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ);
@@ -130,11 +130,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Phi_p[i * NY * NZ + j * NZ + k] = Y2_p[indexingPeriodicp(i, j, k)] + grid.p[indexingPeriodicp(i, j, k)]; // phi^2
@@ -147,11 +147,11 @@ void IcoNS::solve_time_step(Real time)
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
 #endif
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[indexingPeriodicx(i, j, k)] +
@@ -168,11 +168,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[indexingPeriodicy(i, j, k)] +
@@ -189,11 +189,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] +
@@ -210,11 +210,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y3_p[i * NY * NZ + j * NZ + k] = 120.0 / (16.0 * DT) * ((Y3_x[indexingPeriodicx(i, j, k)] - Y3_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y3_y[indexingPeriodicy(i, j, k)] - Y3_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y3_z[indexingPeriodicz(i, j, k)] - Y3_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
@@ -227,11 +227,11 @@ void IcoNS::solve_time_step(Real time)
     // using Y3_p to store solution but we can use Y2_p
     poissonSolver.solveDirichletPoisson(Y3_p,helper);
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end + 1; j++)
+        for (int j = start; j < NY + end + 1; j++)
         {
-            for (size_t k = start; k < NZ + end + 1; k++)
+            for (int k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
                 Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i + 1, j, k)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DX);
@@ -240,11 +240,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end + 1; i++)
+    for (int i = start; i < NX + end + 1; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end + 1; k++)
+            for (int k = start; k < NZ + end + 1; k++)
             {
 #ifdef PERIODIC
                 Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j + 1, k)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DY);
@@ -253,11 +253,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end + 1; i++)
+    for (int i = start; i < NX + end + 1; i++)
     {
-        for (size_t j = start; j < NY + end + 1; j++)
+        for (int j = start; j < NY + end + 1; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * (Y3_p[indexingPeriodicp(i, j, k + 1)] - Y3_p[indexingPeriodicp(i, j, k)]) / (DZ);
@@ -266,11 +266,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Phi_p[i * NY * NZ + j * NZ + k] = Y3_p[indexingPeriodicp(i, j, k)] + Phi_p[indexingPeriodicp(i, j, k)]; // Phi_p=phi^3
@@ -283,11 +283,11 @@ void IcoNS::solve_time_step(Real time)
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
 #endif
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] +
@@ -304,11 +304,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + 1 + end; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] +
@@ -325,11 +325,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + 1 + end; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (size_t j = start; j < NY + 1 + end; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 grid.w[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[indexingPeriodicz(i, j, k)] +
@@ -347,11 +347,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (size_t i = start; i < NX + end; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (size_t j = start; j < NY + end; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (size_t k = start; k < NZ + end; k++)
+            for (int k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
                 Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingPeriodicx(i, j, k)] - grid.u[indexingPeriodicx(i - 1, j, k)]) / (DX) + (grid.v[indexingPeriodicy(i, j, k)] - grid.v[indexingPeriodicy(i, j - 1, k)]) / (DY) + (grid.w[indexingPeriodicz(i, j, k)] - grid.w[indexingPeriodicz(i, j, k - 1)]) / (DZ));
@@ -363,11 +363,11 @@ void IcoNS::solve_time_step(Real time)
     // using Y2_p to store solution
     poissonSolver.solveDirichletPoisson(Y2_p,helper);
 
-    for(size_t i = start; i < NX + end; i++)
+    for(int i = start; i < NX + end; i++)
     {
-        for(size_t j = start; j < NY + end + 1; j++)
+        for(int j = start; j < NY + end + 1; j++)
         {
-            for(size_t k = start; k < NZ + end + 1; k++)
+            for(int k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
                 grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX); 
@@ -375,11 +375,11 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(size_t i = start; i < NX + end + 1; i++)
+    for(int i = start; i < NX + end + 1; i++)
     {
-        for(size_t j = start; j < NY + end; j++)
+        for(int j = start; j < NY + end; j++)
         {
-            for(size_t k = start; k < NZ + end + 1; k++)
+            for(int k = start; k < NZ + end + 1; k++)
             {
                 #ifdef PERIODIC
                 grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY); 
@@ -387,11 +387,11 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(size_t i = start; i < NX + end + 1; i++)
+    for(int i = start; i < NX + end + 1; i++)
     {
-        for(size_t j = start; j < NY + end + 1; j++)
+        for(int j = start; j < NY + end + 1; j++)
         {
-            for(size_t k = start; k < NZ + end; k++)
+            for(int k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
                 grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * (Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ); 
@@ -399,11 +399,11 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(size_t i = start; i < NX + end+1; i++)
+    for(int i = start; i < NX + end+1; i++)
     {
-        for(size_t j = start; j < NY + end+1; j++)
+        for(int j = start; j < NY + end+1; j++)
         {
-            for(size_t k = start; k < NZ + end+1; k++)
+            for(int k = start; k < NZ + end+1; k++)
             {
                 #ifdef PERIODIC
                 grid.p[i * NY * NZ + j * NZ + k] += Y2_p[indexingPeriodicp(i, j, k)]; 
@@ -416,7 +416,7 @@ void IcoNS::solve_time_step(Real time)
 #endif
 }
 
-Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 {
 #ifdef PERIODIC
     return -(u[indexingPeriodicx(i, j, k)] * (u[indexingPeriodicx(i + 1, j, k)] - u[indexingPeriodicx(i - 1, j, k)]) / (2.0 * DX) +
@@ -434,7 +434,7 @@ Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
 #endif
 }
 
-Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 {
 #ifdef PERIODIC
     return -((u[indexingPeriodicx(i, j, k)] + u[indexingPeriodicx(i, j + 1, k)] + u[indexingPeriodicx(i - 1, j, k)] + u[indexingPeriodicx(i - 1, j + 1, k)]) / 4.0 * (v[indexingPeriodicy(i + 1, j, k)] - v[indexingPeriodicy(i - 1, j, k)]) / (2.0 * DX) +
@@ -452,7 +452,7 @@ Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
 #endif
 }
 
-Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 
 {
 #ifdef PERIODIC
@@ -474,11 +474,11 @@ Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
 // w[((i + 1) % (NX) + NX) * (NY + 1) * NZ + (j) % (NY)*NZ + (k) % (NZ)] - 2.0 * w[lw] + w[((i - 1) % (NX) + NX) * (NY + 1) * NZ + (j) % (NY)*NZ + (k) % (NZ)]) / (DX * DX);
 // v[((i + 1) % (NX) + NX) * NY * (NZ + 1) + (j) % (NY) * (NZ + 1) + (k) % (NZ)] - 2.0 * v[lv] + v[((i - 1) % (NX) + NX) * NY * (NZ + 1) + (j) % (NY) * (NZ + 1) + (k) % (NZ)]) / (DX * DX);
 
-/* Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+/* Real IcoNS::functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 {
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
+    int lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    int lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    int lw = i * (NY + 1) * NZ + j * NZ + k;
 
     return -(u[lu] * (u[lu + (NY + 1) * (NZ + 1)] - u[lu - (NY + 1) * (NZ + 1)]) / (2.0 * DX) +
              (v[lv] + v[lv + NY * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + NY * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
@@ -487,11 +487,11 @@ Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
              functionG_u(i, j, k, t);
 }
 
-Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 {
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
+    int lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    int lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    int lw = i * (NY + 1) * NZ + j * NZ + k;
 
     return -((u[lu] + u[lu + (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1)] + u[lu - (NY + 1) * (NZ + 1) + (NZ + 1)]) / 4.0 * ((v[lv + NY * (NZ + 1)] - v[lv - NY * (NZ + 1)]) / (2.0 * DX)) +
              v[lv] * (v[lv + (NZ + 1)] - v[lv - (NZ + 1)]) / (2.0 * DY) +
@@ -502,12 +502,12 @@ Real IcoNS::functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
            functionG_v(i, j, k, t);
 }
 
-Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t)
 
 {
-    size_t lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
-    size_t lw = i * (NY + 1) * NZ + j * NZ + k;
+    int lu = i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+    int lv = i * NY * (NZ + 1) + j * (NZ + 1) + k;
+    int lw = i * (NY + 1) * NZ + j * NZ + k;
 
     return -((u[lu] + u[lu - (NY + 1) * (NZ + 1)] + u[lu + 1] + u[lu - (NZ + 1) * (NY + 1) + 1]) / 4.0 * (w[lw + (NY + 1) * NZ] - w[lw - (NY + 1) * NZ]) / (2.0 * DX) +
              (v[lv + 1] + v[lv - (NZ + 1) + 1] + v[lv] + v[lv - (NZ + 1)]) / 4.0 * (w[lw + NZ] - w[lw - NZ]) / (2.0 * DY) +
@@ -518,7 +518,7 @@ Real IcoNS::functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, cons
            functionG_w(i, j, k, t);
 } */
 
-Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionG_u(int i, int j, int k, Real t)
 {
     Real x = i * DX + DX / 2;
     Real y = j * DY;
@@ -532,7 +532,7 @@ Real IcoNS::functionG_u(size_t i, size_t j, size_t k, Real t)
     // return std::cos(t);
 }
 
-Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionG_v(int i, int j, int k, Real t)
 {
     Real x = i * DX;
     Real y = j * DY + DY / 2;
@@ -547,7 +547,7 @@ Real IcoNS::functionG_v(size_t i, size_t j, size_t k, Real t)
     // return std::cos(t);
 }
 
-Real IcoNS::functionG_w(size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionG_w(int i, int j, int k, Real t)
 {
     Real x = i * DX;
     Real y = j * DY;
