@@ -31,15 +31,15 @@ int main(int argc, char const *argv[])
     
     for (size_t i = 0; i < 6/*nfaces*/; i++)
     {
-        b.addFunction(0,u_func);
-        b.addFunction(1,v_func);
-        b.addFunction(2,w_func);
+        b.addFunction(U,u_func);
+        b.addFunction(V,v_func);
+        b.addFunction(W,w_func);
     }
     double t =0.5;
 
     //std::cout << "u0b:" << b.boundary_value_u[0]->value(3.5, 1, 1, t) << sol.value_x(4,1,1,0.5) << std::endl;
 
-    b.update_boundary(t);
+    b.update_boundary(grid.u,grid.v,grid.w,t);
 
 
 

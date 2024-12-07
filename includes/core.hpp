@@ -10,6 +10,7 @@
 #include <string>
 #include <cmath>
 #include <filesystem>
+#include <mpi.h>
 
 class IcoNS
 {
@@ -46,6 +47,8 @@ public:
   void output_v(const std::string& filename, Grid& print); // write the output file.
   void output_w(const std::string& filename, Grid& print); // write the output file.
 
+  void setParallelization();
+  void IcoNS::exchangeData(std::array& grid_loc, int& newDimX, int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;
@@ -58,6 +61,37 @@ private:
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
+
+  //Parallel vars
+  int rank, size;
+  MPI_Comm cart_comm;
+  int dims[2] = {PX, PY};
+  int periods[2] = {1,1};
+
+  //Left boundary for x dim
+  //since i don't know if i have to count boundary for each process, and if to count them from left or right i'll use these vars as booleans
+  int lbx=0, rbx=0, lby =0, rby=0;
+
+
+  int coords[2];
+  int neighbors[4];
+
+  std::array<Real,newDimX_x*newDimY_x*dim_z> grid_loc_x{};
+  std::array<Real,newDimX_y*newDimY_y*dim_z> grid_loc_y{};
+  std::array<Real,newDimX_z*newDimY_z*dim_z> grid_loc_z{};
+
+  MPI_Datatype MPI_face_x_x;
+  MPI_Datatype MPI_face_x_y;
+  MPI_Datatype MPI_face_x_z;
+
+  MPI_Datatype MPI_face_y_x;
+  MPI_Datatype MPI_face_y_y;
+  MPI_Datatype MPI_face_y_z;
+
+  MPI_Request req1;
+  MPI_Request req2;
+  MPI_Request req3;
+  MPI_Request req4;
 
 };
 

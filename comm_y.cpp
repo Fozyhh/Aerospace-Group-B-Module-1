@@ -169,93 +169,93 @@ int main(int argc, char **argv)
     // |
     // v
     // 1
-    // MPI_Status status4;
-    // if (rank == 0) //(neighbors[1] != -2)
-    // {
-    //     MPI_Send(&grid_loc[dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm);
-    // }
+    MPI_Status status4;
+    if (rank == 0) //(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm);
+    }
 
-    // if (rank == 1) //(neighbors[3] != -2)
-    // {
-    //     MPI_Recv(&grid_loc[0], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status4);
-    // }
+    if (rank == 1) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[0], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status4);
+    }
 
-    // /****** BOTTOM LEFT CORNER ******/
-    // // 0
-    // // ^
-    // // |
-    // // 1
-    // MPI_Status status2;
-    // if (rank == 1) //(neighbors[1] != -2)
-    // {
-    //     MPI_Send(&grid_loc[dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);
-    // }
-
-    // if (rank == 0) //(neighbors[3] != -2)
-    // {
-    //     MPI_Recv(&grid_loc[dim_z * (dim_y)], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status2);
-    // }
-
-    // /****** TOP RIGHT CORNER ******/
-    // // 2
-    // // |
-    // // v
-    // // 3
-    // MPI_Status status5;
-    // if (rank == 2) //(neighbors[1] != -2)
-    // {
-    //     MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm);
-    // }
-
-    // if (rank == 3) //(neighbors[3] != -2)
-    // {
-    //     MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status5);
-    // }
-    
-    /****** BOTTOM RIGHT CORNER ******/
-    // 2
+    /****** BOTTOM LEFT CORNER ******/
+    // 0
     // ^
     // |
+    // 1
+    MPI_Status status2;
+    if (rank == 1) //(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);
+    }
+
+    if (rank == 0) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[dim_z * (dim_y)], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status2);
+    }
+
+    /****** TOP RIGHT CORNER ******/
+    // 2
+    // |
+    // v
     // 3
+    MPI_Status status5;
+    if (rank == 2) //(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm);
+    }
+
+    if (rank == 3) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &status5);
+    }
+    
+     /****** BOTTOM RIGHT CORNER ******/
+    2
+    ^
+    |
+    3
 
 
-    //General
-//     MPI_Status status3;
-//     if (rank == 3) //(neighbors[1] != -2)
-//     {
-//         MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);
-//     }
+    General
+    MPI_Status status3;
+    if (rank == 3) //(neighbors[1] != -2)
+    {
+        MPI_Send(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm);
+    }
 
-//     if (rank == 2) //(neighbors[3] != -2)
-//     {
-//         MPI_Recv(&grid_loc[dim_z * (dim_y) + (newDimY)*dim_z], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status3);
-//     }
+    if (rank == 2) //(neighbors[3] != -2)
+    {
+        MPI_Recv(&grid_loc[dim_z * (dim_y) + (newDimY)*dim_z], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &status3);
+    }
 
-//     /**** LEFT CORNERS TO THE PROCESSES ON THEIR RIGHT ****/
-//     // 0 -> 2 and 1 -> 3
-//     if (neighbors[2] != -2)
-//     {
-//         MPI_Send(&grid_loc[(dim_x - 1) * newDimY * dim_z], 1, MPI_face_y, neighbors[2], rank, cart_comm);
-//     }
+    /**** LEFT CORNERS TO THE PROCESSES ON THEIR RIGHT ****/
+    // 0 -> 2 and 1 -> 3
+    if (neighbors[2] != -2)
+    {
+        MPI_Send(&grid_loc[(dim_x - 1) * newDimY * dim_z], 1, MPI_face_y, neighbors[2], rank, cart_comm);
+    }
 
-//     if (neighbors[0] != -2)
-//     {
-//         MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &status1);
-//     }
+    if (neighbors[0] != -2)
+    {
+        MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &status1);
+    }
 
-//     /**** RIGHT CORNERS TO THE PROCESSES ON THEIR LEFT ****/
-//     // 0 <- 2 and 1 <- 3
-//     if (neighbors[0] != -2)
-//     {
-//         MPI_Send(&grid_loc[newDimY * dim_z], 1, MPI_face_y, neighbors[0], rank, cart_comm);
-//     }
+    /**** RIGHT CORNERS TO THE PROCESSES ON THEIR LEFT ****/
+    // 0 <- 2 and 1 <- 3
+    if (neighbors[0] != -2)
+    {
+        MPI_Send(&grid_loc[newDimY * dim_z], 1, MPI_face_y, neighbors[0], rank, cart_comm);
+    }
 
-//     if (neighbors[2] != -2)
-//     {
-//         MPI_Recv(&grid_loc[(dim_x)*newDimY * dim_z], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &status1);
-//     }
+    if (neighbors[2] != -2)
+    {
+        MPI_Recv(&grid_loc[(dim_x)*newDimY * dim_z], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &status1);
+    }
 
-// }
+}
 if(false){
     if (rank ==0)
     {

@@ -9,35 +9,53 @@
  * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
-void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t)
+void Boundary::update_boundary(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t)
 {
+
+    //UPDATE EVERY INDEX SUCH THAT YOU SKIP FIRST FACE(GHOST)
+    //AND THE FIRST AND LAST ROW OF EACH FACE
     size_t face, i, j, k;
     // X
     // LEFT FACE
-    face = 2;
-    for (size_t k=0; k < NZ+1; k++)
-    {
-        Yx[k] = boundary_value_u[face]->value(0,0,k,t);
-    }
 
-    for (size_t j=1; j < NY; j++)
-    {
-        face = 4;
-        Yx[j*(NZ+1)] = boundary_value_u[face]->value(0,j,0,t);
-        face = 0;
-        for(size_t k = 1; k < NZ; k++)
+    //face 0 -> lbx
+    //face 1 -> rbx
+    //face 2 -> lby
+    //face 3 -> rby
+    //face 4 5 -> no partition on z
+    if(lby){ //if it's a processor with coords[1]==0 then it has the front face as boundary
+        face = 2;
+        for (size_t k=0; k < NZ+1; k++)
         {
-            Yx[j*(NZ+1) + k] = approximate_boundary_u(0,j,k,t,face,1);
+            Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0 + coords[0] * dim_x_x,0 + coords[1] * dim_y_x,k,t); //FOR X AND Y WE NEED GLOBAL INDICES OR IT DOESNT WORK
         }
-        face = 5;
-        Yx[j*(NZ+1) + NZ] = boundary_value_u[face]->value(0,j,NZ,t);
     }
 
-    face = 3;
-    for (size_t k=0; k < NZ+1; k++)
-    {
-        Yx[NY * (NZ+1) + k] = boundary_value_u[face]->value(0,NY,k,t);
+    if(lbx){
+        for (size_t j=1 + lby; j < newDimY_x -1 - rby; j++) //Parti da 1(salti ghost) + 1(se devi considerare il boundary) e arrivi a newDimY -1(ghost)-1(se boundary destro)
+        {
+            face = 4;
+            Yx[((newDimY_x) * dim_z) + j*(NZ+1)] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,j + coords[1] * dim_y_x,0,t);
+            face = 0;
+            for(size_t k = 1; k < NZ; k++)
+            {
+                Yx[((newDimY_x) * dim_z) +  j*(NZ+1) + k] = approximate_boundary_u(0+ coords[0] * dim_x_x,j  + coords[1] * dim_y_x,k,t,face,1);
+            }
+            face = 5;
+            Yx[((newDimY_x) * dim_z) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,j  + coords[1] * dim_y_x,NZ,t);
+        }
     }
+
+    if(rby){
+        face = 3;
+        for (size_t k=0; k < NZ+1; k++)
+        {
+            Yx[((newDimY_x) * dim_z) + (newDimY_x - 2) * (NZ+1) + k] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,dim_y_x  + coords[1] * dim_y_x,k,t);
+        }
+    }
+    
+    //CONTINUE LIKE THIS
+
 
     // MIDDLE POINTS
     for (size_t i=1; i < NX-1; i++)
@@ -280,3 +298,15 @@ void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction
         break;
     }
 };
+
+void Boundary::setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_){
+    lbx=lbx_;
+    rbx=rbx_;
+    lby=lby_;
+    rby=rby_;
+}
+
+void Boundary::setCoords(int coords_[2]){
+    coords[0]=coords_[0];
+    coords[1]=coords_[1];
+}

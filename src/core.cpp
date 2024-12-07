@@ -7,10 +7,13 @@
 #include <fstream>
 #include <string>
 #include <memory>
+#include <mpi.h>
 
 //#define OUTPUT
 //#define OUTPUTERROR
 //#define VERBOSE
+
+
 #ifdef VERBOSE
     #include <chrono>
 #endif
@@ -47,6 +50,8 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         boundary.addFunction(V, v_func);
         boundary.addFunction(W, w_func);
     }
+
+    setParallelization();
 }
 
 void IcoNS::solve()
@@ -62,12 +67,25 @@ void IcoNS::solve()
     std::cout << "Starting solver" << std::endl;
     auto start =std::chrono::high_resolution_clock::now();
     #endif
-    while (time < T)
 
+    while(time < T){
+        boundary.update(grid_loc_x,grid_loc_y,grid_loc_z);
+        exchangeData(grid_loc_x,newDimX_x,newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
+        exchangeData(grid_loc_y,newDimX_y,newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
+        exchangeData(grid_loc_z,newDimX_z,newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
+
+        L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
+
+        solve_time_step(time) // adapt cycles to skip ghosts
+
+        time += DT;
+        i++
+    }
+    /*while (time < T)
     {
         /*Check::Confront(grid,exact_solution,time,U);
         int p;
-        std::cin >> p;*/
+        std::cin >> p;*//*
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
 
         // csv file w/ "," delimiter: time step, iter, L2_error
@@ -76,8 +94,7 @@ void IcoNS::solve()
         // output();
         time += DT;
         i++;
-
-    }
+    }*/
     //error = L2_error(time);
     //error_log << time << "," << i << "," << error << std::endl;
     #ifdef VERBOSE
@@ -97,9 +114,9 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_Y(t);
     error += error_comp_Z(t);
 
-    /*std::cout << error_comp_X(t) << std::endl;
-    std::cout << error_comp_Y(t) << std::endl;
-    std::cout << error_comp_Z(t) << std::endl << std::endl;*/
+    // std::cout << error_comp_X(t) << std::endl;
+    // std::cout << error_comp_Y(t) << std::endl;
+    // std::cout << error_comp_Z(t) << std::endl << std::endl;
 
     return sqrt(error);
 }
@@ -575,6 +592,110 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
+
+void IcoNS::setParallelization(){
+    MPI_Init(&argc, &argv);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    // Create a Cartesian topology (2D)
+    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
+
+    
+    MPI_Cart_coords(cart_comm, rank, 2, coords);
+
+    MPI_Cart_shift(cart_comm, 0, 1, &neighbors[0], &neighbors[2]);
+
+    MPI_Cart_shift(cart_comm, 1, 1, &neighbors[1], &neighbors[3]);
+    if (NX % PX != 0 && coords[0] == dim_x_x - 1)
+        dim_x_x++;
+    if ((NY + 1) % PY != 0 && coords[1] == dim_y_x - 1){
+        dim_y_x++;
+    }
+
+    if ((NX+1) % PX != 0 && coords[0] == dim_x_y - 1)
+        dim_x_y++;
+    if ((NY) % PY != 0 && coords[1] == dim_y_y - 1){
+        dim_y_y++;
+    }
+
+    if ((NX+1) % PX != 0 && coords[0] == dim_x_z - 1)
+        dim_x_z++;
+    if ((NY+1) % PY != 0 && coords[1] == dim_y_z - 1){
+        dim_y_z++;
+    }
+
+    if(coords[0] == 0)  
+        lbx++;
+
+    if(coords[0] == PX-1)
+        rbx++;
+    
+    if(coords[1] == 0)  
+        lby++;
+
+    if(coords[1] == PY-1)
+        rby++;
+
+    boundary.setBoundaryOffsets(lbx,rbx,lby,rby);
+    boundary.setCoords(coords);
+    /*
+    glob_address_x_x = (i-1) +coords[0]*dim_x_x;
+    glob_address_y_x =(j-1)+ coords[1]*dim_y_x; 
+
+    
+    glob_address_x_y = (i-1) +coords[0]*dim_x_y;
+    glob_address_y_y =(j-1)+ coords[1]*dim_y_y; 
+    */
+
+    MPI_Type_vector(dim_x_x,dim_z, (newDimY_x)*dim_z , MPI_INT, &MPI_face_x_x);
+    MPI_Type_commit(&MPI_face_x_x);
+
+    MPI_Type_vector(1,dim_z* newDimY_x, 0, MPI_INT, &MPI_face_y_x);
+    MPI_Type_commit(&MPI_face_y_x);
+
+    MPI_Type_vector(dim_x_y,dim_z, (newDimY_y)*dim_z , MPI_INT, &MPI_face_x_y);
+    MPI_Type_commit(&MPI_face_x_y);
+
+    MPI_Type_vector(1,dim_z* newDimY_y, 0, MPI_INT, &MPI_face_y_y);
+    MPI_Type_commit(&MPI_face_y_y);
+
+    MPI_Type_vector(dim_x_z,dim_z_z, (newDimY_z)*dim_z_z , MPI_INT, &MPI_face_x_z);
+    MPI_Type_commit(&MPI_face_x_z);
+
+    MPI_Type_vector(1,dim_z_z* newDimY_z, 0, MPI_INT, &MPI_face_y_z);
+    MPI_Type_commit(&MPI_face_y_z);
+
+}
+
+void IcoNS::exchangeData(std::array& grid_loc, int& newDimX, int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y){
+    if(neighbors[0] != -2 && neighbors[1] != -2 && neighbors[2] !=-2 && neighbors[3]!=-2){
+        
+        // (x, y-1) <- (x, y)
+        MPI_Isend(&grid_loc[newDimY*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&req1);
+        MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&req1);
+
+        // (x,y) -> (x, y+1)
+        MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&req2);
+        MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&req2);
+
+        // (x-1, y)
+        //   ^
+        //   |
+        // (x, y)
+        MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&req3);
+        MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&req3);
+
+        // (x, y)
+        //   |
+        //   V
+        // (x+1, y)
+        MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&req4);
+        MPI_Irecv(&grid_loc[dim_z*newDimY ],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&req4);
+        MPI_Barrier(cart_comm);
+    }
+}
 // void IcoNS::output()
 // {
 // }

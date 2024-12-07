@@ -2,19 +2,20 @@
 
 void IcoNS::solve_time_step(Real time)
 {
-    for (size_t i = 1; i < NX - 1; i++)
+    for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
 
     {
-        for (size_t j = 1; j < NY; j++)
+        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
-                Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] +
-                                                                   64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time);
+                Y2_x[i * newDimY_x * dim_z + j * dim_z + k] = grid_loc_x[i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] +
+                                                                   64.0 / 120.0 * DT * functionF_u(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
 
+    //i think it's literally the same just with the _y vars for y grid and _w for w grid
     for (size_t i = 1; i < NX; i++)
     {
         for (size_t j = 1; j < NY - 1; j++)
