@@ -9,6 +9,7 @@
  * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
+//TODO:
 void Boundary::update_boundary(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t)
 {
 
@@ -18,98 +19,112 @@ void Boundary::update_boundary(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, s
     // X
     // LEFT FACE
 
-    //face 0 -> lbx
-    //face 1 -> rbx
-    //face 2 -> lby
-    //face 3 -> rby
+    //face 0 -> lbx left
+    //face 1 -> rbx right
+    //face 2 -> lby front
+    //face 3 -> rby back
     //face 4 5 -> no partition on z
-    if(lby){ //if it's a processor with coords[1]==0 then it has the front face as boundary
-        face = 2;
-        for (size_t k=0; k < NZ+1; k++)
-        {
-            Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0 + coords[0] * dim_x_x,0 + coords[1] * dim_y_x,k,t); //FOR X AND Y WE NEED GLOBAL INDICES OR IT DOESNT WORK
-        }
-    }
 
+    //Have to adjust indexes in exact values if it is made by processor with diff coords with global indexes
+    //Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
     if(lbx){
+        if(lby){ //if it's a processor with coords[1]==0 then it has the front face as boundary
+            face = 2;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0,0,k,t); //FOR X AND Y WE NEED GLOBAL INDICES OR IT DOESNT WORK
+            }
+        }
+
+        
         for (size_t j=1 + lby; j < newDimY_x -1 - rby; j++) //Parti da 1(salti ghost) + 1(se devi considerare il boundary) e arrivi a newDimY -1(ghost)-1(se boundary destro)
         {
             face = 4;
-            Yx[((newDimY_x) * dim_z) + j*(NZ+1)] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,j + coords[1] * dim_y_x,0,t);
+            // lby coords = 1 rby coords = 0
+            // we move in the opposite direction of the y process count unfortunately
+            Yx[((newDimY_x) * dim_z) + j*(NZ+1)] = boundary_value_u[face]->value(0,j + (PY-1-coords[1]) * dim_y_x,0,t);
             face = 0;
             for(size_t k = 1; k < NZ; k++)
             {
-                Yx[((newDimY_x) * dim_z) +  j*(NZ+1) + k] = approximate_boundary_u(0+ coords[0] * dim_x_x,j  + coords[1] * dim_y_x,k,t,face,1);
+                Yx[((newDimY_x) * dim_z) +  j*(NZ+1) + k] = approximate_boundary_u(0,j  + (PY-1-coords[1]) * dim_y_x,k,t,face,1);
             }
             face = 5;
-            Yx[((newDimY_x) * dim_z) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,j  + coords[1] * dim_y_x,NZ,t);
+            Yx[((newDimY_x) * dim_z) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(0,j + (PY-1-coords[1]) * dim_y_x,NZ,t);
         }
-    }
+        
 
-    if(rby){
-        face = 3;
-        for (size_t k=0; k < NZ+1; k++)
-        {
-            Yx[((newDimY_x) * dim_z) + (newDimY_x - 2) * (NZ+1) + k] = boundary_value_u[face]->value(0+ coords[0] * dim_x_x,dim_y_x  + coords[1] * dim_y_x,k,t);
+        if(rby){
+            face = 3;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[((newDimY_x) * dim_z) + (newDimY_x - 2) * (NZ+1) + k] = boundary_value_u[face]->value(0,NY,k,t);
+            }
         }
     }
-    
     //CONTINUE LIKE THIS
 
 
     // MIDDLE POINTS
-    for (size_t i=1; i < NX-1; i++)
+    for (size_t i=1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
-        face = 2;
-        for (size_t k=0; k < NZ+1; k++)
-        {
-            Yx[i * (NY+1) * (NZ+1) + k] = boundary_value_u[face]->value(i,0,k,t);
+        if(lby){
+            face = 2;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[i * newDimY_x * (NZ+1) +(NZ+1) + k] = boundary_value_u[face]->value(i + coords[0] * dim_x_x,0,k,t);
+            }
         }
         
-        for (size_t j=1; j < NY; j++)
+        for (size_t j=1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             face = 4;
-            Yx[(NY+1) * (NZ+1) * i + j*(NZ+1)] = boundary_value_u[face]->value(i,j,0,t);
+            Yx[newDimY_x * (NZ+1) * i + j*(NZ+1)] = boundary_value_u[face]->value(i + coords[0] * dim_x_x,j + (PY-1-coords[1]) * dim_y_x,0,t);
 
             face = 5;
-            Yx[(NY+1) * (NZ+1) * i + j*(NZ+1) + NZ] = boundary_value_u[face]->value(i,j,NZ,t);
+            Yx[newDimY_x * (NZ+1) * i + j*(NZ+1) + NZ] = boundary_value_u[face]->value(i + coords[0] * dim_x_x, j + (PY-1-coords[1]) * dim_y_x,NZ,t);
         }
 
-        face = 3;
-        for (size_t k=0; k < NZ+1; k++)
-        {
-            Yx[NY * (NZ + 1) + (NY+1) * (NZ+1) * i + k] = boundary_value_u[face]->value(i,NY,k,t);
+        if(rby){
+            face = 3;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[newDimY_x * (NZ+1) * i +(newDimY_x-1) * (NZ+1) + k] = boundary_value_u[face]->value(i + coords[0] * dim_x_x,NY,k,t);
+            }
         }
     }
 
     // RIGHT FACE
-    face = 2;
-    for (size_t k=0; k < NZ+1; k++)
-    {
-        Yx[(NX-1) * (NY+1) * (NZ+1) + k] = boundary_value_u[face]->value(NX-1,0,k,t);
-    }
-
-    for (size_t j=1; j < NY; j++)
-    {
-        face = 4;
-        Yx[(NX-1) * (NY+1) * (NZ+1) + j*(NZ+1)] = boundary_value_u[face]->value(NX-1,j,0,t);
-
-        face = 1;
-        for(size_t k = 1; k < NZ; k++)
-        {
-            Yx[(NX-1)*(NY+1)*(NZ+1) + j*(NZ+1) + k] = approximate_boundary_u(NX,j,k,t,face,-1);
+    if(rbx){
+        if(lby){
+            face = 2;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[(newDimX_x-2) * newDimY_x * (NZ+1) + (NZ+1) + k] = boundary_value_u[face]->value(NX-1,0,k,t);
+            }
         }
 
-        face = 5;
-        Yx[(NX-1) * (NY+1) * (NZ+1) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(NX-1,j,NZ,t);
-    }
+        for (size_t j=1 + lby; j < newDimY_x -1 - rby; j++)
+        {
+            face = 4;
+            Yx[(newDimX_x-2) * newDimY_x * (NZ+1) + j*(NZ+1)] = boundary_value_u[face]->value(NX-1,j + (PY-1-coords[1]) * dim_y_x,0 + (PY-1-coords[1]) * dim_y_x,t);
 
-    face = 3;
-    for (size_t k=0; k < NZ+1; k++)
-    {
-        Yx[(NX-1) * (NY+1) * (NZ+1) + NY*(NZ+1) + k] = boundary_value_u[face]->value(NX-1,NY,k,t);
-    }
+            face = 1;
+            for(size_t k = 1; k < NZ; k++)
+            {
+                Yx[(newDimX_x-2)*(newDimY_x)*(NZ+1) + j*(NZ+1) + k] = approximate_boundary_u(NX,j + (PY-1-coords[1]) * dim_y_x,k,t,face,-1);
+            }
 
+            face = 5;
+            Yx[(newDimX_x-2) * (newDimY_x) * (NZ+1) + j*(NZ+1) + NZ] = boundary_value_u[face]->value(NX-1,j + (PY-1-coords[1]) * dim_y_x,NZ,t);
+        }
+        if(rby){
+            face = 3;
+            for (size_t k=0; k < NZ+1; k++)
+            {
+                Yx[(newDimX_x-2) * newDimY_x * (NZ+1) + (newDimY_x-2)*(NZ+1) + k] = boundary_value_u[face]->value(NX-1,NY,k,t);
+            }
+        }
+    }
 
     // Y
     // LEFT FACE

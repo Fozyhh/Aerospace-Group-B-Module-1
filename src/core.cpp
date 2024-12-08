@@ -121,6 +121,7 @@ Real IcoNS::L2_error(const Real t)
     return sqrt(error);
 }
 
+//TODO: 
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
@@ -632,10 +633,10 @@ void IcoNS::setParallelization(){
     if(coords[0] == PX-1)
         rbx++;
     
-    if(coords[1] == 0)  
+    if(coords[1] == PY-1)  
         lby++;
 
-    if(coords[1] == PY-1)
+    if(coords[1] == 0)
         rby++;
 
     boundary.setBoundaryOffsets(lbx,rbx,lby,rby);

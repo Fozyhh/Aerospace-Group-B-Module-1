@@ -27,9 +27,9 @@ public:
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
 
-  Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_w(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_u(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
@@ -53,12 +53,12 @@ private:
   Grid grid; // grid of the domain.
   Boundary boundary;
   ExactSolution exact_solution;
-  std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
-  std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
-  std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
-  std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
-  std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
-  std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
+  std::array<Real, (newDimX_x * newDimY_x * dim_z)> Y2_x{};
+  std::array<Real, (newDimX_y * newDimY_y * dim_z)> Y2_y{};
+  std::array<Real, (newDimX_z * newDimY_z * dim_z_z)> Y2_z{};
+  std::array<Real, (newDimX_x * newDimY_x * dim_z)> Y3_x{};
+  std::array<Real, (newDimX_y * newDimY_y * dim_z)> Y3_y{};
+  std::array<Real, (newDimX_z * newDimY_z * dim_z_z)> Y3_z{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
 
