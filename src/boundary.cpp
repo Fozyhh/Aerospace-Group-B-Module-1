@@ -12,7 +12,6 @@
 //TODO:
 void Boundary::update_boundary(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t)
 {
-
     //UPDATE EVERY INDEX SUCH THAT YOU SKIP FIRST FACE(GHOST)
     //AND THE FIRST AND LAST ROW OF EACH FACE
     size_t face, i, j, k;

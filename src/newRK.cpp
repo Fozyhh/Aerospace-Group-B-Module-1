@@ -45,7 +45,7 @@ void IcoNS::solve_time_step(Real time)
 
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
-        for (size_t j = 1 + lby; j < newDimY_x - 1 rby; j++)
+        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
@@ -86,7 +86,7 @@ void IcoNS::solve_time_step(Real time)
 
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
-        for (size_t j = 1 + lby; j < newDimY_x - 1 rby; j++)
+        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
@@ -126,12 +126,12 @@ void IcoNS::solve_time_step(Real time)
 }
 
 
-Real IcoNS::functionF_u(const std::array<Real, newDimX_x *newDimX_y * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_u(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
     size_t lw = i * newDimY_z * NZ + j * NZ + k;
-4
+
     return -(u[lu] * (u[lu + newDimY_x * (NZ + 1)] - u[lu - newDimY_x * (NZ + 1)]) / (2.0 * DX) +
              (v[lv] + v[lv + newDimY_y * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + newDimY_y * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
              (w[lw] + w[lw + newDimY_z * NZ] + w[lw - 1] + w[lw + newDimY_z * NZ - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +

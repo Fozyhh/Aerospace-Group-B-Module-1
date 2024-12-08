@@ -48,7 +48,9 @@ public:
   void output_w(const std::string& filename, Grid& print); // write the output file.
 
   void setParallelization();
-  void IcoNS::exchangeData(std::array& grid_loc, int& newDimX, int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
+  void exchangeData_x(std::array<Real, newDimX_x*newDimY_x*dim_z>& grid_loc);
+  void exchangeData_y(std::array<Real, newDimX_y*newDimY_y*dim_z>& grid_loc);
+  void exchangeData_z(std::array<Real, newDimX_z*newDimY_z*dim_z_z>& grid_loc);
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;
@@ -78,7 +80,7 @@ private:
 
   std::array<Real,newDimX_x*newDimY_x*dim_z> grid_loc_x{};
   std::array<Real,newDimX_y*newDimY_y*dim_z> grid_loc_y{};
-  std::array<Real,newDimX_z*newDimY_z*dim_z> grid_loc_z{};
+  std::array<Real,newDimX_z*newDimY_z*dim_z_z> grid_loc_z{};
 
   MPI_Datatype MPI_face_x_x;
   MPI_Datatype MPI_face_x_y;

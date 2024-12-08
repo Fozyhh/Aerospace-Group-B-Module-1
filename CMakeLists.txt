@@ -6,6 +6,9 @@ project(AEROSPACE_PROJECT VERSION 1.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+find_package(MPI REQUIRED)
+include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+
 # Options for profiling and memory checks
 option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
 option(ENABLE_MEMCHECK "Enable memory checks with Valgrind" OFF)
@@ -47,6 +50,7 @@ set(SOURCES
 # Executable
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
+target_link_libraries(main ${MPI_C_LIBRARIES})
 
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
