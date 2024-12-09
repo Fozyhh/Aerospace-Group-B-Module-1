@@ -223,7 +223,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
             face = 2;
             for (size_t k = 0; k < NZ; k++)
             {
-                Yz[i * (newDimY_z)*NZ + dim_z + k] = boundary_value_w[face]->value(i + offset_x_z, 0, k, t);
+                Yz[i * (newDimY_z)*NZ + dim_z_z + k] = boundary_value_w[face]->value(i + offset_x_z, 0, k, t);
             }
         }
         for (size_t j = 1 + lby; j < newDimY_z - 1 - rby; j++)
