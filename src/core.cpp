@@ -11,7 +11,7 @@
 
 // #define OUTPUT
 // #define OUTPUTERROR
-// #define VERBOSE
+#define VERBOSE
 
 #ifdef VERBOSE
 #include <chrono>
@@ -25,11 +25,11 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
               << std::endl
               << std::endl;
 
-    std::cout << "Solving for a Mesh of physical dimension (" << lx << "," << ly << "," << lz << ") meters." << std::endl
-              << "Number of partitions: " << nx << " nx, " << ny << " ny, " << nz << " nz." << std::endl
-              << "Dimension of a single cell:(" << dx << "," << dy << "," << dz << ")." << std::endl
-              << "Reynolds number: " << Re << std::endl
-              << "Total lenght of simulation: " << T << " seconds, whit a time step of " << dt << " seconds." << std::endl
+    std::cout << "Solving for a Mesh of physical dimension (" << LX << "," << LY << "," << LZ << ") meters." << std::endl
+              << "Number of partitions: " << NX << " nx, " << NY << " ny, " << NZ << " nz." << std::endl
+              << "Dimension of a single cell:(" << DX << "," << DY << "," << DZ << ")." << std::endl
+              << "Reynolds number: " << RE << std::endl
+              << "Total lenght of simulation: " << T << " seconds, whit a time step of " << DT << " seconds." << std::endl
 
               << "------------------------------------------------------------" << std::endl
               << std::endl
@@ -65,7 +65,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 void IcoNS::solve()
 {
     Real time = 0.0;
-
+    Real error;
     int i = 0;
 #ifdef OUTPUTERROR
     Grid ERROR(grid);
@@ -87,7 +87,12 @@ void IcoNS::solve()
 
         auto x = L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
         MPI_Barrier(cart_comm);
-        std::cout << "rank: " << rank << " errorx: " << x << std::endl;
+        error = 0.0;
+        MPI_Reduce(&x, &error, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
+        if (rank == 0)
+        {
+            std::cout << " errorx: " << error << std::endl;
+        }
         // reduce
         solve_time_step(time); // adapt cycles to skip ghosts
         MPI_Barrier(cart_comm);
