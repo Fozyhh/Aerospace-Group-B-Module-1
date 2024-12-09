@@ -24,9 +24,7 @@ public:
     void update_boundary_y(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t);
     void update_boundary_z(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t);
     // override
-    void update_boundary_x(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t);
-    void update_boundary_y(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t);
-    void update_boundary_z(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t);
+    void update_boundary(std::array<Real,newDimX_x*newDimY_x*dim_z> &Yx, std::array<Real, newDimX_y*newDimY_y*dim_z> &Yy, std::array<Real, newDimX_z*newDimY_z*dim_z_z> &Yz, Real t);
     Real approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side);
     Real approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side);
     Real approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side);

@@ -69,17 +69,18 @@ void IcoNS::solve()
     #endif
 
     while(time < T){
-        boundary.update_boundary_x(grid_loc_x,grid_loc_y,grid_loc_z,time);
-        boundary.update_boundary_y(grid_loc_x,grid_loc_y,grid_loc_z,time);
-        boundary.update_boundary_z(grid_loc_x,grid_loc_y,grid_loc_z,time);
+        boundary.update_boundary(grid_loc_x,grid_loc_y,grid_loc_z,time);
+
+        MPI_Barrier(cart_comm);
         exchangeData_x(grid_loc_x);
         exchangeData_y(grid_loc_y);
         exchangeData_z(grid_loc_z);
 
         L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
-
+        MPI_Barrier(cart_comm);
+        //reduce
         solve_time_step(time); // adapt cycles to skip ghosts
-
+        MPI_Barrier(cart_comm);
         time += DT;
         i++;
     }
@@ -113,8 +114,8 @@ Real IcoNS::L2_error(const Real t)
     Real error = 0.0;
 
     error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
+    //error += error_comp_Y(t);
+    //error += error_comp_Z(t);
 
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
