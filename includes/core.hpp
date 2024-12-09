@@ -28,9 +28,9 @@ public:
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
 
-  Real functionF_u(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_w(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_u(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.

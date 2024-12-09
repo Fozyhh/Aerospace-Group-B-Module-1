@@ -41,7 +41,9 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    boundary.update_boundary_x(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    boundary.update_boundary_y(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    boundary.update_boundary_z(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
 
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -82,7 +84,9 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+    boundary.update_boundary_x(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+    boundary.update_boundary_y(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+    boundary.update_boundary_z(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
 
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -126,7 +130,7 @@ void IcoNS::solve_time_step(Real time)
 }
 
 
-Real IcoNS::functionF_u(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_u(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
@@ -139,7 +143,7 @@ Real IcoNS::functionF_u(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> 
            functionG_u(i, j, k, t);
 }
 
-Real IcoNS::functionF_v(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_v(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
@@ -154,7 +158,7 @@ Real IcoNS::functionF_v(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> 
            functionG_v(i, j, k, t);
 }
 
-Real IcoNS::functionF_w(const std::array<Real, newDimX_x *newDimY_x * (NZ + 1)> &u, const std::array<Real, newDimX_y * newDimY_y *(NZ + 1)> &v, const std::array<Real, newDimX_z * newDimY_z * NZ> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_w(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
 
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;

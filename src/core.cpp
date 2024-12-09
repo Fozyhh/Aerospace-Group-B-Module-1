@@ -69,7 +69,9 @@ void IcoNS::solve()
     #endif
 
     while(time < T){
-        boundary.update_boundary(grid_loc_x,grid_loc_y,grid_loc_z,time);
+        boundary.update_boundary_x(grid_loc_x,grid_loc_y,grid_loc_z,time);
+        boundary.update_boundary_y(grid_loc_x,grid_loc_y,grid_loc_z,time);
+        boundary.update_boundary_z(grid_loc_x,grid_loc_y,grid_loc_z,time);
         exchangeData_x(grid_loc_x);
         exchangeData_y(grid_loc_y);
         exchangeData_z(grid_loc_z);
