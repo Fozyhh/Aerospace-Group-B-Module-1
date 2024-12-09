@@ -116,7 +116,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             face = 4;
-            Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] = boundary_value_u[face]->value(NX - 1, j + offset_y_x, 0 + offset_y_x, t);
+            Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] = boundary_value_u[face]->value(NX - 1, j + offset_y_x, 0 , t);
 
             face = 1;
             for (size_t k = 1; k < NZ; k++)
