@@ -8,7 +8,7 @@
 #define NZ 4
 
 #define PX 2
-#define PY 2
+#define PY 1
 #define PZ 1
 
 int main(int argc, char **argv)

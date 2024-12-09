@@ -19,7 +19,7 @@ void IcoNS::solve_time_step(Real time)
 
     for (size_t i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
-        for (size_t j = 1 + lbx; j < newDimY_y - 1 - rby; j++)
+        for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
@@ -58,7 +58,7 @@ void IcoNS::solve_time_step(Real time)
 
     for (size_t i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
-        for (size_t j = 1 + lbx; j < newDimY_y - 1 - rby; j++)
+        for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
@@ -99,7 +99,7 @@ void IcoNS::solve_time_step(Real time)
 
     for (size_t i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
-        for (size_t j = 1 + lbx; j < newDimY_y - 1 - rby; j++)
+        for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (size_t k = 1; k < NZ; k++)
             {
@@ -136,7 +136,7 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
              (v[lv] + v[lv + newDimY_y * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + newDimY_y * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
              (w[lw] + w[lw + newDimY_z * NZ] + w[lw - 1] + w[lw + newDimY_z * NZ - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
            1 / RE * ((u[lu + newDimY_x * (NZ + 1)] - 2 * u[lu] + u[lu - newDimY_x * (NZ + 1)]) / (DX * DX) + (u[lu + (NZ + 1)] - 2 * u[lu] + u[lu - (NZ + 1)]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
-           functionG_u(i, j, k, t);
+           functionG_u(i + coords[0] * dim_x_x, j + (PY - 1 - coords[1]) * dim_y_x, k, t);
 }
 
 Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
@@ -144,14 +144,14 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
     size_t lw = i * newDimY_z * NZ + j * NZ + k;
-
+    //TODO: ho cambiato due robe
     return -((u[lu] + u[lu + (NZ + 1)] + u[lu - newDimY_x * (NZ + 1)] + u[lu - newDimY_x * (NZ + 1) + (NZ + 1)]) / 4.0 * ((v[lv + newDimY_y * (NZ + 1)] - v[lv - newDimY_y * (NZ + 1)]) / (2.0 * DX)) +
              v[lv] * (v[lv + (NZ + 1)] - v[lv - (NZ + 1)]) / (2.0 * DY) +
-             (w[lw] + w[lw - 1] + w[lw + newDimY_z] + w[lw + newDimY_z - 1]) / 4.0 * /* */ (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
+             (w[lw] + w[lw - 1] + w[lw + dim_z_z] + w[lw + dim_z_z - 1]) / 4.0 * (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
            (1.0 / RE) * ((v[lv + newDimY_y * (NZ + 1)] - 2.0 * v[lv] + v[lv - newDimY_y * (NZ + 1)]) / (DX * DX) +
                          (v[lv + (NZ + 1)] - 2.0 * v[lv] + v[lv - (NZ + 1)]) / (DY * DY) +
                          (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
-           functionG_v(i, j, k, t);
+           functionG_v(i + coords[0] * dim_x_y, j + (PY - 1 - coords[1]) * dim_y_y, k, t);
 }
 
 Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
@@ -161,13 +161,13 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
     size_t lw = i * newDimY_z * NZ + j * NZ + k;
 
-    return -((u[lu] + u[lu - newDimY_x * (NZ + 1)] + u[lu + 1] + u[lu - (NZ + 1) * newDimY_x + 1]) / 4.0 * (w[lw + newDimY_x * NZ] - w[lw - newDimY_x * NZ]) / (2.0 * DX) +
+    return -((u[lu] + u[lu - newDimY_x * (NZ + 1)] + u[lu + 1] + u[lu - (NZ + 1) * newDimY_x + 1]) / 4.0 * (w[lw + newDimY_z * NZ] - w[lw - newDimY_z * NZ]) / (2.0 * DX) +
              (v[lv + 1] + v[lv - (NZ + 1) + 1] + v[lv] + v[lv - (NZ + 1)]) / 4.0 * (w[lw + NZ] - w[lw - NZ]) / (2.0 * DY) +
              w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
            (1.0 / RE) * ((w[lw + newDimY_z * NZ] - 2.0 * w[lw] + w[lw - newDimY_z * NZ]) / (DX * DX) +
                          (w[lw + NZ] - 2.0 * w[lw] + w[lw - NZ]) / (DY * DY) +
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
-           functionG_w(i, j, k, t);
+           functionG_w(i + coords[0] * dim_x_z, j + (PY - 1 - coords[1]) * dim_y_z, k, t);
 }
 
 
