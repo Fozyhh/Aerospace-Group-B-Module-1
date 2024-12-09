@@ -399,11 +399,11 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(int i = start; i < NX + end+1; i++)
+    for(int i = start; i < NX + end; i++)
     {
-        for(int j = start; j < NY + end+1; j++)
+        for(int j = start; j < NY + end; j++)
         {
-            for(int k = start; k < NZ + end+1; k++)
+            for(int k = start; k < NZ + end; k++)
             {
                 #ifdef PERIODIC
                 grid.p[i * NY * NZ + j * NZ + k] += Y2_p[indexingPeriodicp(i, j, k)]; 
