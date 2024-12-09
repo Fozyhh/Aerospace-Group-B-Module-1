@@ -16,11 +16,12 @@ class IcoNS
 {
 public:
 
-  IcoNS(const std::string &input_file, const std::string &output_file)
-      : input_file(input_file),
-        output_file(output_file)
-
- 
+  IcoNS(MPI_Comm cart_comm, const std::string &input_file, const std::string &output_file, int rank, int size)
+      : cart_comm(cart_comm),
+        input_file(input_file),
+        output_file(output_file),
+        rank(rank),
+        size(size)
   {
   }
 
