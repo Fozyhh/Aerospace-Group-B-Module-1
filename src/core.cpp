@@ -11,7 +11,7 @@
 
 // #define OUTPUT
 // #define OUTPUTERROR
-#define VERBOSE
+//#define VERBOSE
 
 #ifdef VERBOSE
 #include <chrono>
@@ -147,7 +147,7 @@ Real IcoNS::L2_error(const Real t)
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] + dim_x_x;
+    int offset_x = coords[0] * dim_x_x;
     int offset_y = (PY - 1 - coords[1]) * dim_y_x;
     // first slice (left face)
     if (lbx)
@@ -165,11 +165,11 @@ Real IcoNS::error_comp_X(const Real t)
                               (grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, k, t)) *
                               DX * DY * DZ / 4);
                 }
+            
+                error += ((grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
+                            (grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
+                            DX * DY * DZ / 8);
             }
-            error += ((grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
-                      (grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
-                      DX * DY * DZ / 8);
-
             for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
             {
                 error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1)] - exact_solution.value_x(0.5 + offset_x, j + offset_y, 0, t)) *
@@ -211,19 +211,19 @@ Real IcoNS::error_comp_X(const Real t)
         {
             if (lby)
             {
-                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, 0, t)) *
-                          (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, 0, t)) *
+                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x(i + 0.5 + offset_x, 0, 0, t)) *
+                          (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x(i + 0.5 + offset_x, 0, 0, t)) *
                           DX * DY * DZ / 4);
 
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, k, t)) *
-                              (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, k, t)) *
+                    error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0, k, t)) *
+                              (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0, k, t)) *
                               DX * DY * DZ / 2);
                 }
 
-                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, NZ, t)) *
-                          (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x(i + 0.5 + offset_x, 0 + offset_y, NZ, t)) *
+                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x(i + 0.5 + offset_x, 0, NZ, t)) *
+                          (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x(i + 0.5 + offset_x, 0, NZ, t)) *
                           DX * DY * DZ / 4);
             }
             for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -245,19 +245,19 @@ Real IcoNS::error_comp_X(const Real t)
             }
             if (rby)
             {
-                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, 0, t)) *
-                          (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, 0, t)) *
+                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, NY, 0, t)) *
+                          (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, NY, 0, t)) *
                           DX * DY * DZ / 4);
 
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, k, t)) *
-                              (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, k, t)) *
+                    error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY, k, t)) *
+                              (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY, k, t)) *
                               DX * DY * DZ / 2);
                 }
 
-                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, NZ, t)) *
-                          (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5 + offset_x, NY + offset_y, NZ, t)) *
+                error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5 + offset_x, NY, NZ, t)) *
+                          (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(i + 0.5 + offset_x, NY, NZ, t)) *
                           DX * DY * DZ / 4);
             }
         }
@@ -269,51 +269,51 @@ Real IcoNS::error_comp_X(const Real t)
         {
             if (lby)
             {
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, 0, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, 0, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
                           DX * DY * DZ / 8);
 
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, k, t)) *
-                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
+                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
                               DX * DY * DZ / 4);
                 }
 
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, NZ, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, 0 + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
                           DX * DY * DZ / 8);
             }
             for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
             {
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, 0, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, 0, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j + offset_y, 0, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j + offset_y, 0, t)) *
                           DX * DY * DZ / 4);
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, k, t)) *
-                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j + offset_y, k, t)) *
+                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j + offset_y, k, t)) *
                               DX * DY * DZ / 2);
                 }
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, NZ, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, j + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), j + offset_y, NZ, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), j + offset_y, NZ, t)) *
                           DX * DY * DZ / 4);
             }
             if (rby)
             {
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, 0, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, 0, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                           DX * DY * DZ / 8);
 
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, k, t)) *
-                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
                               DX * DY * DZ / 4);
                 }
 
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, NZ, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5) + offset_x, NY + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
                           DX * DY * DZ / 8);
             }
         }
@@ -663,10 +663,14 @@ void IcoNS::setParallelization()
     dim_z = NZ + 1;
     dim_z_z = NZ;
 
-    if (NX % PX != 0 && coords[0] == dim_x_x - 1)
-        dim_x_x++;
-    if ((NY + 1) % PY != 0 && coords[1] == dim_y_x - 1)
+    if (NX % PX != 0 && coords[0] == PX- 1)
     {
+        std::cout <<"Prova: " << rank << std::endl;
+        dim_x_x++;
+    }
+    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
+    {
+        std::cout <<"x_y: " << rank << std::endl;
         dim_y_x++;
     }
 
@@ -715,13 +719,6 @@ void IcoNS::setParallelization()
     boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
     boundary.setCoords(coords);
 
-    newDimX_x = (dim_x_x + 2);
-    newDimY_x = (dim_y_x + 2);
-    newDimX_y = (dim_x_y + 2);
-    newDimY_y = (dim_y_y + 2);
-    newDimX_z = (dim_x_z + 2);
-    newDimY_z = (dim_y_z + 2);
-
     /*
     glob_address_x_x = (i-1) +coords[0]*dim_x_x;
     glob_address_y_x =(j-1)+ coords[1]*dim_y_x;
@@ -758,18 +755,19 @@ void IcoNS::exchangeData_x(std::vector<Real> &grid_loc)
         // (x, y-1) <- (x, y)
         MPI_Isend(&grid_loc[newDimY_x * dim_z], 1, MPI_face_y_x, neighbors[0], rank, cart_comm, &req1);
         MPI_Irecv(&grid_loc[(dim_z)*newDimY_x * (newDimX_x - 1)], 1, MPI_face_y_x, neighbors[2], neighbors[2], cart_comm, &req1);
-
+        
         // (x,y) -> (x, y+1)
         MPI_Isend(&grid_loc[newDimY_x * dim_z * (newDimX_x - 2)], 1, MPI_face_y_x, neighbors[2], rank, cart_comm, &req2);
         MPI_Irecv(&grid_loc[0], 1, MPI_face_y_x, neighbors[0], neighbors[0], cart_comm, &req2);
-
+        
         // (x-1, y)
         //   ^
         //   |
         // (x, y)
+        //std::cout << "rank: " << rank << " " << newDimY_x << std::endl;
         MPI_Isend(&grid_loc[dim_z * newDimY_x + dim_z], 1, MPI_face_x_x, neighbors[1], rank, cart_comm, &req3);
         MPI_Irecv(&grid_loc[dim_z * newDimY_x + (newDimY_x - 1) * dim_z], 1, MPI_face_x_x, neighbors[3], neighbors[3], cart_comm, &req3);
-
+        
         // (x, y)
         //   |
         //   V
