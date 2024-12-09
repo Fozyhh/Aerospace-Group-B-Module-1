@@ -28,9 +28,9 @@ public:
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
 
-  Real functionF_u(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_v(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
-  Real functionF_w(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
+  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); // compute the source term.
   Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
   Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                                                                                                    // compute the source term.
@@ -49,19 +49,19 @@ public:
   void output_w(const std::string& filename, Grid& print); // write the output file.
 
   void setParallelization();
-  void exchangeData_x(std::array<Real, newDimX_x*newDimY_x*dim_z>& grid_loc);
-  void exchangeData_y(std::array<Real, newDimX_y*newDimY_y*dim_z>& grid_loc);
-  void exchangeData_z(std::array<Real, newDimX_z*newDimY_z*dim_z_z>& grid_loc);
+  void exchangeData_x(std::vector<Real>& grid_loc);
+  void exchangeData_y(std::vector<Real>& grid_loc);
+  void exchangeData_z(std::vector<Real>& grid_loc);
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;
   ExactSolution exact_solution;
-  std::array<Real, (newDimX_x * newDimY_x * dim_z)> Y2_x{};
-  std::array<Real, (newDimX_y * newDimY_y * dim_z)> Y2_y{};
-  std::array<Real, (newDimX_z * newDimY_z * dim_z_z)> Y2_z{};
-  std::array<Real, (newDimX_x * newDimY_x * dim_z)> Y3_x{};
-  std::array<Real, (newDimX_y * newDimY_y * dim_z)> Y3_y{};
-  std::array<Real, (newDimX_z * newDimY_z * dim_z_z)> Y3_z{};
+  std::vector<Real> Y2_x{};
+  std::vector<Real> Y2_y{};
+  std::vector<Real> Y2_z{};
+  std::vector<Real> Y3_x{};
+  std::vector<Real> Y3_y{};
+  std::vector<Real> Y3_z{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
 
@@ -79,9 +79,9 @@ private:
   int coords[2];
   int neighbors[4];
 
-  std::array<Real,newDimX_x*newDimY_x*dim_z> grid_loc_x{};
-  std::array<Real,newDimX_y*newDimY_y*dim_z> grid_loc_y{};
-  std::array<Real,newDimX_z*newDimY_z*dim_z_z> grid_loc_z{};
+  std::vector<Real> grid_loc_x{};
+  std::vector<Real> grid_loc_y{};
+  std::vector<Real> grid_loc_z{};
 
   MPI_Datatype MPI_face_x_x;
   MPI_Datatype MPI_face_x_y;
@@ -96,6 +96,20 @@ private:
   MPI_Request req3;
   MPI_Request req4;
 
+  int dim_x_x;
+  int dim_y_x;
+  int dim_x_y;
+  int dim_y_y;
+  int dim_x_z;
+  int dim_y_z;
+  int dim_z;
+  int dim_z_z;
+  int newDimX_x;
+  int newDimY_x;
+  int newDimX_y;
+  int newDimY_y;
+  int newDimX_z;
+  int newDimY_z;
 };
 
 #endif // CORE_HPP

@@ -30,26 +30,9 @@ constexpr int NY = 40;
 /// @brief Number of cells in the z-direction.
 constexpr int NZ = 40;
 
-constexpr int PX=2;
-constexpr int PY=2;
-constexpr int PZ=1;//Probably useless as we dont want to split z
-
-constexpr int dim_x_x = NX / PX;
-constexpr int dim_y_x = (NY /*+ 1*/) / PY;
-constexpr int dim_x_y = (NX /*+ 1*/) / PX;
-constexpr int dim_y_y = NY / PY;
-constexpr int dim_x_z = (NX /*+ 1*/) / PX;
-constexpr int dim_y_z = (NY /*+ 1*/) / PY;
-constexpr int dim_z = NZ /*+ 1*/;
-constexpr int dim_z_z = NZ;
-constexpr int newDimX_x = (dim_x_x+2);
-constexpr int newDimY_x = (dim_y_x+2);
-constexpr int newDimX_y = (dim_x_y+2);
-constexpr int newDimY_y = (dim_y_y+2);
-constexpr int newDimX_z = (dim_x_z+2);
-constexpr int newDimY_z = (dim_y_z+2);
-
-
+constexpr int PX = 2;
+constexpr int PY = 2;
+constexpr int PZ = 1; // Probably useless as we dont want to split z
 
 /// @brief Space discretization step size in the x-direction.
 constexpr Real DX = LX / NX;

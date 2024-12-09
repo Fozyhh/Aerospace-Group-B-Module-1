@@ -126,7 +126,7 @@ void IcoNS::solve_time_step(Real time)
 }
 
 
-Real IcoNS::functionF_u(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
@@ -139,7 +139,7 @@ Real IcoNS::functionF_u(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, co
            functionG_u(i, j, k, t);
 }
 
-Real IcoNS::functionF_v(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
     size_t lv = i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k;
@@ -154,7 +154,7 @@ Real IcoNS::functionF_v(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, co
            functionG_v(i, j, k, t);
 }
 
-Real IcoNS::functionF_w(const std::array<Real, newDimX_x*newDimY_x*dim_z> &u, const std::array<Real, newDimX_x*newDimY_x*dim_z> &v, const std::array<Real, newDimX_x*newDimY_x*dim_z_z> &w, size_t i, size_t j, size_t k, Real t)
+Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
 
 {
     size_t lu = i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k;
