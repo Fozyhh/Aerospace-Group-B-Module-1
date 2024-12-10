@@ -18,11 +18,55 @@ public:
 
   IcoNS(MPI_Comm cart_comm, const std::string &input_file, const std::string &output_file, int rank, int size)
       : cart_comm(cart_comm),
-        input_file(input_file),
-        output_file(output_file),
-        rank(rank),
-        size(size)
+      input_file(input_file),
+      output_file(output_file),
+      rank(rank),
+      size(size)
   {
+        if (NX % PX != 0 || NY % PY != 0) {
+            throw std::runtime_error("Domain size must be evenly divisible by number of processes");
+        }
+        // Calculate dimensions
+        dim_x_x = NX / PX;
+        dim_y_x = (NY + 1) / PY;
+        dim_x_y = (NX + 1) / PX;
+        dim_y_y = NY / PY;
+        dim_x_z = (NX + 1) / PX;
+        dim_y_z = (NY + 1) / PY;
+        dim_z = NZ + 1;
+        dim_z_z = NZ;
+        newDimX_x = (dim_x_x + 2);
+        newDimY_x = (dim_y_x + 2);
+        newDimX_y = (dim_x_y + 2);
+        newDimY_y = (dim_y_y + 2);
+        newDimX_z = (dim_x_z + 2);
+        newDimY_z = (dim_y_z + 2);
+
+        if (rank == 0) {
+            std::cout << "System information:" << std::endl;
+            std::cout << "Max vector size: " << std::vector<Real>().max_size() << std::endl;
+            std::cout << "Vector element size: " << sizeof(Real) << " bytes" << std::endl;
+        }
+
+        std::size_t x_size = static_cast<std::size_t>(newDimX_x) *
+                            static_cast<std::size_t>(newDimY_x) *
+                            static_cast<std::size_t>(NZ + 1);
+
+        if (rank == 0) {
+            std::cout << "Attempting to allocate:" << std::endl;
+            std::cout << "x_size = " << x_size << " elements (" << (x_size * sizeof(Real)) / (1024*1024) << " MB)" << std::endl;
+        }
+
+        // Resize vectors with correct syntax
+        grid_loc_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+        grid_loc_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+        grid_loc_z.resize(newDimX_z * newDimY_z * NZ, 0.0);
+        Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+        Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+        Y2_z.resize(newDimX_z * newDimY_z * NZ, 0.0);
+        Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+        Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+        Y3_z.resize(newDimX_z * newDimY_z * NZ, 0.0);
   }
 
   void preprocessing(/*std::string &input_file*/); // grid initialization.

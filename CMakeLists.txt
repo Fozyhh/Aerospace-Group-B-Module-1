@@ -50,7 +50,7 @@ set(SOURCES
 # Executable
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes)
-target_link_libraries(main ${MPI_C_LIBRARIES})
+target_link_libraries(main ${MPI_CXX_LIBRARIES})
 
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
@@ -134,18 +134,18 @@ if(ENABLE_MEMPROF)
     endif()
 
     # Custom target for Cachegrind profiling
-    # "--branch-sim=yes" collects the number of branch instructions and mispredictions. 
+    # "--branch-sim=yes" collects the number of branch instructions and mispredictions.
     # This will slow down the cachegrind call by a lot (approx. 25%).
 
     add_custom_target(profile
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config ${CMAKE_BUILD_TYPE}
-        COMMAND ${CACHEGRIND_EXECUTABLE} 
-                --tool=cachegrind 
+        COMMAND ${CACHEGRIND_EXECUTABLE}
+                --tool=cachegrind
                 --cache-sim=yes
                 --I1=32768,8,64
                 --D1=32768,8,64
                 --LL=8388608,16,64
-                --branch-sim=yes 
+                --branch-sim=yes
                 --cachegrind-out-file="${CACHEGRIND_REPORT_DIR}/cachegrind.out"
                 $<TARGET_FILE:main>
         DEPENDS main
