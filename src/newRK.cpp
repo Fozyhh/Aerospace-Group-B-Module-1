@@ -5,7 +5,6 @@
 void IcoNS::solve_time_step(Real time)
 {
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
-
     {
         for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
@@ -16,7 +15,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-
+    
     for (size_t i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
         for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
@@ -39,10 +38,12 @@ void IcoNS::solve_time_step(Real time)
                                                        64.0 / 120.0 * DT * functionF_w(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
-    }
-
+    }  
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-
+    MPI_Barrier(cart_comm);
+    exchangeData(Y2_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
+    exchangeData(Y2_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y); 
+    exchangeData(Y2_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);   
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -81,9 +82,11 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
-
+    MPI_Barrier(cart_comm);
+    exchangeData(Y3_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
+    exchangeData(Y3_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y); 
+    exchangeData(Y3_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
     for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -136,7 +139,7 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
              (v[lv] + v[lv + newDimY_y * (NZ + 1)] + v[lv - (NZ + 1)] + v[lv + newDimY_y * (NZ + 1) - (NZ + 1)]) / 4.0 * (u[lu + (NZ + 1)] - u[lu - (NZ + 1)]) / (2.0 * DY) +
              (w[lw] + w[lw + newDimY_z * NZ] + w[lw - 1] + w[lw + newDimY_z * NZ - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
            1 / RE * ((u[lu + newDimY_x * (NZ + 1)] - 2 * u[lu] + u[lu - newDimY_x * (NZ + 1)]) / (DX * DX) + (u[lu + (NZ + 1)] - 2 * u[lu] + u[lu - (NZ + 1)]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
-           functionG_u(i + coords[0] * dim_x_x, j + (PY - 1 - coords[1]) * dim_y_x, k, t);
+           functionG_u(i + coords[0] * other_dim_x_x, j + (PY - 1 - coords[1]) * other_dim_y_x , k, t);
 }
 
 Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
@@ -151,7 +154,7 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
            (1.0 / RE) * ((v[lv + newDimY_y * (NZ + 1)] - 2.0 * v[lv] + v[lv - newDimY_y * (NZ + 1)]) / (DX * DX) +
                          (v[lv + (NZ + 1)] - 2.0 * v[lv] + v[lv - (NZ + 1)]) / (DY * DY) +
                          (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
-           functionG_v(i + coords[0] * dim_x_y, j + (PY - 1 - coords[1]) * dim_y_y, k, t);
+           functionG_v(i + coords[0] * other_dim_x_y , j + (PY - 1 - coords[1]) * other_dim_y_y, k, t);
 }
 
 Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t)
@@ -167,7 +170,7 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
            (1.0 / RE) * ((w[lw + newDimY_z * NZ] - 2.0 * w[lw] + w[lw - newDimY_z * NZ]) / (DX * DX) +
                          (w[lw + NZ] - 2.0 * w[lw] + w[lw - NZ]) / (DY * DY) +
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
-           functionG_w(i + coords[0] * dim_x_z, j + (PY - 1 - coords[1]) * dim_y_z, k, t);
+           functionG_w(i + coords[0] * other_dim_x_z, j + (PY - 1 - coords[1]) * other_dim_y_z, k, t);
 }
 
 

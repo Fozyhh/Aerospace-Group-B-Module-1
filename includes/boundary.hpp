@@ -30,6 +30,12 @@ private:
     int newDimY_y;
     int newDimX_z;
     int newDimY_z;
+    int other_dim_x_x;
+    int other_dim_y_x;
+    int other_dim_x_y;
+    int other_dim_y_y;
+    int other_dim_x_z;
+    int other_dim_y_z;
 
 public:
     void initializeBoundary(
@@ -52,6 +58,7 @@ public:
         newDimY_y = newDimY_y_;
         newDimX_z = newDimX_z_;
         newDimY_z = newDimY_z_;
+        
     }
 
     // void update_boundary(Real t);
@@ -67,7 +74,8 @@ public:
 
     void addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x);
     void setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_);
-    void setCoords(int coords[2]);
+    void setCoords(int coords_[2]);
+    void setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_);
 
 
 };

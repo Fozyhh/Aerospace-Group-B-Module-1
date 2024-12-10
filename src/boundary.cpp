@@ -26,12 +26,12 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
 
     // Have to adjust indexes in exact values if it is made by processor with diff coords with global indexes
     // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
-    int offset_x_x = coords[0] * dim_x_x;
-    int offset_y_x = (PY - 1 - coords[1]) * dim_y_x;
-    int offset_x_y = coords[0] * dim_x_y;
-    int offset_y_y = (PY - 1 - coords[1]) * dim_y_y;
-    int offset_x_z = coords[0] * dim_x_z;
-    int offset_y_z = (PY - 1 - coords[1]) * dim_y_z;
+    int offset_x_x = coords[0] * other_dim_x_x;
+    int offset_y_x = (PY - 1 - coords[1]) * other_dim_y_x;
+    int offset_x_y = coords[0] * other_dim_x_y;
+    int offset_y_y = (PY - 1 - coords[1]) * other_dim_y_y;
+    int offset_x_z = coords[0] * other_dim_x_z;
+    int offset_y_z = (PY - 1 - coords[1]) * other_dim_y_z;
 
     if (lbx)
     {
@@ -356,4 +356,14 @@ void Boundary::setCoords(int coords_[2])
 {
     coords[0] = coords_[0];
     coords[1] = coords_[1];
+
+}
+
+void Boundary::setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_){
+    other_dim_x_x = other_dim_x_x_;
+    other_dim_y_x= other_dim_y_x_;
+    other_dim_x_y = other_dim_x_y_;
+    other_dim_y_y= other_dim_y_y_;
+    other_dim_x_z = other_dim_x_z_;
+    other_dim_y_z= other_dim_y_z_;
 }

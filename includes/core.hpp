@@ -108,6 +108,12 @@ private:
   int newDimY_y;
   int newDimX_z;
   int newDimY_z;
+  int other_dim_x_x;
+  int other_dim_y_x;
+  int other_dim_x_y;
+  int other_dim_y_y;
+  int other_dim_x_z;
+  int other_dim_y_z;
 };
 
 #endif // CORE_HPP
