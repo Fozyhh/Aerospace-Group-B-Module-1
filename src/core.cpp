@@ -75,20 +75,21 @@ void IcoNS::solve()
     std::cout << "Starting solver" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 #endif
-
+    double x=0;
     while (time < T)
     {
         boundary.update_boundary(grid_loc_x, grid_loc_y, grid_loc_z, time);
 
         MPI_Barrier(cart_comm);
-        // exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
-        // exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
-        // exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
+        exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
+        exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
+        exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
 
-        auto x = L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
+        x = L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
         MPI_Barrier(cart_comm);
         error = 0.0;
         MPI_Reduce(&x, &error, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
+        
         if (rank == 0)
         {
             std::cout << " errorx: " << error << std::endl;
@@ -285,18 +286,18 @@ Real IcoNS::error_comp_X(const Real t)
             if (rby)
             {
                 error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                           DX * DY * DZ / 8);
 
                 for (size_t k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
-                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                    error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
+                              (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
                               DX * DY * DZ / 4);
                 }
 
-                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
-                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimX_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
+                          (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x((NX - 0.5), NY, NZ, t)) *
                           DX * DY * DZ / 8);
             }
         }
@@ -710,11 +711,6 @@ void IcoNS::setParallelization()
     glob_address_x_y = (i-1) +coords[0]*dim_x_y;
     glob_address_y_y =(j-1)+ coords[1]*dim_y_y;
     */
-
-    std::cout << "rank: " << rank << "- stride: " << (newDimY_x)*dim_z << std::endl;
-    if(rank==1){
-        std::cout << "   " <<neighbors[0] << std::endl;
-    }
     MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
 
