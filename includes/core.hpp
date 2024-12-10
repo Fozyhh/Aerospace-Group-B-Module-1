@@ -49,9 +49,7 @@ public:
   void output_w(const std::string& filename, Grid& print); // write the output file.
 
   void setParallelization();
-  void exchangeData_x(std::vector<Real>& grid_loc);
-  void exchangeData_y(std::vector<Real>& grid_loc);
-  void exchangeData_z(std::vector<Real>& grid_loc);
+  void exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
 private:
   Grid grid; // grid of the domain.
   Boundary boundary;

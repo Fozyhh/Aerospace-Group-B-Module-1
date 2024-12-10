@@ -81,9 +81,9 @@ void IcoNS::solve()
         boundary.update_boundary(grid_loc_x, grid_loc_y, grid_loc_z, time);
 
         MPI_Barrier(cart_comm);
-        exchangeData_x(grid_loc_x);
-        exchangeData_y(grid_loc_y);
-        exchangeData_z(grid_loc_z);
+        // exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
+        // exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
+        // exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
 
         auto x = L2_error(time); // every processor calculates his error not counting ghosts(and then some sort of reduce?)
         MPI_Barrier(cart_comm);
@@ -99,23 +99,6 @@ void IcoNS::solve()
         time += DT;
         i++;
     }
-/*while (time < T)
-{
-    /*Check::Confront(grid,exact_solution,time,U);
-    int p;
-    std::cin >> p;*/
-/*
-boundary.update_boundary(grid.u, grid.v, grid.w, time);
-
-// csv file w/ "," delimiter: time step, iter, L2_error
-std::cout << time << "," << i << "," << L2_error(time) << std::endl;
-solve_time_step(time);
-// output();
-time += DT;
-i++;
-}*/
-// error = L2_error(time);
-// error_log << time << "," << i << "," << error << std::endl;
 #ifdef VERBOSE
     if(rank==0){
         std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: " << error << std::endl;
@@ -147,8 +130,8 @@ Real IcoNS::L2_error(const Real t)
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * dim_x_x;
-    int offset_y = (PY - 1 - coords[1]) * dim_y_x;
+    int offset_x = coords[0] * dim_x_x ;
+    int offset_y = (PY - 1 - coords[1]) * dim_y_x ;
     // first slice (left face)
     if (lbx)
     {
@@ -665,28 +648,28 @@ void IcoNS::setParallelization()
 
     if (NX % PX != 0 && coords[0] == PX- 1)
     {
-        std::cout <<"Prova: " << rank << std::endl;
         dim_x_x++;
     }
-    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
+    if ((NY + 1) % PY != 0 && coords[1] == 0)
     {
-        std::cout <<"x_y: " << rank << std::endl;
         dim_y_x++;
     }
 
     if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
         dim_x_y++;
-    if ((NY) % PY != 0 && coords[1] == PY - 1)
+    if ((NY) % PY != 0 && coords[1] == 0)
     {
         dim_y_y++;
     }
 
     if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
         dim_x_z++;
-    if ((NY + 1) % PY != 0 && coords[1] == PY - 1)
+    if ((NY + 1) % PY != 0 && coords[1] == 0)
     {
         dim_y_z++;
     }
+
+    //TODO: controllare che la riga in più non porti errori agli address globali
     newDimX_x = dim_x_x + 2;
     newDimY_x = dim_y_x + 2;
     newDimX_y = dim_x_y + 2;
@@ -732,115 +715,42 @@ void IcoNS::setParallelization()
     if(rank==1){
         std::cout << "   " <<neighbors[0] << std::endl;
     }
-    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_INT, &MPI_face_x_x);
+    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
 
-    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_INT, &MPI_face_y_x);
+    MPI_Type_vector(1, dim_z * dim_y_x, 0, MPI_DOUBLE, &MPI_face_y_x);
     MPI_Type_commit(&MPI_face_y_x);
 
-    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_INT, &MPI_face_x_y);
+    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_DOUBLE, &MPI_face_x_y);
     MPI_Type_commit(&MPI_face_x_y);
 
-    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_INT, &MPI_face_y_y);
+    MPI_Type_vector(1, dim_z * dim_y_y, 0, MPI_DOUBLE, &MPI_face_y_y);
     MPI_Type_commit(&MPI_face_y_y);
 
-    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_INT, &MPI_face_x_z);
+    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_DOUBLE, &MPI_face_x_z);
     MPI_Type_commit(&MPI_face_x_z);
 
-    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_INT, &MPI_face_y_z);
+    MPI_Type_vector(1, dim_z_z * dim_y_z, 0, MPI_DOUBLE, &MPI_face_y_z);
     MPI_Type_commit(&MPI_face_y_z);
 }
 
-void IcoNS::exchangeData_x(std::vector<Real> &grid_loc)
+void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
 {
-    if (neighbors[0] != -2 && neighbors[1] != -2 && neighbors[2] != -2 && neighbors[3] != -2)
-    {
+    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&req3);
+    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&req3);
 
-        // (x, y-1) <- (x, y)
-        MPI_Isend(&grid_loc[newDimY_x * dim_z], 1, MPI_face_y_x, neighbors[1], rank, cart_comm, &req1);
-        MPI_Irecv(&grid_loc[(dim_z)*newDimY_x * (newDimX_x - 1)], 1, MPI_face_y_x, neighbors[3], neighbors[3], cart_comm, &req1);
-        
-        // // (x,y) -> (x, y+1)
-        MPI_Isend(&grid_loc[newDimY_x * dim_z * (newDimX_x - 2)], 1, MPI_face_y_x, neighbors[3], rank, cart_comm, &req2);
-        MPI_Irecv(&grid_loc[0], 1, MPI_face_y_x, neighbors[1], neighbors[1], cart_comm, &req2);
-        
-        // (x-1, y)
-        //   ^
-        //   |
-        // (x, y)
-        //std::cout << "rank: " << rank << " " << newDimY_x << std::endl;
-        MPI_Isend(&grid_loc[dim_z * newDimY_x + dim_z], 1, MPI_face_x_x, neighbors[0], rank, cart_comm, &req3);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_x + (newDimY_x - 1) * dim_z], 1, MPI_face_x_x, neighbors[2], neighbors[2], cart_comm, &req3);
-        
-        // (x, y)
-        //   |
-        //   V
-        // (x+1, y)
-        MPI_Isend(&grid_loc[dim_z * newDimY_x + (newDimY_x - 2) * dim_z], 1, MPI_face_x_x, neighbors[2], rank, cart_comm, &req4);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_x], 1, MPI_face_x_x, neighbors[0], neighbors[0], cart_comm, &req4);
-        MPI_Barrier(cart_comm);
-    }
+    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&req4);
+    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&req4);
+
+    MPI_Barrier(cart_comm);
+    MPI_Isend(&grid_loc[(newDimY+1)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&req1);
+    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1) + dim_z],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&req1);
+
+    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2) + dim_z],1,MPI_face_y,neighbors[2],rank,cart_comm,&req2);
+    MPI_Irecv(&grid_loc[dim_z],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&req2);
+    MPI_Barrier(cart_comm);
 }
 
-void IcoNS::exchangeData_y(std::vector<Real> &grid_loc)
-{
-    if (neighbors[0] != -2 && neighbors[1] != -2 && neighbors[2] != -2 && neighbors[3] != -2)
-    {
-
-        // (x, y-1) <- (x, y)
-        MPI_Isend(&grid_loc[newDimY_y * dim_z], 1, MPI_face_y_y, neighbors[1], rank, cart_comm, &req1);
-        MPI_Irecv(&grid_loc[(dim_z)*newDimY_y * (newDimX_y - 1)], 1, MPI_face_y_y, neighbors[3], neighbors[3], cart_comm, &req1);
-
-        // (x,y) -> (x, y+1)
-        MPI_Isend(&grid_loc[newDimY_y * dim_z * (newDimX_y - 2)], 1, MPI_face_y_y, neighbors[3], rank, cart_comm, &req2);
-        MPI_Irecv(&grid_loc[0], 1, MPI_face_y_y, neighbors[1], neighbors[1], cart_comm, &req2);
-
-        // (x-1, y)
-        //   ^
-        //   |
-        // (x, y)
-        MPI_Isend(&grid_loc[dim_z * newDimY_y + dim_z], 1, MPI_face_x_y, neighbors[0], rank, cart_comm, &req3);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_y + (newDimY_y - 1) * dim_z], 1, MPI_face_x_y, neighbors[2], neighbors[2], cart_comm, &req3);
-
-        // (x, y)
-        //   |
-        //   V
-        // (x+1, y)
-        MPI_Isend(&grid_loc[dim_z * newDimY_y + (newDimY_y - 2) * dim_z], 1, MPI_face_x_y, neighbors[2], rank, cart_comm, &req4);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_y], 1, MPI_face_x_y, neighbors[0], neighbors[0], cart_comm, &req4);
-        MPI_Barrier(cart_comm);
-    }
-}
-
-void IcoNS::exchangeData_z(std::vector<Real> &grid_loc)
-{
-    if (neighbors[0] != -2 && neighbors[1] != -2 && neighbors[2] != -2 && neighbors[3] != -2)
-    {
-
-        // (x, y-1) <- (x, y)
-        MPI_Isend(&grid_loc[newDimY_z * dim_z], 1, MPI_face_y_z, neighbors[1], rank, cart_comm, &req1);
-        MPI_Irecv(&grid_loc[(dim_z)*newDimY_z * (newDimX_z - 1)], 1, MPI_face_y_z, neighbors[3], neighbors[3], cart_comm, &req1);
-
-        // (x,y) -> (x, y+1)
-        MPI_Isend(&grid_loc[newDimY_z * dim_z * (newDimX_z - 2)], 1, MPI_face_y_z, neighbors[3], rank, cart_comm, &req2);
-        MPI_Irecv(&grid_loc[0], 1, MPI_face_y_z, neighbors[1], neighbors[1], cart_comm, &req2);
-
-        // (x-1, y)
-        //   ^
-        //   |
-        // (x, y)
-        MPI_Isend(&grid_loc[dim_z * newDimY_z + dim_z], 1, MPI_face_x_z, neighbors[0], rank, cart_comm, &req3);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_z + (newDimY_z - 1) * dim_z], 1, MPI_face_x_z, neighbors[2], neighbors[2], cart_comm, &req3);
-
-        // (x, y)
-        //   |
-        //   V
-        // (x+1, y)
-        MPI_Isend(&grid_loc[dim_z * newDimY_z + (newDimY_z - 2) * dim_z], 1, MPI_face_x_z, neighbors[2], rank, cart_comm, &req4);
-        MPI_Irecv(&grid_loc[dim_z * newDimY_z], 1, MPI_face_x_z, neighbors[0], neighbors[0], cart_comm, &req4);
-        MPI_Barrier(cart_comm);
-    }
-}
 // void IcoNS::output()
 // {
 // }
