@@ -24,9 +24,9 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         {
             for (int k = 0; k < NZ+1; k++)
             {
-                Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
+                Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
             }
         }
     }
@@ -37,9 +37,9 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         {
             for (int k = 0; k < NZ+1; k++)
             {
-                Y2_y[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                Y3_y[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] = 0;
+                Y2_y[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                Y3_y[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
             }
         }
     }
@@ -50,9 +50,9 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         {
             for (int k = 0; k < NZ; k++)
             {
-                Y2_z[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                Y3_z[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                grid.w[i * (NY + 1) * NZ + j * NZ + k] = 0;
+                Y2_z[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                Y3_z[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0.0;
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] = 0.0;
             }
         }
     }
@@ -63,13 +63,30 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         {
             for (int k = 0; k < NZ; k++)
             {
-                Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                Y3_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 0;
-                grid.p[i * NY * NZ + j * NZ + k] = 0;
+                Y2_p[i * (NY) * (NZ) + j * (NZ) + k] = 0.0;
+                Y3_p[i * (NY) * (NZ) + j * (NZ) + k] = 0.0;
             }
         }
     }
+    
+    for (int i = 0; i < NX+1; i++)
+    {
+        for (int j = 0; j < NY+1; j++)
+        {
+            for (int k = 0; k < NZ+1; k++)
+            {
+                Phi_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
+                grid.p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
+            }
+        }
+    }
+
+    for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
+    {
+        helper[i][0] = 0.0;
+        helper[i][1] = 0.0;
+    }
+    
     
 
 #ifdef VERBOSE

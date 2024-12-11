@@ -24,6 +24,10 @@ public:
   {
   }
 
+  Real d_Px(int i, int j, int k, Real t);
+  Real d_Py(int i, int j, int k, Real t);
+  Real d_Pz(int i, int j, int k, Real t);
+
   void preprocessing(/*std::string &input_file*/); // grid initialization.
 
   Real functionF_u(const std::array<Real, NX *(NY + 1) * (NZ + 1)> &u, const std::array<Real, (NX + 1) * NY *(NZ + 1)> &v, const std::array<Real, (NX + 1) * (NY + 1) * NZ> &w, int i, int j, int k, Real t); // compute the source term.
@@ -61,7 +65,7 @@ private:
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
   std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
   //std::array<Real, ((NX) * (NY) * (NZ))> Sol_p{};
-  std::array<Real, ((NX) * (NY) * (NZ))> Phi_p{};
+  std::array<Real, ((NX+1) * (NY+1) * (NZ+1))> Phi_p{};
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};

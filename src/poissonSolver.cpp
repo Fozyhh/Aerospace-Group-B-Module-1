@@ -110,7 +110,7 @@ void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1
     fftw_execute(neumann);
 
     // Normalization
-    double normalization_factor = 2.0 * (NX) * 2.0 * (NX) * 2.0 * (NX);
+    double normalization_factor = 2.0 * (NX) * 2.0 * (NY) * 2.0 * (NZ);
     for(int i = 0; i < NX+1; i++) {
         for (int j = 0; j < NY+1; j++) {
             for (int k = 0; k < NZ+1; k++) {
