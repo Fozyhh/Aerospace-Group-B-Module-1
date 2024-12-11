@@ -115,8 +115,8 @@ Real IcoNS::L2_error(const Real t)
 {
     Real error = 0.0;
 
-    //error += error_comp_X(t);
-    //error += error_comp_Y(t);
+    error += error_comp_X(t);
+    error += error_comp_Y(t);
     error += error_comp_Z(t);
 
     // std::cout << error_comp_X(t) << std::endl;
@@ -531,13 +531,13 @@ Real IcoNS::error_comp_Z(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-
+    
     // middle slices
     {
         for (size_t i = 1 + lbx; i < newDimX_z - 1 -rbx; i++)
         {
             if(lby){
-                error += ((grid_loc_z[i * newDimY_z * NZ  + dim_z_z + dim_z_z] - exact_solution.value_z(i + offset_x, 0, 0.5, t)) *
+                error += ((grid_loc_z[i * newDimY_z * NZ  + dim_z_z] - exact_solution.value_z(i + offset_x, 0, 0.5, t)) *
                         (grid_loc_z[i * newDimY_z * NZ  + dim_z_z] - exact_solution.value_z(i + offset_x, 0, 0.5, t)) *
                         DX * DY * DZ / 4);
 
@@ -551,7 +551,7 @@ Real IcoNS::error_comp_Z(const Real t)
                         (grid_loc_z[i * newDimY_z * NZ  + dim_z_z + NZ - 1] - exact_solution.value_z(i + offset_x, 0, NZ - 0.5, t)) *
                         DX * DY * DZ / 4);
             }
-            for (size_t j = 1 + lby; j < newDimY_z - 1 -rbx; j++)
+            for (size_t j = 1 + lby; j < newDimY_z - 1 -rby; j++)
             {
                 error += ((grid_loc_z[i * newDimY_z * NZ + j * NZ] - exact_solution.value_z(i + offset_x, j + offset_y, 0.5, t)) *
                           (grid_loc_z[i * newDimY_z * NZ + j * NZ] - exact_solution.value_z(i + offset_x, j + offset_y, 0.5, t)) *
@@ -586,7 +586,7 @@ Real IcoNS::error_comp_Z(const Real t)
             }
         }
     }
-
+    
     // last slice (right face)
     if(rbx)
     {
@@ -638,7 +638,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-
+    
     return error;
 }
 
