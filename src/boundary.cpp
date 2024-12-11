@@ -1,14 +1,5 @@
 #include "boundary.hpp"
 
-/**
- * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each
- * requested time t, calculating the approximated ones too.
- *
- * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
- * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
- * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
- * @param t Time of the time discretization we are considering.
- */
 // TODO:
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
@@ -24,7 +15,8 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // face 3 -> rby back
     // face 4 5 -> no partition on z
 
-    // Have to adjust indexes in exact values if it is made by processor with diff coords with global indexes
+    // Have to adjust indexes in exact values if it is made 
+    // by processor with diff coords with global indexes 
     // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
     int offset_x_x = coords[0] * other_dim_x_x;
     int offset_y_x = (PY - 1 - coords[1]) * other_dim_y_x;
@@ -116,7 +108,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             face = 4;
-            Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] = boundary_value_u[face]->value(NX - 1, j + offset_y_x, 0 , t);
+            Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] = boundary_value_u[face]->value(NX - 1, j + offset_y_x, 0, t);
 
             face = 1;
             for (size_t k = 1; k < NZ; k++)
@@ -157,7 +149,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (lby)
         {
             face = 4;
-            Yy[i*newDimY_y * (NZ + 1)+ dim_z] = boundary_value_v[face]->value(i + offset_x_y, offset_y_y, 0, t);
+            Yy[i * newDimY_y * (NZ + 1) + dim_z] = boundary_value_v[face]->value(i + offset_x_y, offset_y_y, 0, t);
             face = 2;
             for (size_t k = 1; k < NZ; k++)
             {
@@ -258,16 +250,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     }
 }
 
-/**
- * @brief Calculate the approximate value of the x velocity in a given point.
- *
- * @param x,y,z Coordinates of the position in the 3D mesh.
- * @param t Time of the time discretization we are considering.
- * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
- * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
- *
- * @return the approximate value.
- */
+
 Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
 
@@ -277,16 +260,7 @@ Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size
     return boundary_value_u[face]->value((x - 0.5 /*(DX/2.0)*/), y, z, t) - (dv + dw) * (DX / 2) * side;
 }
 
-/**
- * @brief Calculate the approximate value of the y velocity in a given point.
- *
- * @param x,y,z Coordinates of the position in the 3D mesh.
- * @param t Time of the time discretization we are considering.
- * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
- * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
- *
- * @return the approximate value.
- */
+
 Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
@@ -300,16 +274,7 @@ Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size
     return boundary_value_v[face]->value(x, y - 0.5, z, t) - (du + dw) * (DY / 2.0) * side;
 }
 
-/**
- * @brief Calculate the approximate value of the z velocity in a given point.
- *
- * @param x,y,z Coordinates of the position in the 3D mesh.
- * @param t Time of the time discretization we are considering.
- * @param face Face of the mesh we are considering. In order: 0 (LEFT), 1 (RIGHT), 2 (FRONT), 3 (BACK), 4 (LOWER), 5 (UPPER)
- * @param side Int used to calculate the correct approximate value. It's 1 for faces 0, 2 and 4, -1 for the others.
- *
- * @return the approximate value.
- */
+
 Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
@@ -322,12 +287,7 @@ Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
 
-/**
- * @brief Add the given function to the selected direction.
- *
- * @param direction Direction U (length), V (width) or W (height) of the boundary.
- * @param x Function to assign to the boundary
- */
+
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
 {
     switch (direction)
@@ -356,14 +316,14 @@ void Boundary::setCoords(int coords_[2])
 {
     coords[0] = coords_[0];
     coords[1] = coords_[1];
-
 }
 
-void Boundary::setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_){
+void Boundary::setOtherDim(int other_dim_x_x_, int other_dim_y_x_, int other_dim_x_y_, int other_dim_y_y_, int other_dim_x_z_, int other_dim_y_z_)
+{
     other_dim_x_x = other_dim_x_x_;
-    other_dim_y_x= other_dim_y_x_;
+    other_dim_y_x = other_dim_y_x_;
     other_dim_x_y = other_dim_x_y_;
-    other_dim_y_y= other_dim_y_y_;
+    other_dim_y_y = other_dim_y_y_;
     other_dim_x_z = other_dim_x_z_;
-    other_dim_y_z= other_dim_y_z_;
+    other_dim_y_z = other_dim_y_z_;
 }

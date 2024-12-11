@@ -22,13 +22,13 @@ constexpr Real LY = 1.0;
 constexpr Real LZ = 1.0;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 40;
+constexpr int NX = 500;
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 40;
+constexpr int NY = 500;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 40;
+constexpr int NZ = 500;
 
 constexpr int PX = 2;
 constexpr int PY = 2;
