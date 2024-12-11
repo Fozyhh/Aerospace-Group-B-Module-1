@@ -5,7 +5,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
 {
     // UPDATE EVERY INDEX SUCH THAT YOU SKIP FIRST FACE(GHOST)
     // AND THE FIRST AND LAST ROW OF EACH FACE
-    size_t face, i, j, k;
+    int face, i, j, k;
     // X
     // LEFT FACE
 
@@ -30,20 +30,20 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (lby)
         { // if it's a processor with coords[1]==0 then it has the front face as boundary
             face = 2;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0, 0, k, t); // FOR X AND Y WE NEED GLOBAL INDICES OR IT DOESNT WORK
             }
         }
 
-        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++) // Parti da 1(salti ghost) + 1(se devi considerare il boundary) e arrivi a newDimY -1(ghost)-1(se boundary destro)
+        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++) // Parti da 1(salti ghost) + 1(se devi considerare il boundary) e arrivi a newDimY -1(ghost)-1(se boundary destro)
         {
             face = 4;
             // lby coords = 1 rby coords = 0
             // we move in the opposite direction of the y process count unfortunately
             Yx[((newDimY_x)*dim_z) + j * (NZ + 1)] = boundary_value_u[face]->value(0, j + offset_y_x, 0, t);
             face = 0;
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 Yx[((newDimY_x)*dim_z) + j * (NZ + 1) + k] = approximate_boundary_u(0, j + offset_y_x, k, t, face, 1);
             }
@@ -54,7 +54,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (rby)
         {
             face = 3;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[((newDimY_x)*dim_z) + (newDimY_x - 2) * (NZ + 1) + k] = boundary_value_u[face]->value(0, NY, k, t);
             }
@@ -63,18 +63,18 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // CONTINUE LIKE THIS
 
     // MIDDLE POINTS
-    for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
+    for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         if (lby)
         {
             face = 2;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[i * newDimY_x * (NZ + 1) + (NZ + 1) + k] = boundary_value_u[face]->value(i + offset_x_x, 0, k, t);
             }
         }
 
-        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             face = 4;
             Yx[newDimY_x * (NZ + 1) * i + j * (NZ + 1)] = boundary_value_u[face]->value(i + offset_x_x, j + offset_y_x, 0, t);
@@ -86,7 +86,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (rby)
         {
             face = 3;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[newDimY_x * (NZ + 1) * i + (newDimY_x - 2) * (NZ + 1) + k] = boundary_value_u[face]->value(i + offset_x_x, NY, k, t);
             }
@@ -99,19 +99,19 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (lby)
         {
             face = 2;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (NZ + 1) + k] = boundary_value_u[face]->value(NX - 1, 0, k, t);
             }
         }
 
-        for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             face = 4;
             Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] = boundary_value_u[face]->value(NX - 1, j + offset_y_x, 0, t);
 
             face = 1;
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 Yx[(newDimX_x - 2) * (newDimY_x) * (NZ + 1) + j * (NZ + 1) + k] = approximate_boundary_u(NX, j + offset_y_x, k, t, face, -1);
             }
@@ -122,7 +122,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (rby)
         {
             face = 3;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yx[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] = boundary_value_u[face]->value(NX - 1, NY, k, t);
             }
@@ -134,9 +134,9 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     if (lbx)
     {
         face = 0;
-        for (size_t j = 1; j < newDimY_y - 1; j++)
+        for (int j = 1; j < newDimY_y - 1; j++)
         {
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yy[(newDimY_y * dim_z) + j * dim_z + k] = boundary_value_v[face]->value(0, j + offset_y_y, k, t);
             }
@@ -144,21 +144,21 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     }
 
     // MIDDLE POINTS
-    for (size_t i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
+    for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
         if (lby)
         {
             face = 4;
             Yy[i * newDimY_y * (NZ + 1) + dim_z] = boundary_value_v[face]->value(i + offset_x_y, offset_y_y, 0, t);
             face = 2;
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 Yy[i * newDimY_y * (NZ + 1) + k + dim_z] = approximate_boundary_v(i + offset_x_y, 0, k, t, face, 1);
             }
             face = 5;
             Yy[newDimY_y * (NZ + 1) * i + dim_z + NZ] = boundary_value_v[face]->value(i + offset_x_y, 0 + offset_y_y, NZ, t);
         }
-        for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             face = 4;
             Yy[newDimY_y * (NZ + 1) * i + j * (NZ + 1)] = boundary_value_v[face]->value(i + offset_x_y, j + offset_y_y, 0, t);
@@ -172,7 +172,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
             face = 4;
             Yy[newDimY_y * (NZ + 1) * i + (newDimY_y - 2) * (NZ + 1)] = boundary_value_v[face]->value(i + offset_x_y, NY - 1, 0, t);
             face = 3;
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 Yy[newDimY_y * (NZ + 1) * i + (newDimY_y - 2) * (NZ + 1) + k] = approximate_boundary_v(i + offset_x_y, NY, k, t, face, -1);
             }
@@ -185,9 +185,9 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     if (rbx)
     {
         face = 1;
-        for (size_t j = 1; j < newDimY_y - 1; j++)
+        for (int j = 1; j < newDimY_y - 1; j++)
         {
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yy[(newDimX_y - 2) * newDimY_y * (NZ + 1) + j * (NZ + 1) + k] = boundary_value_v[face]->value(NX, j + offset_y_y, k, t);
             }
@@ -199,26 +199,26 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     if (lbx)
     {
         face = 0;
-        for (size_t j = 1; j < newDimY_z; j++)
+        for (int j = 1; j < newDimY_z; j++)
         {
-            for (size_t k = 0; k < NZ; k++)
+            for (int k = 0; k < NZ; k++)
             {
                 Yz[newDimY_z * dim_z_z + j * NZ + k] = boundary_value_w[face]->value(0, j + offset_y_z, k, t);
             }
         }
     }
     // MIDDLE POINTS
-    for (size_t i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
+    for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
     {
         if (lby)
         {
             face = 2;
-            for (size_t k = 0; k < NZ; k++)
+            for (int k = 0; k < NZ; k++)
             {
                 Yz[i * (newDimY_z)*NZ + dim_z_z + k] = boundary_value_w[face]->value(i + offset_x_z, 0, k, t);
             }
         }
-        for (size_t j = 1 + lby; j < newDimY_z - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
         {
             face = 4;
             Yz[newDimY_z * NZ * i + j * NZ] = approximate_boundary_w(i + offset_x_z, j + offset_y_z, 0, t, face, 1);
@@ -229,7 +229,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (rby)
         {
             face = 3;
-            for (size_t k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < NZ + 1; k++)
             {
                 Yz[i * newDimY_z * NZ + (newDimY_z - 2) * NZ + k] = boundary_value_w[face]->value(i + offset_x_z, NY, k, t);
             }
@@ -240,9 +240,9 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     if (rbx)
     {
         face = 1;
-        for (size_t j = 1; j < newDimY_z - 1; j++)
+        for (int j = 1; j < newDimY_z - 1; j++)
         {
-            for (size_t k = 0; k < NZ; k++)
+            for (int k = 0; k < NZ; k++)
             {
                 Yz[(newDimX_z - 2) * newDimY_z * NZ + j * NZ + k] = boundary_value_w[face]->value(NX, j + offset_y_z, k, t);
             }
@@ -251,7 +251,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
 }
 
 
-Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side)
+Real Boundary::approximate_boundary_u(int x, int y, int z, Real t, int face, int side)
 {
 
     Real dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
@@ -261,7 +261,7 @@ Real Boundary::approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size
 }
 
 
-Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side)
+Real Boundary::approximate_boundary_v(int x, int y, int z, Real t, int face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
                ((boundary_value_u[face]->value(x - 1, y, z, t)))) /
@@ -275,7 +275,7 @@ Real Boundary::approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size
 }
 
 
-Real Boundary::approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side)
+Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
                ((boundary_value_u[face]->value(x - 1.0, y, z, t)))) /

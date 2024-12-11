@@ -79,14 +79,14 @@ public:
   *
   * @param 
     */
-  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); 
-  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); 
-  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, size_t i, size_t j, size_t k, Real t); 
+  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t); 
+  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t); 
+  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t); 
   
   // Manufactered solution functions.
-  Real functionG_u(size_t i, size_t j, size_t k, Real t);                                                                                     
-  Real functionG_v(size_t i, size_t j, size_t k, Real t);                                                                                     
-  Real functionG_w(size_t i, size_t j, size_t k, Real t);                                                                                     
+  Real functionG_u(int i, int j, int k, Real t);                                                                                     
+  Real functionG_v(int i, int j, int k, Real t);                                                                                     
+  Real functionG_w(int i, int j, int k, Real t);                                                                                     
 
   void solve();                    
   void solve_time_step(Real time);

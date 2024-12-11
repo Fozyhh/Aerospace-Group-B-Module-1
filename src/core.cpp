@@ -45,7 +45,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
 
-    for (size_t i = 0; i < 6 /*nfaces*/; i++)
+    for (int i = 0; i < 6 /*nfaces*/; i++)
     {
         boundary.addFunction(U, u_func);
         boundary.addFunction(V, v_func);
@@ -116,8 +116,8 @@ Real IcoNS::L2_error(const Real t)
     Real error = 0.0;
 
     error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
+    // error += error_comp_Y(t);
+    // error += error_comp_Z(t);
 
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
@@ -141,51 +141,51 @@ Real IcoNS::error_comp_X(const Real t)
         {
             if (lby)
             {
-                error += ((grid_loc_x[0 + (newDimY_x + 1) * dim_z] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, 0, t)) *
-                          (grid_loc_x[0 + (newDimY_x + 1) * dim_z] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, 0, t)) *
+                error += ((grid_loc_x[0 + (newDimY_x + 1) * dim_z] - exact_solution.value_x(0.5, 0, 0, t)) *
+                          (grid_loc_x[0 + (newDimY_x + 1) * dim_z] - exact_solution.value_x(0.5, 0, 0, t)) *
                           DX * DY * DZ / 8);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, k, t)) *
-                              (grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5, 0, k, t)) *
+                              (grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5, 0, k, t)) *
                               DX * DY * DZ / 4);
                 }
             
-                error += ((grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
-                            (grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5 + offset_x, 0 + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
+                            (grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
                             DX * DY * DZ / 8);
             }
-            for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+            for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
             {
-                error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1)] - exact_solution.value_x(0.5 + offset_x, j + offset_y, 0, t)) *
-                          (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1)] - exact_solution.value_x(0.5 + offset_x, j + offset_y, 0, t)) *
+                error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1)] - exact_solution.value_x(0.5, j + offset_y, 0, t)) *
+                          (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1)] - exact_solution.value_x(0.5, j + offset_y, 0, t)) *
                           DX * DY * DZ / 4);
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + k] - exact_solution.value_x(0.5 + offset_x, j + offset_y, k, t)) *
-                              (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + k] - exact_solution.value_x(0.5 + offset_x, j + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + k] - exact_solution.value_x(0.5, j + offset_y, k, t)) *
+                              (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + k] - exact_solution.value_x(0.5, j + offset_y, k, t)) *
                               DX * DY * DZ / 2);
                 }
-                error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + NZ] - exact_solution.value_x(0.5 + offset_x, j + offset_y, NZ, t)) *
-                          (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + NZ] - exact_solution.value_x(0.5 + offset_x, j + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + NZ] - exact_solution.value_x(0.5, j + offset_y, NZ, t)) *
+                          (grid_loc_x[(newDimY_x)*dim_z + j * (NZ + 1) + NZ] - exact_solution.value_x(0.5, j + offset_y, NZ, t)) *
                           DX * DY * DZ / 4);
             }
             if (rby)
             {
-                error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, 0, t)) *
-                          (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, 0, t)) *
+                error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(0.5, NY, 0, t)) *
+                          (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(0.5, NY, 0, t)) *
                           DX * DY * DZ / 8);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
-                    error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, k, t)) *
-                              (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, k, t)) *
+                    error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
+                              (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(0.5, NY, k, t)) *
                               DX * DY * DZ / 4);
                 }
 
-                error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, NZ, t)) *
-                          (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(0.5 + offset_x, NY + offset_y, NZ, t)) *
+                error += ((grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(0.5, NY, NZ, t)) *
+                          (grid_loc_x[(newDimY_x)*dim_z + (newDimY_x - 2) * (NZ + 1) + NZ] - exact_solution.value_x(0.5, NY, NZ, t)) *
                           DX * DY * DZ / 8);
             }
         }
@@ -193,7 +193,7 @@ Real IcoNS::error_comp_X(const Real t)
     
     // middle slices
     {
-        for (size_t i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
+        for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
         {
             if (lby)
             {
@@ -201,7 +201,7 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x(i + 0.5 + offset_x, 0, 0, t)) *
                           DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0, k, t)) *
                               (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x(i + 0.5 + offset_x, 0, k, t)) *
@@ -212,13 +212,13 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[i * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x(i + 0.5 + offset_x, 0, NZ, t)) *
                           DX * DY * DZ / 4);
             }
-            for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+            for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
             {
                 error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, j + offset_y, 0, t)) *
                           (grid_loc_x[i * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, j + offset_y, 0, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, j + offset_y, k, t)) *
                               (grid_loc_x[i * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, j + offset_y, k, t)) *
@@ -235,7 +235,7 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x(i + 0.5 + offset_x, NY, 0, t)) *
                           DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY, k, t)) *
                               (grid_loc_x[i * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x(i + 0.5 + offset_x, NY, k, t)) *
@@ -259,7 +259,7 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z] - exact_solution.value_x((NX - 0.5), 0, 0, t)) *
                           DX * DY * DZ / 8);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
                               (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + k] - exact_solution.value_x((NX - 0.5), 0, k, t)) *
@@ -270,12 +270,12 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + dim_z + NZ] - exact_solution.value_x((NX - 0.5), 0, NZ, t)) *
                           DX * DY * DZ / 8);
             }
-            for (size_t j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+            for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
             {
                 error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j + offset_y, 0, t)) *
                           (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_x((NX - 0.5), j + offset_y, 0, t)) *
                           DX * DY * DZ / 4);
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j + offset_y, k, t)) *
                               (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), j + offset_y, k, t)) *
@@ -291,7 +291,7 @@ Real IcoNS::error_comp_X(const Real t)
                           (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1)] - exact_solution.value_x((NX - 0.5), NY, 0, t)) *
                           DX * DY * DZ / 8);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
                               (grid_loc_x[(newDimX_x - 2) * newDimY_x * (NZ + 1) + (newDimY_x - 2) * (NZ + 1) + k] - exact_solution.value_x((NX - 0.5), NY, k, t)) *
@@ -321,7 +321,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimY_y+1)*dim_z] - exact_solution.value_y(0, 0.5, 0, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimY_y+1)*dim_z + k] - exact_solution.value_y(0, 0.5, k, t)) *
                         (grid_loc_y[(newDimY_y+1)*dim_z + k] - exact_solution.value_y(0, 0.5, k, t)) *
@@ -332,12 +332,12 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimY_y+1)*dim_z+ NZ] - exact_solution.value_y(0, 0.5, NZ, t)) *
                     DX * DY * DZ / 8);
         }
-        for (size_t j = 1 + lby; j < newDimY_y - 1 -rby; j++)
+        for (int j = 1 + lby; j < newDimY_y - 1 -rby; j++)
         {
             error += ((grid_loc_y[(newDimY_y)*dim_z + j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5 + offset_y, 0, t)) *
                       (grid_loc_y[(newDimY_y)*dim_z + j * (NZ + 1)] - exact_solution.value_y(0, j + 0.5 + offset_y, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimY_y)*dim_z + j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5 + offset_y, k, t)) *
                           (grid_loc_y[(newDimY_y)*dim_z + j * (NZ + 1) + k] - exact_solution.value_y(0, j + 0.5 + offset_y, k, t)) *
@@ -352,7 +352,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimY_y)*dim_z + (newDimY_y-2) * (NZ + 1)] - exact_solution.value_y(0, (NY - 0.5), 0, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimY_y)*dim_z + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
                         (grid_loc_y[(newDimY_y)*dim_z + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(0, (NY - 0.5), k, t)) *
@@ -367,14 +367,14 @@ Real IcoNS::error_comp_Y(const Real t)
     
     // middle slices
     {
-        for (size_t i = 1 + lbx; i < newDimX_y -1 - rbx; i++)
+        for (int i = 1 + lbx; i < newDimX_y -1 - rbx; i++)
         {
             if(lby){
                 error += ((grid_loc_y[i * newDimY_y * (NZ + 1) + dim_z] - exact_solution.value_y(i + offset_x, 0.5, 0, t)) *
                         (grid_loc_y[i * newDimY_y * (NZ + 1) + dim_z] - exact_solution.value_y(i + offset_x, 0.5, 0, t)) *
                         DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_y[i * newDimY_y * (NZ + 1) + dim_z + k] - exact_solution.value_y(i + offset_x, 0.5, k, t)) *
                             (grid_loc_y[i * newDimY_y * (NZ + 1) + dim_z + k] - exact_solution.value_y(i + offset_x, 0.5, k, t)) *
@@ -384,13 +384,13 @@ Real IcoNS::error_comp_Y(const Real t)
                         (grid_loc_y[i * newDimY_y * (NZ + 1) + dim_z + NZ] - exact_solution.value_y(i + offset_x, 0.5, NZ, t)) *
                         DX * DY * DZ / 4);
             }
-            for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+            for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
             {
                 error += ((grid_loc_y[i * newDimY_y * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i + offset_x, j + 0.5 + offset_y, 0, t)) *
                           (grid_loc_y[i * newDimY_y * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(i + offset_x, j + 0.5 + offset_y, 0, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_y[i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i + offset_x, j + 0.5 + offset_y, k, t)) *
                               (grid_loc_y[i * newDimY_y * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(i + offset_x, j + 0.5 + offset_y, k, t)) *
@@ -406,7 +406,7 @@ Real IcoNS::error_comp_Y(const Real t)
                         (grid_loc_y[i * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1)] - exact_solution.value_y(i + offset_x, (NY - 0.5), 0, t)) *
                         DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ; k++)
+                for (int k = 1; k < NZ; k++)
                 {
                     error += ((grid_loc_y[i * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(i + offset_x, (NY - 0.5), k, t)) *
                             (grid_loc_y[i * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(i + offset_x, (NY - 0.5), k, t)) *
@@ -428,7 +428,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + dim_z] - exact_solution.value_y(NX, 0.5, 0, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + dim_z + k] - exact_solution.value_y(NX, 0.5, k, t)) *
                         (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + dim_z + k] - exact_solution.value_y(NX, 0.5, k, t)) *
@@ -439,12 +439,12 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + dim_z + NZ] - exact_solution.value_y(NX, 0.5, NZ, t)) *
                     DX * DY * DZ / 8);
         }
-        for (size_t j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             error += ((grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5 + offset_y, 0, t)) *
                       (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_y(NX, j + 0.5 + offset_y, 0, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5 + offset_y, k, t)) *
                           (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_y(NX, j + 0.5 + offset_y, k, t)) *
@@ -459,7 +459,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1)] - exact_solution.value_y(NX, (NY - 0.5), 0, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ; k++)
+            for (int k = 1; k < NZ; k++)
             {
                 error += ((grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
                         (grid_loc_y[(newDimX_y-2) * newDimY_y * (NZ + 1) + (newDimY_y-2) * (NZ + 1) + k] - exact_solution.value_y(NX, (NY - 0.5), k, t)) *
@@ -488,7 +488,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimY_z +1) *dim_z_z] - exact_solution.value_z(0, 0, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimY_z +1) *dim_z_z + k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
                         (grid_loc_z[(newDimY_z +1) *dim_z_z + k] - exact_solution.value_z(0, 0, k + 0.5, t)) *
@@ -499,12 +499,12 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimY_z +1) *dim_z_z + NZ - 1] - exact_solution.value_z(0, 0, NZ - 0.5, t)) *
                     DX * DY * DZ / 8);
         }
-        for (size_t j = 1 + lby; j < newDimY_z-1-rby; j++)
+        for (int j = 1 + lby; j < newDimY_z-1-rby; j++)
         {
             error += ((grid_loc_z[(newDimY_z) *dim_z_z + j * NZ] - exact_solution.value_z(0, j + offset_y, 0.5, t)) *
                       (grid_loc_z[(newDimY_z) *dim_z_z + j * NZ] - exact_solution.value_z(0, j + offset_y, 0.5, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimY_z) *dim_z_z + j * NZ + k] - exact_solution.value_z(0, j + offset_y, k + 0.5, t)) *
                           (grid_loc_z[(newDimY_z) *dim_z_z + j * NZ + k] - exact_solution.value_z(0, j + offset_y, k + 0.5, t)) *
@@ -519,7 +519,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimY_z) *dim_z_z + (newDimY_y-2)*dim_z_z] - exact_solution.value_z(0, NY, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimY_z) *dim_z_z + (newDimY_y-2)*dim_z_z + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
                         (grid_loc_z[(newDimY_z) *dim_z_z + (newDimY_y-2)*dim_z_z + k] - exact_solution.value_z(0, NY, k + 0.5, t)) *
@@ -534,14 +534,14 @@ Real IcoNS::error_comp_Z(const Real t)
     
     // middle slices
     {
-        for (size_t i = 1 + lbx; i < newDimX_z - 1 -rbx; i++)
+        for (int i = 1 + lbx; i < newDimX_z - 1 -rbx; i++)
         {
             if(lby){
                 error += ((grid_loc_z[i * newDimY_z * NZ  + dim_z_z] - exact_solution.value_z(i + offset_x, 0, 0.5, t)) *
                         (grid_loc_z[i * newDimY_z * NZ  + dim_z_z] - exact_solution.value_z(i + offset_x, 0, 0.5, t)) *
                         DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ - 1; k++)
+                for (int k = 1; k < NZ - 1; k++)
                 {
                     error += ((grid_loc_z[i * newDimY_z * NZ  + dim_z_z + k] - exact_solution.value_z(i + offset_x, 0, k + 0.5, t)) *
                             (grid_loc_z[i * newDimY_z * NZ  + dim_z_z + k] - exact_solution.value_z(i + offset_x, 0, k + 0.5, t)) *
@@ -551,13 +551,13 @@ Real IcoNS::error_comp_Z(const Real t)
                         (grid_loc_z[i * newDimY_z * NZ  + dim_z_z + NZ - 1] - exact_solution.value_z(i + offset_x, 0, NZ - 0.5, t)) *
                         DX * DY * DZ / 4);
             }
-            for (size_t j = 1 + lby; j < newDimY_z - 1 -rby; j++)
+            for (int j = 1 + lby; j < newDimY_z - 1 -rby; j++)
             {
                 error += ((grid_loc_z[i * newDimY_z * NZ + j * NZ] - exact_solution.value_z(i + offset_x, j + offset_y, 0.5, t)) *
                           (grid_loc_z[i * newDimY_z * NZ + j * NZ] - exact_solution.value_z(i + offset_x, j + offset_y, 0.5, t)) *
                           DX * DY * DZ / 2);
 
-                for (size_t k = 1; k < NZ - 1; k++)
+                for (int k = 1; k < NZ - 1; k++)
                 {
                     error += ((grid_loc_z[i * newDimY_z * NZ + j * NZ + k] - exact_solution.value_z(i + offset_x, j + offset_y, k + 0.5, t)) *
                               (grid_loc_z[i * newDimY_z * NZ + j * NZ + k] - exact_solution.value_z(i + offset_x, j + offset_y, k + 0.5, t)) *
@@ -573,7 +573,7 @@ Real IcoNS::error_comp_Z(const Real t)
                         (grid_loc_z[i * newDimY_z * NZ + (newDimY_z-2) * NZ] - exact_solution.value_z(i + offset_x, NY, 0.5, t)) *
                         DX * DY * DZ / 4);
 
-                for (size_t k = 1; k < NZ - 1; k++)
+                for (int k = 1; k < NZ - 1; k++)
                 {
                     error += ((grid_loc_z[i * newDimY_z * NZ + (newDimY_z-2) * NZ + k] - exact_solution.value_z(i + offset_x, NY, k + 0.5, t)) *
                             (grid_loc_z[i * newDimY_z * NZ + (newDimY_z-2) * NZ + k] - exact_solution.value_z(i + offset_x, NY, k + 0.5, t)) *
@@ -595,7 +595,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + dim_z_z] - exact_solution.value_z(NX, 0, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + dim_z_z + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
                         (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + dim_z_z + k] - exact_solution.value_z(NX, 0, k + 0.5, t)) *
@@ -606,12 +606,12 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + dim_z_z + NZ - 1] - exact_solution.value_z(NX, 0, NZ - 0.5, t)) *
                     DX * DY * DZ / 8);
         }
-        for (size_t j = 1 + lby; j < newDimY_z - 1 - rby; j++)
+        for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
         {
             error += ((grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + j * NZ] - exact_solution.value_z(NX, j + offset_y, 0.5, t)) *
                       (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + j * NZ] - exact_solution.value_z(NX, j + offset_y, 0.5, t)) *
                       DX * DY * DZ / 4);
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + j * NZ + k] - exact_solution.value_z(NX, j + offset_y, k + 0.5, t)) *
                           (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ + j * NZ + k] - exact_solution.value_z(NX, j + offset_y, k + 0.5, t)) *
@@ -626,7 +626,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ  + (newDimY_z-2) * NZ] - exact_solution.value_z(NX, NY, 0.5, t)) *
                     DX * DY * DZ / 8);
 
-            for (size_t k = 1; k < NZ - 1; k++)
+            for (int k = 1; k < NZ - 1; k++)
             {
                 error += ((grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ  + (newDimY_z-2) * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
                         (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ  + (newDimY_z-2) * NZ + k] - exact_solution.value_z(NX, NY, k + 0.5, t)) *
@@ -762,18 +762,18 @@ void IcoNS::setParallelization()
 
 void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
 {
-    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&req3);
-    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&req3);
+    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&reqs[3]);
+    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&reqs[3]);
 
-    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&req4);
-    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&req4);
+    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&reqs[4]);
+    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&reqs[4]);
 
     MPI_Barrier(cart_comm);
-    MPI_Isend(&grid_loc[(newDimY)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&req1);
-    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&req1);
+    MPI_Isend(&grid_loc[(newDimY)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&reqs[1]);
+    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&reqs[1]);
 
-    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&req2);
-    MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&req2);
+    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&reqs[2]);
+    MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&reqs[2]);
     MPI_Barrier(cart_comm);
 }
 

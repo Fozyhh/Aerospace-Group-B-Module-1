@@ -76,7 +76,7 @@ public:
      *
      * @return the approximate value.
      */
-    Real approximate_boundary_u(size_t x, size_t y, size_t z, Real t, size_t face, int side);
+    Real approximate_boundary_u(int x, int y, int z, Real t, int face, int side);
 
     
     /**
@@ -89,7 +89,7 @@ public:
      *
      * @return the approximate value.
      */
-    Real approximate_boundary_v(size_t x, size_t y, size_t z, Real t, size_t face, int side);
+    Real approximate_boundary_v(int x, int y, int z, Real t, int face, int side);
 
     /**
      * @brief Calculate the approximate value of the z velocity in a given point.
@@ -101,7 +101,7 @@ public:
      *
      * @return the approximate value.
      */
-    Real approximate_boundary_w(size_t x, size_t y, size_t z, Real t, size_t face, int side);
+    Real approximate_boundary_w(int x, int y, int z, Real t, int face, int side);
 
     /**
      * @brief Add the given function to the selected direction.
