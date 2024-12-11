@@ -146,7 +146,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         {
             for (size_t k = 0; k < NZ + 1; k++)
             {
-                Yy[(newDimY_y * dim_z) + j * (newDimY_y) + k] = boundary_value_v[face]->value(0, j + offset_y_y, k, t);
+                Yy[(newDimY_y * dim_z) + j * dim_z + k] = boundary_value_v[face]->value(0, j + offset_y_y, k, t);
             }
         }
     }
@@ -157,7 +157,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (lby)
         {
             face = 4;
-            Yy[newDimY_y * (NZ + 1) * i + dim_z] = boundary_value_v[face]->value(i + offset_x_y, offset_y_y, 0, t);
+            Yy[i*newDimY_y * (NZ + 1)+ dim_z] = boundary_value_v[face]->value(i + offset_x_y, offset_y_y, 0, t);
             face = 2;
             for (size_t k = 1; k < NZ; k++)
             {
