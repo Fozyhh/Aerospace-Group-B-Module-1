@@ -22,13 +22,13 @@ constexpr Real LY = 1.0;
 constexpr Real LZ = 1.0;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 40;
+constexpr int NX = 100;
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 40;
+constexpr int NY = 100;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 40;
+constexpr int NZ = 100;
 
 constexpr int PX = 2;
 constexpr int PY = 2;
@@ -44,7 +44,7 @@ constexpr Real DY = LY / NY;
 constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr Real DT = 0.3;
+constexpr Real DT = 0.001;
 
 /// @brief Total time interval for the simulation.
 constexpr Real T = 0.5;

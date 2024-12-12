@@ -37,17 +37,17 @@ public:
     other_dim_x_z = dim_x_z;
     other_dim_y_z = dim_y_z;
 
-    grid_loc_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
-    grid_loc_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
-    grid_loc_z[newDimX_z * newDimY_z * (NZ), 0.0];
+    // grid_loc_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
+    // grid_loc_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
+    // grid_loc_z[newDimX_z * newDimY_z * (NZ), 0.0];
 
-    Y2_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
-    Y2_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
-    Y2_z[newDimX_z * newDimY_z * (NZ), 0.0];
+    // Y2_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
+    // Y2_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
+    // Y2_z[newDimX_z * newDimY_z * (NZ), 0.0];
 
-    Y3_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
-    Y3_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
-    Y3_z[newDimX_z * newDimY_z * (NZ), 0.0];
+    // Y3_x[newDimX_x * newDimY_x * (NZ + 1), 0.0];
+    // Y3_y[newDimX_y * newDimY_y * (NZ + 1), 0.0];
+    // Y3_z[newDimX_z * newDimY_z * (NZ), 0.0];
   }
   /**
   * @brief The method is called by the program to initialize the grid.

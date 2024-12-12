@@ -84,7 +84,6 @@ void IcoNS::solve()
         exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
         exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
         exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
-        MPI_Barrier(cart_comm);
         x = L2_error(time); // every processor calculates his error not counting ghosts
         MPI_Barrier(cart_comm);
         error = 0.0;
@@ -151,10 +150,8 @@ Real IcoNS::L2_error(const Real t)
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_x ;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_x ;
-    // std::cout <<t<< "rank: " << rank << " off_x: " << offset_x << " off_y: " << offset_y << " dim_x:" << dim_x_x << " dim_y: " <<dim_y_x <<
-    //         " lby: " << lby << " rby: " << rby << " lbx: " << lbx << " rbx: " << rbx<<std::endl;
+    int offset_x = coords[0] * other_dim_x_x -1;
+    int offset_y = (PY - 1 - coords[1]) * other_dim_y_x -1;
     
     //first slice (left face)
     if (lbx)
@@ -332,8 +329,8 @@ Real IcoNS::error_comp_X(const Real t)
 Real IcoNS::error_comp_Y(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_y ;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_y;
+    int offset_x = coords[0] * other_dim_x_y -1;
+    int offset_y = (PY - 1 - coords[1]) * other_dim_y_y -1;
     // first slice (left face)
     if(lbx)
     {
@@ -499,8 +496,8 @@ Real IcoNS::error_comp_Y(const Real t)
 Real IcoNS::error_comp_Z(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_z;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_z;
+    int offset_x = coords[0] * other_dim_x_z -1;
+    int offset_y = (PY - 1 - coords[1]) * other_dim_y_z -1;
     // first slice (left face)
     if(lbx)
     {
@@ -794,7 +791,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int
 
     MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&reqs[1]);
     MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&reqs[1]);
-
+    MPI_Barrier(cart_comm);
     //MPI_Waitall(4, reqs, MPI_SUCCESS);
 
 }
