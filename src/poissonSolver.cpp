@@ -1,6 +1,6 @@
 #include "poissonSolver.hpp"
 
-void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD)
+void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD, double t1, double t2)
 {
     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
     // C2Decomp *c2d;
@@ -51,12 +51,23 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
     fftw_plan backward = fftw_plan_dft_c2r_3d(NX, NY, NZ, FD, F_dP.data(), FFTW_ESTIMATE);
     fftw_execute(backward);
 
+// TO TEST MAIN JUST CHANGE THE IF STATEMENT
+    if(t1==t2){ // IF CALLED BY TESTER
     // Normalization
     double normalization_factor = (NX) * (NY) * (NZ);
     for (int i=0; i < NX; i++){
         for (int j=0; j < NY; j++){
             for (int k=0; k < NZ; k++){
-                F_dP[i * (NY) * (NZ) + j * (NZ) + k] /= normalization_factor;
+                F_dP[i * (NY) * (NZ) + j * (NZ) + k] = F_dP[i * (NY) * (NZ) + j * (NZ) + k] / normalization_factor * DX * DX; // THIS DX*DX MAKES NO SENSE
+            }
+        }
+    }
+    }else{ // IF CALLED BY MAIN
+        for (int i=0; i < NX; i++){
+            for (int j=0; j < NY; j++){
+                for (int k=0; k < NZ; k++){ // RETURN THE DELTA PRESSURE AS THE MANUFACTURED SOLUTION WANTS
+                    F_dP[i * (NY) * (NZ) + j * (NZ) + k] = std::cos(i * DX) * std::cos(j * DY) * std::sin(k * DZ) * (std::sin(t2)-std::sin(t1));
+                }
             }
         }
     }

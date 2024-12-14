@@ -32,22 +32,20 @@ int main(int argc, char *argv[])
     for (size_t i=0; i < NX; i++){
         for (size_t j=0; j < NY; j++){
             for (size_t k=0; k < NZ; k++){
-                F[i * (NY) * (NZ) + j * (NZ) + k] = ((DX/(LX)) * (DX/(LX)) + (DY/(LY)) * (DY/(LY)) + (DZ/(LZ)) * (DZ/(LZ))) *
-                                                          4 * M_PI * M_PI * 
-                                                          std::cos(i * DX * 2 * M_PI/(LX)) *
-                                                          std::cos(j * DY * 2 * M_PI/(LY)) * 
-                                                          std::cos(k * DZ * 2 * M_PI/(LZ));
+                F[i * (NY) * (NZ) + j * (NZ) + k] = 3*std::cos(i * DX) *
+                                                    std::cos(j * DY) *
+                                                    std::cos(k * DZ);
 
-                sol[i * (NY) * (NZ) + j * (NZ) + k] = -std::cos(i * DX * 2 * M_PI/(LX)) *
-                                                            std::cos(j * DY * 2 * M_PI/(LY)) *
-                                                            std::cos(k * DZ * 2 * M_PI/(LZ));
+                sol[i * (NY) * (NZ) + j * (NZ) + k] = -std::cos(i * DX) *
+                                                      std::cos(j * DY) *
+                                                      std::cos(k * DZ);
             }   
         }
     }
 
     fftw_complex* out = fftw_alloc_complex((NX) * (NY) * ((NZ)/2 + 1));
 
-    poissonSolver.solveDirichletPoisson(F, out);
+    poissonSolver.solveDirichletPoisson(F, out, 0.0, 0.0);
 
     fftw_free(out);
 
