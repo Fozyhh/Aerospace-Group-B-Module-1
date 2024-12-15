@@ -60,9 +60,139 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         newDimX_z, newDimY_z);
 }
 
+void IcoNS::setParallelization()
+{
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
+
+    // Create a Cartesian topology (2D)
+    // MPI_Dims_create(size, 2, dims);
+
+    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
+
+    MPI_Cart_coords(cart_comm, rank, 2, coords);
+
+    MPI_Cart_shift(cart_comm, 0, 1, &neighbors[0], &neighbors[2]);
+
+    MPI_Cart_shift(cart_comm, 1, 1, &neighbors[1], &neighbors[3]);
+
+    if (NX % PX != 0 && coords[0] == PX- 1)
+    {
+        dim_x_x++;
+    }
+    if ((NY + 1) % PY != 0 && coords[1] == 0)
+    {
+        dim_y_x++;
+    }
+
+    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
+        dim_x_y++;
+    if ((NY) % PY != 0 && coords[1] == 0)
+    {
+        dim_y_y++;
+    }
+
+    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
+        dim_x_z++;
+    if ((NY + 1) % PY != 0 && coords[1] == 0)
+    {
+        dim_y_z++;
+    }
+
+    //TODO: controllare che la riga in più non porti errori agli address globali
+    newDimX_x = dim_x_x + 2;
+    newDimY_x = dim_y_x + 2;
+    newDimX_y = dim_x_y + 2;
+    newDimY_y = dim_y_y + 2;
+    newDimX_z = dim_x_z + 2;
+    newDimY_z = dim_y_z + 2;
+
+    grid_loc_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+    grid_loc_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+    grid_loc_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+    Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+    Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+    Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+    Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    /*
+    //Resize only for boundary faces
+        bool is_edge1 = coords[0] == PX - 1;
+        bool is_edge2 = coords[1] == 0;
+
+        if (is_edge1 == true || is_edge2 == true) {
+            grid_loc_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+            grid_loc_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+            grid_loc_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+            Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+            Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+            Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+            Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+            Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+            Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+        }
+ */
+    if (coords[0] == 0)
+        lbx++;
+
+    if (coords[0] == PX - 1)
+        rbx++;
+
+    if (coords[1] == PY - 1)
+        lby++;
+
+    if (coords[1] == 0)
+        rby++;
+
+    boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
+    boundary.setCoords(coords);
+    boundary.setOtherDim(other_dim_x_x,other_dim_y_x,other_dim_x_y,other_dim_y_y,other_dim_x_z,other_dim_y_z);
+
+    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
+    MPI_Type_commit(&MPI_face_x_x);
+
+    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_DOUBLE, &MPI_face_y_x);
+    MPI_Type_commit(&MPI_face_y_x);
+
+    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_DOUBLE, &MPI_face_x_y);
+    MPI_Type_commit(&MPI_face_x_y);
+
+    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_DOUBLE, &MPI_face_y_y);
+    MPI_Type_commit(&MPI_face_y_y);
+
+    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_DOUBLE, &MPI_face_x_z);
+    MPI_Type_commit(&MPI_face_x_z);
+
+    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_DOUBLE, &MPI_face_y_z);
+    MPI_Type_commit(&MPI_face_y_z);
+}
+
+void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
+{
+    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&reqs[2]);
+    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&reqs[2]);
+
+    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&reqs[3]);
+    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&reqs[3]);
+    MPI_Barrier(cart_comm); //required
+
+    MPI_Isend(&grid_loc[(newDimY)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&reqs[0]);
+    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&reqs[0]);
+
+    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&reqs[1]);
+    MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&reqs[1]);
+    MPI_Barrier(cart_comm);
+    //MPI_Waitall(4, reqs, MPI_SUCCESS);
+
+}
+
 void IcoNS::solve()
 {
-    
+
     Real time = 0.0;
     Real error;
     int i = 0;
@@ -77,9 +207,8 @@ void IcoNS::solve()
     double x=0;
     while (time < T)
     {
-        
         boundary.update_boundary(grid_loc_x, grid_loc_y, grid_loc_z, time);
-        
+
         MPI_Barrier(cart_comm);
         exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
         exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
@@ -88,7 +217,7 @@ void IcoNS::solve()
         MPI_Barrier(cart_comm);
         error = 0.0;
         MPI_Reduce(&x, &error, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-        
+
         if (rank == 0)
         {
             error=sqrt(error);
@@ -102,13 +231,13 @@ void IcoNS::solve()
         //         {
         //             for(int j=0; j < newDimY_x ;j++){
         //                 for(int k=0; k <dim_z;k++){
-        //                     std::cout << grid_loc_x[in*newDimY_x*dim_z + j * dim_z + k] << " ";
+        //                     std::cout << grid_loc[100%] Built target main
         //                 }
         //                 std::cout<< std::endl;
         //             }
         //             std::cout<< std::endl;
         //         }
-                
+
         //     }
         //     MPI_Barrier(cart_comm);
         //     }
@@ -152,7 +281,7 @@ Real IcoNS::error_comp_X(const Real t)
     Real error = 0.0;
     int offset_x = coords[0] * other_dim_x_x -1;
     int offset_y = (PY - 1 - coords[1]) * other_dim_y_x -1;
-    
+
     //first slice (left face)
     if (lbx)
     {
@@ -169,7 +298,7 @@ Real IcoNS::error_comp_X(const Real t)
                               (grid_loc_x[(newDimY_x + 1) * dim_z + k] - exact_solution.value_x(0.5, 0, k, t)) *
                               DX * DY * DZ / 4);
                 }
-            
+
                 error += ((grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
                             (grid_loc_x[(newDimY_x + 1) * dim_z + NZ] - exact_solution.value_x(0.5, 0, NZ, t)) *
                             DX * DY * DZ / 8);
@@ -208,7 +337,7 @@ Real IcoNS::error_comp_X(const Real t)
             }
         }
     }
-    
+
     // middle slices
     {
         for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -266,7 +395,7 @@ Real IcoNS::error_comp_X(const Real t)
             }
         }
     }
-    
+
     // last slice (right face)
     if (rbx)
     {
@@ -322,7 +451,7 @@ Real IcoNS::error_comp_X(const Real t)
             }
         }
     }
-    
+
     return error;
 }
 
@@ -382,7 +511,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-    
+
     // middle slices
     {
         for (int i = 1 + lbx; i < newDimX_y -1 - rbx; i++)
@@ -437,7 +566,7 @@ Real IcoNS::error_comp_Y(const Real t)
             }
         }
     }
-    
+
     // last slice (right face)
     if(rbx)
     {
@@ -489,7 +618,7 @@ Real IcoNS::error_comp_Y(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-    
+
     return error;
 }
 
@@ -549,7 +678,7 @@ Real IcoNS::error_comp_Z(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-    
+
     // middle slices
     {
         for (int i = 1 + lbx; i < newDimX_z - 1 -rbx; i++)
@@ -604,7 +733,7 @@ Real IcoNS::error_comp_Z(const Real t)
             }
         }
     }
-    
+
     // last slice (right face)
     if(rbx)
     {
@@ -656,144 +785,8 @@ Real IcoNS::error_comp_Z(const Real t)
                     DX * DY * DZ / 8);
         }
     }
-    
+
     return error;
-}
-
-void IcoNS::setParallelization()
-{
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
-
-    // Create a Cartesian topology (2D)
-    // MPI_Dims_create(size, 2, dims);
-    
-    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
-
-    MPI_Cart_coords(cart_comm, rank, 2, coords);
-
-    MPI_Cart_shift(cart_comm, 0, 1, &neighbors[0], &neighbors[2]);
-
-    MPI_Cart_shift(cart_comm, 1, 1, &neighbors[1], &neighbors[3]);
-
-    // dim_x_x = NX / PX;
-    // dim_y_x = (NY + 1) / PY;
-    // dim_x_y = (NX + 1) / PX;
-    // dim_y_y = NY / PY;
-    // dim_x_z = (NX + 1) / PX;
-    // dim_y_z = (NY + 1) / PY;
-    // dim_z = NZ + 1;
-    // dim_z_z = NZ;
-
-    // other_dim_x_x = dim_x_x;
-    // other_dim_y_x = dim_y_x;
-    // other_dim_x_y = dim_x_y;
-    // other_dim_y_y = dim_y_y;
-    // other_dim_x_z = dim_x_z;
-    // other_dim_y_z = dim_y_z;
-    if (NX % PX != 0 && coords[0] == PX- 1)
-    {
-        dim_x_x++;
-    }
-    if ((NY + 1) % PY != 0 && coords[1] == 0)
-    {
-        dim_y_x++;
-    }
-
-    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-        dim_x_y++;
-    if ((NY) % PY != 0 && coords[1] == 0)
-    {
-        dim_y_y++;
-    }
-
-    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-        dim_x_z++;
-    if ((NY + 1) % PY != 0 && coords[1] == 0)
-    {
-        dim_y_z++;
-    }
-
-    //TODO: controllare che la riga in più non porti errori agli address globali
-    newDimX_x = dim_x_x + 2;
-    newDimY_x = dim_y_x + 2;
-    newDimX_y = dim_x_y + 2;
-    newDimY_y = dim_y_y + 2;
-    newDimX_z = dim_x_z + 2;
-    newDimY_z = dim_y_z + 2;
-
-    grid_loc_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    grid_loc_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    grid_loc_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-    Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-    Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    if (coords[0] == 0)
-        lbx++;
-
-    if (coords[0] == PX - 1)
-        rbx++;
-
-    if (coords[1] == PY - 1)
-        lby++;
-
-    if (coords[1] == 0)
-        rby++;
-
-    boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
-    boundary.setCoords(coords);
-    boundary.setOtherDim(other_dim_x_x,other_dim_y_x,other_dim_x_y,other_dim_y_y,other_dim_x_z,other_dim_y_z);
-
-    /*
-    glob_address_x_x = (i-1) +coords[0]*dim_x_x;
-    glob_address_y_x =(j-1)+ coords[1]*dim_y_x;
-
-
-    glob_address_x_y = (i-1) +coords[0]*dim_x_y;
-    glob_address_y_y =(j-1)+ coords[1]*dim_y_y;
-    */
-    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
-    MPI_Type_commit(&MPI_face_x_x);
-
-    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_DOUBLE, &MPI_face_y_x);
-    MPI_Type_commit(&MPI_face_y_x);
-
-    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_DOUBLE, &MPI_face_x_y);
-    MPI_Type_commit(&MPI_face_x_y);
-
-    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_DOUBLE, &MPI_face_y_y);
-    MPI_Type_commit(&MPI_face_y_y);
-
-    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_DOUBLE, &MPI_face_x_z);
-    MPI_Type_commit(&MPI_face_x_z);
-
-    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_DOUBLE, &MPI_face_y_z);
-    MPI_Type_commit(&MPI_face_y_z);
-}
-
-void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
-{
-    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&reqs[2]);
-    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&reqs[2]);
-
-    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&reqs[3]);
-    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&reqs[3]);
-    MPI_Barrier(cart_comm); //required
-    MPI_Isend(&grid_loc[(newDimY)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&reqs[0]);
-    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&reqs[0]);
-
-    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&reqs[1]);
-    MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&reqs[1]);
-    MPI_Barrier(cart_comm);
-    //MPI_Waitall(4, reqs, MPI_SUCCESS);
-
 }
 
 // void IcoNS::output()

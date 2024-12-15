@@ -1,8 +1,37 @@
 #include "boundary.hpp"
+#include <iostream>
 
+/**
+ * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each
+ * requested time t, calculating the approximated ones too.
+ *
+ * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
+ * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
+ * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
+ * @param t Time of the time discretization we are considering.
+ */
 // TODO:
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
+    // Add size checks at the beginning
+    /*
+    std::cout << "newDimX_x :" << newDimX_x << " newDimX_y :" <<newDimX_y << " newDimX_z :" <<newDimX_z << " dim_z :" << dim_z << " dim_z_z :"<<  dim_z_z << " \n"
+    << "newDimY_x :" << newDimY_x << " newDimY_y :" <<newDimY_y << " newDimY_z :" <<newDimY_z << " dim_z :" << dim_z << " dim_z_z :"<<  dim_z_z
+    << std::endl;
+
+    size_t expected_size_x = (newDimX_x) * (newDimY_x) * dim_z;
+    size_t expected_size_y = (newDimX_y) * (newDimY_y) * dim_z;
+    size_t expected_size_z = (newDimX_z) * (newDimY_z) * dim_z_z;
+
+    if (Yx.size() < expected_size_x ||
+        Yy.size() < expected_size_y ||
+        Yz.size() < expected_size_z) {
+        throw std::runtime_error("Vector sizes are insufficient");
+    }
+
+ */
+
+
     // UPDATE EVERY INDEX SUCH THAT YOU SKIP FIRST FACE(GHOST)
     // AND THE FIRST AND LAST ROW OF EACH FACE
     int face;
@@ -15,8 +44,8 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // face 3 -> rby back
     // face 4 5 -> no partition on z
 
-    // Have to adjust indexes in exact values if it is made 
-    // by processor with diff coords with global indexes 
+    // Have to adjust indexes in exact values if it is made
+    // by processor with diff coords with global indexes
     // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
     int offset_x_x = coords[0] * other_dim_x_x -1;
     int offset_y_x = (PY - 1 - coords[1]) * other_dim_y_x -1;
@@ -134,7 +163,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     {
         face = 0;
         for (int j = 1; j < newDimY_y - 1; j++)
-        { 
+        {
             for (int k = 0; k < dim_z; k++)
             {
                 Yy[(newDimY_y * dim_z) + j * dim_z + k] = boundary_value_v[face]->value(0, j + offset_y_y, k, t);
