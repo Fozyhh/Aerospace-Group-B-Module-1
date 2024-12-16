@@ -88,12 +88,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    double sum = 0.0;
-    for(int i = 0; i < NX*NY*NZ; i++){
-        sum += Y2_p[i] * DX * DY * DZ;
-    }
-    std::cout << "sum1: " << sum << std::endl;
-
+    
     /////////////////////poisson_solver.solvePoisson(Y2_p);//////////////////////////////////// -> the solution is stored in Sol_p
     poissonSolver.solveDirichletPoisson(Y2_p,helper);
 
@@ -232,12 +227,6 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    sum = 0.0;
-    for(int i = 0; i < NX*NY*NZ; i++){
-        sum += Y3_p[i] * DX * DY * DZ;
-    }
-    std::cout << "sum2: " << sum << std::endl;
-    
     /////////////////////poisson_solver.solvePoisson(Y3_p);//////////////////////////////////// -> the solution is stored in Sol_p=Y3_p
     // using Y3_p to store solution but we can use Y2_p
     poissonSolver.solveDirichletPoisson(Y3_p,helper);
@@ -378,12 +367,6 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    sum = 0.0;
-    for(int i = 0; i < NX*NY*NZ; i++){
-        sum += Y2_p[i] * DX * DY * DZ;
-    }
-    std::cout << "sum3: " << sum << std::endl;
-    
     /////////////////////poisson_solver.solvePoisson(Y2_p);//////////////////////////////////// -> the solution is stored in Sol_p
     // using Y2_p to store solution
     poissonSolver.solveDirichletPoisson(Y2_p,helper);

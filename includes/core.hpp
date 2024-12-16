@@ -88,7 +88,7 @@ private:
       if(k==(NZ+1)){
         k=1;
       }
-      return (i%NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+      return ((i+NX)%NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
     };
 
     inline int indexingPeriodicy(int i, int j, int k) {
@@ -104,7 +104,7 @@ private:
       if(k==(NZ+1)){
         k=1;
       }
-      return i * NY * (NZ + 1) + (j%NY) * (NZ + 1) + k;
+      return i * NY * (NZ + 1) + ((j+NY)%NY) * (NZ + 1) + k;
     };
     
     inline int indexingPeriodicz(int i, int j, int k) {
@@ -120,11 +120,11 @@ private:
       if(j==(NY+1)){
         j=1;
       }
-      return i * (NY + 1) * NZ + j * NZ + (k%NZ);
+      return i * (NY + 1) * NZ + j * NZ + ((k+NZ)%NZ);
     };
 
     inline int indexingPeriodicp(int i, int j, int k) {
-      return (i%NX) * NY * NZ + (j%NY) * NZ + (k%NZ);
+      return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
     };
 #endif
   
