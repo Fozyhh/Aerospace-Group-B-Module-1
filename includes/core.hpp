@@ -37,32 +37,6 @@ public:
     other_dim_y_y = dim_y_y;
     other_dim_x_z = dim_x_z;
     other_dim_y_z = dim_y_z;
-
-/*
-    grid_loc_x(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    grid_loc_y(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    grid_loc_z(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    Y2_x(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y2_y(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y2_z(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    Y3_x(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y3_y(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y3_z(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    grid_loc_x = std::vector<double>(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    grid_loc_y = std::vector<double>(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    grid_loc_z = std::vector<double>(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    Y2_x = std::vector<double>(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y2_y = std::vector<double>(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y2_z = std::vector<double>(newDimX_z * newDimY_z * (NZ), 0.0);
-
-    Y3_x = std::vector<double>(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y3_y = std::vector<double>(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y3_z = std::vector<double>(newDimX_z * newDimY_z * (NZ), 0.0);
-*/
   }
 
   /**
@@ -114,7 +88,7 @@ public:
   Real L2_error(const Real t);
 
   // TODO write the output file.
-
+  //void parse_input(const std::string& filename);
 
 
 private:

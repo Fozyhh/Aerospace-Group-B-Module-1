@@ -81,25 +81,29 @@ void IcoNS::setParallelization()
 
     if (NX % PX != 0 && coords[0] == PX- 1)
     {
-        dim_x_x++;
+        dim_x_x+= NX%PX;
     }
     if ((NY + 1) % PY != 0 && coords[1] == 0)
     {
-        dim_y_x++;
+        dim_y_x+= (NY+1)%PY;
     }
 
     if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-        dim_x_y++;
+    {
+        dim_x_y+= (NX+1)%PX;
+    }
     if ((NY) % PY != 0 && coords[1] == 0)
     {
-        dim_y_y++;
+        dim_y_y+= NY%PY;
     }
 
     if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-        dim_x_z++;
+    {
+        dim_x_z+= (NX+1)%PX;
+    }
     if ((NY + 1) % PY != 0 && coords[1] == 0)
     {
-        dim_y_z++;
+        dim_y_z+= (NY+1)%PY;
     }
 
     //TODO: controllare che la riga in più non porti errori agli address globali
@@ -798,6 +802,132 @@ Real IcoNS::error_comp_Z(const Real t)
 
     return error;
 }
+
+/*
+vtk file : 3 slices for x=0, y=0, z=0
+    all of it for all vars u,v,w,p
+two profile*.dat , containing 3 1D arrays of the solution at time=0 and time=final
+*/
+/*
+void IcoNS::parse_input(const std::string& filename)
+{
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error: could not open file " << filename << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    std::string line;
+    std::vector<std::string> bc_types = {"Periodic", "Inlet", "Wall", "Outlet", "Pressure", "Symmetry"};
+
+    while (std::getline(file, line)) {
+        // Skip empty lines and comments
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+
+        // Read Reynolds number
+        if (line.find("Reynolds number") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                iss >> RE;
+            }
+            continue;
+        }
+
+        // Read time step
+        if (line.find("Time step") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                iss >> DT;
+            }
+            continue;
+        }
+
+        // Read number of time steps (total time)
+        if (line.find("Number of time steps") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                iss >> T;
+            }
+            continue;
+        }
+
+        // Read domain dimensions
+        if (line.find("Dimension of domain") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                iss >> LX >> LY >> LZ;
+            }
+            continue;
+        }
+
+        // Read grid points
+        if (line.find("Number of grid points") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                iss >> NX >> NY >> NZ;
+            }
+            continue;
+        }
+
+        // Read boundary conditions
+        if (line.find("Boundary conditions") != std::string::npos) {
+            if (std::getline(file, line)) {
+                iss.str(line);
+                int bcXL, bcXR, bcYL, bcYR, bcZL, bcZR;
+                iss >> bcXL >> bcXR >> bcYL >> bcYR >> bcZL >> bcZR;
+
+                // Validate boundary conditions
+                auto validate_bc = [&bc_types](int bc) {
+                    if (bc < 0 || bc >= static_cast<int>(bc_types.size())) {
+                        std::cerr << "Error: Invalid boundary condition type: " << bc << std::endl;
+                        MPI_Abort(MPI_COMM_WORLD, 1);
+                    }
+                };
+
+                validate_bc(bcXL); validate_bc(bcXR);
+                validate_bc(bcYL); validate_bc(bcYR);
+                validate_bc(bcZL); validate_bc(bcZR);
+
+                // Store boundary conditions in class members
+                // Assuming you have these members in your class:
+                boundary_conditions[0] = {bcXL, bcXR};  // X direction
+                boundary_conditions[1] = {bcYL, bcYR};  // Y direction
+                boundary_conditions[2] = {bcZL, bcZR};  // Z direction
+            }
+            continue;
+        }
+
+    }
+
+    // Validate configuration
+    if (NX <= 0 || NY <= 0 || NZ <= 0) {
+        std::cerr << "Error: Grid dimensions must be positive" << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    if (LX <= 0 || LY <= 0 || LZ <= 0) {
+        std::cerr << "Error: Domain dimensions must be positive" << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    if (DT <= 0 || T <= 0) {
+        std::cerr << "Error: Time parameters must be positive" << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    if (RE <= 0) {
+        std::cerr << "Error: Reynolds number must be positive" << std::endl;
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+
+    // Update derived parameters
+    DX = LX / NX;
+    DY = LY / NY;
+    DZ = LZ / NZ;
+}
+*/
 
 // void IcoNS::output()
 // {
