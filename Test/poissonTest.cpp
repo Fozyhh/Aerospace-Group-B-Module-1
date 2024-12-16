@@ -32,20 +32,20 @@ int main(int argc, char *argv[])
     for (size_t i=0; i < NX; i++){
         for (size_t j=0; j < NY; j++){
             for (size_t k=0; k < NZ; k++){
-                F[i * (NY) * (NZ) + j * (NZ) + k] = 3*std::cos(i * DX) *
+                F[i * (NY) * (NZ) + j * (NZ) + k] = -3*std::cos(i * DX) *
                                                     std::cos(j * DY) *
-                                                    std::cos(k * DZ);
+                                                    std::sin(k * DZ);
 
-                sol[i * (NY) * (NZ) + j * (NZ) + k] = -std::cos(i * DX) *
+                sol[i * (NY) * (NZ) + j * (NZ) + k] = std::cos(i * DX) *
                                                       std::cos(j * DY) *
-                                                      std::cos(k * DZ);
+                                                      std::sin(k * DZ);
             }   
         }
     }
 
     fftw_complex* out = fftw_alloc_complex((NX) * (NY) * ((NZ)/2 + 1));
 
-    poissonSolver.solveDirichletPoisson(F, out, 0.0, 0.0);
+    poissonSolver.solveDirichletPoisson(F, out);
 
     fftw_free(out);
 

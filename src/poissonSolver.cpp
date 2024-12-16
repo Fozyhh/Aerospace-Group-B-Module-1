@@ -1,6 +1,6 @@
 #include "poissonSolver.hpp"
 
-void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD, double t1, double t2)
+void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD)
 {
     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
     // C2Decomp *c2d;
@@ -34,13 +34,13 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
         for (int j = 0; j < NY; j++) {
             for (int k = 0; k < (NZ)/2+1; k++) {
                 FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][0] = FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][0] /
-                    (2 * (std::cos(2 * i * M_PI / (NX)) - 1) +
-                    2 * (std::cos(2 * j * M_PI / (NY)) - 1) +
-                    2 * (std::cos(2 * k * M_PI / (NZ)) - 1));
+                    (2/(DX*DX) * (std::cos(2 * i * M_PI / (NX)) - 1) +
+                    2/(DY*DY) * (std::cos(2 * j * M_PI / (NY)) - 1) +
+                    2/(DZ*DZ) * (std::cos(2 * k * M_PI / (NZ)) - 1));
                 FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][1] = FD[i * (NY) * ((NZ)/2+1) + j * ((NZ)/2+1) + k][1] /
-                    (2 * (std::cos(2 * i * M_PI / (NX)) - 1) +
-                    2 * (std::cos(2 * j * M_PI / (NY)) - 1) +
-                    2 * (std::cos(2 * k * M_PI / (NZ)) - 1));
+                    (2/(DX*DX) * (std::cos(2 * i * M_PI / (NX)) - 1) +
+                    2/(DY*DY) * (std::cos(2 * j * M_PI / (NY)) - 1) +
+                    2/(DZ*DZ) * (std::cos(2 * k * M_PI / (NZ)) - 1));
             }
         }
     }
@@ -51,23 +51,11 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
     fftw_plan backward = fftw_plan_dft_c2r_3d(NX, NY, NZ, FD, F_dP.data(), FFTW_ESTIMATE);
     fftw_execute(backward);
 
-// TO TEST MAIN JUST CHANGE THE IF STATEMENT
-    if(t1==t2){ // IF CALLED BY TESTER
-    // Normalization
     double normalization_factor = (NX) * (NY) * (NZ);
     for (int i=0; i < NX; i++){
         for (int j=0; j < NY; j++){
             for (int k=0; k < NZ; k++){
-                F_dP[i * (NY) * (NZ) + j * (NZ) + k] = F_dP[i * (NY) * (NZ) + j * (NZ) + k] / normalization_factor * DX * DX; // THIS DX*DX MAKES NO SENSE
-            }
-        }
-    }
-    }else{ // IF CALLED BY MAIN
-        for (int i=0; i < NX; i++){
-            for (int j=0; j < NY; j++){
-                for (int k=0; k < NZ; k++){ // RETURN THE DELTA PRESSURE AS THE MANUFACTURED SOLUTION WANTS
-                    F_dP[i * (NY) * (NZ) + j * (NZ) + k] = std::cos(i * DX) * std::cos(j * DY) * std::sin(k * DZ) * (std::sin(t2)-std::sin(t1));
-                }
+                F_dP[i * (NY) * (NZ) + j * (NZ) + k] = F_dP[i * (NY) * (NZ) + j * (NZ) + k] / normalization_factor;
             }
         }
     }
@@ -109,9 +97,9 @@ void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1
         for (int j = 0; j < NY+1; j++) {
             for (int k = 0; k < NZ+1; k++) {
                 F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /
-                    (2 * (std::cos(i * M_PI / (NX)) - 1) +
-                    2 * (std::cos(j * M_PI / (NY)) - 1) +
-                    2 * (std::cos(k * M_PI / (NZ)) - 1));
+                    (2/(DX*DX) * (std::cos(i * M_PI / (NX)) - 1) +
+                    2/(DY*DY) * (std::cos(j * M_PI / (NY)) - 1) +
+                    2/(DZ*DZ) * (std::cos(k * M_PI / (NZ)) - 1));
             }
         }
     }

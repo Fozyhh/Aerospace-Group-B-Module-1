@@ -23,7 +23,7 @@ public:
       periodicZ(periodicZ)
     {}
 
-    void solveDirichletPoisson(std::array<Real, (NX) * (NY) * (NZ)>& F_dP, fftw_complex *FD, double t1, double t2); //t1 and t2 used for manufactured solution
+    void solveDirichletPoisson(std::array<Real, (NX) * (NY) * (NZ)>& F_dP, fftw_complex *FD);
     void solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F);
 };
 

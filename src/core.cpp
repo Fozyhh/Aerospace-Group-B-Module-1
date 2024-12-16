@@ -170,10 +170,10 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_Z(t);
     error += error_comp_P(t);
 
-    std::cout << "Error along x: " << error_comp_X(t) << std::endl;
-    std::cout << "Error along y: " << error_comp_Y(t) << std::endl;
-    std::cout << "Error along z: " << error_comp_Z(t) << std::endl;
-    std::cout << "Error along p: " << error_comp_P(t) << std::endl;
+    std::cout << "Error along x: " << sqrt(error_comp_X(t)) << std::endl;
+    std::cout << "Error along y: " << sqrt(error_comp_Y(t)) << std::endl;
+    std::cout << "Error along z: " << sqrt(error_comp_Z(t)) << std::endl;
+    std::cout << "Error along p: " << sqrt(error_comp_P(t)) << std::endl;
 
     return sqrt(error);
 }
