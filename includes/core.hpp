@@ -4,6 +4,8 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+#define Real double
+
 #include "utils.hpp"
 #include "boundary.hpp"
 #include "grid.hpp"
@@ -20,16 +22,21 @@ public:
         input_file(input_file),
         output_file(output_file),
         rank(rank),
-        size(size),
-        dim_x_x(NX / PX),
-        dim_y_x((NY + 1) / PY),
-        dim_x_y((NX + 1) / PX),
-        dim_y_y(NY / PY),
-        dim_x_z((NX + 1) / PX),
-        dim_y_z((NY + 1) / PY),
-        dim_z(NZ + 1),
-        dim_z_z(NZ)
+        size(size)
   {
+    parse_input(input_file);
+
+    dims[0] = PX;
+    dims[1] = PY;
+
+    dim_x_x = NX / PX;
+    dim_y_x = (NY + 1) / PY;
+    dim_x_y = (NX + 1) / PX;
+    dim_y_y = NY / PY;
+    dim_x_z = (NX + 1) / PX;
+    dim_y_z = (NY + 1) / PY;
+    dim_z = NZ + 1;
+    dim_z_z = NZ;
 
     other_dim_x_x = dim_x_x;
     other_dim_y_x = dim_y_x;
@@ -88,15 +95,14 @@ public:
   Real L2_error(const Real t);
 
   // TODO write the output file.
-  //void parse_input(const std::string& filename);
-
+  void parse_input(const std::string& input_file);
 
 private:
 
   // Parallel variables
   int rank, size;
   MPI_Comm cart_comm;
-  int dims[2] = {PX, PY};
+  int dims[2];
   int periods[2] = {1, 1};
 
   Boundary boundary;

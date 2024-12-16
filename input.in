@@ -1,0 +1,17 @@
+# Reynolds number: Re
+1000
+
+# Time step: dt
+0.001
+
+# Number of time steps: T
+0.5
+
+# Dimension of domain: Lx, Ly, Lz
+1.0 1.0 1.0
+
+# Number of grid points: Nx, Ny, Nz
+480 480 480
+
+# Process grid: Px, Py, Pz
+2 2 1

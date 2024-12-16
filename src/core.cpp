@@ -1,6 +1,6 @@
-
-#include <cmath>
+#include "constants.hpp"
 #include "core.hpp"
+#include <cmath>
 #include <math.h>
 #include <fstream>
 #include <string>
@@ -66,7 +66,7 @@ void IcoNS::setParallelization()
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
+    //std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
 
     // Create a Cartesian topology (2D)
     // MPI_Dims_create(size, 2, dims);
@@ -808,127 +808,88 @@ vtk file : 3 slices for x=0, y=0, z=0
     all of it for all vars u,v,w,p
 two profile*.dat , containing 3 1D arrays of the solution at time=0 and time=final
 */
-/*
-void IcoNS::parse_input(const std::string& filename)
-{
-    std::ifstream file(filename);
+void IcoNS::parse_input(const std::string& input_file) {
+    std::ifstream file(input_file);
     if (!file.is_open()) {
-        std::cerr << "Error: could not open file " << filename << std::endl;
+        std::cerr << "Process " << rank << ": Error - Cannot open file " << input_file << std::endl;
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
     std::string line;
-    std::vector<std::string> bc_types = {"Periodic", "Inlet", "Wall", "Outlet", "Pressure", "Symmetry"};
-
+    // Skip comments and empty lines until we find RE
     while (std::getline(file, line)) {
-        // Skip empty lines and comments
         if (line.empty() || line[0] == '#') continue;
-
         std::istringstream iss(line);
-
-        // Read Reynolds number
-        if (line.find("Reynolds number") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                iss >> RE;
-            }
-            continue;
-        }
-
-        // Read time step
-        if (line.find("Time step") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                iss >> DT;
-            }
-            continue;
-        }
-
-        // Read number of time steps (total time)
-        if (line.find("Number of time steps") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                iss >> T;
-            }
-            continue;
-        }
-
-        // Read domain dimensions
-        if (line.find("Dimension of domain") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                iss >> LX >> LY >> LZ;
-            }
-            continue;
-        }
-
-        // Read grid points
-        if (line.find("Number of grid points") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                iss >> NX >> NY >> NZ;
-            }
-            continue;
-        }
-
-        // Read boundary conditions
-        if (line.find("Boundary conditions") != std::string::npos) {
-            if (std::getline(file, line)) {
-                iss.str(line);
-                int bcXL, bcXR, bcYL, bcYR, bcZL, bcZR;
-                iss >> bcXL >> bcXR >> bcYL >> bcYR >> bcZL >> bcZR;
-
-                // Validate boundary conditions
-                auto validate_bc = [&bc_types](int bc) {
-                    if (bc < 0 || bc >= static_cast<int>(bc_types.size())) {
-                        std::cerr << "Error: Invalid boundary condition type: " << bc << std::endl;
-                        MPI_Abort(MPI_COMM_WORLD, 1);
-                    }
-                };
-
-                validate_bc(bcXL); validate_bc(bcXR);
-                validate_bc(bcYL); validate_bc(bcYR);
-                validate_bc(bcZL); validate_bc(bcZR);
-
-                // Store boundary conditions in class members
-                // Assuming you have these members in your class:
-                boundary_conditions[0] = {bcXL, bcXR};  // X direction
-                boundary_conditions[1] = {bcYL, bcYR};  // Y direction
-                boundary_conditions[2] = {bcZL, bcZR};  // Z direction
-            }
-            continue;
-        }
-
+        if (!(iss >> RE)) continue;
+        break;
     }
 
-    // Validate configuration
-    if (NX <= 0 || NY <= 0 || NZ <= 0) {
-        std::cerr << "Error: Grid dimensions must be positive" << std::endl;
+    // Skip comments and empty lines until we find DT
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> DT)) continue;
+        break;
+    }
+
+    // Skip comments and empty lines until we find T
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> T)) continue;
+        break;
+    }
+
+    // Skip comments and empty lines until we find domain dimensions
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> LX >> LY >> LZ)) continue;
+        break;
+    }
+
+    // Skip comments and empty lines until we find grid points
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> NX >> NY >> NZ)) continue;
+        break;
+    }
+
+    // Skip comments and empty lines until we find process grid
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> PX >> PY >> PZ)) continue;
+        break;
+    }
+
+    if (rank == 0) {
+        std::cout << "\nConfiguration:\n"
+                  << "Reynolds number: " << RE << "\n"
+                  << "Time step: " << DT << "\n"
+                  << "Total time: " << T << "\n"
+                  << "Domain size: " << LX << " x " << LY << " x " << LZ << "\n"
+                  << "Grid points: " << NX << " x " << NY << " x " << NZ << "\n"
+                  << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n";
+    }
+
+    // Verify that the process grid matches the number of processes
+    if (PX * PY * PZ != size) {
+        if (rank == 0) {
+            std::cerr << "Error: Number of processes (" << size
+                      << ") does not match process grid ("
+                      << PX << " x " << PY << " x " << PZ
+                      << " = " << (PX * PY * PZ) << ")\n";
+        }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    if (LX <= 0 || LY <= 0 || LZ <= 0) {
-        std::cerr << "Error: Domain dimensions must be positive" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
-
-    if (DT <= 0 || T <= 0) {
-        std::cerr << "Error: Time parameters must be positive" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
-
-    if (RE <= 0) {
-        std::cerr << "Error: Reynolds number must be positive" << std::endl;
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
-
-    // Update derived parameters
+    // Calculate grid spacing
     DX = LX / NX;
     DY = LY / NY;
     DZ = LZ / NZ;
-}
-*/
 
-// void IcoNS::output()
-// {
-// }
+    // Make sure all processes have read the file before proceeding
+    MPI_Barrier(MPI_COMM_WORLD);
+}

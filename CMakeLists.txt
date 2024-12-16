@@ -35,6 +35,7 @@ set(SOURCES
     src/core.cpp
     src/boundary.cpp
     src/newRK.cpp
+    src/constants.cpp
 )
 
 # Executable
