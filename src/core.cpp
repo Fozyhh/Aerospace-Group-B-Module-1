@@ -171,23 +171,33 @@ void IcoNS::setParallelization()
     MPI_Type_commit(&MPI_face_y_z);
 }
 
-void IcoNS::exchangeData(std::vector<Real> &grid_loc,int newDimX,int newDimY,int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
+void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
 {
-    MPI_Isend(&grid_loc[dim_z*newDimY + dim_z],1,MPI_face_x,neighbors[3],rank,cart_comm,&reqs[2]);
-    MPI_Irecv(&grid_loc[dim_z*newDimY + (newDimY-1)*dim_z],1,MPI_face_x,neighbors[1],neighbors[1],cart_comm,&reqs[2]);
-
-    MPI_Isend(&grid_loc[dim_z*newDimY + (newDimY-2)*dim_z],1,MPI_face_x,neighbors[1],rank,cart_comm,&reqs[3]);
-    MPI_Irecv(&grid_loc[dim_z*newDimY],1,MPI_face_x,neighbors[3],neighbors[3],cart_comm,&reqs[3]);
-    MPI_Barrier(cart_comm); //required
-
-    MPI_Isend(&grid_loc[(newDimY)*dim_z],1,MPI_face_y,neighbors[0],rank,cart_comm,&reqs[0]);
-    MPI_Irecv(&grid_loc[(dim_z)*newDimY*(newDimX-1)],1,MPI_face_y,neighbors[2],neighbors[2],cart_comm,&reqs[0]);
-
-    MPI_Isend(&grid_loc[newDimY*dim_z*(newDimX-2)],1,MPI_face_y,neighbors[2],rank,cart_comm,&reqs[1]);
-    MPI_Irecv(&grid_loc[0],1,MPI_face_y,neighbors[0],neighbors[0],cart_comm,&reqs[1]);
-    MPI_Barrier(cart_comm);
-    //MPI_Waitall(4, reqs, MPI_SUCCESS);
-
+    if (!(/*dirichlet on y && */ coords[1] == 0))
+    {
+        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2) * dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm, &reqs[3]);
+        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &reqs[3]);
+        MPI_Wait(&reqs[3], MPI_SUCCESS);
+    }
+    if (!(/*dirichlet on y && */ coords[1] == PY - 1))
+    {
+        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm, &reqs[2]);
+        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &reqs[2]);
+        MPI_Wait(&reqs[2], MPI_SUCCESS);
+    }
+    // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
+    if (!(/*dirichlet on x axis &&*/ coords[0] == 0))
+    {
+        MPI_Isend(&grid_loc[(newDimY)*dim_z], 1, MPI_face_y, neighbors[0], rank, cart_comm, &reqs[0]);
+        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
+        MPI_Wait(&reqs[0], MPI_SUCCESS);
+    }
+    if (!(/*dirichlet on x &&*/ coords[0] == PX - 1))
+    {
+        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
+        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2)], 1, MPI_face_y, neighbors[2], rank, cart_comm, &reqs[1]);
+        MPI_Wait(&reqs[1], MPI_SUCCESS);
+    }
 }
 
 void IcoNS::solve()
