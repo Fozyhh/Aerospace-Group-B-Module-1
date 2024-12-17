@@ -146,6 +146,8 @@ private:
   int other_dim_x_x, other_dim_y_x;
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
+
+  bool dirichletX= true;
 };
 
 #endif // CORE_HPP

@@ -48,11 +48,11 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // by processor with diff coords with global indexes
     // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
     int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = (PY - 1 - coords[1]) * other_dim_y_x -1;
+    int offset_y_x = coords[1] * other_dim_y_x -1;
     int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = (PY - 1 - coords[1]) * other_dim_y_y -1;
+    int offset_y_y = coords[1] * other_dim_y_y -1;
     int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = (PY - 1 - coords[1]) * other_dim_y_z -1;
+    int offset_y_z = coords[1] * other_dim_y_z -1;
 
     if (lbx)
     {

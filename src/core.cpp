@@ -66,10 +66,10 @@ void IcoNS::setParallelization()
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    //std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
-
+    std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
     // Create a Cartesian topology (2D)
     // MPI_Dims_create(size, 2, dims);
+
 
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
@@ -77,13 +77,14 @@ void IcoNS::setParallelization()
 
     MPI_Cart_shift(cart_comm, 0, 1, &neighbors[0], &neighbors[2]);
 
-    MPI_Cart_shift(cart_comm, 1, 1, &neighbors[1], &neighbors[3]);
+    MPI_Cart_shift(cart_comm, 1, 1, &neighbors[3], &neighbors[1]);
+    std::cout << rank << "- neigh: " << neighbors[1] << neighbors[3] << std::endl;
 
     if (NX % PX != 0 && coords[0] == PX- 1)
     {
         dim_x_x+= NX%PX;
     }
-    if ((NY + 1) % PY != 0 && coords[1] == 0)
+    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
     {
         dim_y_x+= (NY+1)%PY;
     }
@@ -92,7 +93,7 @@ void IcoNS::setParallelization()
     {
         dim_x_y+= (NX+1)%PX;
     }
-    if ((NY) % PY != 0 && coords[1] == 0)
+    if ((NY) % PY != 0 && coords[1] == PY-1)
     {
         dim_y_y+= NY%PY;
     }
@@ -101,7 +102,7 @@ void IcoNS::setParallelization()
     {
         dim_x_z+= (NX+1)%PX;
     }
-    if ((NY + 1) % PY != 0 && coords[1] == 0)
+    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
     {
         dim_y_z+= (NY+1)%PY;
     }
@@ -140,18 +141,18 @@ void IcoNS::setParallelization()
             Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
         }
  */
-    if (coords[0] == 0)
-        lbx++;
+    if(dirichletX){
+        if (coords[0] == 0)
+            lbx++;
 
-    if (coords[0] == PX - 1)
-        rbx++;
-
+        if (coords[0] == PX - 1)
+            rbx++;
+    }
     if (coords[1] == PY - 1)
-        lby++;
-
-    if (coords[1] == 0)
         rby++;
 
+    if (coords[1] == 0)
+        lby++;
     boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
     boundary.setCoords(coords);
     boundary.setOtherDim(other_dim_x_x,other_dim_y_x,other_dim_x_y,other_dim_y_y,other_dim_x_z,other_dim_y_z);
@@ -177,31 +178,47 @@ void IcoNS::setParallelization()
 
 void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
 {
+    if (!(/*dirichlet on y && */ coords[1] == 0)){
+        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
+    }
+
+    if (!(/*dirichlet on y && */ coords[1] == PY-1))
+    {
+        
+        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
+        MPI_Wait(&reqs[3], MPI_SUCCESS);
+        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
+    }
     if (!(/*dirichlet on y && */ coords[1] == 0))
     {
-        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2) * dim_z], 1, MPI_face_x, neighbors[1], rank, cart_comm, &reqs[3]);
-        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], neighbors[1], cart_comm, &reqs[3]);
-        MPI_Wait(&reqs[3], MPI_SUCCESS);
-    }
-    if (!(/*dirichlet on y && */ coords[1] == PY - 1))
-    {
-        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], rank, cart_comm, &reqs[2]);
-        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], neighbors[3], cart_comm, &reqs[2]);
+        
+        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
         MPI_Wait(&reqs[2], MPI_SUCCESS);
     }
     // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
-    if (!(/*dirichlet on x axis &&*/ coords[0] == 0))
+    if (!(dirichletX && coords[0] == 0))
     {
-        MPI_Isend(&grid_loc[(newDimY)*dim_z], 1, MPI_face_y, neighbors[0], rank, cart_comm, &reqs[0]);
-        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
+        MPI_Isend(&grid_loc[(newDimY)*dim_z], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
+        
+        //MPI_Wait(&reqs[0], MPI_SUCCESS);
+        //MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
+        
+    }
+    if (!(dirichletX && coords[0] == PX - 1)){
+        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
+        MPI_Wait(&reqs[1], MPI_SUCCESS);
+        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
+        //MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
+        //MPI_Wait(&reqs[1], MPI_SUCCESS);
+    }
+    if (!(dirichletX && coords[0] == 0)){
+        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9  , cart_comm, &reqs[0]);
         MPI_Wait(&reqs[0], MPI_SUCCESS);
     }
-    if (!(/*dirichlet on x &&*/ coords[0] == PX - 1))
-    {
-        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
-        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2)], 1, MPI_face_y, neighbors[2], rank, cart_comm, &reqs[1]);
-        MPI_Wait(&reqs[1], MPI_SUCCESS);
-    }
+    //MPI_Waitall(test,&reqs[0],MPI_SUCCESS);
+
+    
+    
 }
 
 void IcoNS::solve()
@@ -237,25 +254,25 @@ void IcoNS::solve()
             error=sqrt(error);
             std::cout << " error: " << error << std::endl;
         }
-        // {
-        //     for(int r =0; r<4 ;r++){
-        //     if(rank==r){
-        //         std::cout << "rsnk: " << rank << std::endl;
-        //         for (int in = 0 ; in < newDimX_x ; in++)
-        //         {
-        //             for(int j=0; j < newDimY_x ;j++){
-        //                 for(int k=0; k <dim_z;k++){
-        //                     std::cout << grid_loc[100%] Built target main
-        //                 }
-        //                 std::cout<< std::endl;
-        //             }
-        //             std::cout<< std::endl;
-        //         }
+        /*{
+            for(int r =0; r<4 ;r++){
+            if(rank==r){
+                std::cout << "rsnk: " << rank << std::endl;
+                for (int in = 0 ; in < newDimX_x ; in++)
+                {
+                    for(int j=0; j < newDimY_x ;j++){
+                        for(int k=0; k <dim_z;k++){
+                            std::cout << grid_loc_x[in * newDimY_x * dim_z + j * dim_z + k] << " ";
+                        }
+                        std::cout<< std::endl;
+                    }
+                    std::cout<< std::endl;
+                }
 
-        //     }
-        //     MPI_Barrier(cart_comm);
-        //     }
-        // }
+            }
+            MPI_Barrier(cart_comm);
+            }
+        }*/
         // reduce
         solve_time_step(time); // adapt cycles to skip ghosts
         MPI_Barrier(cart_comm);
@@ -282,7 +299,7 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_Y(t);
     error += error_comp_Z(t);
 
-    //std::cout << error_comp_X(t) << std::endl;
+    // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
     // std::cout << error_comp_Z(t) << std::endl << std::endl;
 
@@ -294,8 +311,7 @@ Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
     int offset_x = coords[0] * other_dim_x_x -1;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_x -1;
-
+    int offset_y = coords[1] * other_dim_y_x -1;
     //first slice (left face)
     if (lbx)
     {
@@ -473,7 +489,7 @@ Real IcoNS::error_comp_Y(const Real t)
 {
     Real error = 0.0;
     int offset_x = coords[0] * other_dim_x_y -1;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_y -1;
+    int offset_y = coords[1] * other_dim_y_y -1;
     // first slice (left face)
     if(lbx)
     {
@@ -640,7 +656,7 @@ Real IcoNS::error_comp_Z(const Real t)
 {
     Real error = 0.0;
     int offset_x = coords[0] * other_dim_x_z -1;
-    int offset_y = (PY - 1 - coords[1]) * other_dim_y_z -1;
+    int offset_y = coords[1] * other_dim_y_z -1;
     // first slice (left face)
     if(lbx)
     {

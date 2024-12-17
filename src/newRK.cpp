@@ -139,7 +139,7 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
              (v[lv] + v[lv + newDimY_y * dim_z] + v[lv - dim_z] + v[lv + newDimY_y * dim_z - dim_z]) / 4.0 * (u[lu + dim_z] - u[lu - dim_z]) / (2.0 * DY) +
              (w[lw] + w[lw + newDimY_z * dim_z_z] + w[lw - 1] + w[lw + newDimY_z * dim_z_z - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
            1 / RE * ((u[lu + newDimY_x * dim_z] - 2 * u[lu] + u[lu - newDimY_x * dim_z]) / (DX * DX) + (u[lu + dim_z] - 2 * u[lu] + u[lu - dim_z]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
-           functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + (PY - 1 - coords[1]) * other_dim_y_x, k, t);
+           functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + coords[1] * other_dim_y_x, k, t);
 }
 
 Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
@@ -154,7 +154,7 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
            (1.0 / RE) * ((v[lv + newDimY_y * dim_z] - 2.0 * v[lv] + v[lv - newDimY_y * dim_z]) / (DX * DX) +
                          (v[lv + dim_z] - 2.0 * v[lv] + v[lv - dim_z]) / (DY * DY) +
                          (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
-           functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + (PY - 1 - coords[1]) * other_dim_y_y, k, t);
+           functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
 }
 
 Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
@@ -170,7 +170,7 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
            (1.0 / RE) * ((w[lw + newDimY_z * dim_z_z] - 2.0 * w[lw] + w[lw - newDimY_z * dim_z_z]) / (DX * DX) +
                          (w[lw + dim_z_z] - 2.0 * w[lw] + w[lw - dim_z_z]) / (DY * DY) +
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
-           functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + (PY - 1 - coords[1]) * other_dim_y_z, k, t);
+           functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
 }
 
 Real IcoNS::functionG_u(int i, int j, int k, Real t)
