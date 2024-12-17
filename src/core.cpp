@@ -76,7 +76,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             {
                 Phi_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
                 grid.p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
-#ifdef PERIODIC
+#ifdef DIRICHELET
                 Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
 #endif
             }
