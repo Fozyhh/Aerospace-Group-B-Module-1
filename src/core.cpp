@@ -56,7 +56,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             }
         }
     }
-    
+#ifdef PERIODIC
     for (int i = 0; i < NX; i++)
     {
         for (int j = 0; j < NY; j++)
@@ -64,11 +64,10 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             for (int k = 0; k < NZ; k++)
             {
                 Y2_p[i * (NY) * (NZ) + j * (NZ) + k] = 0.0;
-                Y3_p[i * (NY) * (NZ) + j * (NZ) + k] = 0.0;
             }
         }
     }
-    
+#endif
     for (int i = 0; i < NX+1; i++)
     {
         for (int j = 0; j < NY+1; j++)
@@ -77,6 +76,9 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
             {
                 Phi_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
                 grid.p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
+#ifdef PERIODIC
+                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 0.0;
+#endif
             }
         }
     }
@@ -163,19 +165,21 @@ void IcoNS::solve()
 
 Real IcoNS::L2_error(const Real t)
 {
-    Real error = 0.0;
+    Real error_v = 0.0;
+    Real error_p = 0.0;
 
-    error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
-    error += error_comp_P(t);
+    error_v += error_comp_X(t);
+    error_v += error_comp_Y(t);
+    error_v += error_comp_Z(t);
+    error_p += error_comp_P(t);
 
-    std::cout << "Error along x: " << sqrt(error_comp_X(t)) << std::endl;
+    /*std::cout << "Error along x: " << sqrt(error_comp_X(t)) << std::endl;
     std::cout << "Error along y: " << sqrt(error_comp_Y(t)) << std::endl;
     std::cout << "Error along z: " << sqrt(error_comp_Z(t)) << std::endl;
-    std::cout << "Error along p: " << sqrt(error_comp_P(t)) << std::endl;
+    std::cout << "Error along p: " << sqrt(error_comp_P(t)) << std::endl;*/
+    std::cout << "Error in p: " << sqrt(error_p) << std::endl;
 
-    return sqrt(error);
+    return sqrt(error_v);
 }
 
 Real IcoNS::error_comp_X(const Real t)

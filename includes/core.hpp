@@ -63,76 +63,76 @@ private:
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y2_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y2_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y2_z{};
+// array used to store input and output of the poisson solver, should be called Sol_p{};
+#ifdef PERIODIC
   std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
-  //std::array<Real, ((NX) * (NY) * (NZ))> Sol_p{};
+#endif
+#ifdef DIRICHELET
+  std::array<Real, ((NX+1) * (NY+1) * (NZ+1))> Y2_p{};
+#endif
   std::array<Real, ((NX+1) * (NY+1) * (NZ+1))> Phi_p{};
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> Y3_x{};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> Y3_y{};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> Y3_z{};
-  std::array<Real, ((NX) * (NY) * (NZ))> Y3_p{};
   std::string input_file;  // input file.
   std::string output_file; // output file.
 
+  inline int indexingPeriodicx(int i, int j, int k) {
+    if(j==-1){
+      j=NY-1;
+    }
+    if(j==(NY+1)){
+      j=1;
+    }
+    if(k==-1){
+      k=NZ-1;
+    }
+    if(k==(NZ+1)){
+      k=1;
+    }
+    return ((i+NX)%NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
+  };
 
-#ifdef PERIODIC
-    inline int indexingPeriodicx(int i, int j, int k) {
-      if(j==-1){
-        j=NY-1;
-      }
-      if(j==(NY+1)){
-        j=1;
-      }
-      if(k==-1){
-        k=NZ-1;
-      }
-      if(k==(NZ+1)){
-        k=1;
-      }
-      return ((i+NX)%NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k;
-    };
+  inline int indexingPeriodicy(int i, int j, int k) {
+    if(i==-1){
+      i=NX-1;
+    }
+    if(i==(NX+1)){
+      i=1;
+    }
+    if(k==-1){
+      k=NZ-1;
+    }
+    if(k==(NZ+1)){
+      k=1;
+    }
+    return i * NY * (NZ + 1) + ((j+NY)%NY) * (NZ + 1) + k;
+  };
 
-    inline int indexingPeriodicy(int i, int j, int k) {
-      if(i==-1){
-        i=NX-1;
-      }
-      if(i==(NX+1)){
-        i=1;
-      }
-      if(k==-1){
-        k=NZ-1;
-      }
-      if(k==(NZ+1)){
-        k=1;
-      }
-      return i * NY * (NZ + 1) + ((j+NY)%NY) * (NZ + 1) + k;
-    };
-    
-    inline int indexingPeriodicz(int i, int j, int k) {
-      if(i==-1){
-        i=NX-1;
-      }
-      if(i==(NX+1)){
-        i=1;
-      }
-      if(j==-1){
-        j=NY-1;
-      }
-      if(j==(NY+1)){
-        j=1;
-      }
-      return i * (NY + 1) * NZ + j * NZ + ((k+NZ)%NZ);
-    };
+  inline int indexingPeriodicz(int i, int j, int k) {
+    if(i==-1){
+      i=NX-1;
+    }
+    if(i==(NX+1)){
+      i=1;
+    }
+    if(j==-1){
+      j=NY-1;
+    }
+    if(j==(NY+1)){
+      j=1;
+    }
+    return i * (NY + 1) * NZ + j * NZ + ((k+NZ)%NZ);
+  };
 
-    inline int indexingPeriodicp(int i, int j, int k) {
-      return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
-    };
-#endif
+  inline int indexingPeriodicp(int i, int j, int k) {
+    return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
+  };
   
-#ifdef DIRICHELET
-    inline int indexingDiricheletx(int i, int j, int k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
-    inline int indexingDirichelety(int i, int j, int k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
-    inline int indexingDiricheletz(int i, int j, int k) { return i * (NY + 1) * NZ + j * NZ + k; }
-#endif
+  inline int indexingDiricheletx(int i, int j, int k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
+  inline int indexingDirichelety(int i, int j, int k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
+  inline int indexingDiricheletz(int i, int j, int k) { return i * (NY + 1) * NZ + j * NZ + k; }
+  inline int indexingDiricheletp(int i, int j, int k) { return i * (NY+1) * (NZ+1) + j * (NZ+1) + k; }
 };
 
 #endif // CORE_HPP

@@ -9,7 +9,7 @@
  * @param Yz Boundary z velocities or the Y size_termediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
-void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t)
+void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, std::array<Real, (NX+1) * (NY + 1) * (NZ + 1)> &P, Real t)
 {
     int face/* , i, j, k */;
     // X
