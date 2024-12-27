@@ -9,7 +9,7 @@
  * @param Yz Boundary z velocities or the Y size_termediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
 */
-void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, std::array<Real, (NX+1) * (NY + 1) * (NZ + 1)> &P, Real t)
+void Boundary::update_boundary(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, Real t)
 {
     int face/* , i, j, k */;
     // X
@@ -254,6 +254,212 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
 
     Real dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2.0) * side;
+}
+
+/**
+ * @brief Calculate the divergence of the velocity at the boundary, used to calculate the input of the poisson solver.
+ * 
+ * @param Yx  Ux input grid.
+ * @param Yy  Uy input grid.
+ * @param Yz  Uz input grid.
+ * @param Y2_p output grid.
+ * @param t Time of the time discretization we are considering.
+ * @param c Time constant of the RK intermidiate step (64, 16 or 40).
+*/
+void Boundary::divergence(std::array<Real, NX * (NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY * (NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> &Y2_p, Real t, Real c)
+{
+    // is the denominator 3*DX correct? -> 2*DX ?
+    // LEFT FACE
+    for (int j = 1; j < NY; j++)
+    {
+        for(int k = 1; k < NZ; k++)
+        {
+            Y2_p[j * (NZ + 1) + k] = 120.0 / (c * DT) *
+                ((-8*boundary_value_u[0]->value(0,j,k,t) + 9*Yx[j * (NZ + 1) + k] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
+                (Yy[j * (NZ + 1) + k] - Yy[(j-1) * (NZ + 1) + k]) / (DY) +
+                (Yz[j * NZ + k] - Yz[j * NZ + k-1]) / (DZ));
+        }
+    }
+    // RIGHT FACE
+    for (int j = 1; j < NY; j++)
+    {
+        for(int k = 1; k < NZ; k++)
+        {
+            Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ+1) + k] = 120.0 / (c * DT) *
+                ((8*boundary_value_u[1]->value(NX,j,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
+                (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1) + k] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1) + k]) / (DY) +
+                (Yz[(NX) * (NY + 1) * NZ + j * NZ + k] - Yz[(NX) * (NY + 1) * NZ + j * NZ + k-1]) / (DZ));
+        }
+    }
+    // FRONT FACE
+    for (int i = 1; i < NX; i++)
+    {
+        for(int k = 1; k < NZ; k++)
+        {
+            Y2_p[i * (NY + 1) * (NZ + 1) + k] = 120.0 / (c * DT) *
+                ((Yx[i * (NY + 1) * (NZ + 1) + k] - Yx[(i-1) * (NY + 1) * (NZ + 1) + k]) / (DX) +
+                (-8*boundary_value_v[2]->value(i,0,k,t) + 9*Yy[i * NY * (NZ + 1) + k] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1) + k]) / (3*DY) +
+                (Yz[i * (NY + 1) * NZ + k] - Yz[i * (NY + 1) * NZ + k-1]) / (DZ));
+        }
+    }
+    // BACK FACE
+    for (int i = 1; i < NX; i++)
+    {
+        for(int k = 1; k < NZ; k++)
+        {
+            Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
+                ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (DX) +
+                (8*boundary_value_v[3]->value(i,NY,k,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1) + k] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1) + k]) / (3*DY) +
+                (Yz[i * (NY + 1) * NZ + (NY) * NZ + k] - Yz[i * (NY + 1) * NZ + (NY) * NZ + k-1]) / (DZ));
+        }
+    }
+    // LOWER FACE
+    for (int i = 1; i < NX; i++)
+    {
+        for(int j = 1; j < NY; j++)
+        {
+            Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] = 120.0 / (c * DT) *
+                ((Yx[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (DX) +
+                (Yy[i * NY * (NZ + 1) + j * (NZ + 1)] - Yy[i * NY * (NZ + 1) + (j-1) * (NZ + 1)]) / (DY) +
+                (-8*boundary_value_w[4]->value(i,j,0,t) + 9*Yz[i * (NY + 1) * NZ + j * NZ] - Yz[i * (NY + 1) * NZ + j * NZ + 1]) / (3*DZ));
+        }
+    }
+    // UPPER FACE
+    for (int i = 1; i < NX; i++)
+    {
+        for(int j = 1; j < NY; j++)
+        {
+            Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+                ((Yx[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (DX) +
+                (Yy[i * NY * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yy[i * NY * (NZ + 1) + (j-1) * (NZ + 1) + (NZ)]) / (DY) +
+                (8*boundary_value_w[5]->value(i,j,NZ,t) - 9*Yz[i * (NY + 1) * NZ + j * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + j * NZ + (NZ-2)]) / (3*DZ));
+        }
+    }
+    // 4 X EDGES
+    for (int i = 1; i < NX; i++)
+    {
+        // LOWER FRONT EDGE
+        Y2_p[i * (NY + 1) * (NZ + 1)] = 120.0 / (c * DT) *
+            ((Yx[i * (NY + 1) * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1)]) / (DX) +
+            (-8*boundary_value_v[2]->value(i,0,0,t) + 9*Yy[i * NY * (NZ + 1)] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1)]) / (3*DY) +
+            (-8*boundary_value_w[4]->value(i,0,0,t) + 9*Yz[i * (NY + 1) * NZ] - Yz[i * (NY + 1) * NZ + 1]) / (3*DZ));
+        // UPPER FRONT EDGE
+        Y2_p[i * (NY + 1) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+            ((Yx[i * (NY + 1) * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NZ)]) / (DX) +
+            (-8*boundary_value_v[2]->value(i,0,NZ,t) + 9*Yy[i * NY * (NZ + 1) + (NZ)] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1) + (NZ)]) / (3*DY) +
+            (8*boundary_value_w[5]->value(i,0,NZ,t) - 9*Yz[i * (NY + 1) * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + (NZ-2)]) / (3*DZ));
+        // LOWER BACK EDGE
+        Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] = 120.0 / (c * DT) *
+            ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (DX) +
+            (8*boundary_value_v[3]->value(i,NY,0,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1)] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1)]) / (3*DY) +
+            (-8*boundary_value_w[4]->value(i,NY,0,t) + 9*Yz[i * (NY + 1) * NZ + (NY) * NZ] - Yz[i * (NY + 1) * NZ + (NY) * NZ + 1]) / (3*DZ));
+        // UPPER BACK EDGE
+        Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+            ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (DX) +
+            (8*boundary_value_v[3]->value(i,NY,NZ,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1) + (NZ)] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
+            (8*boundary_value_w[5]->value(i,NY,NZ,t) - 9*Yz[i * (NY + 1) * NZ + (NY) * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + (NY) * NZ + (NZ-2)]) / (3*DZ));
+    }
+    // 4 Y EDGES
+    for (int j = 1; j < NY; j++)
+    {
+        // LOWER LEFT EDGE
+        Y2_p[j * (NZ + 1)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(0,j,0,t) + 9*Yx[j * (NZ + 1)] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (3*DX) +
+            (Yy[j * (NZ + 1)] - Yy[(j-1) * (NZ + 1)]) / (DY) +
+            (-8*boundary_value_w[4]->value(0,j,0,t) + 9*Yz[j * NZ] - Yz[j * NZ + 1]) / (3*DZ));
+        // UPPER LEFT EDGE
+        Y2_p[j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(0,j,NZ,t) + 9*Yx[j * (NZ + 1) + (NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (3*DX) +
+            (Yy[j * (NZ + 1) + (NZ)] - Yy[(j-1) * (NZ + 1) + (NZ)]) / (DY) +
+            (8*boundary_value_w[5]->value(0,j,NZ,t) - 9*Yz[j * NZ + (NZ-1)] + Yz[j * NZ + (NZ-2)]) / (3*DZ));
+    }// break to exploit locality
+    for (int j = 1; j < NY; j++)
+    {
+        // LOWER RIGHT EDGE
+        Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX,j,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (3*DX) +
+            (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1)] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1)]) / (DY) +
+            (-8*boundary_value_w[4]->value(NX,j,0,t) + 9*Yz[(NX) * (NY + 1) * NZ + j * NZ] - Yz[(NX) * (NY + 1) * NZ + j * NZ + 1]) / (3*DZ));
+        // UPPER RIGHT EDGE
+        Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX,j,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (3*DX) +
+            (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1) + (NZ)]) / (DY) +
+            (8*boundary_value_w[5]->value(NX,j,NZ,t) - 9*Yz[(NX) * (NY + 1) * NZ + j * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + j * NZ + (NZ-2)]) / (3*DZ));
+    }
+    // 4 Z EDGES
+    for (int k = 1; k < NZ; k++)
+    {
+        // FRONT LEFT EDGE
+        Y2_p[k] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(0,0,k,t) + 9*Yx[k] - Yx[1 * (NY + 1) * (NZ + 1) + k]) / (3*DX) +
+            (-8*boundary_value_v[2]->value(0,0,k,t) + 9*Yy[k] - Yy[1 * (NZ + 1) + k]) / (3*DY) +
+            (Yz[k] - Yz[k-1]) / (DZ));
+    }// break to exploit locality
+    for (int k = 1; k < NZ; k++)
+    {
+        // BACK LEFT EDGE
+        Y2_p[(NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(0,NY,k,t) + 9*Yx[(NY) * (NZ + 1) + k] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (3*DX) +
+            (8*boundary_value_v[3]->value(0,NY,k,t) - 9*Yy[(NY-1) * (NZ + 1) + k] + Yy[(NY-2) * (NZ + 1) + k]) / (3*DY) +
+            (Yz[(NY) * NZ + k] - Yz[(NY) * NZ + k-1]) / (DZ));
+    }// break to exploit locality
+    for (int k = 1; k < NZ; k++)
+    {
+        // FRONT RIGHT EDGE
+        Y2_p[(NX) * (NY + 1) * (NZ + 1) + k] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX,0,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + k]) / (3*DX) +
+            (-8*boundary_value_v[2]->value(NX,0,k,t) + 9*Yy[(NX) * NY * (NZ + 1) + k] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1) + k]) / (3*DY) +
+            (Yz[(NX) * (NY + 1) * NZ + k] - Yz[(NX) * (NY + 1) * NZ + k-1]) / (DZ));
+    }// break to exploit locality
+    for (int k = 1; k < NZ; k++)
+    {
+        // BACK RIGHT EDGE
+        Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX,NY,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (3*DX) +
+            (8*boundary_value_v[3]->value(NX,NY,k,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1) + k] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1) + k]) / (3*DY) +
+            (Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + k] - Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + k-1]) / (DZ));
+    }
+    // 8 VERTICES
+    // LOWER FRONT LEFT VERTEX (0,0,0)
+    Y2_p[0] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(0,0,0,t) + 9*Yx[0] - Yx[1 * (NY + 1) * (NZ + 1)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(0,0,0,t) + 9*Yy[0] - Yy[1 * (NZ + 1)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(0,0,0,t) + 9*Yz[0] - Yz[1]) / (3*DZ));
+    // LOWER FRONT RIGHT VERTEX (1,0,0)
+    Y2_p[(NX) * (NY + 1) * (NZ + 1)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX,0,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(NX,0,0,t) + 9*Yy[(NX) * NY * (NZ + 1)] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(NX,0,0,t) + 9*Yz[(NX) * (NY + 1) * NZ] - Yz[(NX) * (NY + 1) * NZ + 1]) / (3*DZ));
+    // LOWER BACK LEFT VERTEX (0,1,0)
+    Y2_p[(NY) * (NZ + 1)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(0,NY,0,t) + 9*Yx[(NY) * (NZ + 1)] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(0,NY,0,t) - 9*Yy[(NY-1) * (NZ + 1)] + Yy[(NY-2) * (NZ + 1)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(0,NY,0,t) + 9*Yz[(NY) * NZ] - Yz[(NY) * NZ + 1]) / (3*DZ));
+    // UPPER FRONT LEFT VERTEX (0,0,1)
+    Y2_p[(NZ)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(0,0,NZ,t) + 9*Yx[(NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + (NZ)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(0,0,NZ,t) + 9*Yy[(NZ)] - Yy[1 * (NZ + 1) + (NZ)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(0,0,NZ,t) - 9*Yz[(NZ-1)] + Yz[(NZ-2)]) / (3*DZ));
+    // UPPER BACK LEFT VERTEX (0,1,1)
+    Y2_p[(NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(0,NY,NZ,t) + 9*Yx[(NY) * (NZ + 1) + (NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(0,NY,NZ,t) - 9*Yy[(NY-1) * (NZ + 1) + (NZ)] + Yy[(NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(0,NY,NZ,t) - 9*Yz[(NY) * NZ + (NZ-1)] + Yz[(NY) * NZ + (NZ-2)]) / (3*DZ));
+    // UPPER FRONT RIGHT VERTEX (1,0,1)
+    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX,0,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NZ)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(NX,0,NZ,t) + 9*Yy[(NX) * NY * (NZ + 1) + (NZ)] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1) + (NZ)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(NX,0,NZ,t) - 9*Yz[(NX) * (NY + 1) * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + (NZ-2)]) / (3*DZ));
+    // LOWER BACK RIGHT VERTEX (1,1,0)
+    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX,NY,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(NX,NY,0,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1)] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(NX,NY,0,t) + 9*Yz[(NX) * (NY + 1) * NZ + (NY) * NZ] - Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + 1]) / (3*DZ));
+    // UPPER BACK RIGHT VERTEX (1,1,1)
+    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX,NY,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(NX,NY,NZ,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1) + (NZ)] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(NX,NY,NZ,t) - 9*Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + (NZ-2)]) / (3*DZ));
 }
 
 /**

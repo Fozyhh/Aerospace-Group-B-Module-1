@@ -11,8 +11,8 @@
 #include <string>
 #include <cmath>
 #include <filesystem>
-#define PERIODIC
-//#define DIRICHELET
+//#define PERIODIC
+#define DIRICHELET
 
 class IcoNS
 {
@@ -77,6 +77,7 @@ private:
   std::string input_file;  // input file.
   std::string output_file; // output file.
 
+#ifdef PERIODIC
   inline int indexingPeriodicx(int i, int j, int k) {
     if(j==-1){
       j=NY-1;
@@ -128,11 +129,14 @@ private:
   inline int indexingPeriodicp(int i, int j, int k) {
     return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
   };
-  
+#endif
+
+#ifdef DIRICHELET
   inline int indexingDiricheletx(int i, int j, int k) { return i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k; }
   inline int indexingDirichelety(int i, int j, int k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
   inline int indexingDiricheletz(int i, int j, int k) { return i * (NY + 1) * NZ + j * NZ + k; }
   inline int indexingDiricheletp(int i, int j, int k) { return i * (NY+1) * (NZ+1) + j * (NZ+1) + k; }
+#endif
 };
 
 #endif // CORE_HPP
