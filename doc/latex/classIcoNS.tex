@@ -1,0 +1,790 @@
+\doxysection{Ico\+NS Class Reference}
+\hypertarget{classIcoNS}{}\label{classIcoNS}\index{IcoNS@{IcoNS}}
+
+
+Incompressible Navier-\/\+Stokes solver class.  
+
+
+
+
+{\ttfamily \#include $<$core.\+hpp$>$}
+
+
+
+Collaboration diagram for Ico\+NS\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=263pt]{classIcoNS__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classIcoNS_ac508d110e99ca787ea7d114b144b6a18}{Ico\+NS}} (MPI\+\_\+\+Comm \mbox{\hyperlink{classIcoNS_ae47e0768919616d373bb02e00934f9db}{cart\+\_\+comm}}, const std\+::string \&\mbox{\hyperlink{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}{input\+\_\+file}}, const std\+::string \&\mbox{\hyperlink{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}{output\+\_\+file}}, int \mbox{\hyperlink{classIcoNS_a9cfe43db3edb7cdd418251b35d2e5294}{rank}}, int \mbox{\hyperlink{classIcoNS_a594436227e2393f4c796d5dab98bbe43}{size}})
+\begin{DoxyCompactList}\small\item\em Constructor for the \doxylink{classIcoNS}{Ico\+NS} solver. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}{preprocessing}} ()
+\begin{DoxyCompactList}\small\item\em Initializes the grid and problem setup. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_a32e59fa66e3304bb2175774bfa5b58b2}{set\+Parallelization}} ()
+\begin{DoxyCompactList}\small\item\em Sets up parallel communication patterns and domain decomposition. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_a5badbb30f47ee92c6f62dccebeb4f30f}{exchange\+Data}} (std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&grid\+\_\+loc, int new\+DimX, int new\+DimY, int \mbox{\hyperlink{classIcoNS_a19e0d75afc760d6c79606e00d88bfb62}{dim\+\_\+z}}, MPI\+\_\+\+Datatype MPI\+\_\+face\+\_\+x, MPI\+\_\+\+Datatype MPI\+\_\+face\+\_\+y)
+\begin{DoxyCompactList}\small\item\em Exchanges ghost cell data between neighboring processes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a0d091209c68c44a0cafe826fb13f44e6}{function\+F\+\_\+u}} (const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&u, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&v, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&w, int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes the F function for u-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_ad9c39f25d435964e522346d9ee19f1c4}{function\+F\+\_\+v}} (const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&u, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&v, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&w, int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes the F function for v-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a873ad7013ba96db27f1d1c4e5d3d5142}{function\+F\+\_\+w}} (const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&u, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&v, const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&w, int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes the F function for w-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a7f329a9fcfe82fe4958ba4cbbd62e4b2}{function\+G\+\_\+u}} (int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Manufactured solution function for u-\/velocity. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a6356d669fc18c14b77315ebb2e800e21}{function\+G\+\_\+v}} (int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Manufactured solution function for v-\/velocity. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_ad6f997ac6cf00a1c35b46bc79b79de4d}{function\+G\+\_\+w}} (int i, int j, int k, \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Manufactured solution function for w-\/velocity. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}{solve}} ()
+\begin{DoxyCompactList}\small\item\em Main solution loop. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_a0cc446178b2bfa2f8124ad128e81474f}{solve\+\_\+time\+\_\+step}} (\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} time)
+\begin{DoxyCompactList}\small\item\em Advances solution by one time step. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_acd08bb2b62e6b310455778077c8d21c6}{error\+\_\+comp\+\_\+X}} (const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes L2 error for X-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a5a2ca2811e65ddc1a899ae4d1f2d49b9}{error\+\_\+comp\+\_\+Y}} (const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes L2 error for Y-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a23a766ca29e68144a88026416b2bbac5}{error\+\_\+comp\+\_\+Z}} (const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes L2 error for Z-\/velocity component. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} \mbox{\hyperlink{classIcoNS_a25eddd9217d6d0aeb1fc8f72560d1554}{L2\+\_\+error}} (const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} t)
+\begin{DoxyCompactList}\small\item\em Computes total L2 error. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classIcoNS_a6791a6937097419b61c896e654f01108}{parse\+\_\+input}} (const std\+::string \&\mbox{\hyperlink{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}{input\+\_\+file}})
+\begin{DoxyCompactList}\small\item\em Parses input configuration file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classIcoNS_a9cfe43db3edb7cdd418251b35d2e5294}{rank}}
+\begin{DoxyCompactList}\small\item\em MPI rank of current process. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a594436227e2393f4c796d5dab98bbe43}{size}}
+\item 
+MPI\+\_\+\+Comm \mbox{\hyperlink{classIcoNS_ae47e0768919616d373bb02e00934f9db}{cart\+\_\+comm}}
+\begin{DoxyCompactList}\small\item\em MPI Cartesian communicator. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a3454e395e9915c34a3d0bea48936d6ea}{dims}} \mbox{[}2\mbox{]}
+\begin{DoxyCompactList}\small\item\em Domain decomposition dimensions. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a52734c79685e7c37c736a39274265340}{periods}} \mbox{[}2\mbox{]} = \{1, 1\}
+\begin{DoxyCompactList}\small\item\em Periodic boundary conditions flags. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classBoundary}{Boundary}} \mbox{\hyperlink{classIcoNS_a20128b80a96e41bcbc00a8d40009baca}{boundary}}
+\begin{DoxyCompactList}\small\item\em \doxylink{classBoundary}{Boundary} conditions handler. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classExactSolution}{Exact\+Solution}} \mbox{\hyperlink{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237}{exact\+\_\+solution}}
+\begin{DoxyCompactList}\small\item\em Exact solution computer. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a3683a058aefb92c3fd7fe8043314dfb4}{Y2\+\_\+x}} \{\}
+\begin{DoxyCompactList}\small\item\em Intermediate solution vectors. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a91a58079bddf25525568a9ff9ceb5fec}{Y2\+\_\+y}} \{\}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a4369f0b2d1e37f57ea440c66a115efd7}{Y2\+\_\+z}} \{\}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a758aabff46751dccc90b80b78529873a}{Y3\+\_\+x}} \{\}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_ad39683bf5b81fec64f4e959b7ce597d1}{Y3\+\_\+y}} \{\}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a2f2058427386be65de7a072dfb911b60}{Y3\+\_\+z}} \{\}
+\item 
+std\+::string \mbox{\hyperlink{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}{input\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em Input/output file paths. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}{output\+\_\+file}}
+\item 
+int \mbox{\hyperlink{classIcoNS_afb078af1f7bb9dd6b044715d215aba3b}{lbx}} = 0
+\begin{DoxyCompactList}\small\item\em \doxylink{classBoundary}{Boundary} flags for domain decomposition. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a5b197078fbe8f4e11504969544e920f1}{rbx}} = 0
+\item 
+int \mbox{\hyperlink{classIcoNS_ac8d1d04465c842e224f67283cdaf9290}{lby}} = 0
+\item 
+int \mbox{\hyperlink{classIcoNS_a73041d3559c7dd7b0969b14d1cfc62ad}{rby}} = 0
+\item 
+int \mbox{\hyperlink{classIcoNS_a7eb53c70d99f937e90c0a58f5d13ebed}{coords}} \mbox{[}2\mbox{]}
+\begin{DoxyCompactList}\small\item\em Process coordinates and neighbors in cartesian grid. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a1e0084a83b4e6272431418675d9a04b9}{neighbors}} \mbox{[}4\mbox{]}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_ac54bd5d5b2a26c447825566ba71c274b}{grid\+\_\+loc\+\_\+x}} \{\}
+\begin{DoxyCompactList}\small\item\em Local grid data for each direction. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a60d0a02435544b05e9a4a52ac0d11747}{grid\+\_\+loc\+\_\+y}} \{\}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \mbox{\hyperlink{classIcoNS_a47dc01f36ee910b611eb4a8a5e2bd41a}{grid\+\_\+loc\+\_\+z}} \{\}
+\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_a585e48afb8204dbcdeed73202ef2b61c}{MPI\+\_\+face\+\_\+x\+\_\+x}}
+\begin{DoxyCompactList}\small\item\em MPI datatypes for face communication. \end{DoxyCompactList}\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_a1d6c9663faedfdc61ddc01153e692d17}{MPI\+\_\+face\+\_\+y\+\_\+x}}
+\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_ab425df5dfbef58eb5d3d0151ab4da776}{MPI\+\_\+face\+\_\+x\+\_\+y}}
+\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_a69e48baac544f6d69efc29400c7efc7f}{MPI\+\_\+face\+\_\+y\+\_\+y}}
+\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_a54c9f2051fbbb4ff2a4b66b0c6e5f4ad}{MPI\+\_\+face\+\_\+x\+\_\+z}}
+\item 
+MPI\+\_\+\+Datatype \mbox{\hyperlink{classIcoNS_a34c2fd8a7b804965ba5386aa1d1275d7}{MPI\+\_\+face\+\_\+y\+\_\+z}}
+\item 
+MPI\+\_\+\+Request \mbox{\hyperlink{classIcoNS_a357bc657336dee9d09a406a0f4eda64c}{reqs}} \mbox{[}4\mbox{]}
+\begin{DoxyCompactList}\small\item\em MPI request handles for non-\/blocking communication. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_a7da3ac9252bf921459ad852e77f453b9}{dim\+\_\+x\+\_\+x}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structGrid}{Grid} dimensions and decomposition parameters. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classIcoNS_ab753fc670e8bc1a907d60aadc800fd40}{dim\+\_\+y\+\_\+x}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a33a648f8603818360a2a7b151abee1bb}{dim\+\_\+x\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_adf322c5c03df30415ebe8abb642057f8}{dim\+\_\+y\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_afab5b04cc3cdb74ff5eeb31d7eb44f36}{dim\+\_\+y\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a19e0d75afc760d6c79606e00d88bfb62}{dim\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a419c9c996f5c2396ada3932945c78d66}{dim\+\_\+x\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a736dc3fd91f99c7752415e84c64cfec2}{dim\+\_\+z\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a0651357ae0e192935824a0f256764b8a}{new\+Dim\+X\+\_\+x}}
+\item 
+int \mbox{\hyperlink{classIcoNS_ab839015a2fa303631ba85d052aeaee6b}{new\+Dim\+Y\+\_\+x}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a21b0f895a1d37b655a102b1bd9d84566}{new\+Dim\+X\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a31186e78c42d5cb7f167753a251d7d52}{new\+Dim\+Y\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a941be88aba4cfda7f9d7001f1c35f928}{new\+Dim\+X\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a44f3701b71a7aa8af2ba7a573eaaeee9}{new\+Dim\+Y\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_a915524d27e2f59687a171d322b1bdb2a}{other\+\_\+dim\+\_\+x\+\_\+x}}
+\item 
+int \mbox{\hyperlink{classIcoNS_ad22611d5a4d97efcdb5fafbe4693021e}{other\+\_\+dim\+\_\+y\+\_\+x}}
+\item 
+int \mbox{\hyperlink{classIcoNS_aaba741976b45d49c5b7ec5612e5dfcba}{other\+\_\+dim\+\_\+x\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_aabb8392ac949e5977d4d9a7621664eb2}{other\+\_\+dim\+\_\+y\+\_\+y}}
+\item 
+int \mbox{\hyperlink{classIcoNS_aea54a02eb67cd442b26b9a58c49d9f50}{other\+\_\+dim\+\_\+x\+\_\+z}}
+\item 
+int \mbox{\hyperlink{classIcoNS_addd78fa67a3fa1c30a5b0da9121d23da}{other\+\_\+dim\+\_\+y\+\_\+z}}
+\item 
+bool \mbox{\hyperlink{classIcoNS_a7f12492f9bcba4e46d931cf534202a43}{dirichletX}} = true
+\begin{DoxyCompactList}\small\item\em Flag for \doxylink{classDirichlet}{Dirichlet} boundary conditions in X direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Incompressible Navier-\/\+Stokes solver class. 
+
+Handles the numerical solution of incompressible Navier-\/\+Stokes equations including parallel domain decomposition, boundary conditions, and time evolution. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classIcoNS_ac508d110e99ca787ea7d114b144b6a18}\label{classIcoNS_ac508d110e99ca787ea7d114b144b6a18} 
+\index{IcoNS@{IcoNS}!IcoNS@{IcoNS}}
+\index{IcoNS@{IcoNS}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{IcoNS()}{IcoNS()}}
+{\footnotesize\ttfamily Ico\+NS\+::\+Ico\+NS (\begin{DoxyParamCaption}\item[{MPI\+\_\+\+Comm}]{cart\+\_\+comm,  }\item[{const std\+::string \&}]{input\+\_\+file,  }\item[{const std\+::string \&}]{output\+\_\+file,  }\item[{int}]{rank,  }\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for the \doxylink{classIcoNS}{Ico\+NS} solver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cart\+\_\+comm} & MPI Cartesian communicator \\
+\hline
+{\em input\+\_\+file} & Path to input configuration file \\
+\hline
+{\em output\+\_\+file} & Path to output results file \\
+\hline
+{\em rank} & MPI process rank \\
+\hline
+{\em size} & Total number of MPI processes \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classIcoNS_acd08bb2b62e6b310455778077c8d21c6}\label{classIcoNS_acd08bb2b62e6b310455778077c8d21c6} 
+\index{IcoNS@{IcoNS}!error\_comp\_X@{error\_comp\_X}}
+\index{error\_comp\_X@{error\_comp\_X}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_X()}{error\_comp\_X()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::error\+\_\+comp\+\_\+X (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes L2 error for X-\/velocity component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+L2 error value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_a5a2ca2811e65ddc1a899ae4d1f2d49b9}\label{classIcoNS_a5a2ca2811e65ddc1a899ae4d1f2d49b9} 
+\index{IcoNS@{IcoNS}!error\_comp\_Y@{error\_comp\_Y}}
+\index{error\_comp\_Y@{error\_comp\_Y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_Y()}{error\_comp\_Y()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::error\+\_\+comp\+\_\+Y (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes L2 error for Y-\/velocity component. 
+
+\Hypertarget{classIcoNS_a23a766ca29e68144a88026416b2bbac5}\label{classIcoNS_a23a766ca29e68144a88026416b2bbac5} 
+\index{IcoNS@{IcoNS}!error\_comp\_Z@{error\_comp\_Z}}
+\index{error\_comp\_Z@{error\_comp\_Z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{error\_comp\_Z()}{error\_comp\_Z()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::error\+\_\+comp\+\_\+Z (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes L2 error for Z-\/velocity component. 
+
+\Hypertarget{classIcoNS_a5badbb30f47ee92c6f62dccebeb4f30f}\label{classIcoNS_a5badbb30f47ee92c6f62dccebeb4f30f} 
+\index{IcoNS@{IcoNS}!exchangeData@{exchangeData}}
+\index{exchangeData@{exchangeData}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{exchangeData()}{exchangeData()}}
+{\footnotesize\ttfamily void Ico\+NS\+::exchange\+Data (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{grid\+\_\+loc,  }\item[{int}]{new\+DimX,  }\item[{int}]{new\+DimY,  }\item[{int}]{dim\+\_\+z,  }\item[{MPI\+\_\+\+Datatype}]{MPI\+\_\+face\+\_\+x,  }\item[{MPI\+\_\+\+Datatype}]{MPI\+\_\+face\+\_\+y }\end{DoxyParamCaption})}
+
+
+
+Exchanges ghost cell data between neighboring processes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em grid\+\_\+loc} & Local grid data \\
+\hline
+{\em new\+DimX} & New X dimension after decomposition \\
+\hline
+{\em new\+DimY} & New Y dimension after decomposition \\
+\hline
+{\em dim\+\_\+z} & Z dimension \\
+\hline
+{\em MPI\+\_\+face\+\_\+x} & MPI datatype for X-\/direction face exchange \\
+\hline
+{\em MPI\+\_\+face\+\_\+y} & MPI datatype for Y-\/direction face exchange \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classIcoNS_a0d091209c68c44a0cafe826fb13f44e6}\label{classIcoNS_a0d091209c68c44a0cafe826fb13f44e6} 
+\index{IcoNS@{IcoNS}!functionF\_u@{functionF\_u}}
+\index{functionF\_u@{functionF\_u}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionF\_u()}{functionF\_u()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+F\+\_\+u (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{u,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{v,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{w,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes the F function for u-\/velocity component. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em u} & X-\/velocity vector \\
+\hline
+{\em v} & Y-\/velocity vector \\
+\hline
+{\em w} & Z-\/velocity vector \\
+\hline
+{\em i,j,k} & \doxylink{structGrid}{Grid} indices \\
+\hline
+{\em t} & Current time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Computed F function value 
+\end{DoxyReturn}
+\Hypertarget{classIcoNS_ad9c39f25d435964e522346d9ee19f1c4}\label{classIcoNS_ad9c39f25d435964e522346d9ee19f1c4} 
+\index{IcoNS@{IcoNS}!functionF\_v@{functionF\_v}}
+\index{functionF\_v@{functionF\_v}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionF\_v()}{functionF\_v()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+F\+\_\+v (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{u,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{v,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{w,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes the F function for v-\/velocity component. 
+
+\Hypertarget{classIcoNS_a873ad7013ba96db27f1d1c4e5d3d5142}\label{classIcoNS_a873ad7013ba96db27f1d1c4e5d3d5142} 
+\index{IcoNS@{IcoNS}!functionF\_w@{functionF\_w}}
+\index{functionF\_w@{functionF\_w}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionF\_w()}{functionF\_w()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+F\+\_\+w (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{u,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{v,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} $>$ \&}]{w,  }\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes the F function for w-\/velocity component. 
+
+\Hypertarget{classIcoNS_a7f329a9fcfe82fe4958ba4cbbd62e4b2}\label{classIcoNS_a7f329a9fcfe82fe4958ba4cbbd62e4b2} 
+\index{IcoNS@{IcoNS}!functionG\_u@{functionG\_u}}
+\index{functionG\_u@{functionG\_u}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionG\_u()}{functionG\_u()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+G\+\_\+u (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Manufactured solution function for u-\/velocity. 
+
+\Hypertarget{classIcoNS_a6356d669fc18c14b77315ebb2e800e21}\label{classIcoNS_a6356d669fc18c14b77315ebb2e800e21} 
+\index{IcoNS@{IcoNS}!functionG\_v@{functionG\_v}}
+\index{functionG\_v@{functionG\_v}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionG\_v()}{functionG\_v()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+G\+\_\+v (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Manufactured solution function for v-\/velocity. 
+
+\Hypertarget{classIcoNS_ad6f997ac6cf00a1c35b46bc79b79de4d}\label{classIcoNS_ad6f997ac6cf00a1c35b46bc79b79de4d} 
+\index{IcoNS@{IcoNS}!functionG\_w@{functionG\_w}}
+\index{functionG\_w@{functionG\_w}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{functionG\_w()}{functionG\_w()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::function\+G\+\_\+w (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Manufactured solution function for w-\/velocity. 
+
+\Hypertarget{classIcoNS_a25eddd9217d6d0aeb1fc8f72560d1554}\label{classIcoNS_a25eddd9217d6d0aeb1fc8f72560d1554} 
+\index{IcoNS@{IcoNS}!L2\_error@{L2\_error}}
+\index{L2\_error@{L2\_error}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{L2\_error()}{L2\_error()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}} Ico\+NS\+::\+L2\+\_\+error (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Computes total L2 error. 
+
+\Hypertarget{classIcoNS_a6791a6937097419b61c896e654f01108}\label{classIcoNS_a6791a6937097419b61c896e654f01108} 
+\index{IcoNS@{IcoNS}!parse\_input@{parse\_input}}
+\index{parse\_input@{parse\_input}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{parse\_input()}{parse\_input()}}
+{\footnotesize\ttfamily void Ico\+NS\+::parse\+\_\+input (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{input\+\_\+file }\end{DoxyParamCaption})}
+
+
+
+Parses input configuration file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em input\+\_\+file} & Path to input file \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6}\label{classIcoNS_a205000492d7d4e3e4a84fd5e456e75e6} 
+\index{IcoNS@{IcoNS}!preprocessing@{preprocessing}}
+\index{preprocessing@{preprocessing}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{preprocessing()}{preprocessing()}}
+{\footnotesize\ttfamily void Ico\+NS\+::preprocessing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initializes the grid and problem setup. 
+
+\Hypertarget{classIcoNS_a32e59fa66e3304bb2175774bfa5b58b2}\label{classIcoNS_a32e59fa66e3304bb2175774bfa5b58b2} 
+\index{IcoNS@{IcoNS}!setParallelization@{setParallelization}}
+\index{setParallelization@{setParallelization}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{setParallelization()}{setParallelization()}}
+{\footnotesize\ttfamily void Ico\+NS\+::set\+Parallelization (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Sets up parallel communication patterns and domain decomposition. 
+
+\Hypertarget{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f}\label{classIcoNS_ae84085f1f561f08a5ca4e93e1934192f} 
+\index{IcoNS@{IcoNS}!solve@{solve}}
+\index{solve@{solve}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{solve()}{solve()}}
+{\footnotesize\ttfamily void Ico\+NS\+::solve (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Main solution loop. 
+
+\Hypertarget{classIcoNS_a0cc446178b2bfa2f8124ad128e81474f}\label{classIcoNS_a0cc446178b2bfa2f8124ad128e81474f} 
+\index{IcoNS@{IcoNS}!solve\_time\_step@{solve\_time\_step}}
+\index{solve\_time\_step@{solve\_time\_step}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{solve\_time\_step()}{solve\_time\_step()}}
+{\footnotesize\ttfamily void Ico\+NS\+::solve\+\_\+time\+\_\+step (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}}]{time }\end{DoxyParamCaption})}
+
+
+
+Advances solution by one time step. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & Current simulation time \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classIcoNS_a20128b80a96e41bcbc00a8d40009baca}\label{classIcoNS_a20128b80a96e41bcbc00a8d40009baca} 
+\index{IcoNS@{IcoNS}!boundary@{boundary}}
+\index{boundary@{boundary}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{boundary}{boundary}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classBoundary}{Boundary}} Ico\+NS\+::boundary\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxylink{classBoundary}{Boundary} conditions handler. 
+
+\Hypertarget{classIcoNS_ae47e0768919616d373bb02e00934f9db}\label{classIcoNS_ae47e0768919616d373bb02e00934f9db} 
+\index{IcoNS@{IcoNS}!cart\_comm@{cart\_comm}}
+\index{cart\_comm@{cart\_comm}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{cart\_comm}{cart\_comm}}
+{\footnotesize\ttfamily MPI\+\_\+\+Comm Ico\+NS\+::cart\+\_\+comm\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+MPI Cartesian communicator. 
+
+\Hypertarget{classIcoNS_a7eb53c70d99f937e90c0a58f5d13ebed}\label{classIcoNS_a7eb53c70d99f937e90c0a58f5d13ebed} 
+\index{IcoNS@{IcoNS}!coords@{coords}}
+\index{coords@{coords}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{coords}{coords}}
+{\footnotesize\ttfamily int Ico\+NS\+::coords\mbox{[}2\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Process coordinates and neighbors in cartesian grid. 
+
+\Hypertarget{classIcoNS_a7da3ac9252bf921459ad852e77f453b9}\label{classIcoNS_a7da3ac9252bf921459ad852e77f453b9} 
+\index{IcoNS@{IcoNS}!dim\_x\_x@{dim\_x\_x}}
+\index{dim\_x\_x@{dim\_x\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_x\_x}{dim\_x\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+x\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxylink{structGrid}{Grid} dimensions and decomposition parameters. 
+
+\Hypertarget{classIcoNS_a33a648f8603818360a2a7b151abee1bb}\label{classIcoNS_a33a648f8603818360a2a7b151abee1bb} 
+\index{IcoNS@{IcoNS}!dim\_x\_y@{dim\_x\_y}}
+\index{dim\_x\_y@{dim\_x\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_x\_y}{dim\_x\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+x\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a419c9c996f5c2396ada3932945c78d66}\label{classIcoNS_a419c9c996f5c2396ada3932945c78d66} 
+\index{IcoNS@{IcoNS}!dim\_x\_z@{dim\_x\_z}}
+\index{dim\_x\_z@{dim\_x\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_x\_z}{dim\_x\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+x\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_ab753fc670e8bc1a907d60aadc800fd40}\label{classIcoNS_ab753fc670e8bc1a907d60aadc800fd40} 
+\index{IcoNS@{IcoNS}!dim\_y\_x@{dim\_y\_x}}
+\index{dim\_y\_x@{dim\_y\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_y\_x}{dim\_y\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+y\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_adf322c5c03df30415ebe8abb642057f8}\label{classIcoNS_adf322c5c03df30415ebe8abb642057f8} 
+\index{IcoNS@{IcoNS}!dim\_y\_y@{dim\_y\_y}}
+\index{dim\_y\_y@{dim\_y\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_y\_y}{dim\_y\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+y\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_afab5b04cc3cdb74ff5eeb31d7eb44f36}\label{classIcoNS_afab5b04cc3cdb74ff5eeb31d7eb44f36} 
+\index{IcoNS@{IcoNS}!dim\_y\_z@{dim\_y\_z}}
+\index{dim\_y\_z@{dim\_y\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_y\_z}{dim\_y\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+y\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a19e0d75afc760d6c79606e00d88bfb62}\label{classIcoNS_a19e0d75afc760d6c79606e00d88bfb62} 
+\index{IcoNS@{IcoNS}!dim\_z@{dim\_z}}
+\index{dim\_z@{dim\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_z}{dim\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a736dc3fd91f99c7752415e84c64cfec2}\label{classIcoNS_a736dc3fd91f99c7752415e84c64cfec2} 
+\index{IcoNS@{IcoNS}!dim\_z\_z@{dim\_z\_z}}
+\index{dim\_z\_z@{dim\_z\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dim\_z\_z}{dim\_z\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::dim\+\_\+z\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a3454e395e9915c34a3d0bea48936d6ea}\label{classIcoNS_a3454e395e9915c34a3d0bea48936d6ea} 
+\index{IcoNS@{IcoNS}!dims@{dims}}
+\index{dims@{dims}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dims}{dims}}
+{\footnotesize\ttfamily int Ico\+NS\+::dims\mbox{[}2\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Domain decomposition dimensions. 
+
+\Hypertarget{classIcoNS_a7f12492f9bcba4e46d931cf534202a43}\label{classIcoNS_a7f12492f9bcba4e46d931cf534202a43} 
+\index{IcoNS@{IcoNS}!dirichletX@{dirichletX}}
+\index{dirichletX@{dirichletX}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{dirichletX}{dirichletX}}
+{\footnotesize\ttfamily bool Ico\+NS\+::dirichletX = true\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Flag for \doxylink{classDirichlet}{Dirichlet} boundary conditions in X direction. 
+
+\Hypertarget{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237}\label{classIcoNS_ab5c0e706a33b6b9f6e2dc9e78a953237} 
+\index{IcoNS@{IcoNS}!exact\_solution@{exact\_solution}}
+\index{exact\_solution@{exact\_solution}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{exact\_solution}{exact\_solution}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classExactSolution}{Exact\+Solution}} Ico\+NS\+::exact\+\_\+solution\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Exact solution computer. 
+
+\Hypertarget{classIcoNS_ac54bd5d5b2a26c447825566ba71c274b}\label{classIcoNS_ac54bd5d5b2a26c447825566ba71c274b} 
+\index{IcoNS@{IcoNS}!grid\_loc\_x@{grid\_loc\_x}}
+\index{grid\_loc\_x@{grid\_loc\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{grid\_loc\_x}{grid\_loc\_x}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::grid\+\_\+loc\+\_\+x \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Local grid data for each direction. 
+
+\Hypertarget{classIcoNS_a60d0a02435544b05e9a4a52ac0d11747}\label{classIcoNS_a60d0a02435544b05e9a4a52ac0d11747} 
+\index{IcoNS@{IcoNS}!grid\_loc\_y@{grid\_loc\_y}}
+\index{grid\_loc\_y@{grid\_loc\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{grid\_loc\_y}{grid\_loc\_y}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::grid\+\_\+loc\+\_\+y \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a47dc01f36ee910b611eb4a8a5e2bd41a}\label{classIcoNS_a47dc01f36ee910b611eb4a8a5e2bd41a} 
+\index{IcoNS@{IcoNS}!grid\_loc\_z@{grid\_loc\_z}}
+\index{grid\_loc\_z@{grid\_loc\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{grid\_loc\_z}{grid\_loc\_z}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::grid\+\_\+loc\+\_\+z \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704}\label{classIcoNS_a4376d65c607ccaf4a3308ecd8be6c704} 
+\index{IcoNS@{IcoNS}!input\_file@{input\_file}}
+\index{input\_file@{input\_file}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{input\_file}{input\_file}}
+{\footnotesize\ttfamily std\+::string Ico\+NS\+::input\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Input/output file paths. 
+
+\Hypertarget{classIcoNS_afb078af1f7bb9dd6b044715d215aba3b}\label{classIcoNS_afb078af1f7bb9dd6b044715d215aba3b} 
+\index{IcoNS@{IcoNS}!lbx@{lbx}}
+\index{lbx@{lbx}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{lbx}{lbx}}
+{\footnotesize\ttfamily int Ico\+NS\+::lbx = 0\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxylink{classBoundary}{Boundary} flags for domain decomposition. 
+
+\Hypertarget{classIcoNS_ac8d1d04465c842e224f67283cdaf9290}\label{classIcoNS_ac8d1d04465c842e224f67283cdaf9290} 
+\index{IcoNS@{IcoNS}!lby@{lby}}
+\index{lby@{lby}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{lby}{lby}}
+{\footnotesize\ttfamily int Ico\+NS\+::lby = 0\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a585e48afb8204dbcdeed73202ef2b61c}\label{classIcoNS_a585e48afb8204dbcdeed73202ef2b61c} 
+\index{IcoNS@{IcoNS}!MPI\_face\_x\_x@{MPI\_face\_x\_x}}
+\index{MPI\_face\_x\_x@{MPI\_face\_x\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_x\_x}{MPI\_face\_x\_x}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+x\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+MPI datatypes for face communication. 
+
+\Hypertarget{classIcoNS_ab425df5dfbef58eb5d3d0151ab4da776}\label{classIcoNS_ab425df5dfbef58eb5d3d0151ab4da776} 
+\index{IcoNS@{IcoNS}!MPI\_face\_x\_y@{MPI\_face\_x\_y}}
+\index{MPI\_face\_x\_y@{MPI\_face\_x\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_x\_y}{MPI\_face\_x\_y}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+x\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a54c9f2051fbbb4ff2a4b66b0c6e5f4ad}\label{classIcoNS_a54c9f2051fbbb4ff2a4b66b0c6e5f4ad} 
+\index{IcoNS@{IcoNS}!MPI\_face\_x\_z@{MPI\_face\_x\_z}}
+\index{MPI\_face\_x\_z@{MPI\_face\_x\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_x\_z}{MPI\_face\_x\_z}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+x\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a1d6c9663faedfdc61ddc01153e692d17}\label{classIcoNS_a1d6c9663faedfdc61ddc01153e692d17} 
+\index{IcoNS@{IcoNS}!MPI\_face\_y\_x@{MPI\_face\_y\_x}}
+\index{MPI\_face\_y\_x@{MPI\_face\_y\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_y\_x}{MPI\_face\_y\_x}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+y\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a69e48baac544f6d69efc29400c7efc7f}\label{classIcoNS_a69e48baac544f6d69efc29400c7efc7f} 
+\index{IcoNS@{IcoNS}!MPI\_face\_y\_y@{MPI\_face\_y\_y}}
+\index{MPI\_face\_y\_y@{MPI\_face\_y\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_y\_y}{MPI\_face\_y\_y}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+y\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a34c2fd8a7b804965ba5386aa1d1275d7}\label{classIcoNS_a34c2fd8a7b804965ba5386aa1d1275d7} 
+\index{IcoNS@{IcoNS}!MPI\_face\_y\_z@{MPI\_face\_y\_z}}
+\index{MPI\_face\_y\_z@{MPI\_face\_y\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{MPI\_face\_y\_z}{MPI\_face\_y\_z}}
+{\footnotesize\ttfamily MPI\+\_\+\+Datatype Ico\+NS\+::\+MPI\+\_\+face\+\_\+y\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a1e0084a83b4e6272431418675d9a04b9}\label{classIcoNS_a1e0084a83b4e6272431418675d9a04b9} 
+\index{IcoNS@{IcoNS}!neighbors@{neighbors}}
+\index{neighbors@{neighbors}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{neighbors}{neighbors}}
+{\footnotesize\ttfamily int Ico\+NS\+::neighbors\mbox{[}4\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a0651357ae0e192935824a0f256764b8a}\label{classIcoNS_a0651357ae0e192935824a0f256764b8a} 
+\index{IcoNS@{IcoNS}!newDimX\_x@{newDimX\_x}}
+\index{newDimX\_x@{newDimX\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimX\_x}{newDimX\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+X\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a21b0f895a1d37b655a102b1bd9d84566}\label{classIcoNS_a21b0f895a1d37b655a102b1bd9d84566} 
+\index{IcoNS@{IcoNS}!newDimX\_y@{newDimX\_y}}
+\index{newDimX\_y@{newDimX\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimX\_y}{newDimX\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+X\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a941be88aba4cfda7f9d7001f1c35f928}\label{classIcoNS_a941be88aba4cfda7f9d7001f1c35f928} 
+\index{IcoNS@{IcoNS}!newDimX\_z@{newDimX\_z}}
+\index{newDimX\_z@{newDimX\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimX\_z}{newDimX\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+X\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_ab839015a2fa303631ba85d052aeaee6b}\label{classIcoNS_ab839015a2fa303631ba85d052aeaee6b} 
+\index{IcoNS@{IcoNS}!newDimY\_x@{newDimY\_x}}
+\index{newDimY\_x@{newDimY\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimY\_x}{newDimY\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+Y\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a31186e78c42d5cb7f167753a251d7d52}\label{classIcoNS_a31186e78c42d5cb7f167753a251d7d52} 
+\index{IcoNS@{IcoNS}!newDimY\_y@{newDimY\_y}}
+\index{newDimY\_y@{newDimY\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimY\_y}{newDimY\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+Y\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a44f3701b71a7aa8af2ba7a573eaaeee9}\label{classIcoNS_a44f3701b71a7aa8af2ba7a573eaaeee9} 
+\index{IcoNS@{IcoNS}!newDimY\_z@{newDimY\_z}}
+\index{newDimY\_z@{newDimY\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{newDimY\_z}{newDimY\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::new\+Dim\+Y\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a915524d27e2f59687a171d322b1bdb2a}\label{classIcoNS_a915524d27e2f59687a171d322b1bdb2a} 
+\index{IcoNS@{IcoNS}!other\_dim\_x\_x@{other\_dim\_x\_x}}
+\index{other\_dim\_x\_x@{other\_dim\_x\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_x\_x}{other\_dim\_x\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+x\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_aaba741976b45d49c5b7ec5612e5dfcba}\label{classIcoNS_aaba741976b45d49c5b7ec5612e5dfcba} 
+\index{IcoNS@{IcoNS}!other\_dim\_x\_y@{other\_dim\_x\_y}}
+\index{other\_dim\_x\_y@{other\_dim\_x\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_x\_y}{other\_dim\_x\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+x\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_aea54a02eb67cd442b26b9a58c49d9f50}\label{classIcoNS_aea54a02eb67cd442b26b9a58c49d9f50} 
+\index{IcoNS@{IcoNS}!other\_dim\_x\_z@{other\_dim\_x\_z}}
+\index{other\_dim\_x\_z@{other\_dim\_x\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_x\_z}{other\_dim\_x\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+x\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_ad22611d5a4d97efcdb5fafbe4693021e}\label{classIcoNS_ad22611d5a4d97efcdb5fafbe4693021e} 
+\index{IcoNS@{IcoNS}!other\_dim\_y\_x@{other\_dim\_y\_x}}
+\index{other\_dim\_y\_x@{other\_dim\_y\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_y\_x}{other\_dim\_y\_x}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+y\+\_\+x\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_aabb8392ac949e5977d4d9a7621664eb2}\label{classIcoNS_aabb8392ac949e5977d4d9a7621664eb2} 
+\index{IcoNS@{IcoNS}!other\_dim\_y\_y@{other\_dim\_y\_y}}
+\index{other\_dim\_y\_y@{other\_dim\_y\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_y\_y}{other\_dim\_y\_y}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+y\+\_\+y\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_addd78fa67a3fa1c30a5b0da9121d23da}\label{classIcoNS_addd78fa67a3fa1c30a5b0da9121d23da} 
+\index{IcoNS@{IcoNS}!other\_dim\_y\_z@{other\_dim\_y\_z}}
+\index{other\_dim\_y\_z@{other\_dim\_y\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{other\_dim\_y\_z}{other\_dim\_y\_z}}
+{\footnotesize\ttfamily int Ico\+NS\+::other\+\_\+dim\+\_\+y\+\_\+z\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0}\label{classIcoNS_ac41d20384a133a9a6bd7eb1bf9cee3c0} 
+\index{IcoNS@{IcoNS}!output\_file@{output\_file}}
+\index{output\_file@{output\_file}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{output\_file}{output\_file}}
+{\footnotesize\ttfamily std\+::string Ico\+NS\+::output\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a52734c79685e7c37c736a39274265340}\label{classIcoNS_a52734c79685e7c37c736a39274265340} 
+\index{IcoNS@{IcoNS}!periods@{periods}}
+\index{periods@{periods}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{periods}{periods}}
+{\footnotesize\ttfamily int Ico\+NS\+::periods\mbox{[}2\mbox{]} = \{1, 1\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Periodic boundary conditions flags. 
+
+\Hypertarget{classIcoNS_a9cfe43db3edb7cdd418251b35d2e5294}\label{classIcoNS_a9cfe43db3edb7cdd418251b35d2e5294} 
+\index{IcoNS@{IcoNS}!rank@{rank}}
+\index{rank@{rank}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{rank}{rank}}
+{\footnotesize\ttfamily int Ico\+NS\+::rank\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+MPI rank of current process. 
+
+\Hypertarget{classIcoNS_a5b197078fbe8f4e11504969544e920f1}\label{classIcoNS_a5b197078fbe8f4e11504969544e920f1} 
+\index{IcoNS@{IcoNS}!rbx@{rbx}}
+\index{rbx@{rbx}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{rbx}{rbx}}
+{\footnotesize\ttfamily int Ico\+NS\+::rbx = 0\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a73041d3559c7dd7b0969b14d1cfc62ad}\label{classIcoNS_a73041d3559c7dd7b0969b14d1cfc62ad} 
+\index{IcoNS@{IcoNS}!rby@{rby}}
+\index{rby@{rby}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{rby}{rby}}
+{\footnotesize\ttfamily int Ico\+NS\+::rby = 0\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a357bc657336dee9d09a406a0f4eda64c}\label{classIcoNS_a357bc657336dee9d09a406a0f4eda64c} 
+\index{IcoNS@{IcoNS}!reqs@{reqs}}
+\index{reqs@{reqs}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{reqs}{reqs}}
+{\footnotesize\ttfamily MPI\+\_\+\+Request Ico\+NS\+::reqs\mbox{[}4\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+MPI request handles for non-\/blocking communication. 
+
+\Hypertarget{classIcoNS_a594436227e2393f4c796d5dab98bbe43}\label{classIcoNS_a594436227e2393f4c796d5dab98bbe43} 
+\index{IcoNS@{IcoNS}!size@{size}}
+\index{size@{size}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{size}{size}}
+{\footnotesize\ttfamily int Ico\+NS\+::size\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a3683a058aefb92c3fd7fe8043314dfb4}\label{classIcoNS_a3683a058aefb92c3fd7fe8043314dfb4} 
+\index{IcoNS@{IcoNS}!Y2\_x@{Y2\_x}}
+\index{Y2\_x@{Y2\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y2\_x}{Y2\_x}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y2\+\_\+x \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Intermediate solution vectors. 
+
+\Hypertarget{classIcoNS_a91a58079bddf25525568a9ff9ceb5fec}\label{classIcoNS_a91a58079bddf25525568a9ff9ceb5fec} 
+\index{IcoNS@{IcoNS}!Y2\_y@{Y2\_y}}
+\index{Y2\_y@{Y2\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y2\_y}{Y2\_y}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y2\+\_\+y \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a4369f0b2d1e37f57ea440c66a115efd7}\label{classIcoNS_a4369f0b2d1e37f57ea440c66a115efd7} 
+\index{IcoNS@{IcoNS}!Y2\_z@{Y2\_z}}
+\index{Y2\_z@{Y2\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y2\_z}{Y2\_z}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y2\+\_\+z \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a758aabff46751dccc90b80b78529873a}\label{classIcoNS_a758aabff46751dccc90b80b78529873a} 
+\index{IcoNS@{IcoNS}!Y3\_x@{Y3\_x}}
+\index{Y3\_x@{Y3\_x}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y3\_x}{Y3\_x}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y3\+\_\+x \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_ad39683bf5b81fec64f4e959b7ce597d1}\label{classIcoNS_ad39683bf5b81fec64f4e959b7ce597d1} 
+\index{IcoNS@{IcoNS}!Y3\_y@{Y3\_y}}
+\index{Y3\_y@{Y3\_y}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y3\_y}{Y3\_y}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y3\+\_\+y \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\Hypertarget{classIcoNS_a2f2058427386be65de7a072dfb911b60}\label{classIcoNS_a2f2058427386be65de7a072dfb911b60} 
+\index{IcoNS@{IcoNS}!Y3\_z@{Y3\_z}}
+\index{Y3\_z@{Y3\_z}!IcoNS@{IcoNS}}
+\doxysubsubsection{\texorpdfstring{Y3\_z}{Y3\_z}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{core_8hpp_a060b837c3b4486ee35317744156f3da2}{Real}}$>$ Ico\+NS\+::\+Y3\+\_\+z \{\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{core_8hpp}{core.\+hpp}}\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/src/\mbox{\hyperlink{core_8cpp}{core.\+cpp}}\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/src/\mbox{\hyperlink{newRK_8cpp}{new\+RK.\+cpp}}\end{DoxyCompactItemize}

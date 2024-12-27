@@ -1,0 +1,50 @@
+\doxysection{Grid Struct Reference}
+\hypertarget{structGrid}{}\label{structGrid}\index{Grid@{Grid}}
+
+
+Structure representing the staggered grid arrangement for the fluid domain.  
+
+
+
+
+{\ttfamily \#include $<$grid.\+hpp$>$}
+
+
+
+\doxysubsection{Detailed Description}
+Structure representing the staggered grid arrangement for the fluid domain. 
+
+The grid uses a staggered arrangement where\+:
+\begin{DoxyItemize}
+\item u-\/velocity components are stored at the x-\/direction cell faces
+\item v-\/velocity components are stored at the y-\/direction cell faces
+\item w-\/velocity components are stored at the z-\/direction cell faces
+\item pressure values are stored at cell vertices
+\end{DoxyItemize}
+
+Currently commented out array definitions\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{std::array<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}\ *(\mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}\ +\ 1)\ *\ (\mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}\ +\ 1)>\ u\{\};\ \ \ \ \ \textcolor{comment}{//\ x-\/velocity\ components}}
+\DoxyCodeLine{std::array<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ (\mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}\ +\ 1)\ *\ \mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}\ *(\mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}\ +\ 1)>\ v\{\};\ \ \ \ \ \textcolor{comment}{//\ y-\/velocity\ components}}
+\DoxyCodeLine{std::array<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ (\mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}\ +\ 1)\ *\ (\mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}\ +\ 1)\ *\ \mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}>\ w\{\};\ \ \ \ \textcolor{comment}{//\ z-\/velocity\ components}}
+\DoxyCodeLine{std::array<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ (\mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}\ +\ 1)\ *\ (\mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}\ +\ 1)\ *\ (\mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}\ +\ 1)>\ p\{\};\ \textcolor{comment}{//\ pressure\ values}}
+
+\end{DoxyCode}
+
+
+Array dimensions explanation\+:
+\begin{DoxyItemize}
+\item u\+: NX × (NY+1) × (NZ+1) -\/ stored at x-\/faces
+\item v\+: (NX+1) × NY × (NZ+1) -\/ stored at y-\/faces
+\item w\+: (NX+1) × (NY+1) × NZ -\/ stored at z-\/faces
+\item p\+: (NX+1) × (NY+1) × (NZ+1) -\/ stored at vertices
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+The arrays are currently commented out, possibly pending implementation or modification to a different data structure. 
+\end{DoxyNote}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{grid_8hpp}{grid.\+hpp}}\end{DoxyCompactItemize}

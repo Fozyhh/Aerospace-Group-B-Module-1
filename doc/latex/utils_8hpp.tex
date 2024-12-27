@@ -1,0 +1,80 @@
+\doxysection{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp File Reference}
+\hypertarget{utils_8hpp}{}\label{utils_8hpp}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp}}
+
+
+Utility classes and functions for boundary conditions and exact solutions.  
+
+
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include "{}grid.\+hpp"{}}\newline
+Include dependency graph for utils.\+hpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utils_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utils_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classBoundaryFunction}{Boundary\+Function}}
+\begin{DoxyCompactList}\small\item\em Abstract base class for boundary condition functions. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classFunctionZero}{Function\+Zero}}
+\begin{DoxyCompactList}\small\item\em Implements zero boundary condition. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classDirichlet}{Dirichlet}}
+\begin{DoxyCompactList}\small\item\em Implements \doxylink{classDirichlet}{Dirichlet} boundary condition. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classExactSolution}{Exact\+Solution}}
+\begin{DoxyCompactList}\small\item\em Provides exact solutions for velocity components. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa}{Direction}} \{ \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaac461e84f27bbb236874e1011cd66031f}{U}}
+, \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaa28f41f1144eee94834387e9a6a088bc1}{V}}
+, \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaab722ceeb601c72cd78fbd35f3581fdf7}{W}}
+ \}
+\begin{DoxyCompactList}\small\item\em Enumeration for velocity components direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Utility classes and functions for boundary conditions and exact solutions. 
+
+This file provides utility classes for handling boundary conditions and exact solutions in the fluid simulation. It includes enumerations for direction, abstract and concrete boundary condition classes, and exact solution calculations. 
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa}\label{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa} 
+\index{utils.hpp@{utils.hpp}!Direction@{Direction}}
+\index{Direction@{Direction}!utils.hpp@{utils.hpp}}
+\doxysubsubsection{\texorpdfstring{Direction}{Direction}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa}{Direction}}}
+
+
+
+Enumeration for velocity components direction. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{U@{U}!utils.hpp@{utils.hpp}}\index{utils.hpp@{utils.hpp}!U@{U}}}\Hypertarget{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaac461e84f27bbb236874e1011cd66031f}\label{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaac461e84f27bbb236874e1011cd66031f} 
+U&X-\/direction. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{V@{V}!utils.hpp@{utils.hpp}}\index{utils.hpp@{utils.hpp}!V@{V}}}\Hypertarget{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaa28f41f1144eee94834387e9a6a088bc1}\label{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaa28f41f1144eee94834387e9a6a088bc1} 
+V&Y-\/direction. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{W@{W}!utils.hpp@{utils.hpp}}\index{utils.hpp@{utils.hpp}!W@{W}}}\Hypertarget{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaab722ceeb601c72cd78fbd35f3581fdf7}\label{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaab722ceeb601c72cd78fbd35f3581fdf7} 
+W&Z-\/direction. \\
+\hline
+
+\end{DoxyEnumFields}

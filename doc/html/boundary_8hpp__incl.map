@@ -1,0 +1,24 @@
+<map id="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/boundary.hpp" name="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/boundary.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="344,5,547,60"/>
+<area shape="rect" id="Node000002" href="$utils_8hpp.html" title="Utility classes and functions for boundary conditions and exact solutions." alt="" coords="319,108,398,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="421,62,382,100,378,96,417,58"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="414,181,477,207"/>
+<area shape="poly" id="edge12_Node000001_Node000006" title=" " alt="" coords="448,60,448,168,443,168,443,60"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="501,181,579,207"/>
+<area shape="poly" id="edge11_Node000001_Node000007" title=" " alt="" coords="463,59,528,168,524,171,459,62"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="217,181,303,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="344,136,289,175,286,171,341,131"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="327,181,390,207"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="361,134,361,168,356,168,356,134"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,255,85,280"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="319,125,273,129,218,139,160,156,107,183,78,212,58,244,54,241,74,209,104,179,158,151,217,134,272,124,319,120"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="374,131,422,170,419,175,371,135"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="389,131,499,174,497,179,387,136"/>
+<area shape="rect" id="Node000008" href="$grid_8hpp.html" title="Defines the staggered grid structure for the fluid simulation domain." alt="" coords="117,181,192,207"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="327,136,201,179,200,174,325,131"/>
+<area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="139,209,76,249,73,245,136,204"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="248,255,304,280"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="176,204,246,245,243,250,173,209"/>
+<area shape="rect" id="Node000010" href="$constants_8hpp.html" title="Configuration constants for domain dimensions, discretization, and simulation parameters." alt="" coords="110,255,223,280"/>
+<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="159,207,165,241,160,242,154,207"/>
+</map>

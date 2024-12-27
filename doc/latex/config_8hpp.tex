@@ -1,0 +1,217 @@
+\doxysection{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/config.hpp File Reference}
+\hypertarget{config_8hpp}{}\label{config_8hpp}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/config.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/config.hpp}}
+
+
+Configuration constants for domain dimensions, discretization, and simulation parameters.  
+
+
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}~double
+\begin{DoxyCompactList}\small\item\em Defines the floating-\/point precision used throughout the simulation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a1509a6acf308c16265cb9ea284f21bf2}{LX}} = 1.\+0
+\begin{DoxyCompactList}\small\item\em Physical length of the domain in the x-\/direction. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_aa0b94d14ab99507029afc11d1fb55b50}{LY}} = 1.\+0
+\begin{DoxyCompactList}\small\item\em Physical length of the domain in the y-\/direction. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a41e5378f6257562d5980c2ee4c8df47b}{LZ}} = 1.\+0
+\begin{DoxyCompactList}\small\item\em Physical length of the domain in the z-\/direction. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}} = 480
+\begin{DoxyCompactList}\small\item\em Number of cells in the x-\/direction. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}} = 480
+\begin{DoxyCompactList}\small\item\em Number of cells in the y-\/direction. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}} = 480
+\begin{DoxyCompactList}\small\item\em Number of cells in the z-\/direction. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_aa4fc78fb548562f4b66762acb9af9f79}{PX}} = 3
+\begin{DoxyCompactList}\small\item\em Number of processes in the x-\/direction for domain decomposition. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_a854ca8fc2f780f77f067b302a61fe77c}{PY}} = 3
+\begin{DoxyCompactList}\small\item\em Number of processes in the y-\/direction for domain decomposition. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{config_8hpp_a14d86550de6e50dc090af24d336c931e}{PZ}} = 1
+\begin{DoxyCompactList}\small\item\em Number of processes in the z-\/direction for domain decomposition. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d}{DX}} = \mbox{\hyperlink{config_8hpp_a1509a6acf308c16265cb9ea284f21bf2}{LX}} / \mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}
+\begin{DoxyCompactList}\small\item\em Space discretization step size in the x-\/direction. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd}{DY}} = \mbox{\hyperlink{config_8hpp_aa0b94d14ab99507029afc11d1fb55b50}{LY}} / \mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}
+\begin{DoxyCompactList}\small\item\em Space discretization step size in the y-\/direction. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a453bbc71274b0c088bbf6cb10c246394}{DZ}} = \mbox{\hyperlink{config_8hpp_a41e5378f6257562d5980c2ee4c8df47b}{LZ}} / \mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}
+\begin{DoxyCompactList}\small\item\em Space discretization step size in the z-\/direction. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a912a7f26a6b9bbdbf4fe451412dcd472}{DT}} = 0.\+001
+\begin{DoxyCompactList}\small\item\em Time step size for the simulation. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_aa6603ea2e2bdc02472b42bf8a9e74489}{T}} = 0.\+5
+\begin{DoxyCompactList}\small\item\em Total time interval for the simulation. \end{DoxyCompactList}\item 
+constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{config_8hpp_a08bb0c8ee22527098da1dfd726be78b2}{RE}} = 1000.\+0
+\begin{DoxyCompactList}\small\item\em Reynolds number for the simulation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Configuration constants for domain dimensions, discretization, and simulation parameters. 
+
+This file defines the constants used for setting up the physical domain and the parameters for a numerical simulation, such as the number of cells, space discretization, time step size, and Reynolds number. 
+
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}\label{config_8hpp_ab26f974b3f268d6dddc1b789e8130527} 
+\index{config.hpp@{config.hpp}!Real@{Real}}
+\index{Real@{Real}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{Real}{Real}}
+{\footnotesize\ttfamily Real~double}
+
+
+
+Defines the floating-\/point precision used throughout the simulation. 
+
+Set to double for double-\/precision floating-\/point calculations 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{config_8hpp_a912a7f26a6b9bbdbf4fe451412dcd472}\label{config_8hpp_a912a7f26a6b9bbdbf4fe451412dcd472} 
+\index{config.hpp@{config.hpp}!DT@{DT}}
+\index{DT@{DT}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{DT}{DT}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} DT = 0.\+001\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Time step size for the simulation. 
+
+Controls the temporal resolution of the simulation. Smaller values provide more accurate results but increase computational time. Must satisfy CFL condition for stability. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d}\label{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d} 
+\index{config.hpp@{config.hpp}!DX@{DX}}
+\index{DX@{DX}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{DX}{DX}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} DX = \mbox{\hyperlink{config_8hpp_a1509a6acf308c16265cb9ea284f21bf2}{LX}} / \mbox{\hyperlink{config_8hpp_acfcd088f6d058849eeba5001d482b695}{NX}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Space discretization step size in the x-\/direction. 
+
+Represents the width of each cell in physical units. Should be calculated as LX/\+NX. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd}\label{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd} 
+\index{config.hpp@{config.hpp}!DY@{DY}}
+\index{DY@{DY}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{DY}{DY}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} DY = \mbox{\hyperlink{config_8hpp_aa0b94d14ab99507029afc11d1fb55b50}{LY}} / \mbox{\hyperlink{config_8hpp_a113b604e180cf2461ce08dcd34794c11}{NY}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Space discretization step size in the y-\/direction. 
+
+Represents the height of each cell in physical units. Should be calculated as LY/\+NY. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a453bbc71274b0c088bbf6cb10c246394}\label{config_8hpp_a453bbc71274b0c088bbf6cb10c246394} 
+\index{config.hpp@{config.hpp}!DZ@{DZ}}
+\index{DZ@{DZ}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{DZ}{DZ}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} DZ = \mbox{\hyperlink{config_8hpp_a41e5378f6257562d5980c2ee4c8df47b}{LZ}} / \mbox{\hyperlink{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}{NZ}}\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Space discretization step size in the z-\/direction. 
+
+Represents the depth of each cell in physical units. Should be calculated as LZ/\+NZ. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a1509a6acf308c16265cb9ea284f21bf2}\label{config_8hpp_a1509a6acf308c16265cb9ea284f21bf2} 
+\index{config.hpp@{config.hpp}!LX@{LX}}
+\index{LX@{LX}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{LX}{LX}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} LX = 1.\+0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Physical length of the domain in the x-\/direction. 
+
+Defines the size of the computational domain along the x-\/axis in physical units. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_aa0b94d14ab99507029afc11d1fb55b50}\label{config_8hpp_aa0b94d14ab99507029afc11d1fb55b50} 
+\index{config.hpp@{config.hpp}!LY@{LY}}
+\index{LY@{LY}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{LY}{LY}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} LY = 1.\+0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Physical length of the domain in the y-\/direction. 
+
+Defines the size of the computational domain along the y-\/axis in physical units. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a41e5378f6257562d5980c2ee4c8df47b}\label{config_8hpp_a41e5378f6257562d5980c2ee4c8df47b} 
+\index{config.hpp@{config.hpp}!LZ@{LZ}}
+\index{LZ@{LZ}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{LZ}{LZ}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} LZ = 1.\+0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Physical length of the domain in the z-\/direction. 
+
+Defines the size of the computational domain along the z-\/axis in physical units. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_acfcd088f6d058849eeba5001d482b695}\label{config_8hpp_acfcd088f6d058849eeba5001d482b695} 
+\index{config.hpp@{config.hpp}!NX@{NX}}
+\index{NX@{NX}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{NX}{NX}}
+{\footnotesize\ttfamily constexpr int NX = 480\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of cells in the x-\/direction. 
+
+Specifies the grid resolution along the x-\/axis. Higher values provide finer resolution but increase computational cost. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a113b604e180cf2461ce08dcd34794c11}\label{config_8hpp_a113b604e180cf2461ce08dcd34794c11} 
+\index{config.hpp@{config.hpp}!NY@{NY}}
+\index{NY@{NY}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{NY}{NY}}
+{\footnotesize\ttfamily constexpr int NY = 480\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of cells in the y-\/direction. 
+
+Specifies the grid resolution along the y-\/axis. Higher values provide finer resolution but increase computational cost. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_af76693b2bd4219d00c913cc6722fa11c}\label{config_8hpp_af76693b2bd4219d00c913cc6722fa11c} 
+\index{config.hpp@{config.hpp}!NZ@{NZ}}
+\index{NZ@{NZ}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{NZ}{NZ}}
+{\footnotesize\ttfamily constexpr int NZ = 480\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of cells in the z-\/direction. 
+
+Specifies the grid resolution along the z-\/axis. Higher values provide finer resolution but increase computational cost. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_aa4fc78fb548562f4b66762acb9af9f79}\label{config_8hpp_aa4fc78fb548562f4b66762acb9af9f79} 
+\index{config.hpp@{config.hpp}!PX@{PX}}
+\index{PX@{PX}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{PX}{PX}}
+{\footnotesize\ttfamily constexpr int PX = 3\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of processes in the x-\/direction for domain decomposition. 
+
+Controls how the domain is split among parallel processes along the x-\/axis. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a854ca8fc2f780f77f067b302a61fe77c}\label{config_8hpp_a854ca8fc2f780f77f067b302a61fe77c} 
+\index{config.hpp@{config.hpp}!PY@{PY}}
+\index{PY@{PY}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{PY}{PY}}
+{\footnotesize\ttfamily constexpr int PY = 3\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of processes in the y-\/direction for domain decomposition. 
+
+Controls how the domain is split among parallel processes along the y-\/axis. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a14d86550de6e50dc090af24d336c931e}\label{config_8hpp_a14d86550de6e50dc090af24d336c931e} 
+\index{config.hpp@{config.hpp}!PZ@{PZ}}
+\index{PZ@{PZ}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{PZ}{PZ}}
+{\footnotesize\ttfamily constexpr int PZ = 1\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Number of processes in the z-\/direction for domain decomposition. 
+
+Controls how the domain is split among parallel processes along the z-\/axis. Currently not used as z-\/direction splitting is not implemented. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_a08bb0c8ee22527098da1dfd726be78b2}\label{config_8hpp_a08bb0c8ee22527098da1dfd726be78b2} 
+\index{config.hpp@{config.hpp}!RE@{RE}}
+\index{RE@{RE}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{RE}{RE}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} RE = 1000.\+0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Reynolds number for the simulation. 
+
+Dimensionless number that describes the flow regime (laminar vs turbulent). Represents the ratio of inertial forces to viscous forces within the fluid. This value is externally defined and can be modified at runtime. \Hypertarget{config_8hpp_aa6603ea2e2bdc02472b42bf8a9e74489}\label{config_8hpp_aa6603ea2e2bdc02472b42bf8a9e74489} 
+\index{config.hpp@{config.hpp}!T@{T}}
+\index{T@{T}!config.hpp@{config.hpp}}
+\doxysubsubsection{\texorpdfstring{T}{T}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} T = 0.\+5\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Total time interval for the simulation. 
+
+Specifies how long the simulation should run in physical time units. The total number of time steps will be T/\+DT. This value is externally defined and can be modified at runtime. 
