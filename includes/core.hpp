@@ -120,7 +120,7 @@ private:
 
   // Left boundary for x dim
   // since i don't know if i have to count boundary for each process, and if to count them from left or right i'll use these vars as booleans
-  int lbx = 0, rbx = 0, lby = 0, rby = 0;
+  int lbx = 0, rbx = 0, lby = 0, rby = 0, lbz=0, rbz=0;
 
   int coords[2];
   int neighbors[4];
@@ -147,7 +147,9 @@ private:
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
 
-  bool dirichletX= true;
+  bool dirichletX= false;
+  bool dirichletY= false;
+  bool dirichletZ= false;
 };
 
 #endif // CORE_HPP
