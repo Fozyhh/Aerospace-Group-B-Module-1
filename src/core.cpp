@@ -141,7 +141,7 @@ void IcoNS::setParallelization()
             Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
         }
  */
-    if(dirichletX){
+    if(BX){
         if (coords[0] == 0)
             lbx++;
 
@@ -184,41 +184,40 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
 
     if (!(/*dirichlet on y && */ coords[1] == PY-1))
     {
-        
         MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
         MPI_Wait(&reqs[3], MPI_SUCCESS);
         MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
     }
     if (!(/*dirichlet on y && */ coords[1] == 0))
     {
-        
+
         MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
         MPI_Wait(&reqs[2], MPI_SUCCESS);
     }
     // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
-    if (!(dirichletX && coords[0] == 0))
+    if (!(BX && coords[0] == 0))
     {
         MPI_Isend(&grid_loc[(newDimY)*dim_z], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
-        
+
         //MPI_Wait(&reqs[0], MPI_SUCCESS);
         //MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
-        
+
     }
-    if (!(dirichletX && coords[0] == PX - 1)){
+    if (!(BX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
         MPI_Wait(&reqs[1], MPI_SUCCESS);
         MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
         //MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
         //MPI_Wait(&reqs[1], MPI_SUCCESS);
     }
-    if (!(dirichletX && coords[0] == 0)){
+    if (!(BX && coords[0] == 0)){
         MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9  , cart_comm, &reqs[0]);
         MPI_Wait(&reqs[0], MPI_SUCCESS);
     }
     //MPI_Waitall(test,&reqs[0],MPI_SUCCESS);
 
-    
-    
+
+
 }
 
 void IcoNS::solve()
@@ -880,6 +879,26 @@ void IcoNS::parse_input(const std::string& input_file) {
         break;
     }
 
+    // Skip comments and empty lines until we find boundaries
+
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        int x_boundary, y_boundary, z_boundary;
+        if (!(iss >> x_boundary >> y_boundary >> z_boundary)) continue;
+
+        // Convert integers to booleans and assign to extern variables
+        BX = static_cast<bool>(x_boundary);
+        BY = static_cast<bool>(y_boundary);
+        BZ = static_cast<bool>(z_boundary);
+
+        // Update periods array for MPI cart create
+        periods[0] = !BX;
+        periods[1] = !BY;
+
+        break;
+    }
+
     if (rank == 0) {
         std::cout << "\nConfiguration:\n"
                   << "Reynolds number: " << RE << "\n"
@@ -887,7 +906,8 @@ void IcoNS::parse_input(const std::string& input_file) {
                   << "Total time: " << T << "\n"
                   << "Domain size: " << LX << " x " << LY << " x " << LZ << "\n"
                   << "Grid points: " << NX << " x " << NY << " x " << NZ << "\n"
-                  << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n";
+                  << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n"
+                  << "Boundary conditions: " << BX << " " << BY << " " << BZ << "\n";
     }
 
     // Verify that the process grid matches the number of processes

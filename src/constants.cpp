@@ -16,5 +16,8 @@ Real DX, DY, DZ;
 Real DT;
 Real T;
 
+// Boundary conditions
+bool BX, BY, BZ;
+
 // Flow parameters
 Real RE;

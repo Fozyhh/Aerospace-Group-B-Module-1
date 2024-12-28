@@ -126,4 +126,31 @@ extern Real T;
  */
 extern Real RE;
 
+/**
+ * @brief Flag for boundary conditions in X direction.
+ * @details Specifies the type of boundary conditions to apply at the domain boundaries.
+ * false: Periodic boundary conditions
+ * true: Dirichlet boundary conditions
+ * This value is externally defined and can be modified at runtime.
+ */
+extern bool BX;
+
+/**
+ * @brief Flag for boundary conditions in Z direction.
+ * @details Specifies the type of boundary conditions to apply at the domain boundaries.
+ * false: Periodic boundary conditions
+ * true: Dirichlet boundary conditions
+ * This value is externally defined and can be modified at runtime.
+ */
+extern bool BZ;
+
+/**
+ * @brief Flag for boundary conditions in Y direction.
+ * @details Specifies the type of boundary conditions to apply at the domain boundaries.
+ * false: Periodic boundary conditions
+ * true: Dirichlet boundary conditions
+ * This value is externally defined and can be modified at runtime.
+ */
+extern bool BY;
+
 #endif // CONSTANTS_HPP

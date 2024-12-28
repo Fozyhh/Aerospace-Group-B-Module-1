@@ -11,7 +11,13 @@
 1.0 1.0 1.0
 
 # Number of grid points: Nx, Ny, Nz
-480 480 480
+100 100 100
 
 # Process grid: Px, Py, Pz
 2 2 1
+
+# Boundaries :
+1 1 1
+
+# 0 : perdiodic
+# 1 : dirichlet

@@ -226,7 +226,7 @@ private:
   int other_dim_x_z, other_dim_y_z;
 
   /// @brief Flag for Dirichlet boundary conditions in X direction
-  bool dirichletX= true;
+  //bool dirichletX= true;
 };
 
 #endif // CORE_HPP
