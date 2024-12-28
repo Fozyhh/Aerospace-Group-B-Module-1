@@ -41,7 +41,7 @@ constexpr Real DY = LY / NY;
 constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr Real DT = 0.001;
+constexpr Real DT = 0.005;
 
 /// @brief Total time interval for the simulation.
 constexpr Real T = 0.1;

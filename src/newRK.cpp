@@ -427,11 +427,11 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < NZ; k++)
             {
-                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (40.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
-    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + DT, 40.0);
+    boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
