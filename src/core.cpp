@@ -147,7 +147,9 @@ void IcoNS::setParallelization()
 
         if (coords[0] == PX - 1)
             rbx=1;
+        
     }
+    
     if(dirichletY){
         if (coords[1] == PY - 1)
             rby=1;
@@ -155,6 +157,18 @@ void IcoNS::setParallelization()
         if (coords[1] == 0)
             lby=1;
     }
+    if (coords[0] == 0)
+        firstX=1;
+
+    if (coords[0] == PX - 1)
+        lastX=1;
+
+    if (coords[1] == PY - 1)
+        lastY=1;
+
+    if (coords[1] == 0)
+        firstY=1;
+
     if(dirichletZ){
         lbz=1;
         rbz=1;
@@ -182,10 +196,13 @@ void IcoNS::setParallelization()
     MPI_Type_commit(&MPI_face_y_z);
 }
 
-void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y)
+void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY)
 {
+    // if(!dirichletX){
+    //     p=0;
+    // }
     if (!(dirichletY && coords[1] == 0)){
-        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
+        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * firstY], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
     }
 
     if (!(dirichletY && coords[1] == PY-1))
@@ -193,18 +210,17 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         
         MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
         MPI_Wait(&reqs[3], MPI_SUCCESS);
-        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
+        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
     }
     if (!(dirichletY &&  coords[1] == 0))
     {
-        
         MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
         MPI_Wait(&reqs[2], MPI_SUCCESS);
     }
     // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
     if (!(dirichletX && coords[0] == 0))
     {
-        MPI_Isend(&grid_loc[(newDimY)*dim_z], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
+        MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
         
         //MPI_Wait(&reqs[0], MPI_SUCCESS);
         //MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
@@ -213,7 +229,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     if (!(dirichletX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
         MPI_Wait(&reqs[1], MPI_SUCCESS);
-        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
+        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
         //MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
         //MPI_Wait(&reqs[1], MPI_SUCCESS);
     }
@@ -222,8 +238,6 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         MPI_Wait(&reqs[0], MPI_SUCCESS);
     }
     //MPI_Waitall(test,&reqs[0],MPI_SUCCESS);
-
-    
     
 }
 
@@ -249,9 +263,9 @@ void IcoNS::solve()
         boundary.update_boundary(grid_loc_x, grid_loc_y, grid_loc_z, time);
 
         MPI_Barrier(cart_comm);
-        exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x);
-        exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y);
-        exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z);
+        exchangeData(grid_loc_x, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x, 0, 1);
+        exchangeData(grid_loc_y, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y, 1 ,0);
+        exchangeData(grid_loc_z, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
         x = L2_error(time); // every processor calculates his error not counting ghosts
         MPI_Barrier(cart_comm);
         error = 0.0;
@@ -266,11 +280,12 @@ void IcoNS::solve()
         //     for(int r =0; r<4 ;r++){
         //     if(rank==r){
         //         std::cout << "rsnk: " << rank << std::endl;
-        //         for (int in = 0 ; in < newDimX_x ; in++)
+        //         for (int in = 0 ; in < newDimX_z ; in++)
         //         {
-        //             for(int j=0; j < newDimY_x ;j++){
-        //                 for(int k=0; k <dim_z;k++){
-        //                     std::cout << grid_loc_x[in * newDimY_x * dim_z + j * dim_z + k] << " ";
+        //             for(int j=0; j < newDimY_z ;j++)
+        //             {
+        //                 for(int k=0; k <dim_z_z;k++){
+        //                     std::cout << grid_loc_z[in * newDimY_z * dim_z_z + j * dim_z_z + k] << " ";
         //                 }
         //                 std::cout<< std::endl;
         //             }
@@ -308,8 +323,8 @@ Real IcoNS::L2_error(const Real t)
     Real error = 0.0;
 
     error += error_comp_X(t);
-    // error += error_comp_Y(t);
-    // error += error_comp_Z(t);
+    error += error_comp_Y(t);
+    error += error_comp_Z(t);
 
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
@@ -901,6 +916,9 @@ void IcoNS::parse_input(const std::string& input_file) {
         if (!(iss >> LX >> LY >> LZ)) continue;
         break;
     }
+    LX = LX* 2* M_PI;
+    LY = LY* 2* M_PI;
+    LZ = LZ* 2* M_PI;
 
     // Skip comments and empty lines until we find grid points
     while (std::getline(file, line)) {

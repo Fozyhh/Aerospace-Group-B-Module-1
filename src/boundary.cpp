@@ -257,7 +257,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
         if (rby)
         {
             face = 3;
-            for (int k = 0; k < dim_z_z + 1; k++)
+            for (int k = 0; k < dim_z_z; k++)
             {
                 Yz[i * newDimY_z * dim_z_z + (newDimY_z - 2) * dim_z_z + k] = boundary_value_w[face]->value(i + offset_x_z, NY, k, t);
             }

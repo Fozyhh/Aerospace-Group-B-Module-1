@@ -67,7 +67,7 @@ public:
   * @param newDimX
   * @param grid_loc
   */
-  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
+  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY);
 
   /**
   * @brief The method is called by the program multiple during the time step,
@@ -84,6 +84,10 @@ public:
   Real functionG_u(int i, int j, int k, Real t);
   Real functionG_v(int i, int j, int k, Real t);
   Real functionG_w(int i, int j, int k, Real t);
+
+  inline int indPeriodicx(int i, int j, int k);
+  inline int indPeriodicy(int i, int j, int k);
+  inline int indPeriodicz(int i, int j, int k);
 
   void solve();
   void solve_time_step(Real time);
@@ -122,6 +126,8 @@ private:
   // since i don't know if i have to count boundary for each process, and if to count them from left or right i'll use these vars as booleans
   int lbx = 0, rbx = 0, lby = 0, rby = 0, lbz=0, rbz=0;
 
+  int firstX=0,firstY=0,lastX=0,lastY=0;
+
   int coords[2];
   int neighbors[4];
 
@@ -147,9 +153,16 @@ private:
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
 
-  bool dirichletX= false;
-  bool dirichletY= false;
-  bool dirichletZ= false;
+  bool dirichletX= true;
+  bool dirichletY= true;
+  bool dirichletZ= true;
 };
 
 #endif // CORE_HPP
+
+/*
+  > > > > 
+^  ^  ^  ^
+  >  >  >  > 
+^  ^  ^  ^  ^
+*/
