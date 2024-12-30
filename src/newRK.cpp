@@ -111,11 +111,11 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
 
-    for (int i = 0; i < NX; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_x[indexingPeriodicx(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Px(i,j,k,time+64.0 * DT / (120.0))-d_Px(i,j,k,time));*/(Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX);
@@ -127,11 +127,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (int j = 0; j < NY; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y2_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y2_y[indexingPeriodicy(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Py(i,j,k,time+64.0 * DT / (120.0))-d_Py(i,j,k,time));*/(Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY);
@@ -143,11 +143,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (int k = 0; k < NZ; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y2_z[i * (NY + 1) * NZ + j * NZ + k] = Y2_z[indexingPeriodicz(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+64.0 * DT / (120.0))-d_Pz(i,j,k,time));*/(Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ);
@@ -273,11 +273,11 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
 
-    for (int i = 0; i < NX; i++)
+    for (int i = start; i < NX + end; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y3_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Px(i,j,k,time+80.0 * DT / (120.0))-d_Px(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX);
@@ -289,11 +289,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (int j = 0; j < NY; j++)
+        for (int j = start; j < NY + end; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 Y3_y[i * NY * (NZ + 1) + j * (NZ + 1) + k] = Y3_y[indexingPeriodicy(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Py(i,j,k,time+80.0 * DT / (120.0))-d_Py(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY);
@@ -305,11 +305,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = start; i < NX + 1 + end; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = start; j < NY + 1 + end; j++)
         {
-            for (int k = 0; k < NZ; k++)
+            for (int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
                 Y3_z[i * (NY + 1) * NZ + j * NZ + k] = Y3_z[indexingPeriodicz(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+80.0 * DT / (120.0))-d_Pz(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ);
@@ -398,7 +398,6 @@ void IcoNS::solve_time_step(Real time)
                                                              90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                              50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                          40.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k+1] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DZ);
-
 #endif
             }
         }
@@ -436,11 +435,11 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
 
-    for(int i = 0; i < NX; i++)
+    for(int i = start; i < NX + end; i++)
     {
-        for(int j = 0; j < NY + 1; j++)
+        for(int j = start; j < NY + 1 + end; j++)
         {
-            for(int k = 0; k < NZ + 1; k++)
+            for(int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
                 grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i + 1, j, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DX); 
@@ -451,32 +450,32 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(int i = 0; i < NX + 1; i++)
+    for(int i = start; i < NX + 1 + end; i++)
     {
-        for(int j = 0; j < NY; j++)
+        for(int j = start; j < NY + end; j++)
         {
-            for(int k = 0; k < NZ + 1; k++)
+            for(int k = start; k < NZ + 1 + end; k++)
             {
 #ifdef PERIODIC
-                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY); 
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * /*(d_Py(i,j,k,time+DT)-d_Py(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j + 1, k)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DY); 
 #endif
 #ifdef DIRICHELET
-                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j + 1, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DY); 
+                grid.v[i * NY * (NZ + 1) + j * (NZ + 1) + k] -= 40.0 * DT / (120.0) * /*(d_Py(i,j,k,time+DT)-d_Py(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j + 1, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DY); 
 #endif
             }
         }
     }
-    for(int i = 0; i < NX + 1; i++)
+    for(int i = start; i < NX + 1 + end; i++)
     {
-        for(int j = 0; j < NY + 1; j++)
+        for(int j = start; j < NY + 1 + end; j++)
         {
-            for(int k = 0; k < NZ; k++)
+            for(int k = start; k < NZ + end; k++)
             {
 #ifdef PERIODIC
-                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ); 
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+DT)-d_Pz(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingPeriodicp(i, j, k + 1)] - Y2_p[indexingPeriodicp(i, j, k)]) / (DZ); 
 #endif
 #ifdef DIRICHELET
-                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j, k + 1)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DZ); 
+                grid.w[i * (NY + 1) * NZ + j * NZ + k] -= 40.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+DT)-d_Pz(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j, k + 1)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DZ); 
 #endif
             }
         }
