@@ -1,0 +1,37 @@
+\doxysection{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp File Reference}
+\hypertarget{grid_8hpp}{}\label{grid_8hpp}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/grid.hpp}}
+
+
+Defines the staggered grid structure for the fluid simulation domain.  
+
+
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include "{}constants.\+hpp"{}}\newline
+Include dependency graph for grid.\+hpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{grid_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{grid_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structGrid}{Grid}}
+\begin{DoxyCompactList}\small\item\em Structure representing the staggered grid arrangement for the fluid domain. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines the staggered grid structure for the fluid simulation domain. 
+
+This file implements a staggered grid arrangement commonly used in computational fluid dynamics. In a staggered grid, velocity components are stored at cell faces while pressure values are stored at cell centers, improving numerical stability and avoiding checker-\/board pressure patterns. 

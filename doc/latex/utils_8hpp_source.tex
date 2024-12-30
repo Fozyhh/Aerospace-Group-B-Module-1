@@ -1,0 +1,72 @@
+\doxysection{utils.\+hpp}
+\hypertarget{utils_8hpp_source}{}\label{utils_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/utils.hpp}}
+\mbox{\hyperlink{utils_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#ifndef\ UTILS\_H}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#define\ UTILS\_H}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{grid_8hpp}{grid.hpp}}"{}}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa}{Direction}}}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaac461e84f27bbb236874e1011cd66031f}{U}},\ \ }
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaa28f41f1144eee94834387e9a6a088bc1}{V}},\ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aaab722ceeb601c72cd78fbd35f3581fdf7}{W}}\ \ \ }
+\DoxyCodeLine{00033\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classBoundaryFunction_a49f26601cedd89da0aef939a39698096}{value}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ x,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ y,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t)\ =\ 0;}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classFunctionZero}{FunctionZero}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}}
+\DoxyCodeLine{00064\ \{}
+\DoxyCodeLine{00065\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classFunctionZero_a57417b859b2225a6f2090599b89d384a}{value}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \textcolor{comment}{/*x*/},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \textcolor{comment}{/*y*/},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \textcolor{comment}{/*z*/},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \textcolor{comment}{/*t*/})\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00075\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classDirichlet}{Dirichlet}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classBoundaryFunction}{BoundaryFunction}}}
+\DoxyCodeLine{00088\ \{}
+\DoxyCodeLine{00089\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00091\ \ \ std::function<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})>\ \mbox{\hyperlink{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e}{func}};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classDirichlet_aa44a86a2c161a65e41877d108b0d7ddd}{Dirichlet}}(std::function<\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}},\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})>\ func\_)\ :\ \mbox{\hyperlink{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e}{func}}(func\_)\ \{\};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classDirichlet_ae9722d9caaeca2febc556c9c37ec9fcc}{value}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ x,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ y,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e}{func}}(x,\ y,\ z,\ t);}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00120\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classExactSolution}{ExactSolution}}}
+\DoxyCodeLine{00121\ \{}
+\DoxyCodeLine{00122\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classExactSolution_a100aff838196598fe1cb2aa1f0c85924}{value\_x}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ x,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ y,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00133\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ std::sin(x\ *\ \mbox{\hyperlink{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d}{DX}})\ *\ std::cos(y\ *\ \mbox{\hyperlink{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd}{DY}})\ *\ std::sin(z\ *\ \mbox{\hyperlink{config_8hpp_a453bbc71274b0c088bbf6cb10c246394}{DZ}})\ *\ std::sin(t);}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classExactSolution_ad4fceb5b046d2f68881e3703c9b4bca8}{value\_y}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ x,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ y,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00146\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{return}\ std::cos(x\ *\ \mbox{\hyperlink{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d}{DX}})\ *\ std::sin(y\ *\ \mbox{\hyperlink{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd}{DY}})\ *\ std::sin(z\ *\ \mbox{\hyperlink{config_8hpp_a453bbc71274b0c088bbf6cb10c246394}{DZ}})\ *\ std::sin(t);}
+\DoxyCodeLine{00148\ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classExactSolution_a0d8b2400536cef54cc4ceca88c118306}{value\_z}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ x,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ y,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00159\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{return}\ 2\ *\ std::cos(x\ *\ \mbox{\hyperlink{config_8hpp_ad7fd4aef6e6f042da2cfcbbddd9c628d}{DX}})\ *\ std::cos(y\ *\ \mbox{\hyperlink{config_8hpp_a17f751badbe0c9229e27e97c9b7f6bcd}{DY}})\ *\ std::cos(z\ *\ \mbox{\hyperlink{config_8hpp_a453bbc71274b0c088bbf6cb10c246394}{DZ}})\ *\ std::sin(t);}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ \};}
+\DoxyCodeLine{00163\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

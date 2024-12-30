@@ -1,0 +1,9 @@
+<map id="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/grid.hpp" name="/workspaces/aerospace&#45;group&#45;b&#45;module&#45;1/includes/grid.hpp">
+<area shape="rect" id="Node000001" title="Defines the staggered grid structure for the fluid simulation domain." alt="" coords="36,5,239,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,108,85,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,62,70,100,66,96,107,58"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="109,108,165,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="140,60,140,94,135,94,135,60"/>
+<area shape="rect" id="Node000004" href="$constants_8hpp.html" title="Configuration constants for domain dimensions, discretization, and simulation parameters." alt="" coords="190,108,303,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="172,58,223,97,219,102,169,62"/>
+</map>

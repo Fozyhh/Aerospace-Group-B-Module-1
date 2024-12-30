@@ -1,0 +1,115 @@
+\doxysection{Dirichlet Class Reference}
+\hypertarget{classDirichlet}{}\label{classDirichlet}\index{Dirichlet@{Dirichlet}}
+
+
+Implements \doxylink{classDirichlet}{Dirichlet} boundary condition.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Dirichlet\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classDirichlet__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Dirichlet\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classDirichlet__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDirichlet_aa44a86a2c161a65e41877d108b0d7ddd}{Dirichlet}} (std\+::function$<$ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})$>$ func\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor taking a function object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{classDirichlet_ae9722d9caaeca2febc556c9c37ec9fcc}{value}} (\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} x, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} y, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} z, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} t) override
+\begin{DoxyCompactList}\small\item\em Calculates boundary value using the stored function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::function$<$ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})$>$ \mbox{\hyperlink{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e}{func}}
+\begin{DoxyCompactList}\small\item\em Function object that defines the boundary value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements \doxylink{classDirichlet}{Dirichlet} boundary condition. 
+
+Allows specification of arbitrary function for \doxylink{classDirichlet}{Dirichlet} boundary conditions. The boundary value is determined by the provided function. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classDirichlet_aa44a86a2c161a65e41877d108b0d7ddd}\label{classDirichlet_aa44a86a2c161a65e41877d108b0d7ddd} 
+\index{Dirichlet@{Dirichlet}!Dirichlet@{Dirichlet}}
+\index{Dirichlet@{Dirichlet}!Dirichlet@{Dirichlet}}
+\doxysubsubsection{\texorpdfstring{Dirichlet()}{Dirichlet()}}
+{\footnotesize\ttfamily Dirichlet\+::\+Dirichlet (\begin{DoxyParamCaption}\item[{std\+::function$<$ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})$>$}]{func\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor taking a function object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func\+\_\+} & Function object defining boundary values \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classDirichlet_ae9722d9caaeca2febc556c9c37ec9fcc}\label{classDirichlet_ae9722d9caaeca2febc556c9c37ec9fcc} 
+\index{Dirichlet@{Dirichlet}!value@{value}}
+\index{value@{value}!Dirichlet@{Dirichlet}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} Dirichlet\+::value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{x,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{y,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{z,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Calculates boundary value using the stored function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate \\
+\hline
+{\em y} & Y-\/coordinate \\
+\hline
+{\em z} & Z-\/coordinate \\
+\hline
+{\em t} & Time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classBoundary}{Boundary} value calculated by the stored function 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classBoundaryFunction_a49f26601cedd89da0aef939a39698096}{Boundary\+Function}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e}\label{classDirichlet_a1d291caaf26e3fa391c15ae498de8c2e} 
+\index{Dirichlet@{Dirichlet}!func@{func}}
+\index{func@{func}!Dirichlet@{Dirichlet}}
+\doxysubsubsection{\texorpdfstring{func}{func}}
+{\footnotesize\ttfamily std\+::function$<$\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}(\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}})$>$ Dirichlet\+::func}
+
+
+
+Function object that defines the boundary value. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}

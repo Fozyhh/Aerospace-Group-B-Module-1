@@ -1,0 +1,79 @@
+\doxysection{boundary.\+hpp}
+\hypertarget{boundary_8hpp_source}{}\label{boundary_8hpp_source}\index{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/boundary.hpp@{/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/boundary.hpp}}
+\mbox{\hyperlink{boundary_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ BOUNDARY\_HPP}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ BOUNDARY\_HPP}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{utils_8hpp}{utils.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classBoundary}{Boundary}}}
+\DoxyCodeLine{00017\ \{}
+\DoxyCodeLine{00018\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a1c1c6a09238671fa000918d5c5d32b71}{lbx}},\mbox{\hyperlink{classBoundary_a4c28af9de8ddb334221bb540c1633a12}{lby}},\mbox{\hyperlink{classBoundary_acda915c774f0c895a1223d867705d78e}{rbx}},\mbox{\hyperlink{classBoundary_ac806f9a6a8ed56b890dabfc0467a911d}{rby}};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_acec880c8fb5e39fc73ef2ac684818435}{coords}}[2];}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00026\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ \mbox{\hyperlink{classBoundary_a4e91a1849f5ed8cf4602d1c78ecd49cb}{boundary\_value\_u}};}
+\DoxyCodeLine{00028\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ \mbox{\hyperlink{classBoundary_a79d237834f514bbc72f677b2783877ff}{boundary\_value\_v}};}
+\DoxyCodeLine{00030\ \ \ \ \ std::vector<std::shared\_ptr<BoundaryFunction>>\ \mbox{\hyperlink{classBoundary_a44c70bd03c1968c2297e0bd6eeb1e670}{boundary\_value\_w}};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a170c5f73cb13d90a5ded049eb19573fa}{dim\_x\_x}},\ \mbox{\hyperlink{classBoundary_a25c33cfc45b165274a40513d9e2b8a04}{dim\_y\_x}};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a639610a6c65bcf0c3952a2278c2886aa}{dim\_x\_y}},\ \mbox{\hyperlink{classBoundary_a84088678d18771e8460e60d62b8c945b}{dim\_y\_y}},\ \mbox{\hyperlink{classBoundary_a2aff6dd7b260629719852b5badda2149}{dim\_y\_z}};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_ae8c8f97e642fff6a390af0fe7aec9401}{dim\_z}},\ \mbox{\hyperlink{classBoundary_a9cad62bdd1c46214783ee5eb6831ed6b}{dim\_x\_z}},\ \mbox{\hyperlink{classBoundary_a2e23a8ae2976bc6db123f7d9abcb7473}{dim\_z\_z}};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a21882d17a05614cfbc90cd16d7ee04c4}{newDimX\_x}},\ \mbox{\hyperlink{classBoundary_a6375ade82b51faed6de44e48db3443b7}{newDimY\_x}};}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a641d8f560d82f1a93145f446c1c26924}{newDimX\_y}},\ \mbox{\hyperlink{classBoundary_a6c1cf20f9faed566a477736b030f3b2b}{newDimY\_y}};}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a9a2d2d662a34755a2bb5c0ec27df5742}{newDimX\_z}},\ \mbox{\hyperlink{classBoundary_a5c81631c819583001a4ca564361c8137}{newDimY\_z}};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_aa97261b5c41f2e80468fcf33cac2b19a}{other\_dim\_x\_x}},\ \mbox{\hyperlink{classBoundary_a1970e321035b1c99892dc94378911561}{other\_dim\_y\_x}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a859aabcc0bbf935e940d20e73017a498}{other\_dim\_x\_y}},\ \mbox{\hyperlink{classBoundary_a39ab653a4becb4a280ece569ecd5415f}{other\_dim\_y\_y}};}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classBoundary_a3aafba27a14dc6e958ed9fe69393c3a5}{other\_dim\_x\_z}},\ \mbox{\hyperlink{classBoundary_ab7864ef12298b8d0b3838fda6751d2c7}{other\_dim\_y\_z}};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_a1d68fa1538e340a04f418d758b53eac7}{initializeBoundary}}(}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dim\_x\_x\_,\ \textcolor{keywordtype}{int}\ dim\_y\_x\_,\ \textcolor{keywordtype}{int}\ dim\_x\_y\_,\ \textcolor{keywordtype}{int}\ dim\_y\_y\_,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dim\_x\_z\_,\ \textcolor{keywordtype}{int}\ dim\_y\_z\_,\ \textcolor{keywordtype}{int}\ dim\_z\_,\ \textcolor{keywordtype}{int}\ dim\_z\_z\_,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDimX\_x\_,\ \textcolor{keywordtype}{int}\ newDimY\_x\_,\ \textcolor{keywordtype}{int}\ newDimX\_y\_,\ \textcolor{keywordtype}{int}\ newDimY\_y\_,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newDimX\_z\_,\ \textcolor{keywordtype}{int}\ newDimY\_z\_)}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a170c5f73cb13d90a5ded049eb19573fa}{dim\_x\_x}}\ =\ dim\_x\_x\_;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a25c33cfc45b165274a40513d9e2b8a04}{dim\_y\_x}}\ =\ dim\_y\_x\_;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a639610a6c65bcf0c3952a2278c2886aa}{dim\_x\_y}}\ =\ dim\_x\_y\_;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a84088678d18771e8460e60d62b8c945b}{dim\_y\_y}}\ =\ dim\_y\_y\_;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a9cad62bdd1c46214783ee5eb6831ed6b}{dim\_x\_z}}\ =\ dim\_x\_z\_;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a2aff6dd7b260629719852b5badda2149}{dim\_y\_z}}\ =\ dim\_y\_z\_;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_ae8c8f97e642fff6a390af0fe7aec9401}{dim\_z}}\ =\ dim\_z\_;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a2e23a8ae2976bc6db123f7d9abcb7473}{dim\_z\_z}}\ =\ dim\_z\_z\_;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a21882d17a05614cfbc90cd16d7ee04c4}{newDimX\_x}}\ =\ newDimX\_x\_;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a6375ade82b51faed6de44e48db3443b7}{newDimY\_x}}\ =\ newDimY\_x\_;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a641d8f560d82f1a93145f446c1c26924}{newDimX\_y}}\ =\ newDimX\_y\_;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a6c1cf20f9faed566a477736b030f3b2b}{newDimY\_y}}\ =\ newDimY\_y\_;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a9a2d2d662a34755a2bb5c0ec27df5742}{newDimX\_z}}\ =\ newDimX\_z\_;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classBoundary_a5c81631c819583001a4ca564361c8137}{newDimY\_z}}\ =\ newDimY\_z\_;}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_ae2d781bbcc9ef44f6629f2ce73ba019d}{update\_boundary}}(std::vector<Real>\ \&Yx,\ std::vector<Real>\ \&Yy,\ std::vector<Real>\ \&Yz,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classBoundary_aca6b5a3232aa9c3952455a70aafe8739}{approximate\_boundary\_u}}(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t,\ \textcolor{keywordtype}{int}\ face,\ \textcolor{keywordtype}{int}\ side);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classBoundary_a11f09cc58ded64fe445a3776549e901c}{approximate\_boundary\_v}}(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t,\ \textcolor{keywordtype}{int}\ face,\ \textcolor{keywordtype}{int}\ side);}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ \mbox{\hyperlink{classBoundary_acce3ac6c032cbc0679d87695b084d3b2}{approximate\_boundary\_w}}(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ z,\ \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}\ t,\ \textcolor{keywordtype}{int}\ face,\ \textcolor{keywordtype}{int}\ side);}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_aea3362ba487020d3772364b190a386f0}{addFunction}}(\mbox{\hyperlink{utils_8hpp_a224b9163917ac32fc95a60d8c1eec3aa}{Direction}}\ direction,\ std::shared\_ptr<BoundaryFunction>\ x);}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_a4d8561a6a94344eea5632855bee850bc}{setBoundaryOffsets}}(\textcolor{keywordtype}{int}\ lbx\_,\ \textcolor{keywordtype}{int}\ rbx\_,\ \textcolor{keywordtype}{int}\ lby\_,\ \textcolor{keywordtype}{int}\ rby\_);}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_af9f721bb379b001a5c235a8bc78b6979}{setCoords}}(\textcolor{keywordtype}{int}\ coords\_[2]);}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classBoundary_a98ab858ea2ea63ab75a91949c7a1cc6e}{setOtherDim}}(\textcolor{keywordtype}{int}\ other\_dim\_x\_x\_,\ \textcolor{keywordtype}{int}\ other\_dim\_y\_x\_,\textcolor{keywordtype}{int}\ other\_dim\_x\_y\_,\ \textcolor{keywordtype}{int}\ other\_dim\_y\_y\_,\textcolor{keywordtype}{int}\ other\_dim\_x\_z\_,\ \textcolor{keywordtype}{int}\ other\_dim\_y\_z\_);}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \};}
+\DoxyCodeLine{00177\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

@@ -3,17 +3,18 @@ import matplotlib.pyplot as plt
 import os
 
 # Example data: replace these with your actual calculated errors and grid sizes
-errors =[]
-#size =[]
-dir = os.fsencode("../resources/conv")
-for file in sorted(os.listdir(dir)):   
-    data = np.genfromtxt(os.fsdecode(os.path.join(dir,file)), delimiter=",")
-    #size.append(int(os.fsdecode(file).split(".")[0]))
-    errors.append(data[-1, 2])
+# errors =[]
+# #size =[]
+# dir = os.fsencode("../resources/conv")
+# for file in sorted(os.listdir(dir)):   
+#     data = np.genfromtxt(os.fsdecode(os.path.join(dir,file)), delimiter=",")
+#     #size.append(int(os.fsdecode(file).split(".")[0]))
+#     errors.append(data[-1, 2])
     
-print(errors)
+# print(errors)
 #print(size)
-grid_sizes = np.array([10, 20 , 50 , 100])
+errors = [7.50053e-05, 1.20893e-5, 2.98394e-6]
+grid_sizes = np.array([20 , 50 , 100])
 errors = np.array(errors)  # Replace with actual error values
 
 # Plot the convergence plot with respect to grid sizes

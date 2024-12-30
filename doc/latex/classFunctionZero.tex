@@ -1,0 +1,77 @@
+\doxysection{Function\+Zero Class Reference}
+\hypertarget{classFunctionZero}{}\label{classFunctionZero}\index{FunctionZero@{FunctionZero}}
+
+
+Implements zero boundary condition.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Function\+Zero\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classFunctionZero__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Function\+Zero\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=184pt]{classFunctionZero__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{classFunctionZero_a57417b859b2225a6f2090599b89d384a}{value}} (\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}) override
+\begin{DoxyCompactList}\small\item\em Implements zero boundary condition. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implements zero boundary condition. 
+
+Derived class from \doxylink{classBoundaryFunction}{Boundary\+Function} that returns zero regardless of position or time. Useful for no-\/slip or zero-\/flux boundary conditions. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classFunctionZero_a57417b859b2225a6f2090599b89d384a}\label{classFunctionZero_a57417b859b2225a6f2090599b89d384a} 
+\index{FunctionZero@{FunctionZero}!value@{value}}
+\index{value@{value}!FunctionZero@{FunctionZero}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} Function\+Zero\+::value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements zero boundary condition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate (unused) \\
+\hline
+{\em y} & Y-\/coordinate (unused) \\
+\hline
+{\em z} & Z-\/coordinate (unused) \\
+\hline
+{\em t} & Time (unused) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Always returns 0 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{classBoundaryFunction_a49f26601cedd89da0aef939a39698096}{Boundary\+Function}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}

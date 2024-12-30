@@ -22,13 +22,17 @@ constexpr Real LY = 1.0;
 constexpr Real LZ = 1.0;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 50;
+constexpr int NX = 480;
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 50;
+constexpr int NY = 480;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 50;
+constexpr int NZ = 480;
+
+constexpr int PX = 3;
+constexpr int PY = 3;
+constexpr int PZ = 1; // Probably useless as we dont want to split z
 
 /// @brief Space discretization step size in the x-direction.
 constexpr Real DX = LX / NX;

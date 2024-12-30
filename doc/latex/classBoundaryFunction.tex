@@ -1,0 +1,67 @@
+\doxysection{Boundary\+Function Class Reference}
+\hypertarget{classBoundaryFunction}{}\label{classBoundaryFunction}\index{BoundaryFunction@{BoundaryFunction}}
+
+
+Abstract base class for boundary condition functions.  
+
+
+
+
+{\ttfamily \#include $<$utils.\+hpp$>$}
+
+
+
+Inheritance diagram for Boundary\+Function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=236pt]{classBoundaryFunction__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} \mbox{\hyperlink{classBoundaryFunction_a49f26601cedd89da0aef939a39698096}{value}} (\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} x, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} y, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} z, \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} t)=0
+\begin{DoxyCompactList}\small\item\em Pure virtual function to calculate boundary value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract base class for boundary condition functions. 
+
+Defines the interface for boundary condition functions. All specific boundary condition types must inherit from this class and implement the value method. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classBoundaryFunction_a49f26601cedd89da0aef939a39698096}\label{classBoundaryFunction_a49f26601cedd89da0aef939a39698096} 
+\index{BoundaryFunction@{BoundaryFunction}!value@{value}}
+\index{value@{value}!BoundaryFunction@{BoundaryFunction}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}} Boundary\+Function\+::value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{x,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{y,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{z,  }\item[{\mbox{\hyperlink{config_8hpp_ab26f974b3f268d6dddc1b789e8130527}{Real}}}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Pure virtual function to calculate boundary value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/coordinate \\
+\hline
+{\em y} & Y-\/coordinate \\
+\hline
+{\em z} & Z-\/coordinate \\
+\hline
+{\em t} & Time \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{classBoundary}{Boundary} value at the specified position and time 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classDirichlet_ae9722d9caaeca2febc556c9c37ec9fcc}{Dirichlet}}, and \mbox{\hyperlink{classFunctionZero_a57417b859b2225a6f2090599b89d384a}{Function\+Zero}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/workspaces/aerospace-\/group-\/b-\/module-\/1/includes/\mbox{\hyperlink{utils_8hpp}{utils.\+hpp}}\end{DoxyCompactItemize}
