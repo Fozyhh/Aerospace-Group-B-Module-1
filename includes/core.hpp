@@ -85,8 +85,10 @@ public:
    * @param dim_z Z dimension
    * @param MPI_face_x MPI datatype for X-direction face exchange
    * @param MPI_face_y MPI datatype for Y-direction face exchange
+   * @param sameX Only for periodic boundary, skip identical datas during communication(set to 0 only for communication x grids)
+   * @param sameY Only for periodic boundary, skip identical datas during communication(set to 0 only for communication y grids)
    */
-  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
+  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
   /**
    * @brief Computes the F function for u-velocity component
@@ -197,6 +199,9 @@ private:
   /// @brief Boundary flags for domain decomposition
   int lbx = 0, rbx = 0, lby = 0, rby = 0;
 
+  /// @brief Brief to handle boundary cores()
+  int firstX=0,firstY=0,lastX=0,lastY=0;
+
   /// @brief Process coordinates and neighbors in cartesian grid
   int coords[2];
   int neighbors[4];
@@ -225,8 +230,6 @@ private:
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
 
-  /// @brief Flag for Dirichlet boundary conditions in X direction
-  //bool dirichletX= true;
 };
 
 #endif // CORE_HPP
