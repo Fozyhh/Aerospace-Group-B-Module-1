@@ -19,6 +19,12 @@
 #include <cmath>
 #include <filesystem>
 #include <mpi.h>
+#include <fftw3.h>
+
+//TODO: mixed races
+//#define PERIODIC
+#define DIRICHELET
+
 
 /**
  * @class IcoNS
@@ -157,6 +163,10 @@ public:
   Real error_comp_Z(const Real t);
 
   /**
+   * @brief Computes L2 error for pressure component
+   */
+  Real error_comp_P(const Real t);
+  /**
    * @brief Computes total L2 error
    */
   Real L2_error(const Real t);
@@ -167,10 +177,12 @@ public:
    */
   void parse_input(const std::string& input_file);
 
-  // TODO write the output file.
-
-
+  //TODO: check for split dimensions with 2decomp
+  fftw_complex* helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 private:
+
+  
+
 
   /// @brief MPI rank of current process
   int rank, size;
@@ -193,6 +205,15 @@ private:
   /// @brief Intermediate solution vectors
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
+  std::vector<Real> Phi_p{};
+
+  //TODO: change to vectors 
+  #ifdef PERIODIC
+  std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
+  #endif
+  #ifdef DIRICHELET
+  std::array<Real, ((NX+1) * (NY+1) * (NZ+1))> Y2_p{};
+  #endif
 
   /// @brief Input/output file paths
   std::string input_file;  // input file.
@@ -209,7 +230,7 @@ private:
   int neighbors[4];
 
   /// @brief Local grid data for each direction
-  std::vector<Real> grid_loc_x{},grid_loc_y{}, grid_loc_z{};
+  std::vector<Real> grid_loc_x{},grid_loc_y{}, grid_loc_z{}; //grid_loc_p?? TODO: check if you handle it like the others or with 2decomp
 
   /// @brief MPI datatypes for face communication
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
@@ -231,6 +252,46 @@ private:
   int other_dim_x_x, other_dim_y_x;
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
+
+  //TODO: re-check indexes !!!PERIODIC ON Z IS NOT NEEDED!!!(Not implemented yet on mpi, we can see it later if we want)!!!
+  #ifdef PERIODIC
+  inline int indexingPeriodicx(int i, int j, int k) {
+    // if(k==-1){
+    //   k=NZ-1;
+    // }
+    // if(k==(NZ+1)){
+    //   k=1;
+    // }
+    return i * newDimY_x * dim_z + j * dim_z + k;
+  };
+
+  inline int indexingPeriodicy(int i, int j, int k) {
+    // if(k==-1){
+    //   k=NZ-1;
+    // }
+    // if(k==(NZ+1)){
+    //   k=1;
+    // }
+    return i * newDimY_y * dim_z + j * dim_z + k;
+  };
+
+  inline int indexingPeriodicz(int i, int j, int k) {
+    return i * newDimY_z * dim_z_z + j * dim_z_z + k; //((k+dim_z_z)%dim_z_z); if we need periodic z
+  };
+
+  //TODO: 2decomp
+  inline int indexingPeriodicp(int i, int j, int k) {
+    return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
+  };
+#endif
+
+#ifdef DIRICHELET
+  inline int indexingDiricheletx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
+  inline int indexingDirichelety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
+  inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+  //TODO: 2decomp
+  inline int indexingDiricheletp(int i, int j, int k) { return i * (NY+1) * (NZ+1) + j * (NZ+1) + k; }
+#endif
 
 };
 

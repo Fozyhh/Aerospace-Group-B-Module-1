@@ -139,6 +139,9 @@ public:
      */
     Real approximate_boundary_w(int x, int y, int z, Real t, int face, int side);
 
+    //TODO: check, Y2 to change in vector most likely
+    void divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, std::vector<Real> &Y2_p/*std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> &Y2_p*/, Real t, Real c);
+
     /**
      * @brief Adds a boundary function for a specified velocity direction
      * @param direction Velocity direction (U=length, V=width, W=height)

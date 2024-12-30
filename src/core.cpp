@@ -53,6 +53,14 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     }
 
     setParallelization();
+
+    //TODO: i didnt copy the inizialization to 0 for all the new vectors, should not be needed tho
+    //TODO: 2decomp    
+    for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
+    {
+        helper[i][0] = 0.0;
+        helper[i][1] = 0.0;
+    }
     boundary.initializeBoundary(
         dim_x_x, dim_y_x, dim_x_y, dim_y_y,
         dim_x_z, dim_y_z, dim_z, dim_z_z,
@@ -107,7 +115,6 @@ void IcoNS::setParallelization()
         dim_y_z+= (NY+1)%PY;
     }
 
-    //TODO: controllare che la riga in più non porti errori agli address globali
     newDimX_x = dim_x_x + 2;
     newDimY_x = dim_y_x + 2;
     newDimX_y = dim_x_y + 2;
@@ -121,6 +128,8 @@ void IcoNS::setParallelization()
     Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    //TODO: resize for different processors following pressure
+    Phi_p.resize(((NX+1) * (NY+1) * (NZ+1)));
     Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
@@ -313,10 +322,12 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_X(t);
     error += error_comp_Y(t);
     error += error_comp_Z(t);
+    error += error_comp_P(t);
 
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
-    // std::cout << error_comp_Z(t) << std::endl << std::endl;
+    // std::cout << error_comp_Z(t) << std::endl;
+    // std::cout << error_comp_P(t) << std::endl << std::endl;
 
     return error;//sqrt(error);
 }
@@ -829,6 +840,164 @@ Real IcoNS::error_comp_Z(const Real t)
                     (grid_loc_z[(newDimX_z-2) * (newDimY_z) * NZ  + (newDimY_z-2) * NZ + NZ - 1] - exact_solution.value_z(NX, NY, NZ - 0.5, t)) *
                     DX * DY * DZ / 8);
         }
+    }
+
+    return error;
+}
+
+//TODO: parallelization, 2deco?
+Real IcoNS::error_comp_P(const Real t)
+{
+    Real error = 0.0;
+    // first slice (left face)
+    {
+        error += ((grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
+                  (grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int k = 1; k < NZ; k++)
+        {
+            error += ((grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
+                      (grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NZ] - exact_solution.value_p(0, 0, NZ, t)) *
+                  (grid.p[NZ] - exact_solution.value_p(0, 0, NZ, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int j = 1; j < NY + 1; j++)
+        {
+            error += ((grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
+                      (grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (int k = 1; k < NZ; k++)
+            {
+                error += ((grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
+                          (grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
+                          DX * DY * DZ / 2);
+            }
+            error += ((grid.p[j * (NZ + 1) + NZ] - exact_solution.value_p(0, j, NZ, t)) *
+                      (grid.p[j * (NZ + 1) + NZ] - exact_solution.value_p(0, j, NZ, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NY * (NZ + 1)] - exact_solution.value_p(0, NY, 0, t)) *
+                  (grid.p[NY * (NZ + 1)] - exact_solution.value_p(0, NY, 0, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int k = 1; k < NZ; k++)
+        {
+            error += ((grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
+                      (grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NY * (NZ + 1) + NZ] - exact_solution.value_p(0, NY, NZ, t)) *
+                  (grid.p[NY * (NZ + 1) + NZ] - exact_solution.value_p(0, NY, NZ, t)) *
+                  DX * DY * DZ / 8);
+    }
+
+    // middle slices
+    {
+        for (int i = 1; i < NX + 1; i++)
+        {
+            error += ((grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
+                      (grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
+                      DX * DY * DZ / 4);
+
+            for (int k = 1; k < NZ; k++)
+            {
+                error += ((grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
+                          (grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
+                          DX * DY * DZ / 2);
+            }
+            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(i, 0, NZ, t)) *
+                      (grid.p[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(i, 0, NZ, t)) *
+                      DX * DY * DZ / 4);
+
+            for (int j = 1; j < NY + 1; j++)
+            {
+                error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
+                          (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
+                          DX * DY * DZ / 2);
+
+                for (int k = 1; k < NZ; k++)
+                {
+                    error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
+                              (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
+                              DX * DY * DZ);
+                }
+
+                error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(i, j, NZ, t)) *
+                          (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(i, j, NZ, t)) *
+                          DX * DY * DZ / 2);
+            }
+
+            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(i, NY, 0, t)) *
+                      (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(i, NY, 0, t)) *
+                      DX * DY * DZ / 4);
+
+            for (int k = 1; k < NZ; k++)
+            {
+                error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
+                          (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
+                          DX * DY * DZ / 2);
+            }
+
+            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(i, NY, NZ, t)) *
+                      (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(i, NY, NZ, t)) *
+                      DX * DY * DZ / 4);
+        }
+    }
+
+    // last slice (right face)
+    {
+        error += ((grid.p[NX * (NY + 1) * (NZ + 1)] - exact_solution.value_p(NX, 0, 0, t)) *
+                  (grid.p[NX * (NY + 1) * (NZ + 1)] - exact_solution.value_p(NX, 0, 0, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int k = 1; k < NZ; k++)
+        {
+            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
+                      (grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(NX, 0, NZ, t)) *
+                  (grid.p[NX * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(NX, 0, NZ, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int j = 1; j < NY + 1; j++)
+        {
+            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
+                      (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (int k = 1; k < NZ; k++)
+            {
+                error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
+                          (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
+                          DX * DY * DZ / 2);
+            }
+            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(NX, j, NZ, t)) *
+                      (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(NX, j, NZ, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(NX, NY, 0, t)) *
+                  (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(NX, NY, 0, t)) *
+                  DX * DY * DZ / 8);
+
+        for (int k = 1; k < NZ; k++)
+        {
+            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *
+                      (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *
+                      DX * DY * DZ / 4);
+        }
+
+        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(NX, NY, NZ, t)) *
+                  (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(NX, NY, NZ, t)) *
+                  DX * DY * DZ / 8);
     }
 
     return error;
