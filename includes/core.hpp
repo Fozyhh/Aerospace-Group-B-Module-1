@@ -111,10 +111,12 @@ public:
    */
   Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
 
+
   /**
    * @brief Manufactured solution function for u-velocity
    */
   Real functionG_u(int i, int j, int k, Real t);
+
 
   /**
    * @brief Manufactured solution function for v-velocity
