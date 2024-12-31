@@ -24,8 +24,8 @@ public:
     {}
 
     //TODO: array brutti, 2decomp per la separazione
-    void solveDirichletPoisson(std::array<Real, (NX) * (NY) * (NZ)>& F_dP, fftw_complex *FD);
-    void solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F);
+    void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
+    void solveNeumannPoisson(std::vector<Real>& F);
 };
 
 #endif

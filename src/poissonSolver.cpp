@@ -2,7 +2,7 @@
 
 
 //TODO: 2Decomp parallellizazione
-void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, fftw_complex *FD)
+void PoissonSolver::solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD)
 {
     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
     // C2Decomp *c2d;
@@ -88,7 +88,7 @@ void PoissonSolver::solveDirichletPoisson(std::array<Real, NX * NY * NZ>& F_dP, 
 
 
 
-void PoissonSolver::solveNeumannPoisson(std::array<Real, (NX+1) * (NY+1) * (NZ+1)>& F)
+void PoissonSolver::solveNeumannPoisson(std::vector<Real>& F)
 {
     // dP = dct(dct(dct(F)))
     fftw_plan neumann = fftw_plan_r2r_3d(NX+1, NY+1, NZ+1, F.data(), F.data(), FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);

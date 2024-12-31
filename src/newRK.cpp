@@ -28,8 +28,8 @@ void IcoNS::solve_time_step(Real time)
                                                                    64.0 / 120.0 * DT * /*d_Px(i,j,k,time);*/(grid.p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
 #endif
                 
-                //Y2_x[i * newDimY_x * dim_z + j * dim_z + k] = grid_loc_x[i * newDimY_x * dim_z + j * dim_z + k] +
-                  //                                            64.0 / 120.0 * DT * functionF_u(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //Y2_x[i * newDimY_x * dim_z + j * dim_z + k] = grid.u[i * newDimY_x * dim_z + j * dim_z + k] +
+                  //                                            64.0 / 120.0 * DT * functionF_u(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -52,7 +52,7 @@ void IcoNS::solve_time_step(Real time)
                                                                             64.0 / 120.0 * DT * /*d_Py(i,j,k,time);*/(grid.p[i * (NY + 1) * (NZ + 1) + (j+1) * (NZ + 1) + k] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DY);
                 #endif
                 // Y2_y[i * newDimY_y * dim_z + j * dim_z + k] = grid_loc_y[i * newDimY_y * dim_z + j * dim_z + k] +
-                //                                                     64.0 / 120.0 * DT * functionF_v(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //                                                     64.0 / 120.0 * DT * functionF_v(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -75,7 +75,7 @@ void IcoNS::solve_time_step(Real time)
                                                        64.0 / 120.0 * DT * /*d_Pz(i,j,k,time);*/(grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k+1] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DZ);
 #endif
                 // Y2_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] = grid_loc_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] +
-                //                                         64.0 / 120.0 * DT * functionF_w(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //                                         64.0 / 120.0 * DT * functionF_w(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -212,7 +212,7 @@ void IcoNS::solve_time_step(Real time)
 #endif
                 // Y3_x[i * newDimY_x * dim_z + j * dim_z + k] = Y2_x[i * newDimY_x * dim_z + j * dim_z + k] +
                 //                                                     50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                //                                                     34.0 / 120.0 * DT * functionF_u(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //                                                     34.0 / 120.0 * DT * functionF_u(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -238,7 +238,7 @@ void IcoNS::solve_time_step(Real time)
 #endif
                 // Y3_y[i * newDimY_y * dim_z + j * dim_z + k] = Y2_y[i * newDimY_y * dim_z + j * dim_z + k] +
                 //                                                     50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                //                                                     34.0 / 120.0 * DT * functionF_v(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //                                                     34.0 / 120.0 * DT * functionF_v(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -265,7 +265,7 @@ void IcoNS::solve_time_step(Real time)
 #endif
                 // Y3_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] = Y2_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] +
                 //                                         50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                //                                         34.0 / 120.0 * DT * functionF_w(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
+                //                                         34.0 / 120.0 * DT * functionF_w(grid.u, grid_loc_y, grid_loc_z, i, j, k, time);
             }
         }
     }
@@ -385,18 +385,18 @@ void IcoNS::solve_time_step(Real time)
 
             {
                 #ifdef PERIODIC
-                grid_loc_x[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] +
+                grid.u[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y3_x[indexingPeriodicx(i, j, k)] +
                                                                      90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                                      40.0 / 120.0 * DT * /*d_Px(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
 #endif
 #ifdef DIRICHELET
-                grid_loc_x[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
+                grid.u[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                                      40.0 / 120.0 * DT * /*d_Px(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
 #endif
-                // grid_loc_x[i * newDimY_x * dim_z + j * dim_z + k] = Y3_x[i * newDimY_x * dim_z + j * dim_z + k] +
+                // grid.u[i * newDimY_x * dim_z + j * dim_z + k] = Y3_x[i * newDimY_x * dim_z + j * dim_z + k] +
                 //                                                           90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                 //                                                           50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT);
             }

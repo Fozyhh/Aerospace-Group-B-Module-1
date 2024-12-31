@@ -15,6 +15,8 @@
 #include "utils.hpp"
 #include "boundary.hpp"
 #include "grid.hpp"
+#include "constants.hpp"
+#include "C2Decomp.hpp"
 #include <string>
 #include <cmath>
 #include <filesystem>
@@ -53,6 +55,11 @@ public:
   {
     parse_input(input_file);
 
+    c2d = new C2Decomp(NX, NY, NZ, PX, PY, periodss);
+
+    std::cout << "<--------------------->" << std::endl;
+    std:cout << "size: " << c2d->xSize[0] << " " << c2d->xSize[1] << " " << c2d->xSize[2] << std::endl;
+
     dims[0] = PX;
     dims[1] = PY;
 
@@ -71,6 +78,8 @@ public:
     other_dim_y_y = dim_y_y;
     other_dim_x_z = dim_x_z;
     other_dim_y_z = dim_y_z;
+
+     helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
   }
 
   /**
@@ -178,11 +187,9 @@ public:
   void parse_input(const std::string& input_file);
 
   //TODO: check for split dimensions with 2decomp
-  fftw_complex* helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
+  fftw_complex* helper;
+
 private:
-
-  
-
 
   /// @brief MPI rank of current process
   int rank, size;
@@ -207,13 +214,17 @@ private:
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
   std::vector<Real> Phi_p{};
 
-  //TODO: change to vectors 
+  //TODO: change to vectors (*double))
   #ifdef PERIODIC
-  std::array<Real, ((NX) * (NY) * (NZ))> Y2_p{};
+  std::vector<Real> Y2_p{};
   #endif
   #ifdef DIRICHELET
-  std::array<Real, ((NX+1) * (NY+1) * (NZ+1))> Y2_p{};
+  std::vector<Real> Y2_p{};
   #endif
+
+
+
+  bool periodss[3] = {true, true, true};
 
   /// @brief Input/output file paths
   std::string input_file;  // input file.
@@ -229,8 +240,9 @@ private:
   int coords[2];
   int neighbors[4];
 
-  /// @brief Local grid data for each direction
-  std::vector<Real> grid_loc_x{},grid_loc_y{}, grid_loc_z{}; //grid_loc_p?? TODO: check if you handle it like the others or with 2decomp
+  Grid grid;
+
+  C2Decomp *c2d;
 
   /// @brief MPI datatypes for face communication
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
@@ -290,7 +302,7 @@ private:
   inline int indexingDirichelety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
   inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
   //TODO: 2decomp
-  inline int indexingDiricheletp(int i, int j, int k) { return i * (NY+1) * (NZ+1) + j * (NZ+1) + k; }
+  inline int indexingDiricheletp(int i, int j, int k) { return /*i * (NY+1) * (NZ+1) + j * (NZ+1) + k*/ 1; }
 #endif
 
 };

@@ -12,8 +12,7 @@
 #define GRID_HPP
 
 #include <iostream>
-#include <array>
-#include "constants.hpp"
+#include <vector>
 
 
 /**
@@ -46,13 +45,10 @@
  */
 struct Grid
 {
-    // Velocity components at cell faces
-    //std::array<Real, NX *(NY + 1) * (NZ + 1)> u{};     ///< x-direction velocity components
-    //std::array<Real, (NX + 1) * NY *(NZ + 1)> v{};     ///< y-direction velocity components
-    //std::array<Real, (NX + 1) * (NY + 1) * NZ> w{};    ///< z-direction velocity components
-
-    // Pressure values at cell vertices
-    //std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> p{}; ///< pressure values
+    std::vector<double> u;     ///< x-velocity components
+    std::vector<double> v;     ///< y-velocity components
+    std::vector<double> w;     ///< z-velocity components
+    double *p;
 
 };
 

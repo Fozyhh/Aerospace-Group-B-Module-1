@@ -16,6 +16,7 @@
 #include <vector>
 #include <memory>
 #include "grid.hpp"
+#include "constants.hpp"
 
 /**
  * @enum Direction

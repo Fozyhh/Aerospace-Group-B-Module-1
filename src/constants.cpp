@@ -1,23 +1,27 @@
 #include "constants.hpp"
 
 // Domain lengths
-Real LX, LY, LZ;
+Real LX = 10.0;  // Example value
+Real LY = 20.0;  // Example value
+Real LZ = 30.0;  // Example value
 
 // Number of cells in each direction
-int NX, NY, NZ;
+int NX = 100, NY = 200, NZ = 300;
 
 // Process grid dimensions
-int PX, PY, PZ;
+int PX = 4, PY = 4, PZ = 4;
 
 // Space discretization steps
-Real DX, DY, DZ;
+Real DX = LX / NX;
+Real DY = LY / NY;
+Real DZ = LZ / NZ;
 
 // Time-related parameters
-Real DT;
-Real T;
+Real DT = 0.001;  // Example time step
+Real T = 100.0;   // Example total time
 
 // Boundary conditions
-bool BX, BY, BZ;
+bool BX = false, BY = false, BZ = false; // Periodic by default
 
 // Flow parameters
-Real RE;
+Real RE = 1000.0;  // Example Reynolds number
