@@ -82,14 +82,15 @@ void IcoNS::solve_time_step(Real time)
 
 
 //TODO: 2deco parallelization
+// dimensions accessible with c2d-> zSize[0] zSize[1] zSize[2] etc.
 #ifdef PERIODIC
-    for (int i = 0; i < NX; i++)
+    for (int i = 0; i < zSize[0]; i++)
     {
-        for (int j = 0; j < NY; j++)
+        for (int j = 0; j < zSize[1]; j++)
         {
-            for (int k = 0; k < NZ; k++)
+            for (int k = 0; k < zSize[2]; k++)
             {
-                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y2_y[indexingPeriodicy(i, j, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y2_z[indexingPeriodicz(i, j, k)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
+                Y2_p[i * zSize[1] * zSize[2] + j * zsize[2] + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y2_y[indexingPeriodicy(i, j, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y2_z[indexingPeriodicz(i, j, k)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
             }
         }
     }

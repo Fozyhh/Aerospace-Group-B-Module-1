@@ -48,7 +48,9 @@ struct Grid
     std::vector<double> u;     ///< x-velocity components
     std::vector<double> v;     ///< y-velocity components
     std::vector<double> w;     ///< z-velocity components
-    double *p;
+    double *p;                 // z-pencil
+    double *px;                // x-pencil
+    double *py;                // y-pencil
 
 };
 

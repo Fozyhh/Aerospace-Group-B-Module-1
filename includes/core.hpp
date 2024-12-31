@@ -57,6 +57,21 @@ public:
 
     c2d = new C2Decomp(NX, NY, NZ, PX, PY, periodss);
 
+    // x-pencil size
+    xSize[0] = c2d->xSize[0];
+    xSize[1] = c2d->xSize[1];
+    xSize[2] = c2d->xSize[2];
+
+    // y-pencil size
+    ySize[0] = c2d->ySize[0];
+    ySize[1] = c2d->ySize[1];
+    ySize[2] = c2d->ySize[2];
+
+    // z-pencil size
+    zSize[0] = c2d->zSize[0];
+    zSize[1] = c2d->zSize[1];
+    zSize[2] = c2d->zSize[2];
+
     std::cout << "<--------------------->" << std::endl;
     std:cout << "size: " << c2d->xSize[0] << " " << c2d->xSize[1] << " " << c2d->xSize[2] << std::endl;
 
@@ -79,7 +94,12 @@ public:
     other_dim_x_z = dim_x_z;
     other_dim_y_z = dim_y_z;
 
-     helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
+    helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
+
+    // pencils allocation
+    c2d->allocZ(grid.p);
+    c2d->allocX(grid.px);
+    c2d->allocY(grid.py);
   }
 
   /**
@@ -209,6 +229,14 @@ private:
   /// @brief Exact solution computer
   ExactSolution exact_solution;
 
+  /// @brief Grid data structure
+  Grid grid;
+
+  /// @brief 2decomp library object
+  C2Decomp *c2d;
+
+  int xSize[3], ySize[3], zSize[3];
+
   /// @brief Intermediate solution vectors
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
@@ -222,8 +250,7 @@ private:
   std::vector<Real> Y2_p{};
   #endif
 
-
-
+  // periodicity fro 2decomp
   bool periodss[3] = {true, true, true};
 
   /// @brief Input/output file paths
@@ -239,10 +266,6 @@ private:
   /// @brief Process coordinates and neighbors in cartesian grid
   int coords[2];
   int neighbors[4];
-
-  Grid grid;
-
-  C2Decomp *c2d;
 
   /// @brief MPI datatypes for face communication
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
