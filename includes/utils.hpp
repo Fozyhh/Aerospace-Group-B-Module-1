@@ -15,6 +15,8 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <string>
+#include <sstream>
 #include "grid.hpp"
 #include "constants.hpp"
 
@@ -175,5 +177,32 @@ public:
     //return std::sin(t);
     //return std::sin(x * DX) * std::sin(t);
   }
+
 };
+
+/**
+    * @brief Evaluates input string as mathematical expression
+    * @param expr Mathematical expression as a string
+    * @return Result of the mathematical expression
+    */
+inline double evaluateExpression(const std::string& expr) {
+    // Replace M_PI with its value if present
+    std::string processedExpr = expr;
+    size_t pos = processedExpr.find("M_PI");
+    if (pos != std::string::npos) {
+        processedExpr.replace(pos, 4, std::to_string(M_PI));
+    }
+
+    // Evaluation for multiplication
+    if (processedExpr.find('*') != std::string::npos) {
+        std::istringstream iss(processedExpr);
+        double a, b;
+        char op;
+        iss >> a >> op >> b;
+        return a * b;
+    }
+
+    // If no operations, convert directly to double
+    return std::stod(processedExpr);
+}
 #endif

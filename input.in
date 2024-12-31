@@ -8,7 +8,7 @@
 0.5
 
 # Dimension of domain: Lx, Ly, Lz
-1.0 1.0 1.0
+2.0 2.0 2.0
 
 # Number of grid points: Nx, Ny, Nz
 100 100 100
@@ -17,7 +17,7 @@
 2 2 1
 
 # Boundaries :
-1 1 1
+0 0 0
 
 # 0 : perdiodic
 # 1 : dirichlet
