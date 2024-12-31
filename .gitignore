@@ -1,6 +1,0 @@
-build/
-resources/
-build-cpuprof/
-build-memprof/
-.vscode/
-.gitignore
