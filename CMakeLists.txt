@@ -9,7 +9,7 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 include_directories(PkgConfig::FFTW)
 link_libraries(PkgConfig::FFTW)
 
-find_package(MPI)
+find_package(MPI REQUIRED)
 include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 
 set(CMAKE_CXX_STANDARD 23)
@@ -53,6 +53,7 @@ set(SOURCES
     src/boundary.cpp
     src/newRK.cpp
     src/poissonSolver.cpp
+    src/constants.cpp
 )
 
 include_directories(${DECOMP_DIR})
@@ -74,7 +75,7 @@ add_library(
 # Executable
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
-target_link_libraries(main $ENV{mkFftwLib} m)
+target_link_libraries(main ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
 
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
