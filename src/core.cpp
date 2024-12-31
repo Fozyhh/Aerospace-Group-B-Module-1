@@ -1,5 +1,6 @@
 #include "constants.hpp"
 #include "core.hpp"
+#include "utils.hpp"
 #include <cmath>
 #include <math.h>
 #include <fstream>
@@ -202,7 +203,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
 
     if (!(BY && coords[1] == PY-1))
     {
-        
+
         MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
         MPI_Wait(&reqs[3], MPI_SUCCESS);
         MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
@@ -216,10 +217,10 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     if (!(BX && coords[0] == 0))
     {
         MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
-        
+
         //MPI_Wait(&reqs[0], MPI_SUCCESS);
         //MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
-        
+
     }
     if (!(BX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
@@ -233,7 +234,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         MPI_Wait(&reqs[0], MPI_SUCCESS);
     }
     //MPI_Waitall(test,&reqs[0],MPI_SUCCESS);
-    
+
 }
 
 void IcoNS::solve()
@@ -871,16 +872,24 @@ void IcoNS::parse_input(const std::string& input_file) {
         break;
     }
 
-    // Skip comments and empty lines until we find domain dimensions
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
+
         std::istringstream iss(line);
-        if (!(iss >> LX >> LY >> LZ)) continue;
-        break;
+        std::string sx, sy, sz;
+
+        if (!(iss >> sx >> sy >> sz)) continue;
+
+        try {
+            LX = evaluateExpression(sx);
+            LY = evaluateExpression(sy);
+            LZ = evaluateExpression(sz);
+            break;
+        } catch (const std::exception& e) {
+            std::cerr << "Error parsing dimensions: " << e.what() << std::endl;
+            continue;
+        }
     }
-    LX = LX* 2* M_PI;
-    LY = LY* 2* M_PI;
-    LZ = LZ* 2* M_PI;
 
     // Skip comments and empty lines until we find grid points
     while (std::getline(file, line)) {
