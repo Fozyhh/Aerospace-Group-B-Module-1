@@ -44,7 +44,7 @@ constexpr Real DZ = LZ / NZ;
 constexpr Real DT = 0.005;
 
 /// @brief Total time interval for the simulation.
-constexpr Real T = 0.1;
+constexpr Real T = 0.91;
 
 /// @brief Reynolds number for the simulation.
 constexpr Real RE = 400.0;
