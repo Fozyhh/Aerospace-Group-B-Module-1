@@ -319,16 +319,22 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
 //TODO: UPDATE ALL INDICES, Y2_p indices?
 void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, std::vector<Real> &Y2_p, Real t, Real c)
 {
+    int offset_x_x = coords[0] * other_dim_x_x -1;
+    int offset_y_x = coords[1] * other_dim_y_x -1;
+    int offset_x_y = coords[0] * other_dim_x_y -1;
+    int offset_y_y = coords[1] * other_dim_y_y -1;
+    int offset_x_z = coords[0] * other_dim_x_z -1;
+    int offset_y_z = coords[1] * other_dim_y_z -1;
     // is the denominator 3*DX correct? -> 2*DX ?
     // LEFT FACE
-    for (int j = 1; j < NY; j++)
+    for (int j = 1; j < zSize[1] - 1; j++)
     {
-        for(int k = 1; k < NZ; k++)
+        for(int k = 1; k < zSize[2] - 1; k++)
         {
-            Y2_p[j * (NZ + 1) + k] = 120.0 / (c * DT) *
-                ((-8*boundary_value_u[0]->value(-0.5,j,k,t) + 9*Yx[j * (NZ + 1) + k] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
-                (Yy[j * (NZ + 1) + k] - Yy[(j-1) * (NZ + 1) + k]) / (DY) +
-                (Yz[j * NZ + k] - Yz[j * NZ + k-1]) / (DZ));
+            Y2_p[j * zSize[2] + k] = 120.0 / (c * DT) *
+                ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,k,t) + 9*Yx[j * dim_z + k] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
+                (Yy[j * dim_z + k] - Yy[(j-1) * dim_z + k]) / (DY) +
+                (Yz[j * dim_z_z + k] - Yz[j * dim_z_z + k-1]) / (DZ));
         }
     }
     // RIGHT FACE
@@ -336,10 +342,10 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
     {
         for(int k = 1; k < NZ; k++)
         {
-            Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ+1) + k] = 120.0 / (c * DT) *
-                ((8*boundary_value_u[1]->value(NX-0.5,j,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
-                (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1) + k] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1) + k]) / (DY) +
-                (Yz[(NX) * (NY + 1) * NZ + j * NZ + k] - Yz[(NX) * (NY + 1) * NZ + j * NZ + k-1]) / (DZ));
+            Y2_p[(zSize[0]-1)/*(NX)*/ * zSize[1] * zSize[2] + j * zSize[2] + k] = 120.0 / (c * DT) *
+                ((8*boundary_value_u[1]->value(NX-0.5,j + offset_y_x,k,t) - 9*Yx[(newDimX_x-2) * newDimY_x * dim_z_z + j * dim_z + k] + Yx[(newDimX_x-3) * newDimY_x * dim_z + j * dim_z + k]) / (3*DX) +
+                (Yy[(newDimX_y - 2) * newDimY_y * dim_z + j * dim_z + k] - Yy[(newDimX_y - 2) * newDimY_y * dim_z + (j-1) * dim_z + k]) / (DY) +
+                (Yz[(newDimX_z - 2) * newDimY_z * dim_z_z + j * dim_z_z + k] - Yz[(newDimX_z - 2) * newDimY_z * dim_z_z + j * dim_z_z + k-1]) / (DZ));
         }
     }
     // FRONT FACE
