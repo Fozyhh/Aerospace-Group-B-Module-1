@@ -622,7 +622,7 @@ Real IcoNS::functionG_v(int i, int j, int k, Real t)
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t)  - std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t) - std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
 }
 
 Real IcoNS::functionG_w(int i, int j, int k, Real t)
