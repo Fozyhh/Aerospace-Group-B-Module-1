@@ -43,6 +43,7 @@ private:
     /// @brief New dimension parameters for z-direction mesh
     int newDimX_z, newDimY_z;
 
+    //TODO: funzione per passare i valori di zSize
     int zSize[3];
 
     /// @brief Additional dimension parameters for x-direction mesh

@@ -319,205 +319,207 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
 //TODO: UPDATE ALL INDICES, Y2_p indices?
 void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, std::vector<Real> &Y2_p, Real t, Real c)
 {
-    int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = coords[1] * other_dim_y_x -1;
-    int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = coords[1] * other_dim_y_y -1;
-    int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = coords[1] * other_dim_y_z -1;
+    //TODO: check the global offsets are the same
+    int offset_x_x = coords[0] * other_dim_x_x;
+    int offset_y_x = coords[1] * other_dim_y_x;
+    int offset_x_y = coords[0] * other_dim_x_y;
+    int offset_y_y = coords[1] * other_dim_y_y;
+    int offset_x_z = coords[0] * other_dim_x_z;
+    int offset_y_z = coords[1] * other_dim_y_z;
     // is the denominator 3*DX correct? -> 2*DX ?
     // LEFT FACE
+    //TODO: how does iteration on p works? bc rn every processor is skipping first element if it is not boundary
     for (int j = 1; j < zSize[1] - 1; j++)
     {
         for(int k = 1; k < zSize[2] - 1; k++)
         {
-            Y2_p[j * zSize[2] + k] = 120.0 / (c * DT) *
-                ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,k,t) + 9*Yx[j * dim_z + k] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (3*DX) +
-                (Yy[j * dim_z + k] - Yy[(j-1) * dim_z + k]) / (DY) +
-                (Yz[j * dim_z_z + k] - Yz[j * dim_z_z + k-1]) / (DZ));
+            Y2_p[getp(0,j,k)] = 120.0 / (c * DT) *
+                ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,k,t) + 9*Yx[getx(0,j,k)] - Yx[getx(1,j,k)]) / (3*DX) +
+                (Yy[gety(0,j,k)] - Yy[gety(0,j-1,k)]) / (DY) +
+                (Yz[getz(0,j,k)] - Yz[getz(0,j,k-1)]) / (DZ));
         }
     }
     // RIGHT FACE
-    for (int j = 1; j < NY; j++)
+    for (int j = 1; j < zSize[1] - 1; j++)
     {
-        for(int k = 1; k < NZ; k++)
+        for(int k = 1; k < zSize[2] - 1; k++)
         {
-            Y2_p[(zSize[0]-1)/*(NX)*/ * zSize[1] * zSize[2] + j * zSize[2] + k] = 120.0 / (c * DT) *
-                ((8*boundary_value_u[1]->value(NX-0.5,j + offset_y_x,k,t) - 9*Yx[(newDimX_x-2) * newDimY_x * dim_z_z + j * dim_z + k] + Yx[(newDimX_x-3) * newDimY_x * dim_z + j * dim_z + k]) / (3*DX) +
-                (Yy[(newDimX_y - 2) * newDimY_y * dim_z + j * dim_z + k] - Yy[(newDimX_y - 2) * newDimY_y * dim_z + (j-1) * dim_z + k]) / (DY) +
-                (Yz[(newDimX_z - 2) * newDimY_z * dim_z_z + j * dim_z_z + k] - Yz[(newDimX_z - 2) * newDimY_z * dim_z_z + j * dim_z_z + k-1]) / (DZ));
+            Y2_p[getp(zSize[0]-1,j,k)] = 120.0 / (c * DT) *
+                ((8*boundary_value_u[1]->value(NX-0.5,j + offset_y_x,k,t) - 9*Yx[getx(dim_x_x - 1, j, k)] + Yx[getx(dim_x_x - 2,j,k)]) / (3*DX) +
+                (Yy[gety(dim_x_y-1,j,k)] - Yy[gety(dim_x_y-1,j-1,k)]) / (DY) +
+                (Yz[getz(dim_x_z-1,j,k)] - Yz[getz(dim_x_z-1,j,k-1)]) / (DZ));
         }
     }
     // FRONT FACE
-    for (int i = 1; i < NX; i++)
+    for (int i = 1; i < zSize[0] - 1; i++)
     {
-        for(int k = 1; k < NZ; k++)
+        for(int k = 1; k < zSize[2] - 1; k++)
         {
-            Y2_p[i * (NY + 1) * (NZ + 1) + k] = 120.0 / (c * DT) *
-                ((Yx[i * (NY + 1) * (NZ + 1) + k] - Yx[(i-1) * (NY + 1) * (NZ + 1) + k]) / (DX) +
-                (-8*boundary_value_v[2]->value(i,-0.5,k,t) + 9*Yy[i * NY * (NZ + 1) + k] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1) + k]) / (3*DY) +
-                (Yz[i * (NY + 1) * NZ + k] - Yz[i * (NY + 1) * NZ + k-1]) / (DZ));
+            Y2_p[getp(i,0,k)] = 120.0 / (c * DT) *
+                ((Yx[getx(i,0,k)] - Yx[getx(i-1,0,k)]) / (DX) +
+                (-8*boundary_value_v[2]->value(i + offset_y_y,-0.5,k,t) + 9*Yy[gety(i,0,k)] - Yy[gety(i,1,k)]) / (3*DY) +
+                (Yz[getz(i,0,k)] - Yz[getz(i,0,k-1)]) / (DZ));
         }
     }
     // BACK FACE
-    for (int i = 1; i < NX; i++)
+    for (int i = 1; i < zSize[0] - 1; i++)
     {
-        for(int k = 1; k < NZ; k++)
+        for(int k = 1; k < zSize[2] - 1; k++)
         {
-            Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
-                ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (DX) +
-                (8*boundary_value_v[3]->value(i,NY-0.5,k,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1) + k] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1) + k]) / (3*DY) +
-                (Yz[i * (NY + 1) * NZ + (NY) * NZ + k] - Yz[i * (NY + 1) * NZ + (NY) * NZ + k-1]) / (DZ));
+            Y2_p[getp(i,zSize[1] - 1,k)] = 120.0 / (c * DT) *
+                ((Yx[getx(i,dim_y_x-1,k)] - Yx[getx(i-1,dim_y_x-1,k)]) / (DX) +
+                (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,k,t) - 9*Yy[gety(i,dim_y_y-1,k)] + Yy[gety(i,dim_y_y-2,k)]) / (3*DY) +
+                (Yz[getz(i,dim_y_z-1,k)] - Yz[getz(i,dim_y_z-1,k-1)]) / (DZ));
         }
     }
     // LOWER FACE
-    for (int i = 1; i < NX; i++)
+    for (int i = 1; i < zSize[0] - 1; i++)
     {
-        for(int j = 1; j < NY; j++)
+        for(int j = 1; j < zSize[1] - 1; j++)
         {
-            Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] = 120.0 / (c * DT) *
-                ((Yx[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (DX) +
-                (Yy[i * NY * (NZ + 1) + j * (NZ + 1)] - Yy[i * NY * (NZ + 1) + (j-1) * (NZ + 1)]) / (DY) +
-                (-8*boundary_value_w[4]->value(i,j,-0.5,t) + 9*Yz[i * (NY + 1) * NZ + j * NZ] - Yz[i * (NY + 1) * NZ + j * NZ + 1]) / (3*DZ));
+            Y2_p[getp(i,j,0)] = 120.0 / (c * DT) *
+                ((Yx[getx(i,j,0)] - Yx[getx(i-1,j,0)]) / (DX) +
+                (Yy[gety(i,j,0)] - Yy[gety(i,j-1,0)]) / (DY) +
+                (-8*boundary_value_w[4]->value(i + offset_x_z,j + offset_y_z,-0.5,t) + 9*Yz[getz(i,j,0)] - Yz[getz(i,j,1)]) / (3*DZ));
         }
     }
     // UPPER FACE
-    for (int i = 1; i < NX; i++)
+    for (int i = 1; i < zSize[0] - 1; i++)
     {
-        for(int j = 1; j < NY; j++)
+        for(int j = 1; j < zSize[1] - 1; j++)
         {
-            Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-                ((Yx[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (DX) +
-                (Yy[i * NY * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yy[i * NY * (NZ + 1) + (j-1) * (NZ + 1) + (NZ)]) / (DY) +
-                (8*boundary_value_w[5]->value(i,j,NZ-0.5,t) - 9*Yz[i * (NY + 1) * NZ + j * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + j * NZ + (NZ-2)]) / (3*DZ));
+            Y2_p[getp(i,j,zSize[2] - 1)] = 120.0 / (c * DT) *
+                ((Yx[getx(i,j,dim_z - 1)] - Yx[getx(i-1,j,dim_z - 1)]) / (DX) +
+                (Yy[gety(i,j,dim_z-1)] - Yy[gety(i,j-1,dim_z-1)]) / (DY) +
+                (8*boundary_value_w[5]->value(i + offset_x_z,j + offset_y_z,NZ-0.5,t) - 9*Yz[getz(i,j,dim_z_z-1)] + Yz[getz(i,j,dim_z_z-2)]) / (3*DZ));
         }
     }
     // 4 X EDGES
-    for (int i = 1; i < NX; i++)
+    for (int i = 1; i < zSize[0] - 1; i++)
     {
         // LOWER FRONT EDGE
-        Y2_p[i * (NY + 1) * (NZ + 1)] = 120.0 / (c * DT) *
-            ((Yx[i * (NY + 1) * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1)]) / (DX) +
-            (-8*boundary_value_v[2]->value(i,-0.5,0,t) + 9*Yy[i * NY * (NZ + 1)] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1)]) / (3*DY) +
-            (-8*boundary_value_w[4]->value(i,0,-0.5,t) + 9*Yz[i * (NY + 1) * NZ] - Yz[i * (NY + 1) * NZ + 1]) / (3*DZ));
+        Y2_p[getp(i,0,0)] = 120.0 / (c * DT) *
+            ((Yx[getx(i,0,0)] - Yx[getx(i-1,0,0)]) / (DX) +
+            (-8*boundary_value_v[2]->value(i + offset_x_y,-0.5,0,t) + 9*Yy[gety(i,0,0)] - Yy[gety(i,1,0)]) / (3*DY) +
+            (-8*boundary_value_w[4]->value(i + offset_x_z,0,-0.5,t) + 9*Yz[getz(i,0,0)] - Yz[getz(i,0,1)]) / (3*DZ));
         // UPPER FRONT EDGE
-        Y2_p[i * (NY + 1) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-            ((Yx[i * (NY + 1) * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NZ)]) / (DX) +
-            (-8*boundary_value_v[2]->value(i,-0.5,NZ,t) + 9*Yy[i * NY * (NZ + 1) + (NZ)] - Yy[i * NY * (NZ + 1) + 1 * (NZ + 1) + (NZ)]) / (3*DY) +
-            (8*boundary_value_w[5]->value(i,0,NZ-0.5,t) - 9*Yz[i * (NY + 1) * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + (NZ-2)]) / (3*DZ));
+        Y2_p[getp(i,0,zSize[2]-1)] = 120.0 / (c * DT) *
+            ((Yx[getx(i,0,dim_z-1)] - Yx[getx(i-1,0,dim_z-1)]) / (DX) +
+            (-8*boundary_value_v[2]->value(i + offset_x_y,-0.5,NZ,t) + 9*Yy[gety(i,0,dim_z-1)] - Yy[gety(i,1,dim_z-1)]) / (3*DY) +
+            (8*boundary_value_w[5]->value(i + offset_x_z,0,NZ-0.5,t) - 9*Yz[getz(i,0,dim_z_z-1)] + Yz[getz(i,0,dim_z_z-2)]) / (3*DZ));
         // LOWER BACK EDGE
-        Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] = 120.0 / (c * DT) *
-            ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (DX) +
-            (8*boundary_value_v[3]->value(i,NY-0.5,0,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1)] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1)]) / (3*DY) +
-            (-8*boundary_value_w[4]->value(i,NY,-0.5,t) + 9*Yz[i * (NY + 1) * NZ + (NY) * NZ] - Yz[i * (NY + 1) * NZ + (NY) * NZ + 1]) / (3*DZ));
+        Y2_p[getp(i,(zSize[1] - 1),0)] = 120.0 / (c * DT) *
+            ((Yx[getx(i,dim_y_x - 1,0)] - Yx[getx(i-1,dim_y_x - 1,0)]) / (DX) +
+            (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,0,t) - 9*Yy[gety(i,dim_y_y - 1,0)] + Yy[gety(i,dim_y_y - 2,0)]) / (3*DY) +
+            (-8*boundary_value_w[4]->value(i + offset_x_z,NY,-0.5,t) + 9*Yz[getz(i,dim_y_z - 1,0)] - Yz[getz(i,dim_y_z - 1,1)]) / (3*DZ));
         // UPPER BACK EDGE
-        Y2_p[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-            ((Yx[i * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] - Yx[(i-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (DX) +
-            (8*boundary_value_v[3]->value(i,NY-0.5,NZ,t) - 9*Yy[i * NY * (NZ + 1) + (NY-1) * (NZ + 1) + (NZ)] + Yy[i * NY * (NZ + 1) + (NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
-            (8*boundary_value_w[5]->value(i,NY,NZ-0.5,t) - 9*Yz[i * (NY + 1) * NZ + (NY) * NZ + (NZ-1)] + Yz[i * (NY + 1) * NZ + (NY) * NZ + (NZ-2)]) / (3*DZ));
+        Y2_p[getp(i,zSize[1]-1,zSize[2]-1)] = 120.0 / (c * DT) *
+            ((Yx[getx(i,dim_y_x-1,dim_z-1)] - Yx[getx(i-1,dim_y_x-1,dim_z-1)]) / (DX) +
+            (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,NZ,t) - 9*Yy[gety(i,dim_y_y-1,dim_z-1)] + Yy[gety(i,dim_y_y-2,dim_z-1)]) / (3*DY) +
+            (8*boundary_value_w[5]->value(i + offset_x_z,NY,NZ-0.5,t) - 9*Yz[getz(i,dim_y_z-1,dim_z_z-1)] + Yz[getz(i,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
     }
     // 4 Y EDGES
-    for (int j = 1; j < NY; j++)
+    for (int j = 1; j < zSize[1] - 1; j++)
     {
         // LOWER LEFT EDGE
-        Y2_p[j * (NZ + 1)] = 120.0 / (c * DT) *
-            ((-8*boundary_value_u[0]->value(-0.5,j,0,t) + 9*Yx[j * (NZ + 1)] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (3*DX) +
-            (Yy[j * (NZ + 1)] - Yy[(j-1) * (NZ + 1)]) / (DY) +
-            (-8*boundary_value_w[4]->value(0,j,-0.5,t) + 9*Yz[j * NZ] - Yz[j * NZ + 1]) / (3*DZ));
+        Y2_p[getp(0,j,0)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,0,t) + 9*Yx[getx(0,j,0)] - Yx[getx(1,j,0)]) / (3*DX) +
+            (Yy[gety(0,j,0)] - Yy[gety(0,j-1,0)]) / (DY) +
+            (-8*boundary_value_w[4]->value(0,j + offset_y_z,-0.5,t) + 9*Yz[getz(0,j,0)] - Yz[getz(0,j,1)]) / (3*DZ));
         // UPPER LEFT EDGE
-        Y2_p[j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-            ((-8*boundary_value_u[0]->value(-0.5,j,NZ,t) + 9*Yx[j * (NZ + 1) + (NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (3*DX) +
-            (Yy[j * (NZ + 1) + (NZ)] - Yy[(j-1) * (NZ + 1) + (NZ)]) / (DY) +
-            (8*boundary_value_w[5]->value(0,j,NZ-0.5,t) - 9*Yz[j * NZ + (NZ-1)] + Yz[j * NZ + (NZ-2)]) / (3*DZ));
+        Y2_p[getp(0,j,zSize[2]-1)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,NZ,t) + 9*Yx[getx(0,j,dim_z-1)] - Yx[getx(1,j,dim_z-1)]) / (3*DX) +
+            (Yy[gety(0,j,dim_z-1)] - Yy[gety(0,j-1,dim_z-1)]) / (DY) +
+            (8*boundary_value_w[5]->value(0,j,NZ-0.5,t) - 9*Yz[getz(0,j,dim_z_z-1)] + Yz[getz(0,j,dim_z_z-2)]) / (3*DZ));
     }// break to exploit locality
-    for (int j = 1; j < NY; j++)
+    for (int j = 1; j < zSize[1] - 1; j++)
     {
         // LOWER RIGHT EDGE
-        Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] = 120.0 / (c * DT) *
-            ((8*boundary_value_u[1]->value(NX-0.5,j,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1)]) / (3*DX) +
-            (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1)] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1)]) / (DY) +
-            (-8*boundary_value_w[4]->value(NX,j,-0.5,t) + 9*Yz[(NX) * (NY + 1) * NZ + j * NZ] - Yz[(NX) * (NY + 1) * NZ + j * NZ + 1]) / (3*DZ));
+        Y2_p[getp(zSize[0] - 1,j,0)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX-0.5,j,0,t) - 9*Yx[getx(dim_x_x - 1,j,0)] + Yx[getx(dim_x_x - 2,j,0)]) / (3*DX) +
+            (Yy[gety(dim_x_y - 1,j,0)] - Yy[gety(dim_x_y - 1,j-1,0)]) / (DY) +
+            (-8*boundary_value_w[4]->value(NX,j,-0.5,t) + 9*Yz[getz(dim_x_z - 1,j,0)] - Yz[getz(dim_x_z - 1,j,1)]) / (3*DZ));
         // UPPER RIGHT EDGE
-        Y2_p[(NX) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-            ((8*boundary_value_u[1]->value(NX-0.5,j,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + (NZ)]) / (3*DX) +
-            (Yy[(NX) * NY * (NZ + 1) + j * (NZ + 1) + (NZ)] - Yy[(NX) * NY * (NZ + 1) + (j-1) * (NZ + 1) + (NZ)]) / (DY) +
-            (8*boundary_value_w[5]->value(NX,j,NZ-0.5,t) - 9*Yz[(NX) * (NY + 1) * NZ + j * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + j * NZ + (NZ-2)]) / (3*DZ));
+        Y2_p[getp(zSize[0] - 1,j,zSize[2]-1)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX-0.5,j,NZ,t) - 9*Yx[getx(dim_x_x - 1,j,dim_z - 1)] + Yx[getx(dim_x_x - 2,j,dim_z - 1)]) / (3*DX) +
+            (Yy[gety(dim_x_y - 1,j,dim_z - 1)] - Yy[gety(dim_x_y - 1,j-1,dim_z - 1)]) / (DY) +
+            (8*boundary_value_w[5]->value(NX,j,NZ-0.5,t) - 9*Yz[getz(dim_x_z - 1,j,dim_z_z - 1)] + Yz[getz(dim_x_z - 1,j,dim_z - 2)]) / (3*DZ));
     }
     // 4 Z EDGES
-    for (int k = 1; k < NZ; k++)
+    for (int k = 1; k < zSize[2] - 1; k++)
     {
         // FRONT LEFT EDGE
-        Y2_p[k] = 120.0 / (c * DT) *
-            ((-8*boundary_value_u[0]->value(-0.5,0,k,t) + 9*Yx[k] - Yx[1 * (NY + 1) * (NZ + 1) + k]) / (3*DX) +
-            (-8*boundary_value_v[2]->value(0,-0.5,k,t) + 9*Yy[k] - Yy[1 * (NZ + 1) + k]) / (3*DY) +
-            (Yz[k] - Yz[k-1]) / (DZ));
+        Y2_p[getp(0,0,k)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(-0.5,0,k,t) + 9*Yx[getx(0,0,k)] - Yx[getx(1,0,k)]) / (3*DX) +
+            (-8*boundary_value_v[2]->value(0,-0.5,k,t) + 9*Yy[gety(0,0,k)] - Yy[getx(0,1,k)]) / (3*DY) +
+            (Yz[getz(0,0,k)] - Yz[getz(0,0,k-1)]) / (DZ));
     }// break to exploit locality
-    for (int k = 1; k < NZ; k++)
+    for (int k = 1; k < zSize[2] - 1; k++)
     {
         // BACK LEFT EDGE
-        Y2_p[(NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
-            ((-8*boundary_value_u[0]->value(-0.5,NY,k,t) + 9*Yx[(NY) * (NZ + 1) + k] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (3*DX) +
-            (8*boundary_value_v[3]->value(0,NY-0.5,k,t) - 9*Yy[(NY-1) * (NZ + 1) + k] + Yy[(NY-2) * (NZ + 1) + k]) / (3*DY) +
-            (Yz[(NY) * NZ + k] - Yz[(NY) * NZ + k-1]) / (DZ));
+        Y2_p[getp(0,zSize[1] - 1, k)] = 120.0 / (c * DT) *
+            ((-8*boundary_value_u[0]->value(-0.5,NY,k,t) + 9*Yx[getx(0,dim_y_x - 1,k)] - Yx[getx(1,dim_y_x - 1,k)]) / (3*DX) +
+            (8*boundary_value_v[3]->value(0,NY-0.5,k,t) - 9*Yy[gety(0,dim_y_y - 1,k)] + Yy[gety(0,dim_y_y - 2,k)]) / (3*DY) +
+            (Yz[getz(0,dim_y_z - 1,k)] - Yz[getz(0,dim_y_z - 1,k-1)]) / (DZ));
     }// break to exploit locality
-    for (int k = 1; k < NZ; k++)
+    for (int k = 1; k < zSize[2] - 1; k++)
     {
         // FRONT RIGHT EDGE
-        Y2_p[(NX) * (NY + 1) * (NZ + 1) + k] = 120.0 / (c * DT) *
-            ((8*boundary_value_u[1]->value(NX-0.5,0,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + k]) / (3*DX) +
-            (-8*boundary_value_v[2]->value(NX,-0.5,k,t) + 9*Yy[(NX) * NY * (NZ + 1) + k] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1) + k]) / (3*DY) +
-            (Yz[(NX) * (NY + 1) * NZ + k] - Yz[(NX) * (NY + 1) * NZ + k-1]) / (DZ));
+        Y2_p[getp(zSize[0] - 1,0,k)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX-0.5,0,k,t) - 9*Yx[getx(dim_x_x-1,0,k)] + Yx[getx(dim_x_x-2,0,k)]) / (3*DX) +
+            (-8*boundary_value_v[2]->value(NX,-0.5,k,t) + 9*Yy[gety(dim_x_y-1,0,k)] - Yy[gety(dim_x_y-1,1,k)]) / (3*DY) +
+            (Yz[getz(dim_x_z-1,0,k)] - Yz[getz(dim_x_z-1,0,k-1)]) / (DZ));
     }// break to exploit locality
-    for (int k = 1; k < NZ; k++)
+    for (int k = 1; k < zSize[2] - 1; k++)
     {
         // BACK RIGHT EDGE
-        Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] = 120.0 / (c * DT) *
-            ((8*boundary_value_u[1]->value(NX-0.5,NY,k,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + k]) / (3*DX) +
-            (8*boundary_value_v[3]->value(NX,NY-0.5,k,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1) + k] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1) + k]) / (3*DY) +
-            (Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + k] - Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + k-1]) / (DZ));
+        Y2_p[getp(zSize[0]-1, zSize[1]-1, k)] = 120.0 / (c * DT) *
+            ((8*boundary_value_u[1]->value(NX-0.5,NY,k,t) - 9*Yx[getx(dim_x_x-1,dim_y_x-1,k)] + Yx[getx(dim_x_x-2,dim_y_x-1,k)]) / (3*DX) +
+            (8*boundary_value_v[3]->value(NX,NY-0.5,k,t) - 9*Yy[gety(dim_x_y-1,dim_y_y-1,k)] + Yy[gety(dim_x_y-1,dim_y_y-2,k)]) / (3*DY) +
+            (Yz[getz(dim_x_z-1,dim_y_z-1,k)] - Yz[getz(dim_x_z-1,dim_y_z-1,k-1)]) / (DZ));
     }
     // 8 VERTICES
     // LOWER FRONT LEFT VERTEX (0,0,0)
-    Y2_p[0] = 120.0 / (c * DT) *
-        ((-8*boundary_value_u[0]->value(-0.5,0,0,t) + 9*Yx[0] - Yx[1 * (NY + 1) * (NZ + 1)]) / (3*DX) +
-        (-8*boundary_value_v[2]->value(0,-0.5,0,t) + 9*Yy[0] - Yy[1 * (NZ + 1)]) / (3*DY) +
-        (-8*boundary_value_w[4]->value(0,0,-0.5,t) + 9*Yz[0] - Yz[1]) / (3*DZ));
+    Y2_p[getp(0, 0, 0)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(-0.5,0,0,t) + 9*Yx[getx(0,0,0)] - Yx[getx(1,0,0)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(0,-0.5,0,t) + 9*Yy[gety(0,0,0)] - Yy[gety(0,1,0)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(0,0,-0.5,t) + 9*Yz[getz(0,0,0)] - Yz[getz(0,0,1)]) / (3*DZ));
     // LOWER FRONT RIGHT VERTEX (1,0,0)
-    Y2_p[(NX) * (NY + 1) * (NZ + 1)] = 120.0 / (c * DT) *
-        ((8*boundary_value_u[1]->value(NX-0.5,0,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1)]) / (3*DX) +
-        (-8*boundary_value_v[2]->value(NX,-0.5,0,t) + 9*Yy[(NX) * NY * (NZ + 1)] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1)]) / (3*DY) +
-        (-8*boundary_value_w[4]->value(NX,0,-0.5,t) + 9*Yz[(NX) * (NY + 1) * NZ] - Yz[(NX) * (NY + 1) * NZ + 1]) / (3*DZ));
+    Y2_p[getp(zSize[0]-1, 0, 0)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX-0.5,0,0,t) - 9*Yx[getx(dim_x_x-1,0,0)] + Yx[getx(dim_x_x-2,0,0)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(NX,-0.5,0,t) + 9*Yy[gety(dim_x_y-1,0,0)] - Yy[gety(dim_x_y-1,1,0)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(NX,0,-0.5,t) + 9*Yz[getz(dim_x_z-1,0,0)] - Yz[getz(dim_x_z-1,0,1)]) / (3*DZ));
     // LOWER BACK LEFT VERTEX (0,1,0)
-    Y2_p[(NY) * (NZ + 1)] = 120.0 / (c * DT) *
-        ((-8*boundary_value_u[0]->value(-0.5,NY,0,t) + 9*Yx[(NY) * (NZ + 1)] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (3*DX) +
-        (8*boundary_value_v[3]->value(0,NY-0.5,0,t) - 9*Yy[(NY-1) * (NZ + 1)] + Yy[(NY-2) * (NZ + 1)]) / (3*DY) +
-        (-8*boundary_value_w[4]->value(0,NY,-0.5,t) + 9*Yz[(NY) * NZ] - Yz[(NY) * NZ + 1]) / (3*DZ));
+    Y2_p[getp(0, zSize[1]-1, 0)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(-0.5,NY,0,t) + 9*Yx[getx(0,dim_y_x-1,0)] - Yx[getx(1,dim_y_x-1,0)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(0,NY-0.5,0,t) - 9*Yy[gety(0,dim_y_y-1,0)] + Yy[gety(0,dim_y_y-2,0)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(0,NY,-0.5,t) + 9*Yz[getz(0,dim_y_z-1,0)] - Yz[getz(0,dim_y_z-1,1)]) / (3*DZ));
     // UPPER FRONT LEFT VERTEX (0,0,1)
-    Y2_p[(NZ)] = 120.0 / (c * DT) *
-        ((-8*boundary_value_u[0]->value(-0.5,0,NZ,t) + 9*Yx[(NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + (NZ)]) / (3*DX) +
-        (-8*boundary_value_v[2]->value(0,-0.5,NZ,t) + 9*Yy[(NZ)] - Yy[1 * (NZ + 1) + (NZ)]) / (3*DY) +
-        (8*boundary_value_w[5]->value(0,0,NZ-0.5,t) - 9*Yz[(NZ-1)] + Yz[(NZ-2)]) / (3*DZ));
+    Y2_p[getp(0, 0, zSize[2]-1)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(-0.5,0,NZ,t) + 9*Yx[getx(0,0,dim_z-1)] - Yx[getx(1,0,dim_z-1)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(0,-0.5,NZ,t) + 9*Yy[gety(0,0,dim_z-1)] - Yy[gety(0,1,dim_z-1)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(0,0,NZ-0.5,t) - 9*Yz[getz(0,0,dim_z_z-1)] + Yz[getz(0,0,dim_z_z-2)]) / (3*DZ));
     // UPPER BACK LEFT VERTEX (0,1,1)
-    Y2_p[(NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-        ((-8*boundary_value_u[0]->value(-0.5,NY,NZ,t) + 9*Yx[(NY) * (NZ + 1) + (NZ)] - Yx[1 * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (3*DX) +
-        (8*boundary_value_v[3]->value(0,NY-0.5,NZ,t) - 9*Yy[(NY-1) * (NZ + 1) + (NZ)] + Yy[(NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
-        (8*boundary_value_w[5]->value(0,NY,NZ-0.5,t) - 9*Yz[(NY) * NZ + (NZ-1)] + Yz[(NY) * NZ + (NZ-2)]) / (3*DZ));
+    Y2_p[getp(0, zSize[1]-1, zSize[2]-1)] = 120.0 / (c * DT) *
+        ((-8*boundary_value_u[0]->value(-0.5,NY,NZ,t) + 9*Yx[getx(0,dim_y_x-1,dim_z-1)] - Yx[getx(1,dim_y_x-1,dim_z-1)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(0,NY-0.5,NZ,t) - 9*Yy[gety(0,dim_y_y-1,dim_z-1)] + Yy[gety(0,dim_y_y-2,dim_z-1)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(0,NY,NZ-0.5,t) - 9*Yz[getz(0,dim_y_z-1,dim_z_z-1)] + Yz[getz(0,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
     // UPPER FRONT RIGHT VERTEX (1,0,1)
-    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-        ((8*boundary_value_u[1]->value(NX-0.5,0,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NZ)]) / (3*DX) +
-        (-8*boundary_value_v[2]->value(NX,-0.5,NZ,t) + 9*Yy[(NX) * NY * (NZ + 1) + (NZ)] - Yy[(NX) * NY * (NZ + 1) + 1 * (NZ + 1) + (NZ)]) / (3*DY) +
-        (8*boundary_value_w[5]->value(NX,0,NZ-0.5,t) - 9*Yz[(NX) * (NY + 1) * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + (NZ-2)]) / (3*DZ));
+    Y2_p[getp(zSize[0]-1, 0, zSize[2]-1)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX-0.5,0,NZ,t) - 9*Yx[getx(dim_x_x-1,0,dim_z-1)] + Yx[getx(dim_x_x-2,0,dim_z-1)]) / (3*DX) +
+        (-8*boundary_value_v[2]->value(NX,-0.5,NZ,t) + 9*Yy[gety(dim_x_y-1,0,dim_z-1)] - Yy[gety(dim_x_y-1,1,dim_z-1)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(NX,0,NZ-0.5,t) - 9*Yz[getz(dim_x_z-1,0,dim_z_z-1)] + Yz[getz(dim_x_z-1,0,dim_z_z-2)]) / (3*DZ));
     // LOWER BACK RIGHT VERTEX (1,1,0)
-    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] = 120.0 / (c * DT) *
-        ((8*boundary_value_u[1]->value(NX-0.5,NY,0,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1)]) / (3*DX) +
-        (8*boundary_value_v[3]->value(NX,NY-0.5,0,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1)] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1)]) / (3*DY) +
-        (-8*boundary_value_w[4]->value(NX,NY,-0.5,t) + 9*Yz[(NX) * (NY + 1) * NZ + (NY) * NZ] - Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + 1]) / (3*DZ));
+    Y2_p[getp(zSize[0]-1, zSize[1]-1, 0)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX-0.5,NY,0,t) - 9*Yx[getx(dim_x_x-1,dim_y_x-1,0)] + Yx[getx(dim_x_x-2,dim_y_x-1,0)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(NX,NY-0.5,0,t) - 9*Yy[gety(dim_x_y-1,dim_y_y-1,0)] + Yy[gety(dim_x_y-1,dim_y_y-2,0)]) / (3*DY) +
+        (-8*boundary_value_w[4]->value(NX,NY,-0.5,t) + 9*Yz[getz(dim_x_z-1,dim_y_z-1,0)] - Yz[getz(dim_x_z-1,dim_y_z-1,1)]) / (3*DZ));
     // UPPER BACK RIGHT VERTEX (1,1,1)
-    Y2_p[(NX) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] = 120.0 / (c * DT) *
-        ((8*boundary_value_u[1]->value(NX-0.5,NY,NZ,t) - 9*Yx[(NX-1) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)] + Yx[(NX-2) * (NY + 1) * (NZ + 1) + (NY) * (NZ + 1) + (NZ)]) / (3*DX) +
-        (8*boundary_value_v[3]->value(NX,NY-0.5,NZ,t) - 9*Yy[(NX) * NY * (NZ + 1) + (NY-1) * (NZ + 1) + (NZ)] + Yy[(NX) * NY * (NZ + 1) + (NY-2) * (NZ + 1) + (NZ)]) / (3*DY) +
-        (8*boundary_value_w[5]->value(NX,NY,NZ-0.5,t) - 9*Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + (NZ-1)] + Yz[(NX) * (NY + 1) * NZ + (NY) * NZ + (NZ-2)]) / (3*DZ));
-}
+    Y2_p[getp(zSize[0]-1, zSize[1]-1, zSize[2]-1)] = 120.0 / (c * DT) *
+        ((8*boundary_value_u[1]->value(NX-0.5,NY,NZ,t) - 9*Yx[getx(dim_x_x-1,dim_y_x-1,dim_z-1)] + Yx[getx(dim_x_x-2,dim_y_x-1,dim_z-1)]) / (3*DX) +
+        (8*boundary_value_v[3]->value(NX,NY-0.5,NZ,t) - 9*Yy[gety(dim_x_y-1,dim_y_y-1,dim_z-1)] + Yy[gety(dim_x_y-1,dim_y_y-2,dim_z-1)]) / (3*DY) +
+        (8*boundary_value_w[5]->value(NX,NY,NZ-0.5,t) - 9*Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-1)] + Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
+    }
 
 
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
