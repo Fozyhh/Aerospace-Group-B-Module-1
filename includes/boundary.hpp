@@ -43,6 +43,8 @@ private:
     /// @brief New dimension parameters for z-direction mesh
     int newDimX_z, newDimY_z;
 
+    int zSize[3];
+
     /// @brief Additional dimension parameters for x-direction mesh
     int other_dim_x_x, other_dim_y_x;
     /// @brief Additional dimension parameters for y-direction mesh
