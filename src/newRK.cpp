@@ -10,7 +10,7 @@ void IcoNS::solve_time_step(Real time)
     PoissonSolver poissonSolver(false,false,false, c2d);
     
     std::cout << "Solving time step at t = " << time << std::endl;
-
+    
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -78,11 +78,11 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    for (int i = 1; i < NX; i++)
+    for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)// salta i ghost a sinistra, a destra lunghezza della pressione, +1 di ghost iniziale che la pressione non considera meno il boundary
     {
-        for (int j = 1; j < NY; j++)
+        for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
-            for (int k = 1; k < NZ; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
                 Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
@@ -131,17 +131,17 @@ void IcoNS::solve_time_step(Real time)
     }
 
     //TODO:?
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = 0; i < zSize[0]; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = 0; j < zSize[1]; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < zSize[2]; k++)
             {
 #ifdef PERIODIC
                 Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // phi^2
 #endif
 #ifdef DIRICHELET
-                Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingDiricheletp(i, j, k)] + grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // phi^2
+                Phi_p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1,j + 1,k)] + grid.p[indexingDiricheletp(i + 1,j + 1,k)]; // phi^2
 #endif
             }
         }
@@ -159,7 +159,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                                   16.0 / 120.0 * DT * /*d_Px(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
+                                                    16.0 / 120.0 * DT * /*d_Px(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i+1,j,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
@@ -173,7 +173,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                             16.0 / 120.0 * DT * /*d_Py(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[i * (NY + 1) * (NZ + 1) + (j+1) * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DY);
+                                                             16.0 / 120.0 * DT * /*d_Py(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j+1,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
@@ -189,7 +189,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       16.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k+1] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DZ);
+                                                       16.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j,k+1)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DZ);
             }
         }
     }
@@ -216,13 +216,13 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
     //TODO: parallelo con zsize
-    for (int i = 1; i < NX; i++)
+    for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
     {
-        for (int j = 1; j < NY; j++)
+        for (int j = 1 + lby; j < zSize[1] + 1 -rby; j++)
         {
-            for (int k = 1; k < NZ; k++)
+            for (int k = 1; k < zSize[2]; k++)
             {
-                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (16.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (16.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -265,17 +265,17 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < NX + 1; i++)
+    for (int i = 0; i < zSize[0]; i++)
     {
-        for (int j = 0; j < NY + 1; j++)
+        for (int j = 0; j < zSize[1]; j++)
         {
-            for (int k = 0; k < NZ + 1; k++)
+            for (int k = 0; k < zSize[2]; k++)
             {
 #ifdef PERIODIC
                 Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // Phi_p=phi^3
 #endif
 #ifdef DIRICHELET
-                Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingDiricheletp(i, j, k)] + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // Phi_p=phi^3
+                Phi_p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1, j + 1, k)] + Phi_p[indexingDiricheletp(i + 1,j + 1,k)]; // Phi_p=phi^3
 #endif
             }
         }
@@ -297,7 +297,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.u[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                                     40.0 / 120.0 * DT * /*d_Px(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
+                                                                     40.0 / 120.0 * DT * /*d_Px(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i + 1,j,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
@@ -312,7 +312,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                               40.0 / 120.0 * DT * /*d_Py(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[i * (NY + 1) * (NZ + 1) + (j+1) * (NZ + 1) + k] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DY);
+                                                               40.0 / 120.0 * DT * /*d_Py(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j+1,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
@@ -326,7 +326,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.w[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] +
                                                              90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                              50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                         40.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k+1] - Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DZ);
+                                                         40.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j,k+1)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DZ);
            }
         }
     }
@@ -352,13 +352,13 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
     exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
 
-    for (int i = 1; i < NX; i++)
+    for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
     {
-        for (int j = 1; j < NY; j++)
+        for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
-            for (int k = 1; k < NZ; k++)
+            for (int k = 1; k < zSize[2]; k++)
             {
-                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -398,17 +398,17 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(int i = 0; i < NX + 1; i++)
+    for(int i = 0; i < zSize[0]; i++)
     {
-        for(int j = 0; j < NY + 1; j++)
+        for(int j = 0; j < zSize[1]; j++)
         {
-            for(int k = 0; k < NZ + 1; k++)
+            for(int k = 0; k < zSize[2]; k++)
             {
 #ifdef PERIODIC
                 grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)]  + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
 #endif
 #ifdef DIRICHELET
-                grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingDiricheletp(i, j, k)]  + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
+                grid.p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1,j + 1, k)]  + Phi_p[indexingDiricheletp(i + 1,j + 1,k)]; 
 #endif
             }
         }
