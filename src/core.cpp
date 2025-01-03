@@ -799,6 +799,188 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
-// void IcoNS::output()
-// {
-// }
+void IcoNS::output_z()
+{
+    MPI_File fh;
+    MPI_Offset headerOffset, rowOffsetX, rowOffsetY, colOffsetX, colOffsetY;
+
+    // Open the file
+    MPI_File_open(cart_comm, "solution_z.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+
+    // Write the header
+    std::ostringstream header;
+    std::ostringstream scalarsu;
+    std::ostringstream scalarsv;
+    std::ostringstream scalarsp;
+    header << "# vtk DataFile Version 3.0\n";
+            << "Solution\n"
+            << "BINARY\n"
+            << "DATASET STRUCTURED_GRID\n"
+            << "DIMENSIONS " << NX + 1 << " " << NY + 1 << " " << 1 << "\n"
+            << "ORIGIN " << 0 << " " << 0 << " " << 0 << "\n"
+            << "POINTS " << (NX + 1) * (NY + 1) * 1 << " float\n";
+    scalarsu << "SCALARS u float 1\nLOOKUP_TABLE default\n";
+    scalarsv << "SCALARS v float 1\nLOOKUP_TABLE default\n";
+    scalarsp << "SCALARS p float 1\nLOOKUP_TABLE default\n";
+
+    headerOffset = header.str().size();
+
+    // This offset determines the cut of the plane in the z direction
+    int zOffset = 0;
+
+    if(rank == 0){
+        // Write header to file
+        MPI_File_write_at(fh, 0, header.str().c_str(), header.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars u header after metadata
+        MPI_File_write_at(fh, headerOffset, scalarsu.str().c_str(), scalarsu.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars v header after scalars u
+        MPI_File_write_at(fh, headerOffset + scalarsu.str().size() + NY, scalarsv.str().c_str(), scalarsv.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars p header after scalars v
+        MPI_File_write_at(fh, headerOffset + scalarsu.str().size() + 2 * NY + scalarsv.str().size(), scalarsp.str().c_str(), scalarsp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+
+    // Write the data
+    // Each processor must write all the rows of its local grid but in a different possition in the line 
+    // depending on the processor rank
+    // go through all the rows of the processor 
+    colOffsetX = coords[0];
+    for (size_t i = 0; i < newDimY_X; i++){
+        // Write the whole line of the processor
+        rowOffsetX = headerOffset + (rank * other_dim_y_x) * i;
+        MPI_File_write_at_all(fh, rowOffsetX + colOffsetX, &grid_loc_x[zOffset], newDimX_X, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    colOffsetY = coords[0];
+    for (size_t i = 0; i < newDimY_Y; i++){
+        // Write the whole line of the processor
+        rowOffsetY = headerOffset + NX + 1 + (rank * other_dim_y_y) * i;
+        MPI_File_write_at_all(fh, rowOffsetY + colOffsetY, &grid_loc_y[zOffset], newDimX_Y, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    // TODO: Write preassure 
+    
+}
+
+void IcoNS::output_x(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y){
+
+    MPI_File fh;
+    MPI_Offset headerOffset, rowOffsetX, rowOffsetY, colOffsetX, colOffsetY;
+
+    // Open the file
+    MPI_File_open(cart_comm, "solution_x.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+
+    // Write the header
+    std::ostringstream header;
+    std::ostringstream scalarsw;
+    std::ostringstream scalarsv;
+    std::ostringstream scalarsp;
+    header << "# vtk DataFile Version 3.0\n";
+            << "Solution x\n"
+            << "BINARY\n"
+            << "DATASET STRUCTURED_GRID\n"
+            << "DIMENSIONS " << 1 << " " << NY + 1 << " " << NZ + 1 << "\n"
+            << "ORIGIN " << 0 << " " << 0 << " " << 0 << "\n"
+            << "POINTS " << (NZ + 1) * (NY + 1) * 1 << " float\n";
+    scalarsw << "SCALARS w float 1\nLOOKUP_TABLE default\n";
+    scalarsv << "SCALARS v float 1\nLOOKUP_TABLE default\n";
+    scalarsp << "SCALARS p float 1\nLOOKUP_TABLE default\n";
+
+    headerOffset = header.str().size();
+
+    // This offset determines the cut of the plane in the z direction
+    int zOffset = 0;
+
+    if(rank == 0){
+        // Write header to file
+        MPI_File_write_at(fh, 0, header.str().c_str(), header.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars u header after metadata
+        MPI_File_write_at(fh, headerOffset, scalarsv.str().c_str(), scalarsv.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars v header after scalars u
+        MPI_File_write_at(fh, headerOffset + scalarsv.str().size() + NY, scalarsw.str().c_str(), scalarsw.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars p header after scalars v
+        MPI_File_write_at(fh, headerOffset + scalarsv.str().size() + 2 * NY + scalarsw.str().size(), scalarsp.str().c_str(), scalarsp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+
+    // Write the data
+    // Each processor must write all the faces of its local grid but in a different possition in the line 
+    // depending on the processor rank
+    // go through all the rows of the processor 
+    colOffsetX = coords[0];
+    for (size_t i = 0; i < newDimY_X; i++){
+        // Write the whole line of the processor
+        rowOffsetX = headerOffset + (rank * other_dim_y_x) * i;
+        MPI_File_write_at_all(fh, rowOffsetX + colOffsetX, &grid_loc_x[zOffset], newDimX_X, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    colOffsetY = coords[0];
+    for (size_t i = 0; i < newDimY_Y; i++){
+        // Write the whole line of the processor
+        rowOffsetY = headerOffset + NX + 1 + (rank * other_dim_y_y) * i;
+        MPI_File_write_at_all(fh, rowOffsetY + colOffsetY, &grid_loc_y[zOffset], newDimX_Y, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    // TODO: Write preassure 
+    
+
+}
+
+void IcoNS::output_y(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y){
+    MPI_File fh;
+    MPI_Offset headerOffset, rowOffsetX, rowOffsetY, colOffsetX, colOffsetY;
+
+    // Open the file
+    MPI_File_open(cart_comm, "solution_y.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+
+    // Write the header
+    std::ostringstream header;
+    std::ostringstream scalarsu;
+    std::ostringstream scalarsw;
+    std::ostringstream scalarsp;
+    header << "# vtk DataFile Version 3.0\n";
+            << "Solution y\n"
+            << "BINARY\n"
+            << "DATASET STRUCTURED_GRID\n"
+            << "DIMENSIONS " << NX + 1 << " " << 1 << " " << NZ + 1 << "\n"
+            << "ORIGIN " << 0 << " " << 0 << " " << 0 << "\n"
+            << "POINTS " << (NX + 1) * (NZ + 1) * 1 << " float\n";
+    scalarsu << "SCALARS u float 1\nLOOKUP_TABLE default\n";
+    scalarsw << "SCALARS w float 1\nLOOKUP_TABLE default\n";
+    scalarsp << "SCALARS p float 1\nLOOKUP_TABLE default\n";
+
+    headerOffset = header.str().size();
+
+    // This offset determines the cut of the plane in the z direction
+    int zOffset = 0;
+
+    if(rank == 0){
+        // Write header to file
+        MPI_File_write_at(fh, 0, header.str().c_str(), header.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars u header after metadata
+        MPI_File_write_at(fh, headerOffset, scalarsu.str().c_str(), scalarsu.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars v header after scalars u
+        MPI_File_write_at(fh, headerOffset + scalarsu.str().size() + NY, scalarsw.str().c_str(), scalarsw.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        // Write scalars p header after scalars v
+        MPI_File_write_at(fh, headerOffset + scalarsu.str().size() + 2 * NY + scalarsw.str().size(), scalarsp.str().c_str(), scalarsp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+
+    // Write the data
+    // Each processor must write all the rows of its local grid but in a different possition in the line 
+    // depending on the processor rank
+    // go through all the rows of the processor 
+    colOffsetX = coords[0];
+    for (size_t i = 0; i < newDimY_X; i++){
+        // Write the whole line of the processor
+        rowOffsetX = headerOffset + (rank * other_dim_y_x) * i;
+        MPI_File_write_at_all(fh, rowOffsetX + colOffsetX, &grid_loc_x[zOffset], newDimX_X, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    colOffsetY = coords[0];
+    for (size_t i = 0; i < newDimY_Y; i++){
+        // Write the whole line of the processor
+        rowOffsetY = headerOffset + NX + 1 + (rank * other_dim_y_y) * i;
+        MPI_File_write_at_all(fh, rowOffsetY + colOffsetY, &grid_loc_y[zOffset], newDimX_Y, MPI_DOUBLE, MPI_STATUS_IGNORE);
+    }
+
+    // TODO: Write preassure 
+    
+}

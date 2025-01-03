@@ -47,6 +47,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // Have to adjust indexes in exact values if it is made
     // by processor with diff coords with global indexes
     // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
+    // axix_grid
     int offset_x_x = coords[0] * other_dim_x_x -1;
     int offset_y_x = (PY - 1 - coords[1]) * other_dim_y_x -1;
     int offset_x_y = coords[0] * other_dim_x_y -1;

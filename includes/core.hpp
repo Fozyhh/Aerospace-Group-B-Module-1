@@ -115,6 +115,9 @@ public:
 
   // TODO write the output file.
 
+  void output_z();
+  void output_y(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
+  void output_x(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
 
 
 private:
