@@ -16,17 +16,12 @@ aerospace-group-b-module-1/
 ### Standard Build
 ```bash
 make
-mpirun -np X ./bin/main    # Where X is number of processes
+mpirun -np X ./build/main input.in   # Where X is number of processes
 ```
 
 ### Clean Build
 ```bash
 make clean
-```
-
-### Debug Build
-```bash
-make debug
 ```
 
 ### Running Tests
@@ -39,6 +34,10 @@ cd Test
 
 ## Python Analysis Scripts
 ### Dependencies
+
+```bash
+2Decomp and fftw3 libraries install procedure goes here
+```
 
 ```bash
 pip install matplotlib numpy pandas
