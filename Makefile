@@ -48,7 +48,7 @@ DECOMP_OBJECTS = $(DECOMP_DIR)/C2Decomp.o \
 DECOMP_LIB = $(BUILD_DIR)/libdecomp.a
 
 ################################
-# Targets                      #
+# Targets                     #
 ################################
 .PHONY: all clean dirs
 
