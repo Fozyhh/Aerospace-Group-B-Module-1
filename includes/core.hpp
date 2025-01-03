@@ -55,7 +55,7 @@ public:
   {
     parse_input(input_file);
 
-    c2d = new C2Decomp(NX, NY, NZ, PX, PY, periodss);
+    c2d = new C2Decomp(NX+1, NY+1, NZ+1, PX, PY, periodss);
 
     // x-pencil size
     xSize[0] = c2d->xSize[0];

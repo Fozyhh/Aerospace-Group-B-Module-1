@@ -1068,6 +1068,10 @@ void IcoNS::parse_input(const std::string& input_file) {
         break;
     }
 
+    NX -= 1;
+    NY -= 1;
+    NZ -= 1;
+
     // Skip comments and empty lines until we find process grid
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
