@@ -184,7 +184,7 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     }
 
     // Normalization
-    double normalization_factor1 = 2.0 * (zSize[0]-1) * 2.0 * (zSize[1]-1) * 2.0 * (zSize[2]-1);
+    double normalization_factor1 = 2.0 * (xSize[0]-1) * 2.0 * (ySize[1]-1) * 2.0 * (zSize[2]-1);
     for(int i = 0; i < zSize[0]; i++) {
         for (int j = 0; j < zSize[1]; j++) {
             for (int k = 0; k < zSize[2]; k++) {
