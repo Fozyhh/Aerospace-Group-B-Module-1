@@ -4,12 +4,24 @@
 
 void IcoNS::solve_time_step(Real time)
 {
-    //TODO: there was a part with start and end different for periodic and diricazz, i didn't bring it here since lbx variables should act the same
-
-    //TODO: check, adapt the trues with BX BY AND BZ
     PoissonSolver poissonSolver(false,false,false, c2d);
     
     std::cout << "Solving time step at t = " << time << std::endl;
+
+    // 1) pressure point exchange
+    double* halo_p;
+
+    /**
+     * TODO: this description can be removed
+     * 
+     * @brief 2decomp halo points exchange 
+     * 
+     * @param grid.p pressure vector
+     * @param halo_p pressure vector with halo points
+     * @param 1 level of halo points exhanged
+     * @param 2 2decomp requires the pencil diretion; 2 stands for z-pencil
+     */ 
+    c2d->updateHalo(grid.p, halo_p,1,2);
     
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -19,8 +31,10 @@ void IcoNS::solve_time_step(Real time)
 
             {
                 //TODO: 2deco per la pressione
-                Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                                   64.0 / 120.0 * DT * /*d_Px(i,j,k,time);*/(grid.p[indexingDiricheletp(i+1,j,k)] - grid.p[indexingDiricheletp(i,j,k)]) / (DX);
+                Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 
+                                                     64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i+1,j,k)] - 
+                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
@@ -33,8 +47,10 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 1; k < dim_z - 1; k++)
 
             {
-                Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                            64.0 / 120.0 * DT * /*d_Py(i,j,k,time);*/(grid.p[indexingDiricheletp(i,j+1,k)] - grid.p[indexingDiricheletp(i,j,k)]) / (DY);
+                Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 
+                                                     64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i,j+1,k)] - 
+                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
@@ -46,15 +62,14 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < dim_z_z - 1; k++)
             {
-                Y2_z[indexingDiricheletz(i, j, k)] = grid.w[indexingDiricheletz(i, j, k)] + 64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       64.0 / 120.0 * DT * /*d_Pz(i,j,k,time);*/(grid.p[indexingDiricheletp(i,j,k+1)] - grid.p[indexingDiricheletp(i,j,k)]) / (DZ);
+                Y2_z[indexingDiricheletz(i, j, k)] = grid.w[indexingDiricheletz(i, j, k)] + 
+                                                     64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i,j,k+1)] - 
+                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DZ);
             }
         }
     }
 
-
-//TODO: 2deco parallelization
-// dimensions accessible with c2d-> zSize[0] zSize[1] zSize[2] etc.
 #ifdef PERIODIC
     for (int i = 0; i < zSize[0]; i++)
     {
@@ -96,14 +111,18 @@ void IcoNS::solve_time_step(Real time)
     //boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     
 
-//TODO: correction of Y with pressure, check indexes should not be a problem, ifdef probably removable
+ // 2) y2_p pressure point exchange
+ c2d->deallocXYZ(halo_p);
+ c2d->updateHalo(Y2_p, halo_p, 1, 2);
  for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                Y2_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Px(i,j,k,time+64.0 * DT / (120.0))-d_Px(i,j,k,time));*/(Y2_p[indexingDiricheletp(i + 1, j, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DX);
+                Y2_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] - 
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DX);
             }
         }
     }
@@ -114,7 +133,9 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                Y2_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Py(i,j,k,time+64.0 * DT / (120.0))-d_Py(i,j,k,time));*/(Y2_p[indexingDiricheletp(i, j + 1, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DY);
+                Y2_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] - 
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DY);
             }
         }
     }
@@ -125,12 +146,13 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z_z; k++)
             {
-                Y2_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] - 64.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+64.0 * DT / (120.0))-d_Pz(i,j,k,time));*/(Y2_p[indexingDiricheletp(i, j, k + 1)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DZ);
+                Y2_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] - 
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DZ);
             }
         }
     }
 
-    //TODO:?
     for (int i = 0; i < zSize[0]; i++)
     {
         for (int j = 0; j < zSize[1]; j++)
@@ -148,7 +170,9 @@ void IcoNS::solve_time_step(Real time)
     }
 
 
-    //TODO: should be same concept as y2s
+    // 3) Phi_p exchange 
+    double* halo_phi;
+    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -159,11 +183,11 @@ void IcoNS::solve_time_step(Real time)
                 Y3_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                    16.0 / 120.0 * DT * /*d_Px(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i+1,j,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DX);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i+1,j,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
-    //TODO:: still same
+
     for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
@@ -173,12 +197,11 @@ void IcoNS::solve_time_step(Real time)
                 Y3_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                             16.0 / 120.0 * DT * /*d_Py(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j+1,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DY);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j+1,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
 
-//TODO: still same
     for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
@@ -189,12 +212,11 @@ void IcoNS::solve_time_step(Real time)
                 Y3_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       16.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 64.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j,k+1)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DZ);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j,k+1)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DZ);
             }
         }
     }
 
-//TODO: same pressure part as y2
     #ifdef PERIODIC
     for (int i = 0; i < NX; i++)
     {
@@ -215,7 +237,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
-    //TODO: parallelo con zsize
+
     for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 -rby; j++)
@@ -231,14 +253,18 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
 
-//TODO: same correction as y2, same treatment
+    // 3) y2_p exchange
+    c2d->deallocXYZ(halo_p);
+    c2d->updateHalo(Y2_p, halo_p, 1, 2);
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                Y3_x[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Px(i,j,k,time+80.0 * DT / (120.0))-d_Px(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i + 1, j, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DX);
+                Y3_x[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] - 
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DX);
             }
         }
     }
@@ -249,7 +275,9 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                Y3_y[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Py(i,j,k,time+80.0 * DT / (120.0))-d_Py(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j + 1, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DY);
+                Y3_y[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] - 
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DY);
             }
         }
     }
@@ -260,7 +288,9 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z_z; k++)
             {
-                Y3_z[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] - 16.0 * DT / (120.0) * /*(d_Pz(i,j,k,time+80.0 * DT / (120.0))-d_Pz(i,j,k,time+64.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j, k + 1)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DZ);
+                Y3_z[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] - 
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
+                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DZ);
             }
         }
     }
@@ -286,7 +316,10 @@ void IcoNS::solve_time_step(Real time)
     
     MPI_Barrier(cart_comm);
 
-    //TODO: same as earlier
+    // 4) Phi_p exchange
+    c2d->deallocXYZ(halo_phi);
+    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
+
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -297,7 +330,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.u[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                                     40.0 / 120.0 * DT * /*d_Px(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i + 1,j,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DX);
+                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i + 1,j,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
@@ -312,7 +345,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                               40.0 / 120.0 * DT * /*d_Py(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j+1,k)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DY);
+                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j+1,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
@@ -326,7 +359,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.w[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] +
                                                              90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                              50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                         40.0 / 120.0 * DT * /*d_Pz(i,j,k,time + 80.0/120.0*DT);*/(Phi_p[indexingDiricheletp(i,j,k+1)] - Phi_p[indexingDiricheletp(i,j,k)]) / (DZ);
+                                                             40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j,k+1)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DZ);
            }
         }
     }
@@ -367,14 +400,18 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 #endif
 
-//TODO: same correction as before to adapt
+    // 5) y2_p exchange
+    c2d->deallocXYZ(halo_p);
+    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+
     for(int i = 1; i < newDimX_x - 1; i++)
     {
         for(int j = 1; j < newDimY_x - 1; j++)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.u[indexingDiricheletx(i,j,k)] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i + 1, j, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DX); 
+                grid.u[indexingDiricheletx(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
+                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DX); 
             }
         }
     }
@@ -384,7 +421,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.v[indexingDirichelety(i,j,k)] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j + 1, k)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DY); 
+                grid.v[indexingDirichelety(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
+                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DY); 
             }
         }
     }
@@ -394,7 +432,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z_z; k++)
             {
-                grid.w[indexingDiricheletz(i,j,k)] -= 40.0 * DT / (120.0) * /*(d_Px(i,j,k,time+DT)-d_Px(i,j,k,time+80.0 * DT / (120.0)));*/(Y2_p[indexingDiricheletp(i, j, k + 1)] - Y2_p[indexingDiricheletp(i, j, k)]) / (DZ); 
+                grid.w[indexingDiricheletz(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
+                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DZ); 
             }
         }
     }
@@ -405,14 +444,16 @@ void IcoNS::solve_time_step(Real time)
             for(int k = 0; k < zSize[2]; k++)
             {
 #ifdef PERIODIC
-                grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)]  + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
+                grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = halo_p[indexingPeriodicp(i, j, k)]  + halo_phi[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
 #endif
 #ifdef DIRICHELET
-                grid.p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1,j + 1, k)]  + Phi_p[indexingDiricheletp(i + 1,j + 1,k)]; 
+                grid.p[indexingDiricheletp(i + 1,j + 1,k)] = halo_p[indexingDiricheletp(i + 1,j + 1, k)]  + halo_phi[indexingDiricheletp(i + 1,j + 1,k)]; 
 #endif
             }
         }
     }
+    c2d->deallocXYZ(halo_phi);
+    c2d->deallocXYZ(halo_p);
 }
 
 //TODO: maybe change everything with the indexing function(should not be mandatory though)
