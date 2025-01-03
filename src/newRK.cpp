@@ -7,8 +7,9 @@ void IcoNS::solve_time_step(Real time)
     //TODO: there was a part with start and end different for periodic and diricazz, i didn't bring it here since lbx variables should act the same
 
     //TODO: check, adapt the trues with BX BY AND BZ
-    PoissonSolver poissonSolver(true,true,true, c2d);
-
+    PoissonSolver poissonSolver(false,false,false, c2d);
+    
+    std::cout << "Solving time step at t = " << time << std::endl;
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -73,6 +74,7 @@ void IcoNS::solve_time_step(Real time)
     //TODO: da vedere! exchange data?
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     
+    std::cout << "Before pressure approx." << std::endl;
     for (int i = 1; i < NX; i++)
     {
         for (int j = 1; j < NY; j++)
@@ -83,13 +85,16 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+    std::cout << "After pressure approx." << std::endl;
     //TODO: paura, exchange data?, check
     boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
-
+    std::cout << "After divergence" << std::endl;
     poissonSolver.solveNeumannPoisson(Y2_p);
+    std::cout << "After poisson" << std::endl;
 #endif
     //TODO: adapt to the code now
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    std::cout << "After boundary update" << std::endl;
     MPI_Barrier(cart_comm);
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);

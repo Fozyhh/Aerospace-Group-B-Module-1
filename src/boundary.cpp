@@ -326,6 +326,8 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
     int offset_y_y = coords[1] * other_dim_y_y;
     int offset_x_z = coords[0] * other_dim_x_z;
     int offset_y_z = coords[1] * other_dim_y_z;
+
+    std::cout << "in divergence" << std::endl;
     // is the denominator 3*DX correct? -> 2*DX ?
     // LEFT FACE
     //TODO: how does iteration on p works? bc rn every processor is skipping first element if it is not boundary
@@ -339,6 +341,9 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 (Yz[getz(0,j,k)] - Yz[getz(0,j,k-1)]) / (DZ));
         }
     }
+
+    std::cout << "left face" << std::endl;
+
     // RIGHT FACE
     for (int j = 1; j < zSize[1] - 1; j++)
     {
@@ -350,6 +355,8 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 (Yz[getz(dim_x_z-1,j,k)] - Yz[getz(dim_x_z-1,j,k-1)]) / (DZ));
         }
     }
+
+    std::cout << "right face" << std::endl;
     // FRONT FACE
     for (int i = 1; i < zSize[0] - 1; i++)
     {
@@ -361,6 +368,8 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 (Yz[getz(i,0,k)] - Yz[getz(i,0,k-1)]) / (DZ));
         }
     }
+
+    std::cout << "front face" << std::endl;
     // BACK FACE
     for (int i = 1; i < zSize[0] - 1; i++)
     {
@@ -372,6 +381,8 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 (Yz[getz(i,dim_y_z-1,k)] - Yz[getz(i,dim_y_z-1,k-1)]) / (DZ));
         }
     }
+
+    std::cout << "back face" << std::endl;
     // LOWER FACE
     for (int i = 1; i < zSize[0] - 1; i++)
     {
