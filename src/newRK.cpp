@@ -99,7 +99,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2] - 1; k++)
             {
-                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -163,7 +163,7 @@ void IcoNS::solve_time_step(Real time)
                 Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // phi^2
 #endif
 #ifdef DIRICHELET
-                Phi_p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1,j + 1,k)] + grid.p[indexingDiricheletp(i + 1,j + 1,k)]; // phi^2
+                Phi_p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i,j,k)] + grid.p[indexingDiricheletp(i,j,k)]; // phi^2
 #endif
             }
         }
@@ -244,7 +244,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
-                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (16.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -305,7 +305,7 @@ void IcoNS::solve_time_step(Real time)
                 Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // Phi_p=phi^3
 #endif
 #ifdef DIRICHELET
-                Phi_p[indexingDiricheletp(i + 1,j + 1,k)] = Y2_p[indexingDiricheletp(i + 1, j + 1, k)] + Phi_p[indexingDiricheletp(i + 1,j + 1,k)]; // Phi_p=phi^3
+                Phi_p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i, j, k)] + Phi_p[indexingDiricheletp(i,j,k)]; // Phi_p=phi^3
 #endif
             }
         }
@@ -391,7 +391,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
-                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -447,7 +447,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = halo_p[indexingPeriodicp(i, j, k)]  + halo_phi[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
 #endif
 #ifdef DIRICHELET
-                grid.p[indexingDiricheletp(i + 1,j + 1,k)] = halo_p[indexingDiricheletp(i + 1,j + 1, k)]  + halo_phi[indexingDiricheletp(i + 1,j + 1,k)]; 
+                grid.p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i,j, k)]  + Phi_p[indexingDiricheletp(i,j,k)]; 
 #endif
             }
         }

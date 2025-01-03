@@ -248,7 +248,7 @@ private:
   double* Y2_p;
 
   // periodicity fro 2decomp
-  bool periodss[3] = {false, false, false};
+  bool periodss[3] = {true, true, false};
 
   /// @brief Input/output file paths
   std::string input_file;  // input file.
@@ -322,7 +322,7 @@ private:
   inline int indexingDirichelety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
   inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
   //TODO: 2decomp
-  inline int indexingDiricheletp(int i, int j, int k) { return (i-1)*zSize[1]*zSize[2] + (j-1) *zSize[2] + k; }
+  inline int indexingDiricheletp(int i, int j, int k) { return i*zSize[1]*zSize[2] + j *zSize[2] + k; }
 #endif
 
 };
