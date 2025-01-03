@@ -90,7 +90,8 @@ void PoissonSolver::solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex 
 
 void PoissonSolver::solveNeumannPoisson(double* F)
 {
-    /*fftw_plan neumann = fftw_plan_r2r_3d(zSize[0], zSize[1], zSize[2], F, F, FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
+    /*
+    fftw_plan neumann = fftw_plan_r2r_3d(zSize[0], zSize[1], zSize[2], F, F, FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
     fftw_execute(neumann);
 
     // Devide by the eigenvalues
@@ -119,8 +120,13 @@ void PoissonSolver::solveNeumannPoisson(double* F)
         }
     }
 
-    fftw_destroy_plan(neumann);*/
+    fftw_destroy_plan(neumann);
 
+    std::cout << "Neumann Poisson 3d solver done" << std::endl;
+    std::cout << F[0] << std::endl;
+    std::cout << F[1] << std::endl;
+    */
+    
     // dP = dct(dct(dct(F)))
     double* py;
     double* px;
@@ -142,9 +148,9 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     c2d->transposeZ2Y(F, py);
     for (int i = 0; i < ySize[0]; i++) 
     {
-        for (int j = 0; j < ySize[1]; j++)
+        for (int j = 0; j < ySize[2]; j++)
         {
-            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[2], &py[i * ySize[2] * ySize[1] + j * ySize[2]], &py[i * ySize[2] * ySize[1] + j * ySize[2]], 
+            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2] * ySize[1] + j * ySize[1]], &py[i * ySize[2] * ySize[1] + j * ySize[1]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumannY);
             fftw_destroy_plan(neumannY);
@@ -152,11 +158,11 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     }
 
     c2d->transposeY2X(py, px);
-    for (int i = 0; i < xSize[0]; i++) 
+    for (int i = 0; i < xSize[1]; i++) 
     {
-        for (int j = 0; j < xSize[1]; j++)
+        for (int j = 0; j < xSize[2]; j++)
         {
-            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[2], &px[i*xSize[2] * xSize[1] + j * xSize[2]], &px[i*xSize[2] * xSize[1] + j * xSize[2]], 
+            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] * xSize[0] + j * xSize[0]], &px[i*xSize[2] * xSize[0] + j * xSize[0]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumannX);
         }
@@ -164,33 +170,24 @@ void PoissonSolver::solveNeumannPoisson(double* F)
 
     // Divide by the eigenvalues
     
-    /*for (int i = 0; i < xSize[0]; i++) {
-        for (int j = 0; j < xSize[1]; j++) {
-            for (int k = 0; k < xSize[2]; k++) {
-                px[i * (xSize[0]) * (xSize[1]) + j * (xSize[0]) + k] /= (2/(DX*DX) * (std::cos(i * M_PI / (xSize[0]-1)) - 1) +
-                                                                        2/(DY*DY) * (std::cos(j * M_PI / (xSize[1]-1)) - 1) +
-                                                                        2/(DZ*DZ) * (std::cos(k * M_PI / (xSize[2]-1)) - 1));
-            }
-        }
-    }*/
-   for (int i = 0; i < xSize[0]; i++) {
-        for (int j = 0; j < xSize[1]; j++) {
-            for (int k = 0; k < xSize[2]; k++) {
-                px[i * (xSize[2]) * (xSize[1]) + j * (xSize[2]) + k] /= (2/(DX*DX) * (std::cos(i * M_PI / (xSize[0]-1)) - 1) +
+    for (int i = 0; i < xSize[1]; i++) {
+        for (int j = 0; j < xSize[2]; j++) {
+            for (int k = 0; k < xSize[0]; k++) {
+                px[i * (xSize[2]) * (xSize[0]) + j * (xSize[0]) + k] /= (2/(DX*DX) * (std::cos(i * M_PI / (xSize[0]-1)) - 1) +
                                                                         2/(DY*DY) * (std::cos(j * M_PI / (xSize[1]-1)) - 1) +
                                                                         2/(DZ*DZ) * (std::cos(k * M_PI / (xSize[2]-1)) - 1));
             }
         }
     }
-    
+
     px[0] = 0.0;
 
     // Inverse Fourier transform
-    for (int i = 0; i < xSize[0]; i++) 
+    for (int i = 0; i < xSize[1]; i++) 
     {
-        for (int j = 0; j < xSize[1]; j++)
+        for (int j = 0; j < xSize[2]; j++)
         {
-            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[2], &px[i*xSize[2] *xSize[1] + j * xSize[2]], &px[i*xSize[2]* xSize[1] + j* xSize[2]], 
+            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] *xSize[0] + j * xSize[0]], &px[i*xSize[2]* xSize[0] + j* xSize[0]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumannX);
         }
@@ -199,9 +196,9 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     c2d->transposeX2Y(px, py);
     for (int i = 0; i < ySize[0]; i++) 
     {
-        for (int j = 0; j < ySize[1]; j++)
+        for (int j = 0; j < ySize[2]; j++)
         {
-            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[2], &py[i * ySize[2]* ySize[1] + j* ySize[2]], &py[i * ySize[2]* ySize[1] + j* ySize[2]], 
+            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2]* ySize[1] + j* ySize[1]], &py[i * ySize[2]* ySize[1] + j* ySize[1]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumannY);
         }
@@ -219,13 +216,18 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     }
 
     // Normalization
-    double normalization_factor = 2.0 * (zSize[0]-1) * 2.0 * (zSize[1]-1) * 2.0 * (zSize[2]-1);
+    double normalization_factor1 = 2.0 * (zSize[0]-1) * 2.0 * (zSize[1]-1) * 2.0 * (zSize[2]-1);
     for(int i = 0; i < zSize[0]; i++) {
         for (int j = 0; j < zSize[1]; j++) {
             for (int k = 0; k < zSize[2]; k++) {
-                    F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] /= normalization_factor;
+                    F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] /= normalization_factor1;
             }
         }
     }
+
+
+    std::cout << "Neumann Poisson 1d solver done" << std::endl;
+    std::cout << F[0] << std::endl;
+    std::cout << F[1] << std::endl;
 
 }
