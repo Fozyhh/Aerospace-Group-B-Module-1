@@ -88,38 +88,104 @@ void PoissonSolver::solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex 
 
 
 
-void PoissonSolver::solveNeumannPoisson(std::vector<Real>& F)
+void PoissonSolver::solveNeumannPoisson(double* F)
 {
     // dP = dct(dct(dct(F)))
-    fftw_plan neumann = fftw_plan_r2r_3d(NX+1, NY+1, NZ+1, F.data(), F.data(), FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
-    fftw_execute(neumann);
+    double* py;
+    double* px;
 
-    // Devide by the eigenvalues
-    for (int i = 0; i < NX+1; i++) {
-        for (int j = 0; j < NY+1; j++) {
-            for (int k = 0; k < NZ+1; k++) {
-                F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /
-                    (2/(DX*DX) * (std::cos(i * M_PI / (NX)) - 1) +
-                    2/(DY*DY) * (std::cos(j * M_PI / (NY)) - 1) +
-                    2/(DZ*DZ) * (std::cos(k * M_PI / (NZ)) - 1));
+    c2d->allocY(py);
+    c2d->allocX(px);
+
+    for (int i = 0; i < zSize[0]; i++) 
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            fftw_plan neumannX = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1] + j], &F[i * zSize[1] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannX);
+            fftw_destroy_plan(neumannX);
+        }
+    }
+
+    c2d->transposeZ2Y(F, py);
+    for (int i = 0; i < ySize[0]; i++) 
+    {
+        for (int j = 0; j < ySize[2]; j++)
+        {
+            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2] + j], &py[i * ySize[2] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannY);
+            fftw_destroy_plan(neumannY);
+        }
+    }
+
+    c2d->transposeY2X(py, px);
+    for (int i = 0; i < xSize[1]; i++) 
+    {
+        for (int j = 0; j < xSize[2]; j++)
+        {
+            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] + j], &px[i*xSize[2] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannX);
+        }
+    }
+
+    // Divide by the eigenvalues
+    
+    for (int i = 0; i < xSize[0]; i++) {
+        for (int j = 0; j < xSize[1]; j++) {
+            for (int k = 0; k < xSize[2]; k++) {
+                F[i * (xSize[1]) * (xSize[2]) + j * (xSize[2]) + k] /= (2/(DX*DX) * (std::cos(i * M_PI / (xSize[0]-1)) - 1) +
+                                                                        2/(DY*DY) * (std::cos(j * M_PI / (xSize[1]-1)) - 1) +
+                                                                        2/(DZ*DZ) * (std::cos(k * M_PI / (xSize[2]-1)) - 1));
             }
         }
     }
+    
     F[0] = 0.0;
 
-    // Inverse transform
-    fftw_execute(neumann);
-
-    // Normalization
-    double normalization_factor = 2.0 * (NX) * 2.0 * (NY) * 2.0 * (NZ);
-    for(int i = 0; i < NX+1; i++) {
-        for (int j = 0; j < NY+1; j++) {
-            for (int k = 0; k < NZ+1; k++) {
-                    F[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] /= normalization_factor;
-            }
+    // Inverse Fourier transform
+    for (int i = 0; i < xSize[1]; i++) 
+    {
+        for (int j = 0; j < xSize[2]; j++)
+        {
+            fftw_plan neumannX = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] + j], &px[i*xSize[2] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannX);
         }
     }
 
-    fftw_destroy_plan(neumann);
+    c2d->transposeX2Y(px, py);
+    for (int i = 0; i < ySize[0]; i++) 
+    {
+        for (int j = 0; j < ySize[2]; j++)
+        {
+            fftw_plan neumannY = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2] + j], &py[i * ySize[2] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannY);
+        }
+    }
+
+    c2d->transposeY2Z(py, F);
+    for (int i = 0; i < zSize[0]; i++) 
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            fftw_plan neumannZ = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1] + j], &F[i * zSize[1] + j], 
+                                                 FFTW_REDFT00, FFTW_ESTIMATE);
+            fftw_execute(neumannZ);
+        }
+    }
+
+    // Normalization
+    double normalization_factor = 2.0 * (zSize[0]-1) * 2.0 * (zSize[1]-1) * 2.0 * (zSize[2]-1);
+    for(int i = 0; i < zSize[0]; i++) {
+        for (int j = 0; j < zSize[1]; j++) {
+            for (int k = 0; k < zSize[2]; k++) {
+                    F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] /= normalization_factor;
+            }
+        }
+    }
 
 }

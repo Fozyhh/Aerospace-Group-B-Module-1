@@ -98,8 +98,8 @@ public:
 
     // pencils allocation
     c2d->allocZ(grid.p);
-    c2d->allocX(grid.px);
-    c2d->allocY(grid.py);
+    c2d->allocZ(Phi_p);
+    c2d->allocZ(Y2_p);
   }
 
   /**
@@ -240,15 +240,10 @@ private:
   /// @brief Intermediate solution vectors
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
-  std::vector<Real> Phi_p{};
+  double* Phi_p{};
 
   //TODO: change to vectors (*double))
-  #ifdef PERIODIC
-  std::vector<Real> Y2_p{};
-  #endif
-  #ifdef DIRICHELET
-  std::vector<Real> Y2_p{};
-  #endif
+  double* Y2_p;
 
   // periodicity fro 2decomp
   bool periodss[3] = {true, true, true};

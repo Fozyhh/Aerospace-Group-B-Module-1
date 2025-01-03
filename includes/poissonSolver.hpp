@@ -16,16 +16,24 @@ private:
     const bool periodicY;
     const bool periodicZ;
 
+    C2Decomp *c2d;
+    int xSize[3], ySize[3], zSize[3];
+
 public: 
-    PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ)
+    PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
+                  C2Decomp *c2d)
     : periodicX(periodicX),
       periodicY(periodicY),
-      periodicZ(periodicZ)
+      periodicZ(periodicZ),
+      c2d(c2d),
+      xSize{c2d->xSize[0], c2d->xSize[1], c2d->xSize[2]},
+      ySize{c2d->ySize[0], c2d->ySize[1], c2d->ySize[2]},
+      zSize{c2d->zSize[0], c2d->zSize[1], c2d->zSize[2]}
     {}
 
     //TODO: array brutti, 2decomp per la separazione
     void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
-    void solveNeumannPoisson(std::vector<Real>& F);
+    void solveNeumannPoisson(double* F);
 };
 
 #endif

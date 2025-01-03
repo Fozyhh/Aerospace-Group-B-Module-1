@@ -130,7 +130,6 @@ void IcoNS::setParallelization()
     Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
     //TODO: resize for different processors following pressure
-    Phi_p.resize(((NX+1) * (NY+1) * (NZ+1)));
     Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
