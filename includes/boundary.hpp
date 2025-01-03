@@ -43,7 +43,7 @@ private:
     /// @brief New dimension parameters for z-direction mesh
     int newDimX_z, newDimY_z;
 
-    //TODO: funzione per passare i valori di zSize
+    /// @brief Array containing pressure dimensions in the z-direction
     int zSize[3];
 
     /// @brief Additional dimension parameters for x-direction mesh
@@ -70,12 +70,14 @@ public:
     * @param newDimY_y_ New Y dimension for y-direction mesh
     * @param newDimX_z_ New X dimension for z-direction mesh
     * @param newDimY_z_ New Y dimension for z-direction mesh
+    * @param zSize_ Array containing pressure dimensions in the z-direction
     */
     void initializeBoundary(
         int dim_x_x_, int dim_y_x_, int dim_x_y_, int dim_y_y_,
         int dim_x_z_, int dim_y_z_, int dim_z_, int dim_z_z_,
         int newDimX_x_, int newDimY_x_, int newDimX_y_, int newDimY_y_,
-        int newDimX_z_, int newDimY_z_)
+        int newDimX_z_, int newDimY_z_,
+        int zSize_[3])
     {
         dim_x_x = dim_x_x_;
         dim_y_x = dim_y_x_;
@@ -91,6 +93,9 @@ public:
         newDimY_y = newDimY_y_;
         newDimX_z = newDimX_z_;
         newDimY_z = newDimY_z_;
+        zSize[0] = zSize_[0];
+        zSize[1] = zSize_[1];
+        zSize[2] = zSize_[2];
     }
 
     /**

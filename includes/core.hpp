@@ -100,6 +100,8 @@ public:
     c2d->allocZ(grid.p);
     c2d->allocZ(Phi_p);
     c2d->allocZ(Y2_p);
+
+    std::cout << "End of constructor" << std::endl;
   }
 
   /**

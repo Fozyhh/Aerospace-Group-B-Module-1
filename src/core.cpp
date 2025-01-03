@@ -66,7 +66,8 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         dim_x_x, dim_y_x, dim_x_y, dim_y_y,
         dim_x_z, dim_y_z, dim_z, dim_z_z,
         newDimX_x, newDimY_x, newDimX_y, newDimY_y,
-        newDimX_z, newDimY_z);
+        newDimX_z, newDimY_z,
+        c2d->zSize);
 }
 
 void IcoNS::setParallelization()
