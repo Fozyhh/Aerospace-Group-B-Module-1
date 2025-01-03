@@ -317,7 +317,7 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
 
 
 //TODO: UPDATE ALL INDICES, Y2_p indices?
-void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, std::vector<Real> &Y2_p, Real t, Real c)
+void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, double* &Y2_p, Real t, Real c)
 {
     //TODO: check the global offsets are the same
     int offset_x_x = coords[0] * other_dim_x_x;
