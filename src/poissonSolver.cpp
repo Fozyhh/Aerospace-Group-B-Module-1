@@ -96,15 +96,16 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     c2d->allocY(py);
     c2d->allocX(px);
 
-    fftw_plan neumann;
+     
 
     for (int i = 0; i < zSize[0]; i++) 
     {
         for (int j = 0; j < zSize[1]; j++)
         {
-            neumann = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1] * zSize[2] + j * zSize[2]], &F[i * zSize[1] * zSize[2] + j * zSize[2]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1] * zSize[2] + j * zSize[2]], &F[i * zSize[1] * zSize[2] + j * zSize[2]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -113,9 +114,10 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     {
         for (int j = 0; j < ySize[2]; j++)
         {
-            neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2] * ySize[1] + j * ySize[1]], &py[i * ySize[2] * ySize[1] + j * ySize[1]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2] * ySize[1] + j * ySize[1]], &py[i * ySize[2] * ySize[1] + j * ySize[1]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -124,9 +126,10 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     {
         for (int j = 0; j < xSize[2]; j++)
         {
-            neumann = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] * xSize[0] + j * xSize[0]], &px[i*xSize[2] * xSize[0] + j * xSize[0]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] * xSize[0] + j * xSize[0]], &px[i*xSize[2] * xSize[0] + j * xSize[0]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -149,9 +152,10 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     {
         for (int j = 0; j < xSize[2]; j++)
         {
-            neumann = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] *xSize[0] + j * xSize[0]], &px[i*xSize[2]* xSize[0] + j* xSize[0]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(xSize[0], &px[i*xSize[2] *xSize[0] + j * xSize[0]], &px[i*xSize[2]* xSize[0] + j* xSize[0]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -160,9 +164,10 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     {
         for (int j = 0; j < ySize[2]; j++)
         {
-            neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2]* ySize[1] + j* ySize[1]], &py[i * ySize[2]* ySize[1] + j* ySize[1]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[2]* ySize[1] + j* ySize[1]], &py[i * ySize[2]* ySize[1] + j* ySize[1]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -171,9 +176,10 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     {
         for (int j = 0; j < zSize[1]; j++)
         {
-            neumann = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1]* zSize[2] + j* zSize[2]], &F[i * zSize[1]* zSize[2] + j* zSize[2]], 
+            fftw_plan neumann = fftw_plan_r2r_1d(zSize[2], &F[i * zSize[1]* zSize[2] + j* zSize[2]], &F[i * zSize[1]* zSize[2] + j* zSize[2]], 
                                                  FFTW_REDFT00, FFTW_ESTIMATE);
             fftw_execute(neumann);
+            fftw_destroy_plan(neumann);
         }
     }
 
@@ -186,5 +192,5 @@ void PoissonSolver::solveNeumannPoisson(double* F)
             }
         }
     }
-    fftw_destroy_plan(neumann);
+    
 }

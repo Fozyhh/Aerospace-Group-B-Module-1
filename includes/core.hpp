@@ -248,7 +248,7 @@ private:
   double* Y2_p;
 
   // periodicity fro 2decomp
-  bool periodss[3] = {true, true, true};
+  bool periodss[3] = {false, false, false};
 
   /// @brief Input/output file paths
   std::string input_file;  // input file.
