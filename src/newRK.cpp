@@ -20,7 +20,7 @@ void IcoNS::solve_time_step(Real time)
             {
                 //TODO: 2deco per la pressione
                 Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                                   64.0 / 120.0 * DT * /*d_Px(i,j,k,time);*/(grid.p[(i+1) * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DX);
+                                                                   64.0 / 120.0 * DT * /*d_Px(i,j,k,time);*/(grid.p[indexingDiricheletp(i+1,j,k)] - grid.p[indexingDiricheletp(i,j,k)]) / (DX);
             }
         }
     }
@@ -34,7 +34,7 @@ void IcoNS::solve_time_step(Real time)
 
             {
                 Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                            64.0 / 120.0 * DT * /*d_Py(i,j,k,time);*/(grid.p[i * (NY + 1) * (NZ + 1) + (j+1) * (NZ + 1) + k] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DY);
+                                                            64.0 / 120.0 * DT * /*d_Py(i,j,k,time);*/(grid.p[indexingDiricheletp(i,j+1,k)] - grid.p[indexingDiricheletp(i,j,k)]) / (DY);
             }
         }
     }
@@ -47,7 +47,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 1; k < dim_z_z - 1; k++)
             {
                 Y2_z[indexingDiricheletz(i, j, k)] = grid.w[indexingDiricheletz(i, j, k)] + 64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                       64.0 / 120.0 * DT * /*d_Pz(i,j,k,time);*/(grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k+1] - grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]) / (DZ);
+                                                       64.0 / 120.0 * DT * /*d_Pz(i,j,k,time);*/(grid.p[indexingDiricheletp(i,j,k+1)] - grid.p[indexingDiricheletp(i,j,k)]) / (DZ);
             }
         }
     }
@@ -73,33 +73,28 @@ void IcoNS::solve_time_step(Real time)
 #ifdef DIRICHELET
     //TODO: da vedere! exchange data?
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-    
-    std::cout << "Before pressure approx." << std::endl;
+    MPI_Barrier(cart_comm);
+    exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
+    exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
+    exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+
     for (int i = 1; i < NX; i++)
     {
         for (int j = 1; j < NY; j++)
         {
             for (int k = 1; k < NZ; k++)
             {
-                Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i,j,k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
-    std::cout << "After pressure approx." << std::endl;
     //TODO: paura, exchange data?, check
     boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
-    std::cout << "After divergence" << std::endl;
     poissonSolver.solveNeumannPoisson(Y2_p);
-    std::cout << "After poisson" << std::endl;
 #endif
     //TODO: adapt to the code now
-    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-    std::cout << "After boundary update" << std::endl;
-    MPI_Barrier(cart_comm);
-    exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
-
+    //boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    
 
 //TODO: correction of Y with pressure, check indexes should not be a problem, ifdef probably removable
  for (int i = 1; i < newDimX_x - 1; i++)
@@ -216,7 +211,11 @@ void IcoNS::solve_time_step(Real time)
 #endif
 #ifdef DIRICHELET
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
-
+    MPI_Barrier(cart_comm);
+    exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
+    exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
+    exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    //TODO: parallelo con zsize
     for (int i = 1; i < NX; i++)
     {
         for (int j = 1; j < NY; j++)
@@ -283,11 +282,8 @@ void IcoNS::solve_time_step(Real time)
     }
 
     //TODO: check
-    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
-    MPI_Barrier(cart_comm);
-    exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    //boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+    
     MPI_Barrier(cart_comm);
 
     //TODO: same as earlier
@@ -352,6 +348,9 @@ void IcoNS::solve_time_step(Real time)
 #endif
 #ifdef DIRICHELET
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
+    exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
+    exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
+    exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
 
     for (int i = 1; i < NX; i++)
     {

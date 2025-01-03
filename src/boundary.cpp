@@ -327,7 +327,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
     int offset_x_z = coords[0] * other_dim_x_z;
     int offset_y_z = coords[1] * other_dim_y_z;
 
-    std::cout << "in divergence" << std::endl;
     // is the denominator 3*DX correct? -> 2*DX ?
     // LEFT FACE
     //TODO: how does iteration on p works? bc rn every processor is skipping first element if it is not boundary
@@ -344,7 +343,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
         }
     }
 
-    std::cout << "left face" << std::endl;
     if(rbx){
         // RIGHT FACE
         for (int j = lby; j < zSize[1] - rby; j++)
@@ -359,7 +357,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
         }
     }
 
-    std::cout << "right face" << std::endl;
     // FRONT FACE
     if(lby){
         for (int i = lbx; i < zSize[0] - rbx; i++)
@@ -374,7 +371,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
         }
     }
 
-    std::cout << "front face" << std::endl;
     // BACK FACE
     if(rby){
         for (int i = lbx; i < zSize[0] - rbx; i++)
@@ -389,7 +385,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
         }
     }
 
-    std::cout << "back face" << std::endl;
     // LOWER FACE
     for (int i = lbx; i < zSize[0] - rbx; i++)
     {
