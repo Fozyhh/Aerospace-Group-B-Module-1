@@ -1,88 +1,70 @@
 ################################
-# MPI Navier-Stokes Solver     #
-# High-Precision Build Config  #
+# Compiler and Basic Flags     #
 ################################
-
-# MPI Compiler
 CXX = mpic++
+CXXFLAGS = -std=c++23 -O3 -march=native -flto -funroll-loops
 
-# Compiler flags for high precision and optimization
-CXXFLAGS = -std=c++17 -Wall -Wextra -O3 \
-           -DUSE_DOUBLE_PRECISION \
-           -DREAL_TYPE=double
-
-# Additional warning flags
-CXXFLAGS += -Wcast-align -Wconversion -pedantic
-
-# Linker flags
-LDFLAGS = -lm
-
-# Directories
+################################
+# Directories                  #
+################################
 SRC_DIR = src
-INC_DIR = includes
 BUILD_DIR = build
-BIN_DIR = bin
-
-# Executable name
-TARGET = $(BIN_DIR)/main
-
-# Source files
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-
-# Include paths
-INCLUDES = -I$(INC_DIR)
+DECOMP_DIR = dependencies/2Decomp_C
 
 ################################
-# Build Targets               #
+# Includes and Libraries       #
 ################################
+INCLUDES = -I./includes \
+          -I$(DECOMP_DIR)
 
-.PHONY: all clean dirs help
+LIBS = -lfftw3_mpi -lfftw3 -lm
 
-# Default target
-all: dirs $(TARGET)
+################################
+# Source Files                 #
+################################
+SOURCES = $(SRC_DIR)/main.cpp \
+          $(SRC_DIR)/core.cpp \
+          $(SRC_DIR)/boundary.cpp \
+          $(SRC_DIR)/newRK.cpp \
+          $(SRC_DIR)/poissonSolver.cpp \
+          $(SRC_DIR)/constants.cpp
 
-# Create directories
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+
+################################
+# 2Decomp Library              #
+################################
+DECOMP_OBJECTS = $(DECOMP_DIR)/C2Decomp.o \
+                 $(DECOMP_DIR)/Alloc.o \
+                 $(DECOMP_DIR)/TransposeX2Y.o \
+                 $(DECOMP_DIR)/TransposeY2Z.o \
+                 $(DECOMP_DIR)/TransposeZ2Y.o \
+                 $(DECOMP_DIR)/TransposeY2X.o \
+                 $(DECOMP_DIR)/MemSplitMerge.o \
+                 $(DECOMP_DIR)/IO.o \
+                 $(DECOMP_DIR)/Best2DGrid.o \
+                 $(DECOMP_DIR)/Halo.o
+
+DECOMP_LIB = $(BUILD_DIR)/libdecomp.a
+
+################################
+# Targets                      #
+################################
+.PHONY: all clean dirs
+
+all: dirs $(BUILD_DIR)/main
+
 dirs:
 	@mkdir -p $(BUILD_DIR)
-	@mkdir -p $(BIN_DIR)
 
-# Link the executable
-$(TARGET): $(OBJS)
-	@echo "Linking MPI executable with double precision..."
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
-	@echo "Build complete: $(TARGET)"
+$(BUILD_DIR)/main: $(OBJECTS) $(DECOMP_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS)
 
-# Compile source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo "Compiling $<..."
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Clean build files
+$(DECOMP_LIB): $(DECOMP_OBJECTS)
+	ar rcs $@ $(DECOMP_OBJECTS)
+
 clean:
-	@echo "Cleaning build files..."
-	@rm -rf $(BUILD_DIR) $(BIN_DIR)
-
-# Debug build
-debug: CXXFLAGS += -g -DDEBUG
-debug: all
-
-################################
-# Help and Info               #
-################################
-
-help:
-	@echo "MPI Navier-Stokes Solver Makefile"
-	@echo "--------------------------------"
-	@echo "Available targets:"
-	@echo "  make        - Build the solver (double precision)"
-	@echo "  make clean  - Remove build files"
-	@echo "  make debug  - Build with debug symbols"
-	@echo "  make help   - Show this help message"
-	@echo ""
-	@echo "To run: mpirun -np X ./bin/main"
-	@echo "where X is the number of processes"
-
-# Auto-dependency generation
-DEPS = $(OBJS:.o=.d)
--include $(DEPS)
+	rm -rf $(BUILD_DIR)

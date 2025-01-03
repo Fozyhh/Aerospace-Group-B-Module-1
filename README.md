@@ -16,17 +16,12 @@ aerospace-group-b-module-1/
 ### Standard Build
 ```bash
 make
-mpirun -np X ./bin/main    # Where X is number of processes
+mpirun -np X ./build/main    # Where X is number of processes
 ```
 
 ### Clean Build
 ```bash
 make clean
-```
-
-### Debug Build
-```bash
-make debug
 ```
 
 ### Running Tests
