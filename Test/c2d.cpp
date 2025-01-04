@@ -14,8 +14,8 @@ int main(int argc, char** argv) {
     C2Decomp *c2d;
     bool periodss[3] = {false, false, false};
     
-    // choose pRow and pCol, recompile and run with the relative number of processes
-    c2d = new C2Decomp(4, 4, 4, 2/*pRow*/, 2/*pCol*/, periodss);
+    // choose pY and pX, recompile and run with the relative number of processes
+    c2d = new C2Decomp(4, 4, 4, 2/*p in "our" y direction*/, 2/*p in "our" x direction*/, periodss);
     int xSize[3], ySize[3], zSize[3];
 
     xSize[0] = c2d->xSize[0];
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     
     outFile << "-----------------------------" << std::endl;
 
-    c2d->transposeZ2Y_MajorIndex(gridZ, gridY);
+    c2d->transposeX2Y_MajorIndex(gridZ, gridY);
 
     outFile << "Displaying Y view from " << rank << ":" << std::endl;
     for (int i = 0; i < ySize[0]*ySize[1]*ySize[2]; i++) {
@@ -63,11 +63,24 @@ int main(int argc, char** argv) {
 
     outFile << "-----------------------------" << std::endl;
     
-    c2d->transposeY2X_MajorIndex(gridY, gridX);
+    c2d->transposeY2Z_MajorIndex(gridY, gridX);
 
     outFile << "Displaying X view from " << rank << ":" << std::endl;
     for (int i = 0; i < xSize[0]*xSize[1]*xSize[2]; i++) {
         outFile << gridX[i] << std::endl;
+    }
+
+    c2d->transposeZ2Y_MajorIndex(gridX, gridY);
+    outFile << "Back to Y from " << rank << ":" << std::endl;
+    for (int i = 0; i < ySize[0]*ySize[1]*ySize[2]; i++) {
+        outFile << gridY[i] << std::endl;
+    }
+
+    c2d->transposeY2X_MajorIndex(gridY, gridZ);
+
+    outFile << "Back to the start from " << rank << ":" << std::endl;
+    for (int i = 0; i < zSize[0]*zSize[1]*zSize[2]; i++) {
+        outFile << gridZ[i] << std::endl;
     }
 
     outFile.close();
