@@ -321,8 +321,8 @@ private:
   inline int indexingDiricheletx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
   inline int indexingDirichelety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
   inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
-  inline int indexingDiricheletp(int i, int j, int k) { return i*zSize[1]*zSize[2] + j *zSize[2] + k; }
-  inline int indexingDiricheletHaloP(int i, int j, int k) { return i * (zSize[1]+1) * (zSize[2]+1) + j * (zSize[2]+1) + k; }
+  inline int indexingDiricheletp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
+  inline int indexingDiricheletHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
 #endif
 
 };

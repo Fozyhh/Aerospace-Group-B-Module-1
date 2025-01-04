@@ -173,7 +173,7 @@ public:
     */
   Real value_p(Real x, Real y, Real z, Real t) const
   {
-    return -std::cos(x * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t);
+    return std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
     //return std::sin(t);
     //return std::sin(x * DX) * std::sin(t);
   }

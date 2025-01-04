@@ -28,9 +28,7 @@ void IcoNS::solve_time_step(Real time)
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z - 1; k++)
-
             {
-                //TODO: 2deco per la pressione
                 Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
                                                      64.0 / 120.0 * DT * (halo_p[indexingDiricheletHaloP(i+1,j,k)] - 
@@ -45,7 +43,6 @@ void IcoNS::solve_time_step(Real time)
         for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z - 1; k++)
-
             {
                 Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -70,22 +67,6 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-#ifdef PERIODIC
-    for (int i = 0; i < zSize[0]; i++)
-    {
-        for (int j = 0; j < zSize[1]; j++)
-        {
-            for (int k = 0; k < zSize[2]; k++)
-            {
-                Y2_p[i * zSize[1] * zSize[2] + j * zsize[2] + k] = 120.0 / (64.0 * DT) * ((Y2_x[indexingPeriodicx(i, j, k)] - Y2_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y2_y[indexingPeriodicy(i, j, k)] - Y2_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y2_z[indexingPeriodicz(i, j, k)] - Y2_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
-            }
-        }
-    }
-    /////////////////////poisson_solver.solvePoisson(step 1);//////////////////////////////////// -> the solution is stored in Sol_p=Y2_p
-    poissonSolver.solveDirichletPoisson(Y2_p,helper);
-#endif
-
-#ifdef DIRICHELET
     //TODO: da vedere! exchange data?
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     MPI_Barrier(cart_comm);
@@ -106,7 +87,6 @@ void IcoNS::solve_time_step(Real time)
     //TODO: paura, exchange data?, check
     boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
     poissonSolver.solveNeumannPoisson(Y2_p);
-#endif
     //TODO: adapt to the code now
     //boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     
@@ -159,12 +139,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < zSize[2]; k++)
             {
-#ifdef PERIODIC
-                Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // phi^2
-#endif
-#ifdef DIRICHELET
                 Phi_p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i,j,k)] + grid.p[indexingDiricheletp(i,j,k)]; // phi^2
-#endif
             }
         }
     }
@@ -217,21 +192,6 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    #ifdef PERIODIC
-    for (int i = 0; i < NX; i++)
-    {
-        for (int j = 0; j < NY; j++)
-        {
-            for (int k = 0; k < NZ; k++)
-            {
-                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (16.0 * DT) * ((Y3_x[indexingPeriodicx(i, j, k)] - Y3_x[indexingPeriodicx(i - 1, j, k)]) / (DX) + (Y3_y[indexingPeriodicy(i, j, k)] - Y3_y[indexingPeriodicy(i, j - 1, k)]) / (DY) + (Y3_z[indexingPeriodicz(i, j, k)] - Y3_z[indexingPeriodicz(i, j, k - 1)]) / (DZ));
-            }
-        }
-    }
-    /////////////////////poisson_solver.solvePoisson(step 2);//////////////////////////////////// -> the solution is stored in Sol_p=Y2_p
-    poissonSolver.solveDirichletPoisson(Y2_p,helper);
-#endif
-#ifdef DIRICHELET
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
     MPI_Barrier(cart_comm);
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
@@ -251,7 +211,6 @@ void IcoNS::solve_time_step(Real time)
     boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
 
     poissonSolver.solveNeumannPoisson(Y2_p);
-#endif
 
     // 3) y2_p exchange
     c2d->deallocXYZ(halo_p);
@@ -301,12 +260,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < zSize[2]; k++)
             {
-#ifdef PERIODIC
-                Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = Y2_p[indexingPeriodicp(i, j, k)] + Phi_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; // Phi_p=phi^3
-#endif
-#ifdef DIRICHELET
                 Phi_p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i, j, k)] + Phi_p[indexingDiricheletp(i,j,k)]; // Phi_p=phi^3
-#endif
             }
         }
     }
@@ -364,22 +318,6 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    //TODO: same work with pressure
-    #ifdef PERIODIC
-    for (int i = 0; i < NX; i++)
-    {
-        for (int j = 0; j < NY; j++)
-        {
-            for (int k = 0; k < NZ; k++)
-            {
-                Y2_p[i * NY * NZ + j * NZ + k] = 120.0 / (40.0 * DT) * ((grid.u[indexingPeriodicx(i, j, k)] - grid.u[indexingPeriodicx(i - 1, j, k)]) / (DX) + (grid.v[indexingPeriodicy(i, j, k)] - grid.v[indexingPeriodicy(i, j - 1, k)]) / (DY) + (grid.w[indexingPeriodicz(i, j, k)] - grid.w[indexingPeriodicz(i, j, k - 1)]) / (DZ));
-            }
-        }
-    }
-    /////////////////////poisson_solver.solvePoisson(step 3);//////////////////////////////////// -> the solution is stored in Sol_p=Y2_p
-    poissonSolver.solveDirichletPoisson(Y2_p,helper);
-#endif
-#ifdef DIRICHELET
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
     exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
@@ -398,7 +336,6 @@ void IcoNS::solve_time_step(Real time)
     boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
     poissonSolver.solveNeumannPoisson(Y2_p);
-#endif
 
     // 5) y2_p exchange
     c2d->deallocXYZ(halo_p);
@@ -443,12 +380,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < zSize[2]; k++)
             {
-#ifdef PERIODIC
-                grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = halo_p[indexingPeriodicp(i, j, k)]  + halo_phi[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k]; 
-#endif
-#ifdef DIRICHELET
                 grid.p[indexingDiricheletp(i,j,k)] = Y2_p[indexingDiricheletp(i,j, k)]  + Phi_p[indexingDiricheletp(i,j,k)]; 
-#endif
             }
         }
     }
@@ -513,7 +445,7 @@ Real IcoNS::functionG_u(int i, int j, int k, Real t)
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
            std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t) - std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t) - std::sin(x) * std::cos(y) * std::cos(z) * std::sin(t);
 }
 
 Real IcoNS::functionG_v(int i, int j, int k, Real t)
@@ -526,7 +458,7 @@ Real IcoNS::functionG_v(int i, int j, int k, Real t)
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t) - std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t);
+           3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t) - std::cos(x) * std::sin(y) * std::cos(z) * std::sin(t);
 }
 
 Real IcoNS::functionG_w(int i, int j, int k, Real t)
@@ -539,6 +471,6 @@ Real IcoNS::functionG_w(int i, int j, int k, Real t)
            2 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            4.0 * std::cos(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) +
-           6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t) + std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t);
+           6.0 / RE * std::cos(x) * std::cos(y) * std::cos(z) * std::sin(t) - std::cos(x) * std::cos(y) * std::sin(z) * std::sin(t);
 }
 //TODO: exact derivative missing, don't know if needed
