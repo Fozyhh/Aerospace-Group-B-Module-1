@@ -6,7 +6,7 @@
 #include <numbers>
 #include <complex>
 #include <fftw3.h>
-#include "../dependences/2Decomp_C/C2Decomp.hpp"
+#include "../dependencies/2Decomp_C/C2Decomp.hpp"
 
 class PoissonSolver
 {

@@ -14,7 +14,7 @@ include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(DECOMP_DIR "${CMAKE_SOURCE_DIR}/dependences/2Decomp_C")
+set(DECOMP_DIR "${CMAKE_SOURCE_DIR}/dependencies/2Decomp_C")
 
 # Options for profiling and memory checks
 option(ENABLE_CPUPROF "Enable profiling with Gprof" OFF)
