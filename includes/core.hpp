@@ -55,6 +55,7 @@ public:
   std::array<Real, (NX * (NY + 1) * (NZ + 1))> u_function(){return grid.u;};
   std::array<Real, ((NX + 1) * NY * (NZ + 1))> v_function(){return grid.v;};
   std::array<Real, ((NX + 1) * (NY + 1) * NZ)> w_function(){return grid.w;};
+  std::array<Real, ((NX + 1) * (NY + 1) * (NZ + 1))> p_function(){return grid.p;};
   fftw_complex* helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 private:
   Grid grid; // grid of the domain.
@@ -136,6 +137,7 @@ private:
   inline int indexingDirichelety(int i, int j, int k) { return i * NY * (NZ + 1) + j * (NZ + 1) + k; }
   inline int indexingDiricheletz(int i, int j, int k) { return i * (NY + 1) * NZ + j * NZ + k; }
   inline int indexingDiricheletp(int i, int j, int k) { return i * (NY+1) * (NZ+1) + j * (NZ+1) + k; }
+  void pressionCorrection(std::array<Real, (NX+1) * (NY+1) * (NZ+1)> &p);
 #endif
 };
 

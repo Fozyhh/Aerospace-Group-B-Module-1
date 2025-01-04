@@ -12,9 +12,7 @@ private:
     // Grid& grid;
 
 
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
+    
 
 
 public:
@@ -30,5 +28,9 @@ public:
     void divergence(std::array<Real, NX *(NY + 1) * (NZ + 1)> &Yx, std::array<Real, (NX + 1) * NY *(NZ + 1)> &Yy, std::array<Real, (NX + 1) * (NY + 1) * NZ> &Yz, std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> &Y2_p, Real t, Real c);
 
     void addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x);
+
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
 };
 #endif
