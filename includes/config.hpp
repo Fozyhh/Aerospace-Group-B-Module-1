@@ -22,16 +22,16 @@ constexpr Real LY = 1.0;
 constexpr Real LZ = 1.0;
 
 /// @brief Number of cells in the x-direction.
-constexpr int NX = 150;
+constexpr int NX = 10;
 
 /// @brief Number of cells in the y-direction.
-constexpr int NY = 150;
+constexpr int NY = 10;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 150;
+constexpr int NZ = 10;
 
-constexpr int PX = 3;
-constexpr int PY = 3;
+constexpr int PX = 2;
+constexpr int PY = 2;
 constexpr int PZ = 1; // Probably useless as we dont want to split z
 
 /// @brief Space discretization step size in the x-direction.
@@ -44,12 +44,12 @@ constexpr Real DY = LY / NY;
 constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr Real DT = 0.001;
+constexpr Real DT = 0.01;
 
 /// @brief Total time interval for the simulation.
 constexpr Real T = 0.5;
 
 /// @brief Reynolds number for the simulation.
-constexpr Real RE = 1000.0;
+constexpr Real RE = 500.0;
 
 #endif // CONFIG_HPP

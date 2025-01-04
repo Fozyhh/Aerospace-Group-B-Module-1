@@ -113,12 +113,10 @@ public:
   Real error_comp_Z(const Real t);
   Real L2_error(const Real t);
 
-  // TODO write the output file.
-
+  // Write to output file.
+  void output_x();
+  void output_y();
   void output_z();
-  void output_y(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
-  void output_x(MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y);
-
 
 private:
 
