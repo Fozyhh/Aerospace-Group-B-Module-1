@@ -33,8 +33,8 @@ void IcoNS::solve_time_step(Real time)
                 //TODO: 2deco per la pressione
                 Y2_x[indexingDiricheletx(i, j, k)] = grid.u[indexingDiricheletx(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i+1,j,k)] - 
-                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DX);
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletHaloP(i+1,j,k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i,j,k)]) / (DX);
             }
         }
     }
@@ -49,8 +49,8 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_y[indexingDirichelety(i, j, k)] = grid.v[indexingDirichelety(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i,j+1,k)] - 
-                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DY);
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletHaloP(i,j+1,k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i,j,k)]) / (DY);
             }
         }
     }
@@ -64,8 +64,8 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_z[indexingDiricheletz(i, j, k)] = grid.w[indexingDiricheletz(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletp(i,j,k+1)] - 
-                                                     halo_p[indexingDiricheletp(i,j,k)]) / (DZ);
+                                                     64.0 / 120.0 * DT * (halo_p[indexingDiricheletHaloP(i,j,k+1)] - 
+                                                     halo_p[indexingDiricheletHaloP(i,j,k)]) / (DZ);
             }
         }
     }
@@ -121,8 +121,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] - 
-                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DX);
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i + 1, j, k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DX);
             }
         }
     }
@@ -134,8 +134,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] - 
-                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DY);
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j + 1, k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DY);
             }
         }
     }
@@ -147,8 +147,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z_z; k++)
             {
                 Y2_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] - 
-                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DZ);
+                                                     64.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j, k + 1)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -183,7 +183,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_x[indexingDiricheletx(i, j, k)] = Y2_x[indexingDiricheletx(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i+1,j,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DX);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i+1,j,k)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DX);
             }
         }
     }
@@ -197,7 +197,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_y[indexingDirichelety(i, j, k)] = Y2_y[indexingDirichelety(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j+1,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DY);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i,j+1,k)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DY);
             }
         }
     }
@@ -212,7 +212,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_z[indexingDiricheletz(i, j, k)] = Y2_z[indexingDiricheletz(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j,k+1)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DZ);
+                                                     16.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i,j,k+1)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DZ);
             }
         }
     }
@@ -263,8 +263,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_x[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] - 
-                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DX);
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i + 1, j, k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DX);
             }
         }
     }
@@ -276,8 +276,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_y[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] - 
-                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DY);
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j + 1, k)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DY);
             }
         }
     }
@@ -289,8 +289,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z_z; k++)
             {
                 Y3_z[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] - 
-                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
-                                                     halo_p[indexingDiricheletp(i, j, k)]) / (DZ);
+                                                     16.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j, k + 1)] - 
+                                                     halo_p[indexingDiricheletHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -330,7 +330,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.u[indexingDiricheletx(i, j, k)] = Y3_x[indexingDiricheletx(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i + 1,j,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DX);
+                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i + 1,j,k)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DX);
             }
         }
     }
@@ -345,7 +345,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j+1,k)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DY);
+                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i,j+1,k)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DY);
             }
         }
     }
@@ -359,7 +359,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.w[indexingDiricheletz(i, j, k)] = Y3_z[indexingDiricheletz(i, j, k)] +
                                                              90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                              50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                             40.0 / 120.0 * DT * (halo_phi[indexingDiricheletp(i,j,k+1)] - halo_phi[indexingDiricheletp(i,j,k)]) / (DZ);
+                                                             40.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i,j,k+1)] - halo_phi[indexingDiricheletHaloP(i,j,k)]) / (DZ);
            }
         }
     }
@@ -410,8 +410,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.u[indexingDiricheletx(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i + 1, j, k)] - 
-                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DX); 
+                grid.u[indexingDiricheletx(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i + 1, j, k)] - 
+                                                      halo_p[indexingDiricheletHaloP(i, j, k)]) / (DX); 
             }
         }
     }
@@ -421,8 +421,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.v[indexingDirichelety(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j + 1, k)] - 
-                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DY); 
+                grid.v[indexingDirichelety(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j + 1, k)] - 
+                                                      halo_p[indexingDiricheletHaloP(i, j, k)]) / (DY); 
             }
         }
     }
@@ -432,8 +432,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z_z; k++)
             {
-                grid.w[indexingDiricheletz(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletp(i, j, k + 1)] - 
-                                                      halo_p[indexingDiricheletp(i, j, k)]) / (DZ); 
+                grid.w[indexingDiricheletz(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[indexingDiricheletHaloP(i, j, k + 1)] - 
+                                                      halo_p[indexingDiricheletHaloP(i, j, k)]) / (DZ); 
             }
         }
     }
