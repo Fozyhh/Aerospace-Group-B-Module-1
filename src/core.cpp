@@ -109,13 +109,13 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
               << std::endl;
 #endif
     // boundary
-    /* auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+    auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
     auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); }); */
-    auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                              { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
+    /* auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                           { 
                                               return 0; // u = 0 everywhere 
                                           });
@@ -129,7 +129,7 @@ auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
 auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                           { 
                                               return 0; // w = 0 everywhere
-                                          });
+                                          }); */
 
     for (int i = 0; i < 6 /*nfaces*/; i++)
     {

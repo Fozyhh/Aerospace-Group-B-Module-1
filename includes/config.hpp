@@ -14,13 +14,13 @@
 #include <cmath>
 
 /// @brief Physical length of the domain in the x-direction.
-constexpr Real LX = 1;
+constexpr Real LX = 2*M_PI;
 
 /// @brief Physical length of the domain in the y-direction.
-constexpr Real LY = 1;
+constexpr Real LY = 2*M_PI;
 
 /// @brief Physical length of the domain in the z-direction.
-constexpr Real LZ = 2;
+constexpr Real LZ = 2*M_PI;
 
 /// @brief Number of cells in the x-direction.
 constexpr int NX = 40; // 81 cells in each direction gives segmenation fault
@@ -29,7 +29,7 @@ constexpr int NX = 40; // 81 cells in each direction gives segmenation fault
 constexpr int NY = 40;
 
 /// @brief Number of cells in the z-direction.
-constexpr int NZ = 80;
+constexpr int NZ = 40;
 
 /// @brief Space discretization step size in the x-direction.
 constexpr Real DX = LX / NX;
@@ -41,12 +41,12 @@ constexpr Real DY = LY / NY;
 constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr Real DT = 0.001;
+constexpr Real DT = 0.01;
 
 /// @brief Total time interval for the simulation. 
-constexpr Real T = 8;
+constexpr Real T = 1;
 
 /// @brief Reynolds number for the simulation.
-constexpr Real RE = 10.0;
+constexpr Real RE = 1000.0;
 
 #endif // CONFIG_HPP

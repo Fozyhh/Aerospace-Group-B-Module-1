@@ -601,40 +601,7 @@ void IcoNS::solve_time_step(Real time)
     }
     // boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 64.0);
 
-    sum = 0.0;
-
-    for (int i = 0; i < NX + 1; i++)
-    {
-        for (int j = 0; j < NY + 1; j++)
-        {
-            for (int k = 0; k < NZ + 1; k++)
-            {
-                sum += (Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - 3.0 * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time + 80.0 * DT / (120.0)) - sin(time + DT))) *
-                       (Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - 3.0 * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time + 80.0 * DT / (120.0)) - sin(time + DT))) * DX * DY * DZ;
-                // Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 3.0 * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time + 80.0 * DT / (120.0)) - sin(time + DT));
-            }
-        }
-    }
-
-    std::cout << "sum = " << sqrt(sum) << std::endl;
-
     poissonSolver.solveNeumannPoisson(Y2_p);
-
-    sum = 0.0;
-    // compute the average value of Y2_p
-    for (int i = 0; i < NX + 1; i++)
-    {
-        for (int j = 0; j < NY + 1; j++)
-        {
-            for (int k = 0; k < NZ + 1; k++)
-            {
-                if (Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] > 0.5)
-                {
-                    // std::cout << "Y2_p[" << i << "][" << j << "][" << k << "] = (2)" << Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] << std::endl;
-                }
-            }
-        }
-    }
 
 #endif
 
@@ -1111,7 +1078,7 @@ Real IcoNS::functionG_u(int i, int j, int k, Real t)
     Real x = i * DX + DX / 2;
     Real y = j * DY;
     Real z = k * DZ;
-    return 0.0;
+    //return 0.0;
     return std::sin(x) * std::cos(y) * std::sin(z) * std::cos(t) +
            std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) -
            std::sin(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) + 2.0 * std::sin(x) * std::cos(x) * std::cos(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
@@ -1126,7 +1093,7 @@ Real IcoNS::functionG_v(int i, int j, int k, Real t)
     Real x = i * DX;
     Real y = j * DY + DY / 2;
     Real z = k * DZ;
-    return 0.0;
+    //return 0.0;
     return std::cos(x) * std::sin(y) * std::sin(z) * std::cos(t) -
            std::sin(x) * std::sin(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
            std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::sin(z) * std::sin(z) * std::sin(t) * std::sin(t) +
@@ -1142,7 +1109,7 @@ Real IcoNS::functionG_w(int i, int j, int k, Real t)
     Real x = i * DX;
     Real y = j * DY;
     Real z = k * DZ + DZ / 2;
-    return 0.0;
+    //return 0.0;
     return 2.0 * std::cos(x) * std::cos(y) * std::cos(z) * std::cos(t) -
            2.0 * std::sin(x) * std::sin(x) * std::cos(y) * std::cos(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::sin(y) * std::sin(z) * std::cos(z) * std::sin(t) * std::sin(t) -
