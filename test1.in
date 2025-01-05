@@ -11,7 +11,7 @@
 1000
 
 # Dimension of domain: Lx, Ly, Lz
-2.0*M_PI 2.0*M_PI 2.0*M_PI
+1.0 1.0 2.0 # da fare il domain che può partire da un numero diverso da 0
 
 # Number of grid points: Nx, Ny, Nz
 480 480 480
