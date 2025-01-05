@@ -3,11 +3,13 @@
 
 void IcoNS::solve_time_step(Real time)
 {
+
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z - 1; k++)
+
             {
                 Y2_x[i * newDimY_x * dim_z + j * dim_z + k] = grid_loc_x[i * newDimY_x * dim_z + j * dim_z + k] +
                                                               64.0 / 120.0 * DT * functionF_u(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
@@ -15,11 +17,13 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
+
     for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z - 1; k++)
+
             {
                 Y2_y[i * newDimY_y * dim_z + j * dim_z + k] = grid_loc_y[i * newDimY_y * dim_z + j * dim_z + k] +
                                                                     64.0 / 120.0 * DT * functionF_v(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
@@ -27,11 +31,13 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
+
     for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z_z - 1; k++)
+
             {
                 Y2_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] = grid_loc_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] +
                                                         64.0 / 120.0 * DT * functionF_w(grid_loc_x, grid_loc_y, grid_loc_z, i, j, k, time);
@@ -49,6 +55,7 @@ void IcoNS::solve_time_step(Real time)
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z - 1; k++)
+
             {
                 Y3_x[i * newDimY_x * dim_z + j * dim_z + k] = Y2_x[i * newDimY_x * dim_z + j * dim_z + k] +
                                                                     50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
@@ -62,6 +69,7 @@ void IcoNS::solve_time_step(Real time)
         for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z-1; k++)
+
             {
                 Y3_y[i * newDimY_y * dim_z + j * dim_z + k] = Y2_y[i * newDimY_y * dim_z + j * dim_z + k] +
                                                                     50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
@@ -70,11 +78,13 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
+
     for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z_z - 1; k++)
+
             {
                 Y3_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] = Y2_z[i * newDimY_z * dim_z_z + j * dim_z_z + k] +
                                                         50.0 / 120.0 * DT * functionF_w(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
@@ -94,6 +104,7 @@ void IcoNS::solve_time_step(Real time)
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
         {
             for (int k = 1; k < dim_z-1; k++)
+
             {
                 grid_loc_x[i * newDimY_x * dim_z + j * dim_z + k] = Y3_x[i * newDimY_x * dim_z + j * dim_z + k] +
                                                                           90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
@@ -101,6 +112,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+
 
     for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
@@ -115,6 +127,7 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
+
     for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
@@ -128,6 +141,7 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 }
+
 
 Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
@@ -171,6 +185,7 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
                          (w[lw + dim_z_z] - 2.0 * w[lw] + w[lw - dim_z_z]) / (DY * DY) +
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
            functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
+
 }
 
 Real IcoNS::functionG_u(int i, int j, int k, Real t)

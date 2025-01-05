@@ -1,85 +1,55 @@
 # Aerospace-Group-B-Module-1
-Repository for the project related to the "High Performance Scientific Computing in AeroSpace" course on Navier-Stokes equation for Incrompessible Fluids
+Repository for the project related to the "High Performance Scientific Computing in AeroSpace" course on Navier-Stokes equation for Incompressible Fluids.
 
+## Project Structure
+aerospace-group-b-module-1/
+├── src/       # Source files
+├── includes/  # Header files
+├── doc/       # Documentation
+├── scripts/   # Python analysis scripts
+├── resources/ # Output resources
+├── Test/      # Test files
+└── README.md
 
-# CPU Profiling, Memory Profiling and Memory check
-In order to enable CPU profiling using GProf and Memory checks using Valgrind please follow these steps: 
-Make sure before compiling that you have the `{PROJECT_ROOT/resources}` directory.
+## Building and Running
 
-## Dependencies:
-Gprof:
-`sudo apt install binutils`
-
-Valgrind:
-`sudo apt install valgrind`
-
-## Normal build
-```console 
-mkdir build
-cd build
-cmake ..
+### Standard Build
+```bash
 make
-./main
+mpirun -np X ./bin/main    # Where X is number of processes
 ```
 
-## CPU profiling build
-```console
-mkdir build-cpuprof
-cd build-cpuprof
-cmake -DENABLE_CPUPROF=ON ..
-make profile
+### Clean Build
+```bash
+make clean
 ```
-## Memory profiling build
-```console
-mkdir build-memprof
-cd build-memprof
-cmake -DENABLE_MEMPROF=ON ..
-make profile
-```
-## Memcheck build
-```console
-mkdir build-memcheck
-cd build-memcheck
-cmake -DENABLE_MEMCHECK=ON ..
-make
-ctest --verbose
-```
-You can then find the reports in the `resources` directory.
 
-PS: It is not ideal to run both profiling and memcheck together as Gprof messes with the optimization flags and Valgrind greatly affects the execution speed of the executable.
-
-# Python scripts
-There are at the moment 3 scripts to parse and visualize the:
-  - error
-  - cpu profiling
-  - memory cache profiling
-
-## Dependencies
-  - matplotlib
-  - numpy
-  - pandas
-
-Run using: 
-```console
-python3 vizualisation.py
+### Debug Build
+```bash
+make debug
 ```
-```console
-python3 cpu_profile.py
+
+### Running Tests
+Tests can be run using the test executable in the Test directory:
+
+```bash
+cd Test
+./run_tests
 ```
-```console
-python3 mem_profile.py METRIC
+
+## Python Analysis Scripts
+### Dependencies
+
+```bash
+pip install matplotlib numpy pandas
 ```
-Available metrics:
-  - IR: Instruction Reads
-  - L1IMISS: L1 Instruction Cache Misses
-  - LLIMISS: LL Instruction Cache Misses
-  - DR: Data Reads
-  - L1DMISS: L1 Data Cache Misses
-  - LLDMISS: LL Data Cache Misses
-  - DW: Data Writes
-  - L1WMISS: L1 Data Write Misses
-  - LLWMISS: LL Data Write Misses
-  - BC: Conditional Branches
-  - BCM: Conditional Branches Mispredicted
-  - BI: Indirect Branches
-  - BIM: Indirect Branches Mispredicted
+
+## Running Analysis
+```bash
+python3 script.py
+```
+## Documentation
+Additional documentation can be found in the doc directory.
+
+## Input Configuration
+Program settings can be modified in input.in file.

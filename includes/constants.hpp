@@ -5,7 +5,6 @@
  * This file declares external variables used for setting up the physical domain and the parameters
  * for a numerical simulation. These parameters are defined elsewhere and include domain dimensions,
  * grid resolution, discretization steps, temporal parameters, and flow characteristics.
- * Unlike config.hpp, these values can be modified at runtime.
  */
 
 #ifndef CONSTANTS_HPP
