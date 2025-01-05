@@ -261,7 +261,7 @@ void IcoNS::solve()
     auto start = std::chrono::high_resolution_clock::now();
 #endif
     double x=0;
-    while (time < T)
+    while (i < Nt)
     {
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
 
@@ -1033,11 +1033,11 @@ void IcoNS::parse_input(const std::string& input_file) {
         break;
     }
 
-    // Skip comments and empty lines until we find T
+    // Skip comments and empty lines until we find Nt
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
         std::istringstream iss(line);
-        if (!(iss >> T)) continue;
+        if (!(iss >> Nt)) continue;
         break;
     }
 
@@ -1104,9 +1104,9 @@ void IcoNS::parse_input(const std::string& input_file) {
         std::cout << "\nConfiguration:\n"
                   << "Reynolds number: " << RE << "\n"
                   << "Time step: " << DT << "\n"
-                  << "Total time: " << T << "\n"
+                  << "Number of timesteps: " << Nt << "\n"
                   << "Domain size: " << LX << " x " << LY << " x " << LZ << "\n"
-                  << "Grid points: " << NX << " x " << NY << " x " << NZ << "\n"
+                  << "Grid points: " << NX+1 << " x " << NY+1 << " x " << NZ+1 << "\n"
                   << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n"
                   << "Boundary conditions: " << BX << " " << BY << " " << BZ << "\n";
     }

@@ -4,8 +4,8 @@
 # Time step: dt
 0.001
 
-# Number of time steps: T
-0.5
+# Number of time steps: Nt
+1000
 
 # Dimension of domain: Lx, Ly, Lz
 2.0 2.0 2.0
@@ -14,7 +14,7 @@
 100 100 100
 
 # Process grid: Px, Py, Pz
-2 2 1
+1 1 1
 
 # Boundaries :
 0 0 0
