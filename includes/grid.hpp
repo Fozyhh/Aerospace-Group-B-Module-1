@@ -26,13 +26,6 @@
  * - w-velocity components are stored at the z-direction cell faces
  * - pressure values are stored at cell vertices
  *
- * Currently commented out array definitions:
- * @code{.cpp}
- * std::array<Real, NX *(NY + 1) * (NZ + 1)> u{};     // x-velocity components
- * std::array<Real, (NX + 1) * NY *(NZ + 1)> v{};     // y-velocity components
- * std::array<Real, (NX + 1) * (NY + 1) * NZ> w{};    // z-velocity components
- * std::array<Real, (NX + 1) * (NY + 1) * (NZ + 1)> p{}; // pressure values
- * @endcode
  *
  * Array dimensions explanation:
  * - u: NX × (NY+1) × (NZ+1) - stored at x-faces
@@ -40,8 +33,6 @@
  * - w: (NX+1) × (NY+1) × NZ - stored at z-faces
  * - p: (NX+1) × (NY+1) × (NZ+1) - stored at vertices
  *
- * @note The arrays are currently commented out, possibly pending implementation
- * or modification to a different data structure.
  */
 struct Grid
 {

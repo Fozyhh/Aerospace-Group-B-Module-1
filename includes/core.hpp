@@ -208,7 +208,6 @@ public:
    */
   void parse_input(const std::string& input_file);
 
-  //TODO: check for split dimensions with 2decomp
   fftw_complex* helper;
 
 private:
@@ -285,45 +284,11 @@ private:
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
 
-  //TODO: re-check indexes !!!PERIODIC ON Z IS NOT NEEDED!!!(Not implemented yet on mpi, we can see it later if we want)!!!
-  #ifdef PERIODIC
-  inline int indexingPeriodicx(int i, int j, int k) {
-    // if(k==-1){
-    //   k=NZ-1;
-    // }
-    // if(k==(NZ+1)){
-    //   k=1;
-    // }
-    return i * newDimY_x * dim_z + j * dim_z + k;
-  };
-
-  inline int indexingPeriodicy(int i, int j, int k) {
-    // if(k==-1){
-    //   k=NZ-1;
-    // }
-    // if(k==(NZ+1)){
-    //   k=1;
-    // }
-    return i * newDimY_y * dim_z + j * dim_z + k;
-  };
-
-  inline int indexingPeriodicz(int i, int j, int k) {
-    return i * newDimY_z * dim_z_z + j * dim_z_z + k; //((k+dim_z_z)%dim_z_z); if we need periodic z
-  };
-
-  //TODO: 2decomp
-  inline int indexingPeriodicp(int i, int j, int k) {
-    return ((i+NX)%NX) * NY * NZ + ((j+NY)%NY) * NZ + ((k+NZ)%NZ);
-  };
-#endif
-
-#ifdef DIRICHELET
-  inline int indexingDiricheletx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
-  inline int indexingDirichelety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
-  inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
-  inline int indexingDiricheletp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
-  inline int indexingDiricheletHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
-#endif
+  inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
+  inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
+  inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+  inline int getp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
+  inline int getHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
 
 };
 

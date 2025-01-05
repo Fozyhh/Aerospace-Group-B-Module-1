@@ -8,8 +8,6 @@
 #include <memory>
 #include <mpi.h>
 
-// #define OUTPUT
-// #define OUTPUTERROR
 //#define VERBOSE
 
 #ifdef VERBOSE
@@ -54,9 +52,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     }
 
     setParallelization();
-
-    //TODO: i didnt copy the inizialization to 0 for all the new vectors, should not be needed tho
-    //TODO: 2decomp    
+   
     for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
     {
         helper[i][0] = 0.0;
@@ -79,8 +75,6 @@ void IcoNS::setParallelization()
     std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
     // Create a Cartesian topology (2D)
     // MPI_Dims_create(size, 2, dims);
-
-
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
     MPI_Cart_coords(cart_comm, rank, 2, coords);
@@ -130,27 +124,11 @@ void IcoNS::setParallelization()
     Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-    //TODO: resize for different processors following pressure
+
     Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-    /*
-    //Resize only for boundary faces
-        bool is_edge1 = coords[0] == PX - 1;
-        bool is_edge2 = coords[1] == 0;
 
-        if (is_edge1 == true || is_edge2 == true) {
-            grid.u.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-            grid.v.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-            grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-            Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-            Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-            Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-            Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-            Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-            Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-        }
- */
     if(BX){
         if (coords[0] == 0)
             lbx++;
@@ -222,40 +200,29 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
         MPI_Wait(&reqs[2], MPI_SUCCESS);
     }
+
     // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
     if (!(BX && coords[0] == 0))
     {
         MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
-
-        //MPI_Wait(&reqs[0], MPI_SUCCESS);
-        //MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[0], neighbors[0], cart_comm, &reqs[0]);
-
     }
     if (!(BX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
         MPI_Wait(&reqs[1], MPI_SUCCESS);
         MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
-        //MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[2], neighbors[2], cart_comm, &reqs[1]);
-        //MPI_Wait(&reqs[1], MPI_SUCCESS);
     }
     if (!(BX && coords[0] == 0)){
         MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9  , cart_comm, &reqs[0]);
         MPI_Wait(&reqs[0], MPI_SUCCESS);
     }
-    //MPI_Waitall(test,&reqs[0],MPI_SUCCESS);
-
 }
 
 void IcoNS::solve()
 {
-
     Real time = 0.0;
     Real error;
     int i = 0;
-#ifdef OUTPUTERROR
-    Grid ERROR(grid);
-#endif
-// std::ofstream error_log("../resources/" + error_file);
+
 #ifdef VERBOSE
     std::cout << "Starting solver" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
@@ -279,27 +246,8 @@ void IcoNS::solve()
             error=sqrt(error);
             std::cout << " error: " << error << std::endl;
         }
-        /*{
-            for(int r =0; r<4 ;r++){
-            if(rank==r){
-                std::cout << "rsnk: " << rank << std::endl;
-                for (int in = 0 ; in < newDimX_x ; in++)
-                {
-                    for(int j=0; j < newDimY_x ;j++){
-                        for(int k=0; k <dim_z;k++){
-                            std::cout << grid.u[in * newDimY_x * dim_z + j * dim_z + k] << " ";
-                        }
-                        std::cout<< std::endl;
-                    }
-                    std::cout<< std::endl;
-                }
 
-            }
-            MPI_Barrier(cart_comm);
-            }
-        }*/
-        // reduce
-        solve_time_step(time); // adapt cycles to skip ghosts
+        solve_time_step(time);
         MPI_Barrier(cart_comm);
         time += DT;
         i++;
@@ -330,10 +278,9 @@ Real IcoNS::L2_error(const Real t)
     // std::cout << error_comp_Z(t) << std::endl;
     // std::cout << error_comp_P(t) << std::endl << std::endl;
 
-    return error;//sqrt(error);
+    return error;
 }
 
-// TODO:
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
@@ -846,7 +793,7 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
-//TODO: parallelization, 2deco?
+//TODO: parallelization
 Real IcoNS::error_comp_P(const Real t)
 {
     Real error = 0.0;

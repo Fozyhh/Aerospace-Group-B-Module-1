@@ -5,7 +5,6 @@
 
 int main(int argc, char* argv[])
 {
-
     //Parallel vars
     int rank, size;
 
