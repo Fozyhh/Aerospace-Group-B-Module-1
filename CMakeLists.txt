@@ -59,9 +59,9 @@ add_library(
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
 target_link_libraries(main ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
-add_executable(c2dT Test/c2d.cpp)
-target_include_directories(c2dT PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
-target_link_libraries(c2dT ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
+# add_executable(c2dT Test/c2d.cpp)
+# target_include_directories(c2dT PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
+# target_link_libraries(c2dT ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 #add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public

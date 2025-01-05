@@ -109,6 +109,7 @@ public:
    */
   void preprocessing(/*std::string &input_file*/);
 
+  void setBoundaryConditions();
   /**
    * @brief Sets up parallel communication patterns and domain decomposition
    */
@@ -200,7 +201,7 @@ public:
   /**
    * @brief Computes total L2 error
    */
-  Real L2_error(const Real t);
+  void L2_error(const Real t);
 
   /**
    * @brief Parses input configuration file
@@ -211,6 +212,8 @@ public:
   fftw_complex* helper;
 
 private:
+
+  int testCase;
 
   /// @brief MPI rank of current process
   int rank, size;

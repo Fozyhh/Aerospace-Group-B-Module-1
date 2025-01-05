@@ -35,21 +35,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     std::cout << "*************************************************" << std::endl
               << std::endl;
 #endif
-    // boundary
-    auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-
-                                              { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
-    auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
-    auto w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                              { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); });
-
-    for (int i = 0; i < 6 /*nfaces*/; i++)
-    {
-        boundary.addFunction(U, u_func);
-        boundary.addFunction(V, v_func);
-        boundary.addFunction(W, w_func);
-    }
+    setBoundaryConditions();
 
     setParallelization();
    
@@ -58,6 +44,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         helper[i][0] = 0.0;
         helper[i][1] = 0.0;
     }
+
     boundary.initializeBoundary(
         dim_x_x, dim_y_x, dim_x_y, dim_y_y,
         dim_x_z, dim_y_z, dim_z, dim_z_z,
@@ -66,6 +53,55 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         c2d->zSize);
 }
 
+
+void IcoNS::setBoundaryConditions(){
+    std::shared_ptr<BoundaryFunction> u_func;
+    std::shared_ptr<BoundaryFunction> v_func;
+    std::shared_ptr<BoundaryFunction> w_func;
+
+    if(testCase==1){
+        u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return 0; });
+        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { 
+                                                    //TODO: da capire u(1,0,0) che cella è
+                                                    if(x==1.0 && y==0 && z==0){
+                                                        return 1;
+                                                    }else{
+                                                        return 0;
+                                                    } 
+                                                });
+        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return 0; });
+    }else if(testCase==2){
+        u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return 0; });
+        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { 
+                                                    if(x==-0.5 && y==0 && z==0){
+                                                        return 1;
+                                                    }else{
+                                                        return 0;
+                                                    } 
+                                                });
+        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return 0; });
+    }else{
+        u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
+        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
+        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
+                                                { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); }); 
+    }
+
+    for (int i = 0; i < 6 /*nfaces*/; i++)
+    {
+        boundary.addFunction(U, u_func);
+        boundary.addFunction(V, v_func);
+        boundary.addFunction(W, w_func);
+    }
+}
 void IcoNS::setParallelization()
 {
 
@@ -236,17 +272,11 @@ void IcoNS::solve()
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
         exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
-        x = L2_error(time); // every processor calculates his error not counting ghosts
-        MPI_Barrier(cart_comm);
-        error = 0.0;
-        MPI_Reduce(&x, &error, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-
-        if (rank == 0)
-        {
-            error=sqrt(error);
-            std::cout << " error: " << error << std::endl;
+        
+        if(testCase==0){
+            L2_error(time);
         }
-
+        
         solve_time_step(time);
         MPI_Barrier(cart_comm);
         time += DT;
@@ -264,21 +294,28 @@ void IcoNS::solve()
 #endif
 }
 
-Real IcoNS::L2_error(const Real t)
+void IcoNS::L2_error(const Real t)
 {
-    Real error = 0.0;
+    Real error = 0.0, totalError=0.0;
 
     error += error_comp_X(t);
     error += error_comp_Y(t);
     error += error_comp_Z(t);
     error += error_comp_P(t);
 
+    MPI_Barrier(cart_comm);
+
+    MPI_Reduce(&error, &totalError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
+    if (rank == 0)
+    {
+        totalError=sqrt(totalError);
+        std::cout << " totalError: " << totalError << std::endl;
+    }
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
     // std::cout << error_comp_Z(t) << std::endl;
     // std::cout << error_comp_P(t) << std::endl << std::endl;
 
-    return error;
 }
 
 Real IcoNS::error_comp_X(const Real t)
@@ -964,6 +1001,15 @@ void IcoNS::parse_input(const std::string& input_file) {
     }
 
     std::string line;
+
+    // Skip comments and empty lines until we find test case number
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> testCase)) continue;
+        break;
+    }
+
     // Skip comments and empty lines until we find RE
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;

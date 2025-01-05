@@ -1,5 +1,5 @@
 #Test case:
-0
+1
 
 # Reynolds number: Re
 1000
@@ -14,7 +14,7 @@
 2.0*M_PI 2.0*M_PI 2.0*M_PI
 
 # Number of grid points: Nx, Ny, Nz
-50 50 50
+480 480 480
 
 # Process grid: Px, Py, Pz
 1 1 1

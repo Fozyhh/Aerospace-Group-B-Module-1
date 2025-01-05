@@ -1,5 +1,5 @@
 #Test case:
-0
+2
 
 # Reynolds number: Re
 1000
@@ -11,16 +11,16 @@
 1000
 
 # Dimension of domain: Lx, Ly, Lz
-2.0*M_PI 2.0*M_PI 2.0*M_PI
+1.0 1.0 1.0 #probabilmente è da moltiplicare all'interno per 2*M_PI perchè sennò non ha senso
 
 # Number of grid points: Nx, Ny, Nz
-50 50 50
+480 480 480
 
 # Process grid: Px, Py, Pz
 1 1 1
 
 # Boundaries :
-1 1 1
+0 1 1
 
 # 0 : periodic
 # 1 : dirichlet
