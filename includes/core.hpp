@@ -166,7 +166,7 @@ public:
   void parse_input(const std::string& input_file);
 
   // TODO write the output file.
-
+  void output();
 
 private:
 

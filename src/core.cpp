@@ -294,6 +294,7 @@ void IcoNS::solve()
         time += DT;
         i++;
     }
+    output();
 #ifdef VERBOSE
     if(rank==0){
         std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: " << error << std::endl;
@@ -947,4 +948,142 @@ void IcoNS::parse_input(const std::string& input_file) {
 
     // Make sure all processes have read the file before proceeding
     MPI_Barrier(MPI_COMM_WORLD);
+}
+
+
+void IcoNS::output(){
+    MPI_File fh;
+    MPI_Offset offset = 0;
+    const float x_middle = LX / 2;
+    if(rank==0)
+        std::remove("solution_x.vtk");
+    MPI_File_open(cart_comm, "solution_x.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+
+    //===========================================
+    // Header Writing (Rank 0 only)
+    //===========================================
+    std::ostringstream header1, header2,header4;
+    header1 << std::fixed << std::setprecision(6);
+    header2 << std::fixed << std::setprecision(6);
+    header4 << std::fixed << std::setprecision(6);
+
+    // VTK metadata
+    header1 << "# vtk DataFile Version 3.0\n"
+                << "Solution x\n"
+                << "ASCII\n"
+                << "DATASET STRUCTURED_GRID\n"
+                << "DIMENSIONS 1 " << NY + 1 << " " << NZ + 1 << "\n"
+                << "POINTS " << (NY + 1) * (NZ + 1) << " float\n";
+
+    // Define data format
+    header2 << "\nPOINT_DATA " << (NY + 1) * (NZ + 1) << "\n"
+                << "SCALARS u float\n"
+                << "LOOKUP_TABLE default\n";
+
+    header4     << "SCALARS z float\n"
+                << "LOOKUP_TABLE default\n";
+    // Write header to file
+    // std::string header_str = full_header.str();
+    // MPI_File_write_at(fh, 0, header_str.c_str(), header_str.size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    // offset = header_str.size();
+
+    // Sync offset across all processes
+    // MPI_Bcast(&offset, 1, MPI_OFFSET, 0, cart_comm);
+
+    //===========================================
+    // Data Collection
+    //===========================================
+    std::vector<float> minepoints(PX*PY, 0.0f);
+    std::vector<float> minevaluesx(PX*PY, 0.0f);
+    std::vector<float> minevaluesz(PX*PY, 0.0f);
+    std::vector<float> globalpoints(PX*PY);
+    std::vector<float> globalvaluesx(PX*PY);
+    std::vector<float> globalvaluesz(PX*PY);
+
+    std::ostringstream points, valuesx,valuesz;
+
+    // Find process containing middle slice
+    int x_index = static_cast<int>(x_middle);
+    int offset_x_x = coords[0] * other_dim_x_x -1;
+    int offset_y_x = coords[1] * other_dim_y_x -1;
+    // int offset_x_y = coords[0] * other_dim_x_y -1;
+    // int offset_y_y = coords[1] * other_dim_y_y -1;
+
+    if (x_index >= offset_x_x && x_index < dim_x_x + offset_x_x) {
+
+        int local_x = x_index - offset_x_x + 1;
+
+        for(int j = 1; j < newDimY_x - 1; j++){
+            for(int k=0; k < dim_z; k++){
+                
+                // Write grid points coordinate
+                points << x_middle << " "
+                           << static_cast<float>(j + offset_y_x) * DY << " "
+                           << static_cast<float>(k) * DZ << "\n";
+                
+                //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid_loc_y[local_x* newDimY_x * dim_z + j * dim_z + k];
+                valuesx << grid_loc_x[local_x* newDimY_x * dim_z + j * dim_z + k] << "\n";
+                Real temp = (grid_loc_z[local_x*newDimY_z * dim_z_z + j * dim_z_z + k] + grid_loc_z[local_x*newDimY_z * dim_z_z + j * dim_z_z + k+1])/2;
+                
+                valuesz << temp << "\n";
+                
+            }
+        }
+    }
+    std::cout << valuesx.str().size() << " " <<valuesz.str().size() << std::endl;
+    minepoints[rank] = points.str().size();
+    minevaluesx[rank] = valuesx.str().size();
+    minevaluesz[rank] = valuesz.str().size();
+    // Gather data from all processes
+    // MPI_Allreduce(valuesx.data(), global_values.data(), valuesx.size(), MPI_FLOAT, MPI_SUM, cart_comm);
+    MPI_Allreduce(minepoints.data(), globalpoints.data(), minepoints.size(), MPI_FLOAT, MPI_SUM, cart_comm);
+    MPI_Allreduce(minevaluesx.data(), globalvaluesx.data(), minevaluesx.size(), MPI_FLOAT, MPI_SUM, cart_comm);
+    MPI_Allreduce(minevaluesz.data(), globalvaluesz.data(), minevaluesz.size(), MPI_FLOAT, MPI_SUM, cart_comm);
+
+    //===========================================
+    // Data Writing (Rank 0 only)
+    //===========================================
+    int my_points=0, allpoints=0, my_valuesx=0, allvaluesx=0,my_valuesz=0,allvaluesz=0;
+    for(int i=0; i < PX*PY; i++){
+        allpoints += globalpoints[i];
+        allvaluesx += globalvaluesx[i];
+        allvaluesz += globalvaluesz[i];
+        if(rank > i){
+            my_points += globalpoints[i];
+            my_valuesx += globalvaluesx[i];
+            my_valuesz += globalvaluesz[i];
+        }
+    }
+    if (rank == 0) {
+        MPI_File_write_at(fh, offset, header1.str().c_str(), header1.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+    offset += header1.str().size();
+    MPI_File_write_at(fh, offset + my_points /*+ coords[0] * points.str().size()*/, points.str().c_str(), points.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    offset += allpoints;// PX * points.str().size() ;
+    if(rank==0){
+        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);  
+        // for (float val : global_values) {
+        //     std::ostringstream value_str;
+        //     value_str << std::fixed << std::setprecision(6) << val << "\n";
+        //     std::string str = value_str.str();
+
+        //     MPI_File_write_at(fh, offset, str.c_str(), str.size(), MPI_CHAR, MPI_STATUS_IGNORE);
+        //     offset += str.size();
+        // }
+    }
+    offset += header2.str().size() ;
+    MPI_File_write_at(fh, offset + my_valuesx/* coords[0] * valuesx.str().size()*/, valuesx.str().c_str(), valuesx.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    offset += allvaluesx;
+    if (rank == 0) {
+        MPI_File_write_at(fh, offset, header4.str().c_str(), header4.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+    offset += header4.str().size();
+    MPI_File_write_at(fh, offset + my_valuesz/* coords[0] * valuesx.str().size()*/, valuesz.str().c_str(), valuesz.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    offset += allvaluesz;
+    // MPI_File_write_at(fh, header1.str().size() + rank * points.str().size(), points.str().c_str(), points.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    // std::cout << rank << " " << header1.str().size() + rank * points.str().size() << std::endl;
+    // if(rank==0)
+    //     MPI_File_write_at(fh, header1.str().size() + (PX * PY) * points.str().size(), header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+
+    MPI_File_close(&fh);
 }

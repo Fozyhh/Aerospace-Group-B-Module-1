@@ -2,16 +2,16 @@
 1000
 
 # Time step: dt
-0.001
+0.01
 
 # Number of time steps: T
-0.5
+0.1
 
 # Dimension of domain: Lx, Ly, Lz
 1.0 1.0 1.0
 
 # Number of grid points: Nx, Ny, Nz
-100 100 100
+10 10 10
 
 # Process grid: Px, Py, Pz
 2 2 1
