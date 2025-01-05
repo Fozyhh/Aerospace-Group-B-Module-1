@@ -209,6 +209,11 @@ public:
    */
   void parse_input(const std::string& input_file);
 
+  /**
+   * @brief Writes output data to file
+   */
+  void Output();
+
   fftw_complex* helper;
 
 private:

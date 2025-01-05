@@ -369,6 +369,9 @@ void IcoNS::solve_time_step(Real time)
     }
     c2d->deallocXYZ(halo_phi);
     c2d->deallocXYZ(halo_p);
+    for(int i = 0; i < 10; i++){
+        std::cout << grid.w[i+60] << std::endl;
+    }
 }
 
 //TODO: maybe change everything with the indexing function
