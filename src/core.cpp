@@ -1126,12 +1126,12 @@ void IcoNS::parse_input(const std::string& input_file) {
 
 void IcoNS::Output(){
 
-    const std::string filename = "profile" + std::to_string(testCase) + ".dat";
+    const std::string filename = "out" + std::to_string(testCase) + ".dat";
     MPI_File fh;
     MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
     
-    if(coords[0] == (PX-1)/2){
-        MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
+    if(coords[0] == (PX-1)/2){    
         const double xCoord = 0.5;
         double yCoord = coords[1] * zSize[1] * DY;
         const double zCoord = 0.5;
@@ -1152,8 +1152,8 @@ void IcoNS::Output(){
                 u = grid.u[getx(newDimX_x-1, i, (dim_z-1)/2)];
                 v = (grid.v[gety(newDimX_y-1, i, (dim_z-1)/2)] +
                     grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2)])/2;
-                w = grid.w[getz(newDimX_z-1, i+1, (dim_z_z-1)/2+2)];// +
-//                    grid.w[getz(newDimX_z-1, i+1, (dim_z_z-1)/2-1)])/2;
+                w = (grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2)] +
+                    grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2-1)])/2;
                 p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)];
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
@@ -1166,12 +1166,52 @@ void IcoNS::Output(){
             offset += sizeof(double);
         }
     }
+
+    if(coords[1] == (PY-1)/2){
+        offset = PY * zSize[1] * sizeof(double) * 7 + coords[0] * zSize[0] * sizeof(double) * 7;
+        double xCoord = coords[0] * zSize[0] * DX;
+        const double yCoord = 0.5;
+        const double zCoord = 0.5;
+        double u, v, w, p;
+        for (int i = 0; i < zSize[0]; i++)
+        {
+            MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            xCoord += DX;
+            offset += sizeof(double);
+
+            MPI_File_write_at(fh, offset, &yCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+
+            MPI_File_write_at(fh, offset, &zCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+
+            if(PY%2 == 0){
+                u = (grid.u[getx(i, newDimY_x-1, (dim_z-1)/2)] +
+                    grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2)])/2;
+                v = grid.v[gety(i, newDimY_x-1, (dim_z-1)/2)];
+                w = (grid.w[getz(i, newDimY_x-1, (dim_z-1)/2)] +
+                    grid.w[getz(i, newDimY_x-1, (dim_z-1)/2-1)])/2;
+                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)];
+            }
+            MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+            MPI_File_write_at(fh, offset, &v, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+            MPI_File_write_at(fh, offset, &w, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+            MPI_File_write_at(fh, offset, &p, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            offset += sizeof(double);
+        }
+    }
+
     MPI_File_close(&fh);
 
     if(rank == 0){
         int count = 0;
-        std::ifstream input("profile0.dat", std::ios::binary);
-        std::ofstream output("output.txt");
+        std::ifstream input(filename, std::ios::binary);
+        std::ofstream output("profile" + std::to_string(testCase) + ".dat");
+        output << "Line 1" << std::endl;
+        output << "x y z u v w p" << std::endl;
         double value;
         while (input.read(reinterpret_cast<char*>(&value), sizeof(double))) {
             count++;
@@ -1179,9 +1219,15 @@ void IcoNS::Output(){
             if (count % 7 == 0) {
                 output << std::endl;
             }
+            if (count == ((NY+1)*7)) {
+                output << std::endl;
+                output << "Line 2" << std::endl;
+                output << "x y z u v w p" << std::endl;
+            }
         }
 
     input.close();
     output.close();
+    std::remove(filename.c_str());
     }
 }
