@@ -30,7 +30,8 @@ plt.show()
 #print(f'Estimated order of convergence: {p:.2f}')
 
 #compute the convergence rate for all steps and print the average
-p = np.log(errors[1:] / errors[:-1]) / np.log(grid_sizes[1:] / grid_sizes[:-1])
+#p = np.log(errors[1:] / errors[:-1]) / np.log(grid_sizes[1:] / grid_sizes[:-1])
+p = np.log(errors[:-1] / errors[1:]) / np.log(grid_sizes[1:] / grid_sizes[:-1])
 print(f'Estimated order of convergence: {p}')
 print(f'Average order of convergence: {np.mean(p):.2f}')
 print(f'Average order of convergence: {np.mean(p):.2f} +/- {np.std(p):.2f}')
