@@ -130,7 +130,7 @@ void PoissonSolver::solveNeumannPoisson(double* F)
                                                                         2/(DY*DY) * (std::cos((j + c2d->coord[0] * xSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
                                                                         2/(DZ*DZ) * (std::cos((k + c2d->coord[1] * xSize[2]) * M_PI / (c2d->nzGlobal-1)) - 1));
             }
-        }
+        }  
     }
 
     if(c2d->nRank == 0) {
@@ -165,7 +165,7 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     }
 
     // Normalization
-    double normalization_factor1 = 2.0 * (xSize[0]-1) * 2.0 * (ySize[1]-1) * 2.0 * (zSize[2]-1);
+    double normalization_factor1 = 2.0 * (NX) * 2.0 * (NY) * 2.0 * (NZ);
     for(int i = 0; i < zSize[0]*zSize[1]*zSize[2]; i++) {
         F[i] /= normalization_factor1;
     }
