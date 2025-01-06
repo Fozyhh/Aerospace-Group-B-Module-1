@@ -31,6 +31,8 @@ int main(int argc, char* argv[])
         printf("Total time with init: %f seconds\n", end_time - start_time);
     }
 
+    icoNS.output();
+
     MPI_Finalize();
 
     return 0;
