@@ -15,7 +15,7 @@ DECOMP_DIR = dependencies/2Decomp_C
 # Includes and Libraries       #
 ################################
 INCLUDES = -I./includes \
-          -I$(DECOMP_DIR)
+          -I$(DECOMP_DIR) 
 
 LIBS = -lfftw3_mpi -lfftw3 -lm
 
