@@ -1127,7 +1127,7 @@ void IcoNS::output_x(){
 void IcoNS::output_y(){
     MPI_File fh;
     MPI_Offset offset = 0;
-    const float x_middle = /*SY + */LY / 2;
+    const float y_middle = /*SY + */LY / 2;
     if(rank==0)
         std::remove("solution_y.vtk");
     MPI_File_open(cart_comm, "solution_y.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
@@ -1142,20 +1142,19 @@ void IcoNS::output_y(){
 
     // VTK metadata
     header1 << "# vtk DataFile Version 3.0\n"
-                << "Solution x\n"
+                << "Solution y\n"
                 << "ASCII\n"
                 << "DATASET STRUCTURED_GRID\n"
-                << "DIMENSIONS 1 " << NY + 1 << " " << NZ + 1 << "\n"
-                << "POINTS " << (NY + 1) * (NZ + 1) << " float\n";
+                << "DIMENSIONS " <<  NX + 1 << " " <<  1 << " " << NZ + 1 << "\n"
+                << "POINTS " << (NX + 1) * (NZ + 1) << " float\n";
 
     // Define data format
-    header2 << "\nPOINT_DATA " << (NY + 1) * (NZ + 1) << "\n"
+    header2 << "\nPOINT_DATA " << (NX + 1) * (NZ + 1) << "\n"
                 << "SCALARS u float\n"
                 << "LOOKUP_TABLE default\n";
-
-    header3     << "SCALARS y float\n"
+    header3     << "SCALARS v float\n"
                 << "LOOKUP_TABLE default\n";
-    header4     << "SCALARS z float\n"
+    header4     << "SCALARS w float\n"
                 << "LOOKUP_TABLE default\n";
     // Write header to file
     // std::string header_str = full_header.str();
@@ -1180,7 +1179,7 @@ void IcoNS::output_y(){
     std::ostringstream points, valuesx,valuesy,valuesz;
 
     // Find process containing middle slice
-    int x_index = static_cast<int>(x_middle);
+    int y_index = static_cast<int>(y_middle);
     int offset_x_x = coords[0] * other_dim_x_x -1;
     int offset_y_x = coords[1] * other_dim_y_x -1;
     int offset_x_y = coords[0] * other_dim_x_y -1;
@@ -1188,40 +1187,40 @@ void IcoNS::output_y(){
     int offset_x_z = coords[0] * other_dim_x_z -1;
     int offset_y_z = coords[1] * other_dim_y_z -1;
 
-    if (x_index >= offset_x_x && x_index < dim_x_x + offset_x_x) {
+    if (y_index >= offset_y_y && y_index < dim_y_y + offset_y_y) {
 
-        int local_x_x = x_index - offset_x_x + 1;
-        int local_x_y = x_index - offset_x_y + 1;
-        int local_x_z = x_index - offset_x_z + 1;
+        int local_y_x = y_index - offset_y_x + 1;
+        int local_y_y = y_index - offset_y_y + 1;
+        int local_y_z = y_index - offset_y_z + 1;
 
-        for(int j = 1; j < newDimY_x - 1; j++){
+        for(int i = 1; i < newDimX_y - 1; i++){
             for(int k=0; k < dim_z; k++){
                 
-                // Write grid points coordinate
-                points << x_middle << " "
-                           << static_cast<float>(j + offset_y_x) * DY << " "
+                // Write grid points coordinate 
+                points << static_cast<float>(i + offset_x_y) * DX << " "
+                           << y_middle << " "
                            << static_cast<float>(k) * DZ << "\n";
                 
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid_loc_y[local_x* newDimY_x * dim_z + j * dim_z + k];
-                valuesx << grid_loc_x[local_x_x* newDimY_x * dim_z + j * dim_z + k] << "\n";
+                valuesy << grid_loc_y[local_y_y* newDimY_y * dim_z + i * dim_z + k] << "\n";
 
-                if(lby &&j==1){
-                    valuesy << (boundary.boundary_value_v[2]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[2]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
-                }else if(rby && j==newDimY_x-2){
-                    valuesy << (boundary.boundary_value_v[3]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[3]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
+                if(lbx &&i==1){
+                    valuesx << (boundary.boundary_value_u[0]->value(i + offset_x_x-0.5,y_index,k,T) + boundary.boundary_value_u[0]->value(i + offset_x_x-0.5,y_index + 1,k,T))/2 << "\n";
+                }else if(rbx && i==newDimX_y-2){
+                    valuesx << (boundary.boundary_value_u[1]->value(i + offset_x_x-0.5,y_index,k,T) + boundary.boundary_value_u[1]->value(i + offset_x_x-0.5,y_index + 1,k,T))/2 << "\n";
                 }else{
-                    valuesy << (grid_loc_y[local_x_y*newDimY_y * dim_z + j * dim_z + k] + grid_loc_y[local_x_y*newDimY_y * dim_z + (j-1) * dim_z + k] +
-                                grid_loc_y[(local_x_y+1)*newDimY_y * dim_z + j * dim_z + k] + grid_loc_y[(local_x_y+1)*newDimY_y * dim_z + (j-1) * dim_z + k])/4 << "\n";
-                }  
+                    valuesx << (grid_loc_x[local_y_x*newDimY_x * dim_z + i * dim_z + k] + grid_loc_x[local_y_x*newDimY_x * dim_z + (i-1) * dim_z + k] +
+                                grid_loc_x[(local_y_x+1)*newDimY_x * dim_z + i * dim_z + k] + grid_loc_x[(local_y_x+1)*newDimY_x * dim_z + (i-1) * dim_z + k])/4 << "\n";
+                }
 
                 if(k==0){
-                    valuesz << boundary.boundary_value_w[4]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
+                    valuesz << boundary.boundary_value_w[4]->value(i + offset_x_z,y_index + 0.5,k - 0.5,T) << "\n";
                 }else if(k==dim_z -1){
-                    valuesz << boundary.boundary_value_w[5]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
+                    valuesz << boundary.boundary_value_w[5]->value(i + offset_x_z,y_index + 0.5,k - 0.5,T) << "\n";
                 }else{
-                    valuesz << (grid_loc_z[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k] + grid_loc_z[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k-1] +
-                                grid_loc_z[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k] + grid_loc_z[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k-1])/4 << "\n";
-                }              
+                    valuesz << (grid_loc_z[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k] + grid_loc_z[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k-1] +
+                                grid_loc_z[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k] + grid_loc_z[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k-1])/4 << "\n";
+                }             
             }
         }
     }
