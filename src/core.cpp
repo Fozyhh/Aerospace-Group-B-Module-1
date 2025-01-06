@@ -1141,7 +1141,6 @@ void IcoNS::output(){
     MPI_File fh;
     MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
-    
     // LINE 1
     if(coords[0] == (PX-1)/2){
         const double xCoord = SX+LX/2;
@@ -1353,7 +1352,7 @@ void IcoNS::output(){
                 output << "Line 2" << std::endl;
                 output << "x y z u v w p" << std::endl;
             }
-            if (count == ((NX+1)*7 + (NY+1)*7)) {
+            if (count == ((NX+1)*7 + (NY+1)*7) && testCase==2) {
                 output << std::endl;
                 output << "Line 3" << std::endl;
                 output << "x y z u v w p" << std::endl;
