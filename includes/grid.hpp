@@ -12,6 +12,7 @@
 #define GRID_HPP
 
 #include <iostream>
+#include "config.hpp"
 #include <vector>
 
 

@@ -211,6 +211,11 @@ public:
   //TODO: check for split dimensions with 2decomp
   fftw_complex* helper;
 
+  std::vector<Real> u_function(){return grid.u;};
+  std::vector<Real> v_function(){return grid.v;};
+  std::vector<Real> w_function(){return grid.w;};
+  //std::vector<Real> p_function(){return grid.p;};
+
 private:
 
   /// @brief MPI rank of current process
@@ -323,8 +328,14 @@ private:
   inline int indexingDiricheletz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
   inline int indexingDiricheletp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
   inline int indexingDiricheletHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
+  void pressionCorrection(double* p);
+  inline int globalIndexingx_x(int i) { return i + coords[0] * other_dim_x_x;}
+  inline int globalIndexingy_x(int j) { return j + coords[1] * other_dim_y_x;}
+  inline int globalIndexingx_y(int i) { return i + coords[0] * other_dim_x_y;}
+  inline int globalIndexingy_y(int j) { return j + coords[1] * other_dim_y_y;}
+  inline int globalIndexingx_z(int k) { return k + coords[0] * other_dim_x_z;}
+  inline int globalIndexingy_z(int k) { return k + coords[1] * other_dim_y_z;}
 #endif
-
 };
 
 #endif // CORE_HPP

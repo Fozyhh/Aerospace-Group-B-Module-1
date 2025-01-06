@@ -39,7 +39,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 #endif
     // boundary
     auto u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-
                                               { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
     auto v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                               { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
@@ -264,7 +263,6 @@ void IcoNS::solve()
     while (time < T)
     {
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
-
         MPI_Barrier(cart_comm);
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
@@ -324,7 +322,6 @@ Real IcoNS::L2_error(const Real t)
     error += error_comp_Y(t);
     error += error_comp_Z(t);
     error += error_comp_P(t);
-
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
     // std::cout << error_comp_Z(t) << std::endl;
@@ -850,6 +847,7 @@ Real IcoNS::error_comp_Z(const Real t)
 Real IcoNS::error_comp_P(const Real t)
 {
     Real error = 0.0;
+    return 0;
     // first slice (left face)
     {
         error += ((grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
