@@ -169,6 +169,9 @@ public:
 
   // TODO write the output file.
   void output();
+  void output_x();
+  void output_y();
+  void output_z();
 
 private:
 

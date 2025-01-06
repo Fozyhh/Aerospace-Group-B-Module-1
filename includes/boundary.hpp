@@ -22,13 +22,7 @@ private:
     /// @brief Process coordinates in the 2D grid
     int coords[2];
 
-    /// @brief Vector of boundary functions for u-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
-    /// @brief Vector of boundary functions for v-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
-    /// @brief Vector of boundary functions for w-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
-
+    
     /// @brief Dimension parameters for x-direction mesh
     int dim_x_x, dim_y_x;
     /// @brief Dimension parameters for y-direction mesh
@@ -51,6 +45,13 @@ private:
     int other_dim_x_z, other_dim_y_z;
 
 public:
+    /// @brief Vector of boundary functions for u-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
+    /// @brief Vector of boundary functions for v-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
+    /// @brief Vector of boundary functions for w-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
+
     /**
     * @brief Initialize boundary dimensions and parameters
     * @param dim_x_x_ X dimension for x-direction mesh
