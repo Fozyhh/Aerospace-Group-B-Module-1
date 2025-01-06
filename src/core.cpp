@@ -16,6 +16,30 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
     setParallelization();
    
+    for(int i=0; i<zSize[0]*zSize[1]*zSize[2]; i++){
+        grid.p[i]=0.0;
+        Phi_p[i]=0.0;
+        Y2_p[i]=0.0;
+    }
+
+    for(int i=0; i<newDimX_x * newDimY_x * (NZ + 1); i++){
+        grid.u[i]=0.0;
+        Y2_x[i]=0.0;
+        Y3_x[i]=0.0;
+    }
+
+    for(int i=0; i<newDimX_y * newDimY_y * (NZ + 1); i++){
+        grid.v[i]=0.0;
+        Y2_y[i]=0.0;
+        Y3_y[i]=0.0;
+    }
+
+    for(int i=0; i<newDimX_z * newDimY_z * (NZ); i++){
+        grid.w[i]=0.0;
+        Y2_z[i]=0.0;
+        Y3_z[i]=0.0;
+    }
+    
     for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
     {
         helper[i][0] = 0.0;
