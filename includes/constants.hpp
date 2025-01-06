@@ -113,6 +113,14 @@ extern Real DZ;
 extern Real DT;
 
 /**
+ * @brief Total time interval for the simulation.
+ * @details Specifies how long the simulation should run in physical time units.
+ * The total number of time steps will be T/DT.
+ * This value is externally defined and can be modified at runtime.
+ */
+extern Real T;
+
+/**
  * @brief Total number of time steps for the simulation.
  * @details Specifies how long the simulation should run in physical time units.
  * The total simulation time is calculated as Nt * DT.

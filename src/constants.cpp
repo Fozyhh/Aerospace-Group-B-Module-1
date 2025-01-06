@@ -23,6 +23,7 @@ Real DZ = LZ / NZ;
 // Time-related parameters
 Real DT = 0.001;  // Example time step
 Real Nt = 1000.0;   // Example total time
+Real T = 0.1;  // Current time
 
 // Boundary conditions
 bool BX = false, BY = false, BZ = false; // Periodic by default

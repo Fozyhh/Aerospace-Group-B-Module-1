@@ -208,6 +208,12 @@ public:
    * @param input_file Path to input file
    */
   void parse_input(const std::string& input_file);
+  
+  void output();
+  void output_x();
+  void output_y();
+  void output_z();
+
 
   fftw_complex* helper;
 
