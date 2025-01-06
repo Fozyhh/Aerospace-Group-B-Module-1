@@ -80,71 +80,12 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2] - 1; k++)
             {
-                /* Real diffx = 0.0;
-                Real diffy = 0.0;
-                Real diffz = 0.0;
-
-                if (i == 0)
-                {
-                    // continue;
-                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 0.5, j, k, time + 64.0 / 120.0 * DT) + 9 * Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i + 1, j, k)]) / (3 * DX);
-                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else if (i == NX)
-                {
-                    // continue;
-                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j, k, time + 64.0 / 120.0 * DT) - 9 * Y2_x[indexingDiricheletx(i - 1, j, k)] + Y2_x[indexingDiricheletx(i - 2, j, k)]) / (3 * DX);
-                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else
-                {
-                    diffx = (Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX);
-                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-
-                if (j == 0)
-                {
-                    // continue;
-                    diffy = (-8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + 64.0 / 120.0 * DT) + 9 * Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j + 1, k)]) / (3 * DY);
-                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else if (j == NY)
-                {
-                    // continue;
-                    diffy = (8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + 64.0 / 120.0 * DT) - 9 * Y2_y[indexingDirichelety(i, j - 1, k)] + Y2_y[indexingDirichelety(i, j - 2, k)]) / (3 * DY);
-                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else
-                {
-                    diffy = (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY);
-                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-
-                if (k == 0)
-                {
-                    // continue;
-                    diffz = (-8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + 64.0 / 120.0 * DT) + 9 * Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k + 1)]) / (3 * DZ);
-                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else if (k == NZ)
-                {
-                    // continue;
-                    diffz = (8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + 64.0 / 120.0 * DT) - 9 * Y2_z[indexingDiricheletz(i, j, k - 1)] + Y2_z[indexingDiricheletz(i, j, k - 2)]) / (3 * DZ);
-                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-                else
-                {
-                    diffz = (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ);
-                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
-                }
-
-                Y2_p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] = 120.0 / (64.0 * DT) * (diffx + diffy + diffz); */
-                //Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (64.0 * DT) * ((Y2_x[indexingDiricheletx(i, j, k)] - Y2_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y2_y[indexingDirichelety(i, j, k)] - Y2_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y2_z[indexingDiricheletz(i, j, k)] - Y2_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
     // TODO: paura, exchange data?, check
-    //boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
+    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
     poissonSolver.solveNeumannPoisson(Y2_p);
     // TODO: adapt to the code now
     // boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
@@ -444,56 +385,6 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
-                /* // Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (64.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
-                Real diffx = 0.0;
-                Real diffy = 0.0;
-                Real diffz = 0.0;
-
-                if (i == 0)
-                {
-                    // continue;
-                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 0.5, j, k, time + DT) + 9 * grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i + 1, j, k)]) / (3 * DX);
-                }
-                else if (i == NX)
-                {
-                    // continue;
-                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j, k, time + DT) - 9 * grid.u[indexingDiricheletx(i - 1, j, k)] + grid.u[indexingDiricheletx(i - 2, j, k)]) / (3 * DX);
-                }
-                else
-                {
-                    diffx = (grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX);
-                }
-
-                if (j == 0)
-                {
-                    // continue;
-                    diffy = (-8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + DT) + 9 * grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j + 1, k)]) / (3 * DY);
-                }
-                else if (j == NY)
-                {
-                    // continue;
-                    diffy = (8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + DT) - 9 * grid.v[indexingDirichelety(i, j - 1, k)] + grid.v[indexingDirichelety(i, j - 2, k)]) / (3 * DY);
-                }
-                else
-                {
-                    diffy = (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY);
-                }
-
-                if (k == 0)
-                {
-                    // continue;
-                    diffz = (-8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + DT) + 9 * grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k + 1)]) / (3 * DZ);
-                }
-                else if (k == NZ)
-                {
-                    // continue;
-                    diffz = (8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + DT) - 9 * grid.w[indexingDiricheletz(i, j, k - 1)] + grid.w[indexingDiricheletz(i, j, k - 2)]) / (3 * DZ);
-                }
-                else
-                {
-                    diffz = (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ);
-                } */
-
                 Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
@@ -567,107 +458,6 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
              (w[lw] + w[lw + newDimY_z * dim_z_z] + w[lw - 1] + w[lw + newDimY_z * dim_z_z - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
            1 / RE * ((u[lu + newDimY_x * dim_z] - 2 * u[lu] + u[lu - newDimY_x * dim_z]) / (DX * DX) + (u[lu + dim_z] - 2 * u[lu] + u[lu - dim_z]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
            functionG_u(i - 1 + coords[0] * other_dim_x_x, j - 1 + coords[1] * other_dim_y_x, k, t);
-    /* Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
-
-    u_value = u[indexingDiricheletx(i, j, k)];
-
-    if (j == 0 || j == NY)
-    {
-        v_value = boundary.boundary_value_v[0]->value(i, j - 0.5, k, t);
-    }
-    else
-    {
-        v_value = (v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i + 1, j, k)] + v[indexingDirichelety(i, j - 1, k)] + v[indexingDirichelety(i + 1, j - 1, k)]) / 4.0;
-    }
-
-    if (k == 0 || k == NZ)
-    {
-        w_value = boundary.boundary_value_w[0]->value(i, j, k - 0.5, t);
-    }
-    else
-    {
-        w_value = (w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i + 1, j, k)] + w[indexingDiricheletz(i, j, k - 1)] + w[indexingDiricheletz(i + 1, j, k - 1)]) / 4.0;
-    }
-
-    if (i == 0)
-    {
-        diffx = (-4 * boundary.boundary_value_u[0]->value(i - 0.5, j, k, t) + 3 * u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i + 1, j, k)]) / (3.0 * DX);
-    }
-    else if (i == NX - 1)
-    {
-        diffx = (4 * boundary.boundary_value_u[0]->value(NX - 0.5, j, k, t) - 3 * u[indexingDiricheletx(i, j, k)] - u[indexingDiricheletx(i - 1, j, k)]) / (3.0 * DX);
-    }
-    else
-    {
-        diffx = (u[indexingDiricheletx(i + 1, j, k)] - u[indexingDiricheletx(i - 1, j, k)]) / (2.0 * DX);
-    }
-
-    if (j == 0)
-    {
-        diffy = (-3 * u[indexingDiricheletx(i, j, k)] + 4 * u[indexingDiricheletx(i, j + 1, k)] - u[indexingDiricheletx(i, j + 2, k)]) / (2 * DY);
-    }
-    else if (j == NY)
-    {
-        diffy = (3 * u[indexingDiricheletx(i, j, k)] - 4 * u[indexingDiricheletx(i, j - 1, k)] + u[indexingDiricheletx(i, j - 2, k)]) / (2 * DY);
-    }
-    else
-    {
-        diffy = (u[indexingDiricheletx(i, j + 1, k)] - u[indexingDiricheletx(i, j - 1, k)]) / (2.0 * DY);
-    }
-
-    if (k == 0)
-    {
-        diffz = (-3 * u[indexingDiricheletx(i, j, k)] + 4 * u[indexingDiricheletx(i, j, k + 1)] - u[indexingDiricheletx(i, j, k + 2)]) / (2 * DZ);
-    }
-    else if (k == NZ)
-    {
-        diffz = (3 * u[indexingDiricheletx(i, j, k)] - 4 * u[indexingDiricheletx(i, j, k - 1)] + u[indexingDiricheletx(i, j, k - 2)]) / (2 * DZ);
-    }
-    else
-    {
-        diffz = (u[indexingDiricheletx(i, j, k + 1)] - u[indexingDiricheletx(i, j, k - 1)]) / (2.0 * DZ);
-    }
-
-    if (i == 0)
-    {
-        diffsecx = (16 * boundary.boundary_value_u[0]->value(i - 0.5, j, k, t) - 25 * u[indexingDiricheletx(i, j, k)] + 10 * u[indexingDiricheletx(i + 1, j, k)] - u[indexingDiricheletx(i + 2, j, k)]) / (5.0 * DX * DX);
-    }
-    else if (i == NX - 1)
-    {
-        diffsecx = (-16 * boundary.boundary_value_u[0]->value(i + 0.5, j, k, t) + 25 * u[indexingDiricheletx(i, j, k)] - 10 * u[indexingDiricheletx(i - 1, j, k)] + u[indexingDiricheletx(i - 2, j, k)]) / (5.0 * DX * DX);
-    }
-    else
-    {
-        diffsecx = (u[indexingDiricheletx(i + 1, j, k)] - 2 * u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i - 1, j, k)]) / (DX * DX);
-    }
-
-    if (j == 0)
-    {
-        diffsecy = (2 * u[indexingDiricheletx(i, j, k)] - 5 * u[indexingDiricheletx(i, j + 1, k)] + 4 * u[indexingDiricheletx(i, j + 2, k)] - u[indexingDiricheletx(i, j + 3, k)]) / (DY * DY);
-    }
-    else if (j == NY)
-    {
-        diffsecy = (-2 * u[indexingDiricheletx(i, j, k)] + 5 * u[indexingDiricheletx(i, j - 1, k)] - 4 * u[indexingDiricheletx(i, j - 2, k)] + u[indexingDiricheletx(i, j - 3, k)]) / (DY * DY);
-    }
-    else
-    {
-        diffsecy = (u[indexingDiricheletx(i, j + 1, k)] - 2 * u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i, j - 1, k)]) / (DY * DY);
-    }
-
-    if (k == 0)
-    {
-        diffsecz = (2 * u[indexingDiricheletx(i, j, k)] - 5 * u[indexingDiricheletx(i, j, k + 1)] + 4 * u[indexingDiricheletx(i, j, k + 2)] - u[indexingDiricheletx(i, j, k + 3)]) / (DZ * DZ);
-    }
-    else if (k == NZ)
-    {
-        diffsecz = (-2 * u[indexingDiricheletx(i, j, k)] + 5 * u[indexingDiricheletx(i, j, k - 1)] - 4 * u[indexingDiricheletx(i, j, k - 2)] + u[indexingDiricheletx(i, j, k - 3)]) / (DZ * DZ);
-    }
-    else
-    {
-        diffsecz = (u[indexingDiricheletx(i, j, k + 1)] - 2 * u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i, j, k - 1)]) / (DZ * DZ);
-    }
-
-    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_u(i, j, k, t); */
 }
 
 Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
@@ -683,106 +473,6 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
                          (v[lv + dim_z] - 2.0 * v[lv] + v[lv - dim_z]) / (DY * DY) +
                          (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
            functionG_v(i - 1 + coords[0] * other_dim_x_y, j - 1 + coords[1] * other_dim_y_y, k, t);
-    /* Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
-    v_value = v[indexingDirichelety(i, j, k)];
-
-    if (i == 0 || i == NX)
-    {
-        u_value = boundary.boundary_value_u[0]->value(i - 0.5, j, k, t);
-    }
-    else
-    {
-        u_value = (u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i, j + 1, k)] + u[indexingDiricheletx(i - 1, j, k)] + u[indexingDiricheletx(i - 1, j + 1, k)]) / 4.0;
-    }
-
-    if (k == 0 || k == NZ)
-    {
-        w_value = boundary.boundary_value_w[0]->value(i, j, k - 0.5, t);
-    }
-    else
-    {
-        w_value = (w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i, j + 1, k)] + w[indexingDiricheletz(i, j, k - 1)] + w[indexingDiricheletz(i, j + 1, k - 1)]) / 4.0;
-    }
-
-    if (i == 0)
-    {
-        diffx = (-3 * v[indexingDirichelety(i, j, k)] + 4 * v[indexingDirichelety(i + 1, j, k)] - v[indexingDirichelety(i + 2, j, k)]) / (2 * DX);
-    }
-    else if (i == NX)
-    {
-        diffx = (3 * v[indexingDirichelety(i, j, k)] - 4 * v[indexingDirichelety(i - 1, j, k)] + v[indexingDirichelety(i - 2, j, k)]) / (2 * DX);
-    }
-    else
-    {
-        diffx = (v[indexingDirichelety(i + 1, j, k)] - v[indexingDirichelety(i - 1, j, k)]) / (2.0 * DX);
-    }
-
-    if (j == 0)
-    {
-        diffy = (-4 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, t) + 3 * v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i, j + 1, k)]) / (3.0 * DY);
-    }
-    else if (j == NY - 1)
-    {
-        diffy = (4 * boundary.boundary_value_v[0]->value(i, NY - 0.5, k, t) - 3 * v[indexingDirichelety(i, j, k)] - v[indexingDirichelety(i, j - 1, k)]) / (3.0 * DY);
-    }
-    else
-    {
-        diffy = (v[indexingDirichelety(i, j + 1, k)] - v[indexingDirichelety(i, j - 1, k)]) / (2.0 * DY);
-    }
-
-    if (k == 0)
-    {
-        diffz = (-3 * v[indexingDirichelety(i, j, k)] + 4 * v[indexingDirichelety(i, j, k + 1)] - v[indexingDirichelety(i, j, k + 2)]) / (2 * DZ);
-    }
-    else if (k == NZ)
-    {
-        diffz = (3 * v[indexingDirichelety(i, j, k)] - 4 * v[indexingDirichelety(i, j, k - 1)] + v[indexingDirichelety(i, j, k - 2)]) / (2 * DZ);
-    }
-    else
-    {
-        diffz = (v[indexingDirichelety(i, j, k + 1)] - v[indexingDirichelety(i, j, k - 1)]) / (2.0 * DZ);
-    }
-
-    if (j == 0)
-    {
-        diffsecy = (16 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, t) - 25 * v[indexingDirichelety(i, j, k)] + 10 * v[indexingDirichelety(i, j + 1, k)] - v[indexingDirichelety(i, j + 2, k)]) / (5.0 * DY * DY);
-    }
-    else if (j == NY - 1)
-    {
-        diffsecy = (-16 * boundary.boundary_value_v[0]->value(i, NY - 0.5, k, t) + 25 * v[indexingDirichelety(i, j, k)] - 10 * v[indexingDirichelety(i, j - 1, k)] + v[indexingDirichelety(i, j - 2, k)]) / (5.0 * DY * DY);
-    }
-    else
-    {
-        diffsecy = (v[indexingDirichelety(i, j + 1, k)] - 2 * v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i, j - 1, k)]) / (DY * DY);
-    }
-
-    if (i == 0)
-    {
-        diffsecx = (2 * v[indexingDirichelety(i, j, k)] - 5 * v[indexingDirichelety(i + 1, j, k)] + 4 * v[indexingDirichelety(i + 2, j, k)] - v[indexingDirichelety(i + 3, j, k)]) / (DX * DX);
-    }
-    else if (i == NX)
-    {
-        diffsecx = (-2 * v[indexingDirichelety(i, j, k)] + 5 * v[indexingDirichelety(i - 1, j, k)] - 4 * v[indexingDirichelety(i - 2, j, k)] + v[indexingDirichelety(i - 3, j, k)]) / (DX * DX);
-    }
-    else
-    {
-        diffsecx = (v[indexingDirichelety(i + 1, j, k)] - 2 * v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i - 1, j, k)]) / (DX * DX);
-    }
-
-    if (k == 0)
-    {
-        diffsecz = (2 * v[indexingDirichelety(i, j, k)] - 5 * v[indexingDirichelety(i, j, k + 1)] + 4 * v[indexingDirichelety(i, j, k + 2)] - v[indexingDirichelety(i, j, k + 3)]) / (DZ * DZ);
-    }
-    else if (k == NZ)
-    {
-        diffsecz = (-2 * v[indexingDirichelety(i, j, k)] + 5 * v[indexingDirichelety(i, j, k - 1)] - 4 * v[indexingDirichelety(i, j, k - 2)] + v[indexingDirichelety(i, j, k - 3)]) / (DZ * DZ);
-    }
-    else
-    {
-        diffsecz = (v[indexingDirichelety(i, j, k + 1)] - 2 * v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i, j, k - 1)]) / (DZ * DZ);
-    }
-
-    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_v(i, j, k, t); */
 }
 
 Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
@@ -799,104 +489,6 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
                          (w[lw + dim_z_z] - 2.0 * w[lw] + w[lw - dim_z_z]) / (DY * DY) +
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
            functionG_w(i - 1 + coords[0] * other_dim_x_z, j - 1 + coords[1] * other_dim_y_z, k, t);
-    /* Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
-    w_value = w[indexingDiricheletz(i, j, k)];
-    if (i == 0 || i == NX)
-    {
-        u_value = boundary.boundary_value_u[0]->value(i - 0.5, j, k, t);
-    }
-    else
-    {
-        u_value = (u[indexingDiricheletx(i, j, k)] + u[indexingDiricheletx(i, j, k + 1)] + u[indexingDiricheletx(i - 1, j, k)] + u[indexingDiricheletx(i - 1, j, k + 1)]) / 4.0;
-    }
-    if (j == 0 || j == NY)
-    {
-        v_value = boundary.boundary_value_v[0]->value(i, j - 0.5, k, t);
-    }
-    else
-    {
-        v_value = (v[indexingDirichelety(i, j, k)] + v[indexingDirichelety(i, j - 1, k)] + v[indexingDirichelety(i, j, k + 1)] + v[indexingDirichelety(i, j - 1, k + 1)]) / 4.0;
-    }
-
-    if (i == 0)
-    {
-        diffx = (-3 * w[indexingDiricheletz(i, j, k)] + 4 * w[indexingDiricheletz(i + 1, j, k)] - w[indexingDiricheletz(i + 2, j, k)]) / (2 * DX);
-    }
-    else if (i == NX)
-    {
-        diffx = (3 * w[indexingDiricheletz(i, j, k)] - 4 * w[indexingDiricheletz(i - 1, j, k)] + w[indexingDiricheletz(i - 2, j, k)]) / (2 * DX);
-    }
-    else
-    {
-        diffx = (w[indexingDiricheletz(i + 1, j, k)] - w[indexingDiricheletz(i - 1, j, k)]) / (2.0 * DX);
-    }
-
-    if (j == 0)
-    {
-        diffy = (-3 * w[indexingDiricheletz(i, j, k)] + 4 * w[indexingDiricheletz(i, j + 1, k)] - w[indexingDiricheletz(i, j + 2, k)]) / (2 * DY);
-    }
-    else if (j == NY)
-    {
-        diffy = (3 * w[indexingDiricheletz(i, j, k)] - 4 * w[indexingDiricheletz(i, j - 1, k)] + w[indexingDiricheletz(i, j - 2, k)]) / (2 * DY);
-    }
-    else
-    {
-        diffy = (w[indexingDiricheletz(i, j + 1, k)] - w[indexingDiricheletz(i, j - 1, k)]) / (2.0 * DY);
-    }
-
-    if (k == 0)
-    {
-        diffz = (-4 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, t) + 3 * w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i, j, k + 1)]) / (3.0 * DZ);
-    }
-    else if (k == NZ - 1)
-    {
-        diffz = (4 * boundary.boundary_value_w[0]->value(i, j, NZ - 0.5, t) - 3 * w[indexingDiricheletz(i, j, k)] - w[indexingDiricheletz(i, j, k - 1)]) / (3.0 * DZ);
-    }
-    else
-    {
-        diffz = (w[indexingDiricheletz(i, j, k + 1)] - w[indexingDiricheletz(i, j, k - 1)]) / (2.0 * DZ);
-    }
-
-    if (k == 0)
-    {
-        diffsecz = (16 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, t) - 25 * w[indexingDiricheletz(i, j, k)] + 10 * w[indexingDiricheletz(i, j, k + 1)] - w[indexingDiricheletz(i, j, k + 2)]) / (5.0 * DZ * DZ);
-    }
-    else if (k == NZ - 1)
-    {
-        diffsecz = (-16 * boundary.boundary_value_w[0]->value(i, j, NZ - 0.5, t) + 25 * w[indexingDiricheletz(i, j, k)] - 10 * w[indexingDiricheletz(i, j, k - 1)] + w[indexingDiricheletz(i, j, k - 2)]) / (5.0 * DZ * DZ);
-    }
-    else
-    {
-        diffsecz = (w[indexingDiricheletz(i, j, k + 1)] - 2 * w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i, j, k - 1)]) / (DZ * DZ);
-    }
-
-    if (i == 0)
-    {
-        diffsecx = (2 * w[indexingDiricheletz(i, j, k)] - 5 * w[indexingDiricheletz(i + 1, j, k)] + 4 * w[indexingDiricheletz(i + 2, j, k)] - w[indexingDiricheletz(i + 3, j, k)]) / (DX * DX);
-    }
-    else if (i == NX)
-    {
-        diffsecx = (-2 * w[indexingDiricheletz(i, j, k)] + 5 * w[indexingDiricheletz(i - 1, j, k)] - 4 * w[indexingDiricheletz(i - 2, j, k)] + w[indexingDiricheletz(i - 3, j, k)]) / (DX * DX);
-    }
-    else
-    {
-        diffsecx = (w[indexingDiricheletz(i + 1, j, k)] - 2 * w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i - 1, j, k)]) / (DX * DX);
-    }
-
-    if (j == 0)
-    {
-        diffsecy = (2 * w[indexingDiricheletz(i, j, k)] - 5 * w[indexingDiricheletz(i, j + 1, k)] + 4 * w[indexingDiricheletz(i, j + 2, k)] - w[indexingDiricheletz(i, j + 3, k)]) / (DY * DY);
-    }
-    else if (j == NY)
-    {
-        diffsecy = (-2 * w[indexingDiricheletz(i, j, k)] + 5 * w[indexingDiricheletz(i, j - 1, k)] - 4 * w[indexingDiricheletz(i, j - 2, k)] + w[indexingDiricheletz(i, j - 3, k)]) / (DY * DY);
-    }
-    else
-    {
-        diffsecy = (w[indexingDiricheletz(i, j + 1, k)] - 2 * w[indexingDiricheletz(i, j, k)] + w[indexingDiricheletz(i, j - 1, k)]) / (DY * DY);
-    }
-
-    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_w(i, j, k, t); */
 }
 Real IcoNS::functionG_u(int i, int j, int k, Real t)
 {
@@ -1115,4 +707,29 @@ void IcoNS::pressionCorrection(double *Y2_p)
         // UPPER BACK RIGHT VERTEX (1,1,1)
         Y2_p[indexingDiricheletp(zSize[0] - 1, zSize[1] - 1, zSize[2] - 1)] = (4 / 3) * Y2_p[indexingDiricheletp(zSize[0] - 2, zSize[1] - 1, zSize[2] - 1)] - (1 / 3) * Y2_p[indexingDiricheletp(zSize[0] - 3, zSize[1] - 1, zSize[2] - 1)];
     }
+
+    // compute the average value of the pressure field and subtract it from the pressure field
+    Real sum = 0.0;
+    for (int i = lbx; i < zSize[0] - rbx; i++)
+    {
+        for (int j = lby; j < zSize[1] - rby; j++)
+        {
+            for (int k = 1; k < zSize[2] - 1; k++)
+            {
+                sum += Y2_p[indexingDiricheletp(i, j, k)];
+            }
+        }
+    }
+    Real average = sum / (zSize[0] * zSize[1] * zSize[2]);
+    for (int i = lbx; i < zSize[0] - rbx; i++)
+    {
+        for (int j = lby; j < zSize[1] - rby; j++)
+        {
+            for (int k = 1; k < zSize[2] - 1; k++)
+            {
+                Y2_p[indexingDiricheletp(i, j, k)] -= average;
+            }
+        }
+    }
+
 }
