@@ -4,11 +4,12 @@
 
 void IcoNS::solve_time_step(Real time)
 {
+    int ipencil=0;
     PoissonSolver poissonSolver(false,false,false, c2d);
 
     // 1) pressure point exchange
     double* halo_p;
-    c2d->updateHalo(grid.p, halo_p,1,2);
+    c2d->updateHalo(grid.p, halo_p,1,ipencil);
     
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -78,7 +79,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 2) y2_p pressure point exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -132,7 +133,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 3) Phi_p exchange 
     double* halo_phi;
-    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
+    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -199,7 +200,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 3) y2_p exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -254,7 +255,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 4) Phi_p exchange
     c2d->deallocXYZ(halo_phi);
-    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
+    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -320,7 +321,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 5) y2_p exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
 
     for(int i = 1; i < newDimX_x - 1; i++)
     {
