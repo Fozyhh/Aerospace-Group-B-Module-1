@@ -822,155 +822,163 @@ Real IcoNS::error_comp_Z(const Real t)
 Real IcoNS::error_comp_P(const Real t)
 {
     Real error = 0.0;
+    int offset_x = coords[0] * zSize[0];
+    int offset_y = coords[1] * zSize[1];
     // first slice (left face)
+    if(lbx)
     {
-        error += ((grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
-                  (grid.p[0] - exact_solution.value_p(0, 0, 0, t)) *
-                  DX * DY * DZ / 8);
-
-        for (int k = 1; k < NZ; k++)
+        if(lby){
+            error += ((grid.p[getp(0,0,0)] - exact_solution.value_p(0, 0, 0, t)) *
+                        (grid.p[getp(0,0,0)] - exact_solution.value_p(0, 0, 0, t)) *
+                        DX * DY * DZ / 8);
+        for (int k = 1; k < zSize[2] -1; k++)
         {
-            error += ((grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
-                      (grid.p[k] - exact_solution.value_p(0, 0, k, t)) *
+            error += ((grid.p[getp(0,0,k)] - exact_solution.value_p(0, 0, k, t)) *
+                      (grid.p[getp(0,0,k)] - exact_solution.value_p(0, 0, k, t)) *
                       DX * DY * DZ / 4);
         }
+            error += ((grid.p[getp(0,0,zSize[2] - 1)] - exact_solution.value_p(0, 0, zSize[2] -1, t)) *
+                    (grid.p[getp(0,0,zSize[2] -1)] - exact_solution.value_p(0, 0, zSize[2] -1, t)) *
+                    DX * DY * DZ / 8);
+        }
 
-        error += ((grid.p[NZ] - exact_solution.value_p(0, 0, NZ, t)) *
-                  (grid.p[NZ] - exact_solution.value_p(0, 0, NZ, t)) *
-                  DX * DY * DZ / 8);
-
-        for (int j = 1; j < NY; j++)
+        for (int j = 0; j < zSize[1]; j++)
         {
-            error += ((grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
-                      (grid.p[j * (NZ + 1)] - exact_solution.value_p(0, j, 0, t)) *
+            error += ((grid.p[getp(0,j,0)] - exact_solution.value_p(0, j + offset_y, 0, t)) *
+                      (grid.p[getp(0,j,0)] - exact_solution.value_p(0, j + offset_y, 0, t)) *
                       DX * DY * DZ / 4);
-            for (int k = 1; k < NZ; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
-                error += ((grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
-                          (grid.p[j * (NZ + 1) + k] - exact_solution.value_p(0, j, k, t)) *
+                error += ((grid.p[getp(0,j,k)] - exact_solution.value_p(0, j + offset_y, k, t)) *
+                          (grid.p[getp(0,j,k)] - exact_solution.value_p(0, j + offset_y, k, t)) *
                           DX * DY * DZ / 2);
             }
-            error += ((grid.p[j * (NZ + 1) + NZ] - exact_solution.value_p(0, j, NZ, t)) *
-                      (grid.p[j * (NZ + 1) + NZ] - exact_solution.value_p(0, j, NZ, t)) *
+            error += ((grid.p[getp(0,j,zSize[2] - 1)] - exact_solution.value_p(0, j + offset_y, zSize[2] - 1, t)) *
+                      (grid.p[getp(0,j,zSize[2] - 1)] - exact_solution.value_p(0, j + offset_y, zSize[2] - 1, t)) *
                       DX * DY * DZ / 4);
         }
+        if(rby){
+            error += ((grid.p[getp(0,zSize[1] - 1,0)] - exact_solution.value_p(0, zSize[1] - 1, 0, t)) *
+                    (grid.p[getp(0,zSize[1] - 1,0)] - exact_solution.value_p(0, zSize[1] - 1, 0, t)) *
+                    DX * DY * DZ / 8);
 
-        error += ((grid.p[NY * (NZ + 1)] - exact_solution.value_p(0, NY, 0, t)) *
-                  (grid.p[NY * (NZ + 1)] - exact_solution.value_p(0, NY, 0, t)) *
-                  DX * DY * DZ / 8);
+            for (int k = 1; k < zSize[2] - 1; k++)
+            {
+                error += ((grid.p[getp(0,zSize[1] - 1,k)] - exact_solution.value_p(0, (zSize[1] - 1), k, t)) *
+                        (grid.p[getp(0,zSize[1] - 1,k)] - exact_solution.value_p(0, (zSize[1] - 1), k, t)) *
+                        DX * DY * DZ / 4);
+            }
 
-        for (int k = 1; k < NZ; k++)
-        {
-            error += ((grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
-                      (grid.p[NY * (NZ + 1) + k] - exact_solution.value_p(0, NY, k, t)) *
-                      DX * DY * DZ / 4);
-        }
-
-        error += ((grid.p[NY * (NZ + 1) + NZ] - exact_solution.value_p(0, NY, NZ, t)) *
-                  (grid.p[NY * (NZ + 1) + NZ] - exact_solution.value_p(0, NY, NZ, t)) *
-                  DX * DY * DZ / 8);
+            error += ((grid.p[getp(0,zSize[1] - 1,zSize[2] - 1)] - exact_solution.value_p(0, (zSize[1] - 1), zSize[2] - 1, t)) *
+                    (grid.p[getp(0,zSize[1] - 1,zSize[2] - 1)] - exact_solution.value_p(0, (zSize[1] - 1), zSize[2] - 1, t)) *
+                    DX * DY * DZ / 8);
+            }
     }
 
     // middle slices
     {
-        for (int i = 1; i < NX; i++)
+        for (int i = 0; i < zSize[0] - 1; i++)
         {
-            error += ((grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
-                      (grid.p[i * (NY + 1) * (NZ + 1)] - exact_solution.value_p(i, 0, 0, t)) *
-                      DX * DY * DZ / 4);
+            if(lby){
+                error += ((grid.p[getp(i,0,0)] - exact_solution.value_p(i + offset_x, 0, 0, t)) *
+                        (grid.p[getp(i,0,0)] - exact_solution.value_p(i + offset_x, 0, 0, t)) *
+                        DX * DY * DZ / 4);
 
-            for (int k = 1; k < NZ; k++)
-            {
-                error += ((grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
-                          (grid.p[i * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(i, 0, k, t)) *
-                          DX * DY * DZ / 2);
-            }
-            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(i, 0, NZ, t)) *
-                      (grid.p[i * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(i, 0, NZ, t)) *
-                      DX * DY * DZ / 4);
-
-            for (int j = 1; j < NY; j++)
-            {
-                error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
-                          (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(i, j, 0, t)) *
-                          DX * DY * DZ / 2);
-
-                for (int k = 1; k < NZ; k++)
+                for (int k = 1; k < zSize[2] - 1; k++)
                 {
-                    error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
-                              (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(i, j, k, t)) *
+                    error += ((grid.p[getp(i,0,k)] - exact_solution.value_p(i + offset_x, 0, k, t)) *
+                            (grid.p[getp(i,0,k)] - exact_solution.value_p(i + offset_x, 0, k, t)) *
+                            DX * DY * DZ / 2);
+                }
+                error += ((grid.p[getp(i,0,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, 0, zSize[2] -1, t)) *
+                        (grid.p[getp(i,0,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, 0, zSize[2] -1, t)) *
+                        DX * DY * DZ / 4);
+            }
+            for (int j = 0; j < zSize[1] - 1; j++)
+            {
+                error += ((grid.p[getp(i,j,0)] - exact_solution.value_p(i + offset_x, j + offset_y, 0, t)) *
+                          (grid.p[getp(i,j,0)] - exact_solution.value_p(i + offset_x, j + offset_y, 0, t)) *
+                          DX * DY * DZ / 2);
+
+                for (int k = 1; k < zSize[2] - 1; k++)
+                {
+                    error += ((grid.p[getp(i,j,k)] - exact_solution.value_p(i + offset_x, j + offset_y, k, t)) *
+                              (grid.p[getp(i,j,k)] - exact_solution.value_p(i + offset_x, j + offset_y, k, t)) *
                               DX * DY * DZ);
                 }
 
-                error += ((grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(i, j, NZ, t)) *
-                          (grid.p[i * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(i, j, NZ, t)) *
+                error += ((grid.p[getp(i,j,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, j + offset_y, zSize[2] - 1, t)) *
+                          (grid.p[getp(i,j,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, j + offset_y, zSize[2] - 1, t)) *
                           DX * DY * DZ / 2);
             }
+            if(rby){
+                error += ((grid.p[getp(i,zSize[1] - 1,0)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, 0, t)) *
+                          (grid.p[getp(i,zSize[1] - 1,0)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, 0, t)) *
+                        DX * DY * DZ / 4);
 
-            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(i, NY, 0, t)) *
-                      (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(i, NY, 0, t)) *
-                      DX * DY * DZ / 4);
+                for (int k = 1; k < zSize[2] - 1; k++)
+                {
+                    error += ((grid.p[getp(i,zSize[1] - 1,k)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, k, t)) *
+                              (grid.p[getp(i,zSize[1] - 1,k)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, k, t)) *
+                            DX * DY * DZ / 2);
+                }
 
-            for (int k = 1; k < NZ; k++)
-            {
-                error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
-                          (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(i, NY, k, t)) *
-                          DX * DY * DZ / 2);
+                error += ((grid.p[getp(i,zSize[1] - 1,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, zSize[2] - 1, t)) *
+                          (grid.p[getp(i,zSize[1] - 1,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, zSize[1] - 1, zSize[2] - 1, t)) *
+                        DX * DY * DZ / 4);
             }
-
-            error += ((grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(i, NY, NZ, t)) *
-                      (grid.p[i * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(i, NY, NZ, t)) *
-                      DX * DY * DZ / 4);
         }
     }
-
     // last slice (right face)
+    if(rbx)
     {
-        error += ((grid.p[NX * (NY + 1) * (NZ + 1)] - exact_solution.value_p(NX, 0, 0, t)) *
-                  (grid.p[NX * (NY + 1) * (NZ + 1)] - exact_solution.value_p(NX, 0, 0, t)) *
-                  DX * DY * DZ / 8);
+        if(lby){
+            error += ((grid.p[getp(zSize[0] - 1,0,0)] - exact_solution.value_p(zSize[0] - 1, 0, 0, t)) *
+                    (grid.p[getp(zSize[0] - 1,0,0)] - exact_solution.value_p(zSize[0] - 1, 0, 0, t)) *
+                    DX * DY * DZ / 8);
 
-        for (int k = 1; k < NZ; k++)
-        {
-            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
-                      (grid.p[NX * (NY + 1) * (NZ + 1) + k] - exact_solution.value_p(NX, 0, k, t)) *
-                      DX * DY * DZ / 4);
-        }
-
-        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(NX, 0, NZ, t)) *
-                  (grid.p[NX * (NY + 1) * (NZ + 1) + NZ] - exact_solution.value_p(NX, 0, NZ, t)) *
-                  DX * DY * DZ / 8);
-
-        for (int j = 1; j < NY; j++)
-        {
-            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
-                      (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1)] - exact_solution.value_p(NX, j, 0, t)) *
-                      DX * DY * DZ / 4);
-            for (int k = 1; k < NZ; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
-                error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
-                          (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + k] - exact_solution.value_p(NX, j, k, t)) *
+                error += ((grid.p[getp(zSize[0] - 1,0,k)] - exact_solution.value_p(zSize[0] - 1, 0, k, t)) *
+                        (grid.p[getp(zSize[0] - 1,0,k)] - exact_solution.value_p(zSize[0] - 1, 0, k, t)) *
+                        DX * DY * DZ / 4);
+            }
+
+            error += ((grid.p[getp(zSize[0] - 1,0,zSize[2] - 1)] - exact_solution.value_p(zSize[0] - 1, 0, zSize[2]- 1, t)) *
+                    (grid.p[getp(zSize[0] - 1,0,zSize[2] - 1)] - exact_solution.value_p(zSize[0] - 1, 0, zSize[2]- 1, t)) *
+                    DX * DY * DZ / 8);
+        }
+        for (int j = 0; j < zSize[1] - 1; j++)
+        {
+            error += ((grid.p[getp(zSize[0] - 1,j,0)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, 0, t)) *
+                      (grid.p[getp(zSize[0] - 1,j,0)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, 0, t)) *
+                      DX * DY * DZ / 4);
+            for (int k = 1; k < zSize[2] - 1; k++)
+            {
+                error += ((grid.p[getp(zSize[0] - 1,j,k)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, k, t)) *
+                          (grid.p[getp(zSize[0] - 1,j,k)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, k, t)) *
                           DX * DY * DZ / 2);
             }
-            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(NX, j, NZ, t)) *
-                      (grid.p[NX * (NY + 1) * (NZ + 1) + j * (NZ + 1) + NZ] - exact_solution.value_p(NX, j, NZ, t)) *
+            error += ((grid.p[getp(zSize[0] - 1,j,zSize[2] - 1)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, zSize[2] - 1, t)) *
+                      (grid.p[getp(zSize[0] - 1,j,zSize[2] - 1)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, zSize[2] - 1, t)) *
                       DX * DY * DZ / 4);
         }
+        if(rby){
+            error += ((grid.p[getp(zSize[0] - 1,zSize[1] - 1,0)] - exact_solution.value_p(zSize[0] - 1, zSize[1] - 0, 0, t)) *
+                      (grid.p[getp(zSize[0] - 1,zSize[1] - 1,0)] - exact_solution.value_p(zSize[0] - 1, zSize[1] - 0, 0, t)) *
+                    DX * DY * DZ / 8);
 
-        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(NX, NY, 0, t)) *
-                  (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1)] - exact_solution.value_p(NX, NY, 0, t)) *
-                  DX * DY * DZ / 8);
+            for (int k = 1; k < zSize[2] - 1; k++)
+            {
+                error += ((grid.p[getp(zSize[0] - 1,zSize[1] - 1,k)] - exact_solution.value_p(zSize[0] - 1, zSize[1] - 1, k, t)) *
+                          (grid.p[getp(zSize[0] - 1,zSize[1] - 1,k)] - exact_solution.value_p(zSize[0] - 1, zSize[1] - 1, k, t)) *
+                        DX * DY * DZ / 4);
+            }
 
-        for (int k = 1; k < NZ; k++)
-        {
-            error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *
-                      (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + k] - exact_solution.value_p(NX, NY, k, t)) *
-                      DX * DY * DZ / 4);
-        }
-
-        error += ((grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(NX, NY, NZ, t)) *
-                  (grid.p[NX * (NY + 1) * (NZ + 1) + NY * (NZ + 1) + NZ] - exact_solution.value_p(NX, NY, NZ, t)) *
-                  DX * DY * DZ / 8);
+            error += ((grid.p[getp(zSize[0] - 1,zSize[1]-1,zSize[2] - 1)] - exact_solution.value_p(zSize[0] -1, zSize[1] - 1, zSize[2] -1, t)) *
+                      (grid.p[getp(zSize[0] - 1,zSize[1]-1,zSize[2] - 1)] - exact_solution.value_p(zSize[0] -1, zSize[1] - 1, zSize[2] -1, t)) *
+                     DX*DY* DZ / 8);
+        }   
     }
 
     return error;
