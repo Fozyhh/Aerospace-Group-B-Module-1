@@ -1158,7 +1158,7 @@ void IcoNS::Output(){
                     grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2-1)] +
                     grid.w[getz(newDimX_z, i, (dim_z_z-1)/2)] +
                     grid.w[getz(newDimX_z, i, (dim_z_z-1)/2-1)])/4;
-                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)] 
+                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)]; 
                     // + grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)])/2;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
@@ -1200,7 +1200,7 @@ void IcoNS::Output(){
                     grid.w[getz(i, newDimY_x-1, (dim_z-1)/2-1)] +
                     grid.w[getz(i, newDimY_x, (dim_z-1)/2)] +
                     grid.w[getz(i, newDimY_x, (dim_z-1)/2-1)])/4;
-                p = grid.p[getp(i, zSize[1]-1, (zSize[2]-1)/2)] 
+                p = grid.p[getp(i, zSize[1]-1, (zSize[2]-1)/2)];
                     // + grid.p[getp(i, zSize[1], (zSize[2]-1)/2)])/2;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
@@ -1271,8 +1271,8 @@ void IcoNS::Output(){
                 grid.v[gety(iY, jY, k+1)] +
                 grid.v[gety(iY, jY-1, k+1)])/4;
             w = grid.w[getz(iZ, jZ, k)];
-            p = grid.p[getp(iP, jP, k)] 
-                // + grid.p[getp(iP, jP, k)])/2;
+            p = grid.p[getp(iP, jP, k)];
+                // + grid.p[getp(iP, jP, k+1)])/2;
 
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
