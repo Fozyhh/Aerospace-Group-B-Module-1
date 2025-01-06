@@ -75,7 +75,7 @@ void IcoNS::solve_time_step(Real time)
         }
     }
     // TODO: paura, exchange data?, check
-    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0, nullptr);
+    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
 
     for (int i = 0; i < zSize[0]; i++)
     {
@@ -215,7 +215,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0, nullptr);
+    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
 
     for (int i = 0; i < zSize[0]; i++)
     {
