@@ -1,14 +1,11 @@
 #include "core.hpp"
 #include "poissonSolver.hpp"
+#include <fstream>
+
 
 void IcoNS::solve_time_step(Real time)
 {
-    int offset_x_x = coords[0] * other_dim_x_x;
-    int offset_y_x = coords[1] * other_dim_y_x;
-    int offset_x_y = coords[0] * other_dim_x_y;
-    int offset_y_y = coords[1] * other_dim_y_y;
-    int offset_x_z = coords[0] * other_dim_x_z;
-    int offset_y_z = coords[1] * other_dim_y_z;
+
     PoissonSolver poissonSolver(false, false, false, c2d);
 
     std::cout << "Solving time step at t = " << time << std::endl;
@@ -85,8 +82,21 @@ void IcoNS::solve_time_step(Real time)
         }
     }
     // TODO: paura, exchange data?, check
-    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
+    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0, nullptr);
+
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                Y2_p[indexingDiricheletp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time)-sin(time+64.0/120.0*DT));   
+            }
+        }
+    }
+
     poissonSolver.solveNeumannPoisson(Y2_p);
+
     // TODO: adapt to the code now
     // boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
 
@@ -206,61 +216,22 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
-                /* // Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (64.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
-                Real diffx = 0.0;
-                Real diffy = 0.0;
-                Real diffz = 0.0;
-
-                if (i == 0)
-                {
-                    // continue;
-                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 0.5, j, k, time + 80.0 / 120.0 * DT) + 9 * Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i + 1, j, k)]) / (3 * DX);
-                }
-                else if (i == NX)
-                {
-                    // continue;
-                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j, k, time + 80.0 / 120.0 * DT) - 9 * Y3_x[indexingDiricheletx(i - 1, j, k)] + Y3_x[indexingDiricheletx(i - 2, j, k)]) / (3 * DX);
-                }
-                else
-                {
-                    diffx = (Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX);
-                }
-
-                if (j == 0)
-                {
-                    // continue;
-                    diffy = (-8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + 80.0 / 120.0 * DT) + 9 * Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j + 1, k)]) / (3 * DY);
-                }
-                else if (j == NY)
-                {
-                    // continue;
-                    diffy = (8 * boundary.boundary_value_v[0]->value(i, j - 0.5, k, time + 80.0 / 120.0 * DT) - 9 * Y3_y[indexingDirichelety(i, j - 1, k)] + Y3_y[indexingDirichelety(i, j - 2, k)]) / (3 * DY);
-                }
-                else
-                {
-                    diffy = (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY);
-                }
-
-                if (k == 0)
-                {
-                    // continue;
-                    diffz = (-8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + 80.0 / 120.0 * DT) + 9 * Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k + 1)]) / (3 * DZ);
-                }
-                else if (k == NZ)
-                {
-                    // continue;
-                    diffz = (8 * boundary.boundary_value_w[0]->value(i, j, k - 0.5, time + 80.0 / 120.0 * DT) - 9 * Y3_z[indexingDiricheletz(i, j, k - 1)] + Y3_z[indexingDiricheletz(i, j, k - 2)]) / (3 * DZ);
-                }
-                else
-                {
-                    diffz = (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ);
-                } */
-
                 Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (16.0 * DT) * ((Y3_x[indexingDiricheletx(i, j, k)] - Y3_x[indexingDiricheletx(i - 1, j, k)]) / (DX) + (Y3_y[indexingDirichelety(i, j, k)] - Y3_y[indexingDirichelety(i, j - 1, k)]) / (DY) + (Y3_z[indexingDiricheletz(i, j, k)] - Y3_z[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
-    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
+    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0, nullptr);
+
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                Y2_p[indexingDiricheletp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time+64.0/120.0*DT)-sin(time+80.0/120.0*DT));   
+            }
+        }
+    }
 
     poissonSolver.solveNeumannPoisson(Y2_p);
 
@@ -354,7 +325,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[indexingDirichelety(i, j, k)] = Y3_y[indexingDirichelety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                       40.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i, j + 1, k)] - halo_phi[indexingDiricheletHaloP(i, j, k)]) / (DY);
+                                                      40.0 / 120.0 * DT * (halo_phi[indexingDiricheletHaloP(i, j + 1, k)] - halo_phi[indexingDiricheletHaloP(i, j, k)]) / (DY);
             }
         }
     }
@@ -372,25 +343,144 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-
+    
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
+    //the same thing for grid.u, grid.v, grid.w
+    std::ofstream file;
+    file.open("grid_u.vtk");
+    file << "# vtk DataFile Version 3.0\n";
+    file << "vtk output\n";
+    file << "ASCII\n";
+    file << "DATASET STRUCTURED_POINTS\n";
+    file << "DIMENSIONS " << zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    file << "ORIGIN 0 0 0\n";
+    file << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    file << "POINT_DATA " << zSize[0] * zSize[1] * zSize[2] << "\n";
+    file << "SCALARS grid_u float\n";
+    file << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                file << grid.u[indexingDiricheletx(i, j, k)] << "\n";
+            }
+        }
+    }
+    file.close();
+
+    file.open("grid_v.vtk");
+    file << "# vtk DataFile Version 3.0\n";
+    file << "vtk output\n";
+    file << "ASCII\n";
+    file << "DATASET STRUCTURED_POINTS\n";
+    file << "DIMENSIONS " << zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    file << "ORIGIN 0 0 0\n";
+    file << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    file << "POINT_DATA " << zSize[0] * zSize[1] * zSize[2] << "\n";
+    file << "SCALARS grid_v float\n";
+    file << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                file << grid.v[indexingDirichelety(i, j, k)] << "\n";
+            }
+        }
+    }
+    file.close();
+
+    file.open("grid_w.vtk");
+    file << "# vtk DataFile Version 3.0\n";
+    file << "vtk output\n";
+    file << "ASCII\n";
+    file << "DATASET STRUCTURED_POINTS\n";
+    file << "DIMENSIONS " << zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    file << "ORIGIN 0 0 0\n";
+    file << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    file << "POINT_DATA " << zSize[0] * zSize[1] * zSize[2] << "\n";
+    file << "SCALARS grid_w float\n";
+    file << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                file << grid.w[indexingDiricheletz(i, j, k)] << "\n";
+            }
+        }
+    }
+    file.close();
     MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
-
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                Y2_p[indexingDiricheletp(i, j, k)] = 0;   
+            }
+        }
+    }
     for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
-                Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i, j, k)] - grid.u[indexingDiricheletx(i - 1, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j, k)] - grid.v[indexingDirichelety(i, j - 1, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
+                Y2_p[indexingDiricheletp(i - 1, j - 1, k)] = 120.0 / (40.0 * DT) * ((grid.u[indexingDiricheletx(i - 1, j, k)] - grid.u[indexingDiricheletx(i - 2, j, k)]) / (DX) + (grid.v[indexingDirichelety(i, j - 1, k)] - grid.v[indexingDirichelety(i, j - 2, k)]) / (DY) + (grid.w[indexingDiricheletz(i, j, k)] - grid.w[indexingDiricheletz(i, j, k - 1)]) / (DZ));
             }
         }
     }
-    boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
+    boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0, nullptr);
 
+    //create a vtk file for Y2_p so that i can see it on paraview
+    
+    file.open("Y2_p.vtk");
+    file << "# vtk DataFile Version 3.0\n";
+    file << "vtk output\n";
+    file << "ASCII\n";
+    file << "DATASET STRUCTURED_POINTS\n";
+    file << "DIMENSIONS " << zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    file << "ORIGIN 0 0 0\n";
+    file << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    file << "POINT_DATA " << zSize[0] * zSize[1] * zSize[2] << "\n";
+    file << "SCALARS Y2_p float\n";
+    file << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                file << Y2_p[indexingDiricheletp(i, j, k)] << "\n";
+            }
+        }
+    }
+    file.close();
+
+    
+    
+
+
+
+    /* for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                Y2_p[indexingDiricheletp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time+80.0/120.0*DT)-sin(time+DT)); 
+            }
+        }
+    } */
     poissonSolver.solveNeumannPoisson(Y2_p);
 
     // 5) y2_p exchange
