@@ -1,5 +1,9 @@
 #include "constants.hpp"
 
+Real SX = 0.0;
+Real SY = 0.0;
+Real SZ = 0.0;
+
 // Domain lengths
 Real LX = 10.0;  // Example value
 Real LY = 20.0;  // Example value
@@ -18,7 +22,8 @@ Real DZ = LZ / NZ;
 
 // Time-related parameters
 Real DT = 0.001;  // Example time step
-Real T = 100.0;   // Example total time
+Real Nt = 1000.0;   // Example total time
+Real T = 0.1;  // Current time
 
 // Boundary conditions
 bool BX = false, BY = false, BZ = false; // Periodic by default

@@ -31,11 +31,8 @@ public:
       zSize{c2d->zSize[0], c2d->zSize[1], c2d->zSize[2]}
     {}
 
-    //TODO: array brutti, 2decomp per la separazione
     void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
     void solveNeumannPoisson(double* F);
 };
 
 #endif
-
-// We have to decide how to pass different types of boundaries (Periodic or Neumann). For now we will use a boolean

@@ -10,43 +10,16 @@
  * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
  */
-// TODO:
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
-    // Add size checks at the beginning
-    /*
-    std::cout << "newDimX_x :" << newDimX_x << " newDimX_y :" <<newDimX_y << " newDimX_z :" <<newDimX_z << " dim_z :" << dim_z << " dim_z_z :"<<  dim_z_z << " \n"
-    << "newDimY_x :" << newDimY_x << " newDimY_y :" <<newDimY_y << " newDimY_z :" <<newDimY_z << " dim_z :" << dim_z << " dim_z_z :"<<  dim_z_z
-    << std::endl;
-
-    size_t expected_size_x = (newDimX_x) * (newDimY_x) * dim_z;
-    size_t expected_size_y = (newDimX_y) * (newDimY_y) * dim_z;
-    size_t expected_size_z = (newDimX_z) * (newDimY_z) * dim_z_z;
-
-    if (Yx.size() < expected_size_x ||
-        Yy.size() < expected_size_y ||
-        Yz.size() < expected_size_z) {
-        throw std::runtime_error("Vector sizes are insufficient");
-    }
-
- */
-
-
-    // UPDATE EVERY INDEX SUCH THAT YOU SKIP FIRST FACE(GHOST)
-    // AND THE FIRST AND LAST ROW OF EACH FACE
     int face;
-    // X
-    // LEFT FACE
-
     // face 0 -> lbx left
     // face 1 -> rbx right
     // face 2 -> lby front
     // face 3 -> rby back
     // face 4 5 -> no partition on z
 
-    // Have to adjust indexes in exact values if it is made
-    // by processor with diff coords with global indexes
-    // Have to skip cycles: EITHER by adjusting loops or by hand for lines outside loops
+    // Global offsets
     int offset_x_x = coords[0] * other_dim_x_x -1;
     int offset_y_x = coords[1] * other_dim_y_x -1;
     int offset_x_y = coords[0] * other_dim_x_y -1;
@@ -54,22 +27,22 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     int offset_x_z = coords[0] * other_dim_x_z -1;
     int offset_y_z = coords[1] * other_dim_y_z -1;
 
+    // X
+    // LEFT FACE
     if (lbx)
     {
         if (lby)
-        { // if it's a processor with coords[1]==0 then it has the front face as boundary
+        {
             face = 2;
             for (int k = 0; k < dim_z; k++)
             {
-                Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0, 0, k, t); // FOR X AND Y WE NEED GLOBAL INDICES OR IT DOESNT WORK
+                Yx[((newDimY_x + 1) * dim_z) + k] = boundary_value_u[face]->value(0, 0, k, t);
             }
         }
 
-        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++) // Parti da 1(salti ghost) + 1(se devi considerare il boundary) e arrivi a newDimY -1(ghost)-1(se boundary destro)
+        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++) 
         {
             face = 4;
-            // lby coords = 1 rby coords = 0
-            // we move in the opposite direction of the y process count unfortunately
             Yx[((newDimY_x)*dim_z) + j * dim_z] = boundary_value_u[face]->value(0, j + offset_y_x, 0, t);
             face = 0;
             for (int k = 1; k < dim_z - 1; k++)
@@ -285,7 +258,7 @@ Real Boundary::approximate_boundary_u(int x, int y, int z, Real t, int face, int
     Real dv = (boundary_value_v[face]->value(x, y, z, t) - boundary_value_v[face]->value(x, y - 1.0, z, t)) / DY;
     Real dw = (boundary_value_w[face]->value(x, y, z, t) - boundary_value_w[face]->value(x, y, z - 1.0, t)) / DZ;
 
-    return boundary_value_u[face]->value((x - 0.5 /*(DX/2.0)*/), y, z, t) - (dv + dw) * (DX / 2) * side;
+    return boundary_value_u[face]->value((x - 0.5), y, z, t) - (dv + dw) * (DX / 2) * side;
 }
 
 
@@ -315,8 +288,6 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
 
-
-//TODO: UPDATE ALL INDICES, Y2_p indices?
 void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, double* &Y2_p, Real t, Real c)
 {
     //TODO: check the global offsets are the same
@@ -327,9 +298,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
     int offset_x_z = coords[0] * other_dim_x_z;
     int offset_y_z = coords[1] * other_dim_y_z;
 
-    // is the denominator 3*DX correct? -> 2*DX ?
     // LEFT FACE
-    //TODO: how does iteration on p works? bc rn every processor is skipping first element if it is not boundary
     if(lbx){
         for (int j = lby; j < zSize[1] - rby; j++)
         {

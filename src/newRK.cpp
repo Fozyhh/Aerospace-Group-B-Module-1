@@ -146,7 +146,7 @@ void IcoNS::solve_time_step(Real time)
 
 
     // 3) Phi_p exchange 
-    double *halo_phi;
+    double* halo_phi;
     c2d->updateHalo(Phi_p, halo_phi, 1, 2);
     pressionCorrection(Phi_p);
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
