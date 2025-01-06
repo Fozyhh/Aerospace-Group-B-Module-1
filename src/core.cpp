@@ -8,33 +8,10 @@
 #include <memory>
 #include <mpi.h>
 
-//#define VERBOSE
 
-#ifdef VERBOSE
-#include <chrono>
-#endif
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
-#ifdef VERBOSE
-    std::cout << "*************************************************" << std::endl;
-    std::cout << "Incompressible Navier-Stokes equation Solver" << std::endl
-              << std::endl
-              << std::endl;
-
-    std::cout << "Solving for a Mesh of physical dimension (" << LX << "," << LY << "," << LZ << ") meters." << std::endl
-              << "Number of partitions: " << NX << " nx, " << NY << " ny, " << NZ << " nz." << std::endl
-              << "Dimension of a single cell:(" << DX << "," << DY << "," << DZ << ")." << std::endl
-              << "Reynolds number: " << RE << std::endl
-              << "Total lenght of simulation: " << T << " seconds, whit a time step of " << DT << " seconds." << std::endl
-
-              << "------------------------------------------------------------" << std::endl
-              << std::endl
-              << "Reading Initial condition from file: Not implemented yet, setting all to 0." << std::endl
-              << "Reading Boundary conditions from file: Not implemented yet, using default ones" << std::endl;
-    std::cout << "*************************************************" << std::endl
-              << std::endl;
-#endif
     setBoundaryConditions();
 
     setParallelization();
@@ -259,10 +236,6 @@ void IcoNS::solve()
     Real error;
     int i = 0;
 
-#ifdef VERBOSE
-    std::cout << "Starting solver" << std::endl;
-    auto start = std::chrono::high_resolution_clock::now();
-#endif
     double x=0;
     while (i < Nt)
     {
@@ -282,16 +255,7 @@ void IcoNS::solve()
         time += DT;
         i++;
     }
-#ifdef VERBOSE
-    if(rank==0){
-        std::cout << "At time: " << time << "s of " << T << "s the L2 norm of the error is: " << error << std::endl;
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-        std::cout << std::endl
-                << "Time: " << duration.count() << std::endl;
-    }
-
-#endif
+    output();
 }
 
 void IcoNS::L2_error(const Real t)

@@ -169,7 +169,4 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     for(int i = 0; i < zSize[0]*zSize[1]*zSize[2]; i++) {
         F[i] /= normalization_factor1;
     }
-    if(c2d->nRank == 0) {
-        std::cout << "F:" << F[0] << ", " << F[1] << std::endl;
-    }
 }

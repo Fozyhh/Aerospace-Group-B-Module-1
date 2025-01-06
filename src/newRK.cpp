@@ -5,8 +5,8 @@
 void IcoNS::solve_time_step(Real time)
 {
     PoissonSolver poissonSolver(false,false,false, c2d);
-    
-    std::cout << "Solving time step at t = " << time << std::endl;
+    if(rank==0)
+            std::cout << "Solving time step at t = " << time << std::endl;
 
     // 1) pressure point exchange
     double* halo_p;
