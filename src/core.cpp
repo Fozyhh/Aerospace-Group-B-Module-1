@@ -1361,7 +1361,7 @@ void IcoNS::output(){
 void IcoNS::output_x(){
     MPI_File fh;
     MPI_Offset offset = 0;
-    const float x_middle = /*SX + */LX / 2;
+    const float x_middle = SX + LX / 2;
     if(rank==0)
         std::remove("solution_x.vtk");
     MPI_File_open(cart_comm, "solution_x.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
@@ -1427,16 +1427,17 @@ void IcoNS::output_x(){
     int offset_y_z = coords[1] * other_dim_y_z -1;
     int offset_x_p = coords[0] * zSize[0] - 1;
     int offset_y_p = coords[1] * zSize[1] - 1;
-
+    double* halo_p;
+    c2d->updateHalo(grid.p, halo_p,1,2);
     if (x_index >= offset_x_x && x_index < dim_x_x + offset_x_x) {
-
+        
         int local_x_x = x_index - offset_x_x + 1;
         int local_x_y = x_index - offset_x_y + 1;
         int local_x_z = x_index - offset_x_z + 1;
-        int local_x_p = x_index - offset_x_z + 1;
+        int local_x_p = x_index - offset_x_p + 1;
 
-        for(int j = 1; j < zSize[1] +1; j++){
-            for(int k=0; k < zSize[2]; k++){
+        for(int j = 1; j < newDimY_x - 1; j++){
+            for(int k=0; k < dim_z ; k++){
                 
                 // Write grid points coordinate
                 points << x_middle << " "
@@ -1448,7 +1449,7 @@ void IcoNS::output_x(){
 
                 if(lby &&j==1){
                     valuesy << (boundary.boundary_value_v[2]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[2]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
-                }else if(rby && j==zSize[1]){
+                }else if(rby && j==newDimY_x - 2){
                     valuesy << (boundary.boundary_value_v[3]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[3]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
                 }else{
                     valuesy << (grid.v[local_x_y*newDimY_y * dim_z + j * dim_z + k] + grid.v[local_x_y*newDimY_y * dim_z + (j-1) * dim_z + k] +
@@ -1457,17 +1458,19 @@ void IcoNS::output_x(){
 
                 if(k==0){
                     valuesz << boundary.boundary_value_w[4]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
-                }else if(k==zSize[2] -1){
+                }else if(k==dim_z -1){
                     valuesz << boundary.boundary_value_w[5]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
                 }else{
                     valuesz << (grid.w[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k-1] +
                                 grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k-1])/4 << "\n";
-                }   
+                }       
 
-                valuesp << (grid.p[local_x_p * zSize[1]*zSize[2] + j * zSize[2] + k] +  grid.p[(local_x_p-1) * zSize[1]*zSize[2] + j * zSize[2] + k])/2 << "\n";         
+                valuesp << (halo_p[local_x_p * zSize[1]*zSize[2] + j * zSize[2] + k] +  halo_p[(local_x_p-1) * zSize[1]*zSize[2] + j * zSize[2] + k])/2 << "\n";         
             }
         }
+        
     }
+    c2d->deallocXYZ(halo_p);
     minepoints[rank] = points.str().size();
     minevaluesx[rank] = valuesx.str().size();
     minevaluesy[rank] = valuesy.str().size();
@@ -1527,8 +1530,6 @@ void IcoNS::output_x(){
     }
     offset += header5.str().size();
     MPI_File_write_at(fh, offset + my_valuesp, valuesp.str().c_str(), valuesp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
-    offset += allvaluesp;
-
 
     MPI_File_close(&fh);
 }
@@ -1536,7 +1537,7 @@ void IcoNS::output_x(){
 void IcoNS::output_y(){
     MPI_File fh;
     MPI_Offset offset = 0;
-    const float y_middle = /*SY + */LY / 2;
+    const float y_middle = SY + LY / 2;
     if(rank==0)
         std::remove("solution_y.vtk");
     MPI_File_open(cart_comm, "solution_y.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
@@ -1544,10 +1545,12 @@ void IcoNS::output_y(){
     //===========================================
     // Header Writing (Rank 0 only)
     //===========================================
-    std::ostringstream header1, header2, header3,header4;
+    std::ostringstream header1, header2, header3,header4, header5;
     header1 << std::fixed << std::setprecision(6);
     header2 << std::fixed << std::setprecision(6);
+    header3 << std::fixed << std::setprecision(6);
     header4 << std::fixed << std::setprecision(6);
+    header5 << std::fixed << std::setprecision(6);
 
     // VTK metadata
     header1 << "# vtk DataFile Version 3.0\n"
@@ -1565,6 +1568,8 @@ void IcoNS::output_y(){
                 << "LOOKUP_TABLE default\n";
     header4     << "SCALARS w float\n"
                 << "LOOKUP_TABLE default\n";
+    header5     << "SCALARS p float\n"
+                << "LOOKUP_TABLE default\n";
     // Write header to file
     // std::string header_str = full_header.str();
     // MPI_File_write_at(fh, 0, header_str.c_str(), header_str.size(), MPI_CHAR, MPI_STATUS_IGNORE);
@@ -1580,12 +1585,14 @@ void IcoNS::output_y(){
     std::vector<float> minevaluesx(PX*PY, 0.0f);
     std::vector<float> minevaluesy(PX*PY, 0.0f);
     std::vector<float> minevaluesz(PX*PY, 0.0f);
+    std::vector<float> minevaluesp(PX*PY, 0.0f);
     std::vector<float> globalpoints(PX*PY);
     std::vector<float> globalvaluesx(PX*PY);
     std::vector<float> globalvaluesy(PX*PY);
     std::vector<float> globalvaluesz(PX*PY);
+    std::vector<float> globalvaluesp(PX*PY);
 
-    std::ostringstream points, valuesx,valuesy,valuesz;
+    std::ostringstream points, valuesx,valuesy,valuesz,valuesp;
 
     // Find process containing middle slice
     int y_index = static_cast<int>(y_middle);
@@ -1595,12 +1602,17 @@ void IcoNS::output_y(){
     int offset_y_y = coords[1] * other_dim_y_y -1;
     int offset_x_z = coords[0] * other_dim_x_z -1;
     int offset_y_z = coords[1] * other_dim_y_z -1;
+    int offset_x_p = coords[0] * zSize[0] - 1;
+    int offset_y_p = coords[1] * zSize[1] - 1;
 
+    double* halo_p;
+    c2d->updateHalo(grid.p,halo_p,1,2);
     if (y_index >= offset_y_y && y_index < dim_y_y + offset_y_y) {
 
         int local_y_x = y_index - offset_y_x + 1;
         int local_y_y = y_index - offset_y_y + 1;
         int local_y_z = y_index - offset_y_z + 1;
+        int local_y_p = y_index - offset_y_p + 1;
 
         for(int i = 1; i < newDimX_y - 1; i++){
             for(int k=0; k < dim_z; k++){
@@ -1629,34 +1641,39 @@ void IcoNS::output_y(){
                 }else{
                     valuesz << (grid.w[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k] + grid.w[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k-1] +
                                 grid.w[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k] + grid.w[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k-1])/4 << "\n";
-                }             
+                }  
+                valuesp << (halo_p[i * zSize[1]*zSize[2] + local_y_p * zSize[2] + k] +  halo_p[i * zSize[1]*zSize[2] + (local_y_p - 1)* zSize[2] + k])/2 << "\n";                    
             }
         }
     }
+    c2d->deallocXYZ(halo_p);
     minepoints[rank] = points.str().size();
     minevaluesx[rank] = valuesx.str().size();
     minevaluesy[rank] = valuesy.str().size();
     minevaluesz[rank] = valuesz.str().size();
+    minevaluesp[rank] = valuesp.str().size();
     // Gather data from all processes
     MPI_Allreduce(minepoints.data(), globalpoints.data(), minepoints.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesx.data(), globalvaluesx.data(), minevaluesx.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesy.data(), globalvaluesy.data(), minevaluesy.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesz.data(), globalvaluesz.data(), minevaluesz.size(), MPI_FLOAT, MPI_SUM, cart_comm);
-
+    MPI_Allreduce(minevaluesp.data(), globalvaluesp.data(), minevaluesp.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     //===========================================
     // Data Writing (Rank 0 only)
     //===========================================
-    int my_points=0, allpoints=0, my_valuesx=0, allvaluesx=0,my_valuesy=0,allvaluesy=0,my_valuesz=0,allvaluesz=0;
+    int my_points=0, allpoints=0, my_valuesx=0, allvaluesx=0,my_valuesy=0,allvaluesy=0,my_valuesz=0,allvaluesz=0,my_valuesp=0,allvaluesp=0;
     for(int i=0; i < PX*PY; i++){
         allpoints += globalpoints[i];
         allvaluesx += globalvaluesx[i];
         allvaluesy += globalvaluesy[i];
         allvaluesz += globalvaluesz[i];
+        allvaluesp += globalvaluesp[i];
         if(rank > i){
             my_points += globalpoints[i];
             my_valuesx += globalvaluesx[i];
             my_valuesy += globalvaluesy[i];
             my_valuesz += globalvaluesz[i];
+            my_valuesp += globalvaluesp[i];
         }
     }
     if (rank == 0) {
@@ -1683,13 +1700,18 @@ void IcoNS::output_y(){
     offset += header4.str().size();
     MPI_File_write_at(fh, offset + my_valuesz, valuesz.str().c_str(), valuesz.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     offset += allvaluesz;
+    if (rank == 0) {
+        MPI_File_write_at(fh, offset, header5.str().c_str(), header5.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+    offset += header5.str().size();
+    MPI_File_write_at(fh, offset + my_valuesp, valuesp.str().c_str(), valuesp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
 
     MPI_File_close(&fh);
 }
 void IcoNS::output_z(){
     MPI_File fh;
     MPI_Offset offset = 0;
-    const float z_middle = /*SZ + */LZ / 2;
+    const float z_middle = SZ + LZ / 2;
     if(rank==0)
         std::remove("solution_z.vtk");
     MPI_File_open(cart_comm, "solution_z.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
@@ -1697,10 +1719,12 @@ void IcoNS::output_z(){
     //===========================================
     // Header Writing (Rank 0 only)
     //===========================================
-    std::ostringstream header1, header2, header3,header4;
+    std::ostringstream header1, header2, header3,header4,header5;
     header1 << std::fixed << std::setprecision(6);
     header2 << std::fixed << std::setprecision(6);
+    header3 << std::fixed << std::setprecision(6);
     header4 << std::fixed << std::setprecision(6);
+    header5 << std::fixed << std::setprecision(6);
 
     // VTK metadata
     header1 << "# vtk DataFile Version 3.0\n"
@@ -1714,9 +1738,11 @@ void IcoNS::output_z(){
     header2 << "\nPOINT_DATA " << (NY + 1) * (NX + 1) << "\n"
                 << "SCALARS u float\n"
                 << "LOOKUP_TABLE default\n";
-    header3     << "SCALARS y float\n"
+    header3     << "SCALARS v float\n"
                 << "LOOKUP_TABLE default\n";
-    header4     << "SCALARS z float\n"
+    header4     << "SCALARS w float\n"
+                << "LOOKUP_TABLE default\n";
+    header5     << "SCALARS p float\n"
                 << "LOOKUP_TABLE default\n";
     // Write header to file
     // std::string header_str = full_header.str();
@@ -1733,12 +1759,14 @@ void IcoNS::output_z(){
     std::vector<float> minevaluesx(PX*PY, 0.0f);
     std::vector<float> minevaluesy(PX*PY, 0.0f);
     std::vector<float> minevaluesz(PX*PY, 0.0f);
+    std::vector<float> minevaluesp(PX*PY, 0.0f);
     std::vector<float> globalpoints(PX*PY);
     std::vector<float> globalvaluesx(PX*PY);
     std::vector<float> globalvaluesy(PX*PY);
     std::vector<float> globalvaluesz(PX*PY);
+    std::vector<float> globalvaluesp(PX*PY);
 
-    std::ostringstream points, valuesx,valuesy,valuesz;
+    std::ostringstream points, valuesx,valuesy,valuesz,valuesp;
 
     // Find process containing middle slice
     int z_index = static_cast<int>(z_middle);
@@ -1748,6 +1776,11 @@ void IcoNS::output_z(){
     int offset_y_y = coords[1] * other_dim_y_y -1;
     int offset_x_z = coords[0] * other_dim_x_z -1;
     int offset_y_z = coords[1] * other_dim_y_z -1;
+    int offset_x_p = coords[0] * zSize[0] - 1;
+    int offset_y_p = coords[1] * zSize[1] - 1;
+
+    double* halo_p;
+    c2d->updateHalo(grid.p,halo_p,1,2);
 
     /* if (z_index >= offset_x_x && z_index < dim_x_x + offset_x_x)  */{
 
@@ -1784,34 +1817,40 @@ void IcoNS::output_z(){
                                 grid.v[i*newDimY_y * dim_z + (j-1) * dim_z + z_index] + grid.v[(i-1)*newDimY_y * dim_z + (j-1) * dim_z + z_index])/4 << "\n";
                 } 
 
-                valuesz << grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index] << "\n";             
+                valuesz << grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index] << "\n";     
+                valuesp << (halo_p[i * zSize[1]*zSize[2] + j * zSize[2] + z_index] +  halo_p[i * zSize[1]*zSize[2] + j* zSize[2] + z_index-1])/2 << "\n";          
             }
         }
     }
+    c2d->deallocXYZ(halo_p);
     minepoints[rank] = points.str().size();
     minevaluesx[rank] = valuesx.str().size();
     minevaluesy[rank] = valuesy.str().size();
     minevaluesz[rank] = valuesz.str().size();
+    minevaluesz[rank] = valuesp.str().size();
     // Gather data from all processes
     MPI_Allreduce(minepoints.data(), globalpoints.data(), minepoints.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesx.data(), globalvaluesx.data(), minevaluesx.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesy.data(), globalvaluesy.data(), minevaluesy.size(), MPI_FLOAT, MPI_SUM, cart_comm);
     MPI_Allreduce(minevaluesz.data(), globalvaluesz.data(), minevaluesz.size(), MPI_FLOAT, MPI_SUM, cart_comm);
+    MPI_Allreduce(minevaluesp.data(), globalvaluesp.data(), minevaluesp.size(), MPI_FLOAT, MPI_SUM, cart_comm);
 
     //===========================================
     // Data Writing (Rank 0 only)
     //===========================================
-    int my_points=0, allpoints=0, my_valuesx=0, allvaluesx=0,my_valuesy=0,allvaluesy=0,my_valuesz=0,allvaluesz=0;
+    int my_points=0, allpoints=0, my_valuesx=0, allvaluesx=0,my_valuesy=0,allvaluesy=0,my_valuesz=0,allvaluesz=0,my_valuesp=0,allvaluesp=0;
     for(int i=0; i < PX*PY; i++){
         allpoints += globalpoints[i];
         allvaluesx += globalvaluesx[i];
         allvaluesy += globalvaluesy[i];
         allvaluesz += globalvaluesz[i];
+        allvaluesp += globalvaluesp[i];
         if(rank > i){
             my_points += globalpoints[i];
             my_valuesx += globalvaluesx[i];
             my_valuesy += globalvaluesy[i];
             my_valuesz += globalvaluesz[i];
+            my_valuesp += globalvaluesp[i];
         }
     }
     if (rank == 0) {
@@ -1838,6 +1877,11 @@ void IcoNS::output_z(){
     offset += header4.str().size();
     MPI_File_write_at(fh, offset + my_valuesz, valuesz.str().c_str(), valuesz.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     offset += allvaluesz;
+    if (rank == 0) {
+        MPI_File_write_at(fh, offset, header5.str().c_str(), header5.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
+    }
+    offset += header5.str().size();
+    MPI_File_write_at(fh, offset + my_valuesp, valuesp.str().c_str(), valuesp.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
 
     MPI_File_close(&fh);
 }

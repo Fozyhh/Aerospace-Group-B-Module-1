@@ -14,7 +14,7 @@
 -0.5 -0.5 -0.5
 
 # Dimension of domain: Lx, Ly, Lz
-1.0 1.0 1.0 #probabilmente è da moltiplicare all'interno per 2*M_PI perchè sennò non ha senso
+1.0 1.0 1.0
 
 # Number of grid points: Nx, Ny, Nz
 480 480 480
