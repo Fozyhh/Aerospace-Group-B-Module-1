@@ -1131,10 +1131,11 @@ void IcoNS::Output(){
     MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
     
-    if(coords[0] == (PX-1)/2){    
-        const double xCoord = 0.5;
-        double yCoord = coords[1] * zSize[1] * DY;
-        const double zCoord = 0.5;
+    // LINE 1
+    if(coords[0] == (PX-1)/2){
+        const double xCoord = /*SX+*/LX/2;
+        double yCoord = /*SY+*/coords[1] * zSize[1] * DY;
+        const double zCoord = /*SZ+*/LZ/2;
         double u, v, w, p;
         for (int i = 0; i < zSize[1]; i++)
         {
@@ -1158,8 +1159,20 @@ void IcoNS::Output(){
                     grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2-1)] +
                     grid.w[getz(newDimX_z, i, (dim_z_z-1)/2)] +
                     grid.w[getz(newDimX_z, i, (dim_z_z-1)/2-1)])/4;
-                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)] 
-                    // + grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)])/2;
+                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)];
+                    // + grid.p[getp(zSize[0], i, (zSize[2]-1)/2)])/2;
+            }else{
+                u = grid.u[getx((newDimX_x-1)/2, i, (dim_z-1)/2)];
+                v = (grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2)] +
+                    grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2)] +
+                    grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2)] +
+                    grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2)])/4;
+                w = (grid.w[getz((newDimX_z-1)/2, i, (dim_z_z-1)/2)] +
+                    grid.w[getz((newDimX_z-1)/2+1, i, (dim_z_z-1)/2)] +
+                    grid.w[getz((newDimX_z-1)/2, i, (dim_z_z-1)/2-1)] +
+                    grid.w[getz((newDimX_z-1)/2+1, i, (dim_z_z-1)/2-1)])/4;
+                p = (grid.p[getp((zSize[0]-1)/2, i, (zSize[2]-1)/2)] +
+                    grid.p[getp((zSize[0]-1)/2+1, i, (zSize[2]-1)/2)])/2;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
@@ -1172,11 +1185,12 @@ void IcoNS::Output(){
         }
     }
 
+    // LINE 2
     if(coords[1] == (PY-1)/2){
         offset = PY * zSize[1] * sizeof(double) * 7 + coords[0] * zSize[0] * sizeof(double) * 7;
-        double xCoord = coords[0] * zSize[0] * DX;
-        const double yCoord = 0.5;
-        const double zCoord = 0.5;
+        double xCoord = /*SX+*/coords[0] * zSize[0] * DX;
+        const double yCoord = /*SY+*/LY/2;
+        const double zCoord = /*SZ+*/LZ/2;
         double u, v, w, p;
         for (int i = 0; i < zSize[0]; i++)
         {
@@ -1195,13 +1209,25 @@ void IcoNS::Output(){
                     grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2)] +
                     grid.u[getx(i, newDimY_x, (dim_z-1)/2)] +
                     grid.u[getx(i-1, newDimY_x, (dim_z-1)/2)])/4;
-                v = grid.v[gety(i, newDimY_x-1, (dim_z-1)/2)];
-                w = (grid.w[getz(i, newDimY_x-1, (dim_z-1)/2)] +
-                    grid.w[getz(i, newDimY_x-1, (dim_z-1)/2-1)] +
-                    grid.w[getz(i, newDimY_x, (dim_z-1)/2)] +
-                    grid.w[getz(i, newDimY_x, (dim_z-1)/2-1)])/4;
-                p = grid.p[getp(i, zSize[1]-1, (zSize[2]-1)/2)] 
+                v = grid.v[gety(i, newDimY_y-1, (dim_z-1)/2)];
+                w = (grid.w[getz(i, newDimY_z-1, (dim_z-1)/2)] +
+                    grid.w[getz(i, newDimY_z-1, (dim_z-1)/2-1)] +
+                    grid.w[getz(i, newDimY_z, (dim_z-1)/2)] +
+                    grid.w[getz(i, newDimY_z, (dim_z-1)/2-1)])/4;
+                p = grid.p[getp(i, zSize[1]-1, (zSize[2]-1)/2)];
                     // + grid.p[getp(i, zSize[1], (zSize[2]-1)/2)])/2;
+            }else{
+                u = (grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                    grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                    grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
+                    grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2)])/4;
+                v = grid.v[gety(i, (newDimY_y-1)/2, (dim_z-1)/2)];
+                w = (grid.w[getz(i, (newDimY_z-1)/2, (dim_z-1)/2)] +
+                    grid.w[getz(i, (newDimY_z-1)/2+1, (dim_z-1)/2)] +
+                    grid.w[getz(i, (newDimY_z-1)/2, (dim_z-1)/2)-1] +
+                    grid.w[getz(i, (newDimY_z-1)/2+1, (dim_z-1)/2-1)-1])/4;
+                p = (grid.p[getp(i, (zSize[1]-1)/2, (zSize[2]-1)/2)] +
+                    grid.p[getp(i, (zSize[1]-1)/2+1, (zSize[2]-1)/2)])/2;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
@@ -1214,76 +1240,86 @@ void IcoNS::Output(){
         }
     }
 
-    if(coords[0] == (PX-1)/2 && coords[1] == (PY-1)/2)
-    {
-        offset = PX * PY * zSize[1] * sizeof(double) * 7 + coords[0] * zSize[0] * sizeof(double) * 7;
-        const double xCoord = 0.5;
-        const double yCoord = 0.5;
-        double zCoord = 0.0;
-        
-        double u, v, w, p;
-        for(int k = 0; k < zSize[2]; k++)
+    // LINE 3
+    if(testCase == 2){
+        if(coords[0] == (PX-1)/2 && coords[1] == (PY-1)/2)
         {
-            MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
-
-            MPI_File_write_at(fh, offset, &yCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
-
-            MPI_File_write_at(fh, offset, &zCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            zCoord += DZ;
-            offset += sizeof(double);
-
-            int iX, iY, iZ, iP, jX, jY, jZ, jP;
-            if(PX % 2 == 0)
+            offset = (PX * zSize[0] + PY * zSize[1]) * sizeof(double) * 7;
+            const double xCoord = /*SX+*/LX/2;
+            const double yCoord = /*SY+*/LY/2;
+            double zCoord = /*SZ+*/0.0;
+            
+            double u, v, w, p;
+            for(int k = 0; k < zSize[2]; k++)
             {
-                iX = newDimX_x-1;
-                iY = newDimX_y-1;
-                iZ = newDimX_z-1;
-                iP = zSize[0]-1;
-            }else
-            {
-                iX = (newDimX_x-1)/2;
-                iY = (newDimX_y-1)/2;
-                iZ = (newDimX_z-1)/2;
-                iP = (zSize[0]-1)/2;
+                MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
+
+                MPI_File_write_at(fh, offset, &yCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
+
+                MPI_File_write_at(fh, offset, &zCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                zCoord += DZ;
+                offset += sizeof(double);
+
+                int iX, iY, iZ, iP, jX, jY, jZ, jP;
+                if(PX % 2 == 0)
+                {
+                    iX = newDimX_x-1;
+                    iY = newDimX_y-1;
+                    iZ = newDimX_z-1;
+                    iP = zSize[0]-1;
+                }else
+                {
+                    iX = (newDimX_x-1)/2;
+                    iY = (newDimX_y-1)/2;
+                    iZ = (newDimX_z-1)/2;
+                    iP = (zSize[0]-1)/2;
+                }
+                if(PY % 2 == 0)
+                {
+                    jX = newDimY_x-1;
+                    jY = newDimY_y-1;
+                    jZ = newDimY_z-1;
+                    jP = zSize[1]-1;
+                }else
+                {
+                    jX = (newDimY_x-1)/2;
+                    jY = (newDimY_y-1)/2;
+                    jZ = (newDimY_z-1)/2;
+                    jP = (zSize[1]-1)/2;
+                }
+                u = (grid.u[getx(iX, jX, k)] +
+                    grid.u[getx(iX, jX+1, k)] +
+                    grid.u[getx(iX, jX, k+1)] +
+                    grid.u[getx(iX, jX+1, k+1)])/4;
+                v = (grid.v[gety(iY, jY, k)] +
+                    grid.v[gety(iY+1, jY, k)] +
+                    grid.v[gety(iY, jY, k+1)] +
+                    grid.v[gety(iY+1, jY, k+1)])/4;
+                w = grid.w[getz(iZ, jZ, k)] +
+                    grid.w[getz(iZ+1, jZ, k)] +
+                    grid.w[getz(iZ, jZ+1, k)] +
+                    grid.w[getz(iZ+1, jZ+1, k)]/4;
+                p = grid.p[getp(iP, jP, k)];
+                    // + grid.p[getp(iP+1, jP, k)]
+                    // + grid.p[getp(iP, jP+1, k)]
+                    // + grid.p[getp(iP, jP, k+1)]
+                    // + grid.p[getp(iP+1, jP+1, k)]
+                    // + grid.p[getp(iP+1, jP, k+1)]
+                    // + grid.p[getp(iP, jP+1, k+1)]
+                    // + grid.p[getp(iP+1, jP+1, k+1)])/8;
+
+                MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
+                MPI_File_write_at(fh, offset, &v, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
+                MPI_File_write_at(fh, offset, &w, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
+                MPI_File_write_at(fh, offset, &p, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+                offset += sizeof(double);
             }
-            if(PY % 2 == 0)
-            {
-                jX = newDimY_x-1;
-                jY = newDimY_y-1;
-                jZ = newDimY_z-1;
-                jP = zSize[1]-1;
-            }else
-            {
-                jX = (newDimY_x-1)/2;
-                jY = (newDimY_y-1)/2;
-                jZ = (newDimY_z-1)/2;
-                jP = (zSize[1]-1)/2;
-            }
-
-            u = (grid.u[getx(iX, jX, k)] +
-                grid.u[getx(iX-1, jX, k)] +
-                grid.u[getx(iX, jX, k+1)] +
-                grid.u[getx(iX-1, jX, k+1)])/4;
-            v = (grid.v[gety(iY, jY, k)] +
-                grid.v[gety(iY, jY-1, k)] +
-                grid.v[gety(iY, jY, k+1)] +
-                grid.v[gety(iY, jY-1, k+1)])/4;
-            w = grid.w[getz(iZ, jZ, k)];
-            p = grid.p[getp(iP, jP, k)] 
-                // + grid.p[getp(iP, jP, k)])/2;
-
-            MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
-            MPI_File_write_at(fh, offset, &v, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
-            MPI_File_write_at(fh, offset, &w, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
-            MPI_File_write_at(fh, offset, &p, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-            offset += sizeof(double);
         }
-
     }
 
     MPI_File_close(&fh);
