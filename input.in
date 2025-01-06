@@ -10,6 +10,9 @@
 # Number of time steps: Nt
 1000
 
+# Start of domain: SX,SY,SZ
+0.0 0.0 0.0
+
 # Dimension of domain: Lx, Ly, Lz
 2.0*M_PI 2.0*M_PI 2.0*M_PI
 
@@ -17,7 +20,7 @@
 50 50 50
 
 # Process grid: Px, Py, Pz
-1 1 1
+2 2 1
 
 # Boundaries :
 1 1 1

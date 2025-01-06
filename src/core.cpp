@@ -65,7 +65,7 @@ void IcoNS::setBoundaryConditions(){
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { 
                                                     //TODO: da capire u(1,0,0) che cella è
-                                                    if(x==1.0 && y==0 && z==0){
+                                                    if(SX + x==1.0){
                                                         return 1;
                                                     }else{
                                                         return 0;
@@ -78,7 +78,7 @@ void IcoNS::setBoundaryConditions(){
                                                 { return 0; });
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { 
-                                                    if(x==-0.5 && y==0 && z==0){
+                                                    if(SX + x==-0.5){
                                                         return 1;
                                                     }else{
                                                         return 0;
@@ -88,11 +88,11 @@ void IcoNS::setBoundaryConditions(){
                                                 { return 0; });
     }else{
         u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return std::sin((x + 0.5) * DX) * std::cos(y * DY) * std::sin(z * DZ) * std::sin(t); });
+                                                { return std::sin(SX + (x + 0.5) * DX) * std::cos(SY + y * DY) * std::sin(SZ + z * DZ) * std::sin(t); });
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return std::cos(x * DX) * std::sin((y + 0.5) * DY) * std::sin(z * DZ) * std::sin(t); });
+                                                { return std::cos(SX + x * DX) * std::sin(SY + (y + 0.5) * DY) * std::sin(SZ + z * DZ) * std::sin(t); });
         w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 2 * (std::cos(x * DX) * std::cos(y * DY) * std::cos((z + 0.5) * DZ) * std::sin(t)); }); 
+                                                { return 2 * (std::cos(SZ + x * DX) * std::cos(SY + y * DY) * std::cos(SZ + (z + 0.5) * DZ) * std::sin(t)); }); 
     }
 
     for (int i = 0; i < 6 /*nfaces*/; i++)
@@ -1034,6 +1034,13 @@ void IcoNS::parse_input(const std::string& input_file) {
         break;
     }
 
+    // Skip comments and empty lines until we find grid points
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        if (!(iss >> SX >> SY >> SZ)) continue;
+        break;
+    }
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
 
@@ -1098,6 +1105,7 @@ void IcoNS::parse_input(const std::string& input_file) {
                   << "Reynolds number: " << RE << "\n"
                   << "Time step: " << DT << "\n"
                   << "Number of timesteps: " << Nt << "\n"
+                  << "Starting point of the domain: " << SX << "x" << SY << "x" << SZ <<"\n"
                   << "Domain size: " << LX << " x " << LY << " x " << LZ << "\n"
                   << "Grid points: " << NX+1 << " x " << NY+1 << " x " << NZ+1 << "\n"
                   << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n"

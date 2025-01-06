@@ -1,5 +1,9 @@
 #include "constants.hpp"
 
+Real SX = 0.0;
+Real SY = 0.0;
+Real SZ = 0.0;
+
 // Domain lengths
 Real LX = 10.0;  // Example value
 Real LY = 20.0;  // Example value

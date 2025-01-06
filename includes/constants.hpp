@@ -18,6 +18,9 @@
  */
 #define Real double
 
+
+
+extern Real SX,SY,SZ;
 /**
  * @brief Physical length of the domain in the x-direction.
  * @details Defines the size of the computational domain along the x-axis in physical units.
