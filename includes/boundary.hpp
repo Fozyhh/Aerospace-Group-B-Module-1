@@ -98,7 +98,7 @@ public:
     }
 
     /**
-     * @brief The method is called by the program multiple during the time step,
+     * @brief The method is called by the program multiple times during the time step,
      *        in order to update the values of the boundaries at each
      *        requested time t, calculating the approximated ones too.
      *
