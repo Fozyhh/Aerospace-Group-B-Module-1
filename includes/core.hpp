@@ -72,9 +72,6 @@ public:
     zSize[1] = c2d->zSize[1];
     zSize[2] = c2d->zSize[2];
 
-    std::cout << "<--------------------->" << std::endl;
-    std:cout << "size: " << c2d->xSize[0] << " " << c2d->xSize[1] << " " << c2d->xSize[2] << std::endl;
-
     dims[0] = PX;
     dims[1] = PY;
 
