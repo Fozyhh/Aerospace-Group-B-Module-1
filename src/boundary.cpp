@@ -5,9 +5,9 @@
  * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each
  * requested time t, calculating the approximated ones too.
  *
- * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
- * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
- * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
+ * @param Yx Boundary x velocities for the Y intermediate function related to the x direction.
+ * @param Yy Boundary y velocities for the Y intermediate function related to the y direction.
+ * @param Yz Boundary z velocities for the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
  */
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
@@ -288,6 +288,7 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
 
+
 void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, double* &Y2_p, Real t, Real c)
 {
     //TODO: check the global offsets are the same
@@ -532,7 +533,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
             (8*boundary_value_w[5]->value(NX,NY,NZ-0.5,t) - 9*Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-1)] + Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
     }
 }
-
 
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
 {

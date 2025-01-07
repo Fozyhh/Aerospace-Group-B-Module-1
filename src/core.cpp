@@ -54,7 +54,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         c2d->zSize);
 }
 
-
 void IcoNS::setBoundaryConditions(){
     std::shared_ptr<BoundaryFunction> u_func;
     std::shared_ptr<BoundaryFunction> v_func;
@@ -103,6 +102,7 @@ void IcoNS::setBoundaryConditions(){
         boundary.addFunction(W, w_func);
     }
 }
+
 void IcoNS::setParallelization()
 {
 
@@ -1740,6 +1740,7 @@ void IcoNS::output_y(){
 
     MPI_File_close(&fh);
 }
+
 void IcoNS::output_z(){
     MPI_File fh;
     MPI_Offset offset = 0;

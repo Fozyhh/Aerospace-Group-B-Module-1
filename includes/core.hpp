@@ -233,7 +233,7 @@ private:
   /// @brief Boundary conditions handler
   Boundary boundary;
 
-  /// @brief Exact solution computer
+  /// @brief Exact solution object
   ExactSolution exact_solution;
 
   /// @brief Grid data structure
@@ -242,6 +242,7 @@ private:
   /// @brief 2decomp library object
   C2Decomp *c2d;
 
+  /// @brief Arrays to store the dimensions of the grid in each direction
   int xSize[3], ySize[3], zSize[3];
 
   /// @brief Intermediate solution vectors
@@ -252,7 +253,7 @@ private:
   //TODO: change to vectors (*double))
   double* Y2_p;
 
-  // periodicity fro 2decomp
+  /// @brief periodicity for 2decomp
   bool periodss[3] = {true, true, false};
 
   /// @brief Input/output file paths
@@ -282,14 +283,17 @@ private:
   int dim_x_y, dim_y_y, dim_y_z;
   int dim_z, dim_x_z, dim_z_z;
 
+  /// @brief New dimension parameters for each mesh after decomposition
   int newDimX_x, newDimY_x;
   int newDimX_y, newDimY_y;
   int newDimX_z, newDimY_z;
 
+  /// @brief Additional dimension parameters to calculate the offset for each mesh
   int other_dim_x_x, other_dim_y_x;
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
 
+  /// @brief functions to access easier to each grid
   inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
   inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
   inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
