@@ -5,9 +5,9 @@
  * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each
  * requested time t, calculating the approximated ones too.
  *
- * @param Yx Boundary x velocities or the Y intermediate function related to the x direction.
- * @param Yy Boundary y velocities or the Y intermediate function related to the y direction.
- * @param Yz Boundary z velocities or the Y intermediate function related to the z direction.
+ * @param Yx Boundary x velocities for the Y intermediate function related to the x direction.
+ * @param Yy Boundary y velocities for the Y intermediate function related to the y direction.
+ * @param Yz Boundary z velocities for the Y intermediate function related to the z direction.
  * @param t Time of the time discretization we are considering.
  */
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
@@ -288,6 +288,7 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
 
+
 void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, double* &Y2_p, Real t, Real c)
 {
     //TODO: check the global offsets are the same
@@ -308,6 +309,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                     ((-8*boundary_value_u[0]->value(-0.5,j + offset_y_x,k,t) + 9*Yx[getx(0,j,k)] - Yx[getx(1,j,k)]) / (3*DX) +
                     (Yy[gety(0,j,k)] - Yy[gety(0,j-1,k)]) / (DY) +
                     (Yz[getz(0,j,k)] - Yz[getz(0,j,k-1)]) / (DZ));
+                //Y2_p[getp(0,j,k)] = cos(-0.5*DX)*cos((j+ offset_y_x)*DY)*cos(k*DZ)*(sin(t)-sin(t+64.0/120.0*DT));
             }
         }
     }
@@ -322,6 +324,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                     ((8*boundary_value_u[1]->value(NX-0.5,j + offset_y_x,k,t) - 9*Yx[getx(dim_x_x - 1, j, k)] + Yx[getx(dim_x_x - 2,j,k)]) / (3*DX) +
                     (Yy[gety(dim_x_y-1,j,k)] - Yy[gety(dim_x_y-1,j-1,k)]) / (DY) +
                     (Yz[getz(dim_x_z-1,j,k)] - Yz[getz(dim_x_z-1,j,k-1)]) / (DZ));
+                //Y2_p[getp(zSize[0]-1,j,k)] = cos((NX-0.5)*DX)*cos((j+ offset_y_x)*DY)*cos(k*DZ)*(sin(t)-sin(t+64.0/120.0*DT));
             }
         }
     }
@@ -334,8 +337,9 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
             {
                 Y2_p[getp(i,0,k)] = 120.0 / (c * DT) *
                     ((Yx[getx(i,0,k)] - Yx[getx(i-1,0,k)]) / (DX) +
-                    (-8*boundary_value_v[2]->value(i + offset_y_y,-0.5,k,t) + 9*Yy[gety(i,0,k)] - Yy[gety(i,1,k)]) / (3*DY) +
+                    (-8*boundary_value_v[2]->value(i+ offset_x_y,-0.5,k,t) + 9*Yy[gety(i,0,k)] - Yy[gety(i,1,k)]) / (3*DY) +
                     (Yz[getz(i,0,k)] - Yz[getz(i,0,k-1)]) / (DZ));
+                //Y2_p[getp(i,0,k)] = cos((i+ offset_x_y)*DX)*cos(k*DZ)*(sin(t)-sin(t+64.0/120.0*DT));
             }
         }
     }
@@ -350,6 +354,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                     ((Yx[getx(i,dim_y_x-1,k)] - Yx[getx(i-1,dim_y_x-1,k)]) / (DX) +
                     (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,k,t) - 9*Yy[gety(i,dim_y_y-1,k)] + Yy[gety(i,dim_y_y-2,k)]) / (3*DY) +
                     (Yz[getz(i,dim_y_z-1,k)] - Yz[getz(i,dim_y_z-1,k-1)]) / (DZ));
+                //Y2_p[getp(i,zSize[1] - 1,k)] = cos((i+ offset_x_y)*DX)*cos(k*DZ)*(sin(t)-sin(t+64.0/120.0*DT));
             }
         }
     }
@@ -363,6 +368,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 ((Yx[getx(i,j,0)] - Yx[getx(i-1,j,0)]) / (DX) +
                 (Yy[gety(i,j,0)] - Yy[gety(i,j-1,0)]) / (DY) +
                 (-8*boundary_value_w[4]->value(i + offset_x_z,j + offset_y_z,-0.5,t) + 9*Yz[getz(i,j,0)] - Yz[getz(i,j,1)]) / (3*DZ));
+            //Y2_p[getp(i,j,0)] = cos((i+ offset_x_z)*DX)*cos((j+ offset_y_z)*DY)*(sin(t)-sin(t+64.0/120.0*DT));
         }
     }
     // UPPER FACE
@@ -374,6 +380,7 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 ((Yx[getx(i,j,dim_z - 1)] - Yx[getx(i-1,j,dim_z - 1)]) / (DX) +
                 (Yy[gety(i,j,dim_z-1)] - Yy[gety(i,j-1,dim_z-1)]) / (DY) +
                 (8*boundary_value_w[5]->value(i + offset_x_z,j + offset_y_z,NZ-0.5,t) - 9*Yz[getz(i,j,dim_z_z-1)] + Yz[getz(i,j,dim_z_z-2)]) / (3*DZ));
+            //Y2_p[getp(i,j,zSize[2] - 1)] = cos((i+ offset_x_z)*DX)*cos((j+ offset_y_z)*DY)*(sin(t)-sin(t+64.0/120.0*DT));
         }
     }
     // 4 X EDGES
@@ -385,11 +392,13 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 ((Yx[getx(i,0,0)] - Yx[getx(i-1,0,0)]) / (DX) +
                 (-8*boundary_value_v[2]->value(i + offset_x_y,-0.5,0,t) + 9*Yy[gety(i,0,0)] - Yy[gety(i,1,0)]) / (3*DY) +
                 (-8*boundary_value_w[4]->value(i + offset_x_z,0,-0.5,t) + 9*Yz[getz(i,0,0)] - Yz[getz(i,0,1)]) / (3*DZ));
+            //Y2_p[getp(i,0,0)] = cos((i+ offset_x_y)*DX)*cos(DZ)*(sin(t)-sin(t+64.0/120.0*DT));
         // UPPER FRONT EDGE
         Y2_p[getp(i,0,zSize[2]-1)] = 120.0 / (c * DT) *
             ((Yx[getx(i,0,dim_z-1)] - Yx[getx(i-1,0,dim_z-1)]) / (DX) +
             (-8*boundary_value_v[2]->value(i + offset_x_y,-0.5,NZ,t) + 9*Yy[gety(i,0,dim_z-1)] - Yy[gety(i,1,dim_z-1)]) / (3*DY) +
             (8*boundary_value_w[5]->value(i + offset_x_z,0,NZ-0.5,t) - 9*Yz[getz(i,0,dim_z_z-1)] + Yz[getz(i,0,dim_z_z-2)]) / (3*DZ));
+        //Y2_p[getp(i,0,zSize[2]-1)] = cos((i+ offset_x_y)*DX)*cos(DZ)*(sin(t)-sin(t+64.0/120.0*DT));
         }
         if(rby){
             // LOWER BACK EDGE
@@ -397,11 +406,13 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
                 ((Yx[getx(i,dim_y_x - 1,0)] - Yx[getx(i-1,dim_y_x - 1,0)]) / (DX) +
                 (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,0,t) - 9*Yy[gety(i,dim_y_y - 1,0)] + Yy[gety(i,dim_y_y - 2,0)]) / (3*DY) +
                 (-8*boundary_value_w[4]->value(i + offset_x_z,NY,-0.5,t) + 9*Yz[getz(i,dim_y_z - 1,0)] - Yz[getz(i,dim_y_z - 1,1)]) / (3*DZ));
+            //Y2_p[getp(i,(zSize[1] - 1),0)] = cos((i+ offset_x_y)*DX)*cos(DZ)*(sin(t)-sin(t+64.0/120.0*DT));
             // UPPER BACK EDGE
             Y2_p[getp(i,zSize[1]-1,zSize[2]-1)] = 120.0 / (c * DT) *
                 ((Yx[getx(i,dim_y_x-1,dim_z-1)] - Yx[getx(i-1,dim_y_x-1,dim_z-1)]) / (DX) +
                 (8*boundary_value_v[3]->value(i + offset_x_y,NY-0.5,NZ,t) - 9*Yy[gety(i,dim_y_y-1,dim_z-1)] + Yy[gety(i,dim_y_y-2,dim_z-1)]) / (3*DY) +
                 (8*boundary_value_w[5]->value(i + offset_x_z,NY,NZ-0.5,t) - 9*Yz[getz(i,dim_y_z-1,dim_z_z-1)] + Yz[getz(i,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
+            //Y2_p[getp(i,zSize[1]-1,zSize[2]-1)] = cos((i+ offset_x_y)*DX)*cos(DZ)*(sin(t)-sin(t+64.0/120.0*DT));
         }
     }
     if(lbx){
@@ -532,7 +543,6 @@ void Boundary::divergence(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vec
             (8*boundary_value_w[5]->value(NX,NY,NZ-0.5,t) - 9*Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-1)] + Yz[getz(dim_x_z-1,dim_y_z-1,dim_z_z-2)]) / (3*DZ));
     }
 }
-
 
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
 {

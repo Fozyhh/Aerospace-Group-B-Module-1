@@ -90,6 +90,38 @@ void PoissonSolver::solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex 
 
 void PoissonSolver::solveNeumannPoisson(double* F)
 {
+    /*fftw_plan neumann = fftw_plan_r2r_3d(zSize[0], zSize[1], zSize[2], F, F, FFTW_REDFT00, FFTW_REDFT00, FFTW_REDFT00, FFTW_ESTIMATE);
+    fftw_execute(neumann);
+
+    // Divide by the eigenvalues
+    for (int i = 0; i < zSize[0]; i++) {
+        for (int j = 0; j < zSize[1]; j++) {
+            for (int k = 0; k < zSize[2]; k++) {
+                F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] = F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] /
+                    (2/(DX*DX) * (std::cos(i * M_PI / (zSize[0]-1)) - 1) +
+                    2/(DY*DY) * (std::cos(j * M_PI / (zSize[1]-1)) - 1) +
+                    2/(DZ*DZ) * (std::cos(k * M_PI / (zSize[2]-1)) - 1));
+            }
+        }
+    }
+    F[0] = 0.0;
+
+    // Inverse transform
+    fftw_execute(neumann);
+
+    // Normalization
+    double normalization_factor = 2.0 * (zSize[0]-1) * 2.0 * (zSize[1]-1) * 2.0 * (zSize[2]-1);
+    for(int i = 0; i < zSize[0]; i++) {
+        for (int j = 0; j < zSize[1]; j++) {
+            for (int k = 0; k < zSize[2]; k++) {
+                    F[i * (zSize[1]) * (zSize[2]) + j * (zSize[2]) + k] /= normalization_factor;
+            }
+        }
+    }
+
+    fftw_destroy_plan(neumann);*/
+
+    
     double* py;
     double* px;
 
@@ -127,8 +159,8 @@ void PoissonSolver::solveNeumannPoisson(double* F)
         for (int j = 0; j < xSize[1]; j++) {
             for (int i = 0; i < xSize[0]; i++) {
                 px[k * (xSize[1]) * (xSize[0]) + j * (xSize[0]) + i] /= (2/(DX*DX) * (std::cos(i * M_PI / (c2d->nxGlobal-1)) - 1) +
-                                                                        2/(DY*DY) * (std::cos((j + c2d->coord[0] * xSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
-                                                                        2/(DZ*DZ) * (std::cos((k + c2d->coord[1] * xSize[2]) * M_PI / (c2d->nzGlobal-1)) - 1));
+                                                                        2/(DZ*DZ) * (std::cos((j + c2d->coord[0] * xSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
+                                                                        2/(DY*DY) * (std::cos((k + c2d->coord[1] * xSize[2]) * M_PI / (c2d->nzGlobal-1)) - 1));
             }
         }  
     }

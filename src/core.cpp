@@ -54,7 +54,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         c2d->zSize);
 }
 
-
 void IcoNS::setBoundaryConditions(){
     std::shared_ptr<BoundaryFunction> u_func;
     std::shared_ptr<BoundaryFunction> v_func;
@@ -103,6 +102,7 @@ void IcoNS::setBoundaryConditions(){
         boundary.addFunction(W, w_func);
     }
 }
+
 void IcoNS::setParallelization()
 {
 
@@ -273,6 +273,31 @@ void IcoNS::solve()
         if(testCase==0){
             L2_error(time);
         }
+        // std::cout << std::endl;
+        // double* halo_p;
+        // c2d->updateHalo(grid.p,halo_p,1,0);
+        // for(int in = 0; in < zSize[0]; in++){
+        //     for (int j = 0; j < zSize[1]; j++){
+        //         for (int k = 0; k < zSize[2]; k++)
+        //         {
+        //             std::cout << grid.p[getp(in,j,k)] << " ";
+        //         }
+        //         std::cout << std::endl;
+        //     }            
+        //     std::cout << std::endl;
+        // }
+        // std::cout << "Halos: "<< std::endl;
+        // for(int in = 0; in < zSize[0] + 2; in++){
+        //     for (int j = 0; j < zSize[1] + 2; j++){
+        //         for (int k = 0; k < zSize[2]; k++)
+        //         {
+        //             std::cout << halo_p[getHaloP(in,j,k)] << " ";
+        //         }
+        //         std::cout << std::endl;
+        //     }            
+        //     std::cout << std::endl;
+        // }
+        // c2d->deallocXYZ(halo_p);
         
         solve_time_step(time);
         MPI_Barrier(cart_comm);
@@ -284,32 +309,25 @@ void IcoNS::solve()
 
 void IcoNS::L2_error(const Real t)
 {
-    Real errorV = 0.0, totalErrorV=0.0;
-    Real errorP = 0.0, totalErrorP=0.0;
+    Real error = 0.0, totalError=0.0;
 
-    errorV += error_comp_X(t);
-    errorV += error_comp_Y(t);
-    errorV += error_comp_Z(t);
-    errorP += error_comp_P(t);
+    error += error_comp_X(t);
+    error += error_comp_Y(t);
+    error += error_comp_Z(t);
+    error += error_comp_P(t);
 
     MPI_Barrier(cart_comm);
 
-    //MPI_Reduce(&error, &totalError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-    MPI_Reduce(&errorV, &totalErrorV, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-    MPI_Reduce(&errorP, &totalErrorP, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-
+    MPI_Reduce(&error, &totalError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
     if (rank == 0)
     {
-        totalErrorP = std::sqrt(totalErrorP);
-        totalErrorV = std::sqrt(totalErrorV);
-        std::cout << "Total L2 error for velocity: " << totalErrorV << std::endl;
-        std::cout << "Total L2 error for pressure: " << totalErrorP << std::endl;
-        std::cout << std::endl;
+        totalError=sqrt(totalError);
+        std::cout << " totalError: " << totalError << std::endl;
     }
-    // std::cout << error_comp_X(t) << std::endl;
-    // std::cout << error_comp_Y(t) << std::endl;
-    // std::cout << error_comp_Z(t) << std::endl;
-    // std::cout << error_comp_P(t) << std::endl << std::endl;
+    std::cout << error_comp_X(t) << std::endl;
+    std::cout << error_comp_Y(t) << std::endl;
+    std::cout << error_comp_Z(t) << std::endl;
+    std::cout << error_comp_P(t) << std::endl << std::endl;
 
 }
 
@@ -1454,9 +1472,9 @@ void IcoNS::output_x(){
             for(int k=0; k < dim_z ; k++){
                 
                 // Write grid points coordinate
-                points << x_middle << " "
-                           << static_cast<float>(j + offset_y_x) * DY << " "
-                           << static_cast<float>(k) * DZ << "\n";
+                points << SX + x_middle << " "
+                           << static_cast<float>(SY + (j + offset_y_x) * DY) << " "
+                           << static_cast<float>(SZ + (k) * DZ) << "\n";
                 
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid..v[local_x* newDimY_x * dim_z + j * dim_z + k];
                 valuesx << grid.u[local_x_x* newDimY_x * dim_z + j * dim_z + k] << "\n";
@@ -1632,9 +1650,9 @@ void IcoNS::output_y(){
             for(int k=0; k < dim_z; k++){
                 
                 // Write grid points coordinate 
-                points << static_cast<float>(i + offset_x_y) * DX << " "
-                           << y_middle << " "
-                           << static_cast<float>(k) * DZ << "\n";
+                points << static_cast<float>(SX + (i + offset_x_y) * DX) << " "
+                           << SY + y_middle << " "
+                           << static_cast<float>(SZ + (k) * DZ) << "\n";
                 
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid..v[local_x* newDimY_x * dim_z + j * dim_z + k];
                 valuesy << grid.v[local_y_y* newDimY_y * dim_z + i * dim_z + k] << "\n";
@@ -1722,6 +1740,7 @@ void IcoNS::output_y(){
 
     MPI_File_close(&fh);
 }
+
 void IcoNS::output_z(){
     MPI_File fh;
     MPI_Offset offset = 0;
@@ -1805,9 +1824,9 @@ void IcoNS::output_z(){
             for(int j = 1; j < newDimY_z - 1; j++){
                 
                 // Write grid points coordinate
-                points << static_cast<float>(i + offset_x_z) * DX << " "
-                           << static_cast<float>(j + offset_y_z) * DY << " "
-                           << z_middle << "\n";
+                points << static_cast<float>(SX + (i + offset_x_z) * DX) << " "
+                           << static_cast<float>(SY + (j + offset_y_z) * DY) << " "
+                           << SZ + z_middle << "\n";
                 
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid.v[local_x* newDimY_x * dim_z + j * dim_z + k];
 

@@ -84,8 +84,8 @@ void IcoNS::solve_time_step(Real time)
                 Y2_p[getp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time)-sin(time+64.0/120.0*DT));   
             }
         }
-    } */
-
+    }
+ */
     poissonSolver.solveNeumannPoisson(Y2_p);
 
 
@@ -145,7 +145,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 3) Phi_p exchange 
     double* halo_phi;
-    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
+    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
     pressionCorrection(Phi_p);
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     MPI_Barrier(cart_comm);
@@ -207,7 +207,7 @@ void IcoNS::solve_time_step(Real time)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 -rby; j++)
         {
-            for (int k = 1; k < zSize[2]; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
                 Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
             }
@@ -288,8 +288,6 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
     pressionCorrection(Phi_p);
 
-    // TODO: check
-    // boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
 
     // 4) Phi_p exchange
     c2d->deallocXYZ(halo_phi);
@@ -343,7 +341,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
     exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
 
-    for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
+    /* for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
@@ -352,18 +350,56 @@ void IcoNS::solve_time_step(Real time)
                 Y2_p[getp(i-1,j-1,k)] = 0.0;
             }
         }
-    }
+    } */
+
     for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
-            for (int k = 1; k < zSize[2]; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
                 Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
     boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
+
+    //vtk file for grid.p
+    std::ofstream vtkFile("pressure"+std::to_string(time)+".vtk");
+    //header
+    vtkFile << "# vtk DataFile Version 3.0\n";
+    vtkFile << "Navier-Stokes solution\n";
+    vtkFile << "ASCII\n";
+    vtkFile << "DATASET STRUCTURED_POINTS\n";
+    vtkFile << "DIMENSIONS " <<  zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    vtkFile << "ORIGIN 0 0 0\n";
+    vtkFile << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    //scalar data   
+    vtkFile << "POINT_DATA " << zSize[0]*zSize[1]*zSize[2] << "\n";
+    vtkFile << "SCALARS pressure double 1\n";
+    vtkFile << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                vtkFile << Y2_p[getp(i,j,k)] << "\n";
+            }
+        }
+    }
+    vtkFile.close();
+
+    /* for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                Y2_p[getp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time+80.0/120.0*DT)-sin(time+DT));
+            }
+        }
+    } */
 
 
     poissonSolver.solveNeumannPoisson(Y2_p);
@@ -424,33 +460,9 @@ void IcoNS::solve_time_step(Real time)
     c2d->deallocXYZ(halo_phi);
     c2d->deallocXYZ(halo_p);
 
-    //vtk file for grid.p
-    std::ofstream vtkFile("pressure"+std::to_string(time)+".vtk");
-    //header
-    vtkFile << "# vtk DataFile Version 3.0\n";
-    vtkFile << "Navier-Stokes solution\n";
-    vtkFile << "ASCII\n";
-    vtkFile << "DATASET STRUCTURED_POINTS\n";
-    vtkFile << "DIMENSIONS " <<  zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
-    vtkFile << "ORIGIN 0 0 0\n";
-    vtkFile << "SPACING " << DX << " " << DY << " " << DZ << "\n";
-    //scalar data   
-    vtkFile << "POINT_DATA " << zSize[0]*zSize[1]*zSize[2] << "\n";
-    vtkFile << "SCALARS pressure double 1\n";
-    vtkFile << "LOOKUP_TABLE default\n";
-    for (int i = 0; i < zSize[0]; i++)
-    {
-        for (int j = 0; j < zSize[1]; j++)
-        {
-            for (int k = 0; k < zSize[2]; k++)
-            {
-                vtkFile << grid.p[getp(i,j,k)] << "\n";
-            }
-        }
-    }
-    vtkFile.close();
+    
 
-    //vtk file for grid.u
+    /* //vtk file for grid.u
     std::ofstream vtkFile2("grid_u"+std::to_string(time)+".vtk");
     //header
     vtkFile2 << "# vtk DataFile Version 3.0\n";
@@ -526,7 +538,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    vtkFile4.close();
+    vtkFile4.close(); */
 }
 
 //TODO: maybe change everything with the indexing function
