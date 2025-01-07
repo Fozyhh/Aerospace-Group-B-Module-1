@@ -2,16 +2,14 @@
 #include "poissonSolver.hpp"
 #include <fstream>
 
-
 void IcoNS::solve_time_step(Real time)
 {
+    int ipencil=0;
     PoissonSolver poissonSolver(false,false,false, c2d);
-    if(rank==0)
-            std::cout << "Solving time step at t = " << time << std::endl;
 
     // 1) pressure point exchange
     double* halo_p;
-    c2d->updateHalo(grid.p, halo_p,1,2);
+    c2d->updateHalo(grid.p, halo_p,1,ipencil);
     
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -74,10 +72,10 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    // TODO: paura, exchange data?, check
+
     boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
 
-    for (int i = 0; i < zSize[0]; i++)
+    /* for (int i = 0; i < zSize[0]; i++)
     {
         for (int j = 0; j < zSize[1]; j++)
         {
@@ -86,14 +84,14 @@ void IcoNS::solve_time_step(Real time)
                 Y2_p[getp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time)-sin(time+64.0/120.0*DT));   
             }
         }
-    }
+    } */
 
     poissonSolver.solveNeumannPoisson(Y2_p);
 
 
     // 2) y2_p pressure point exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -217,7 +215,7 @@ void IcoNS::solve_time_step(Real time)
     }
     boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
 
-    for (int i = 0; i < zSize[0]; i++)
+    /* for (int i = 0; i < zSize[0]; i++)
     {
         for (int j = 0; j < zSize[1]; j++)
         {
@@ -226,13 +224,13 @@ void IcoNS::solve_time_step(Real time)
                 Y2_p[getp(i, j, k)] = 3*cos(i*DX)*cos(j*DY)*cos(k*DZ)*(sin(time+64.0/120.0*DT)-sin(time+80.0/120.0*DT));   
             }
         }
-    }
+    } */
 
     poissonSolver.solveNeumannPoisson(Y2_p);
 
     // 3) y2_p exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -295,7 +293,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 4) Phi_p exchange
     c2d->deallocXYZ(halo_phi);
-    c2d->updateHalo(Phi_p, halo_phi, 1, 2);
+    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -351,17 +349,28 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 1; k < zSize[2]; k++)
             {
+                Y2_p[getp(i-1,j-1,k)] = 0.0;
+            }
+        }
+    }
+    for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
+    {
+        for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
+        {
+            for (int k = 1; k < zSize[2]; k++)
+            {
                 Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
     boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
+
     poissonSolver.solveNeumannPoisson(Y2_p);
 
     // 5) y2_p exchange
     c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, 2);
+    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
 
     for(int i = 1; i < newDimX_x - 1; i++)
     {
@@ -414,6 +423,110 @@ void IcoNS::solve_time_step(Real time)
     pressionCorrection(grid.p);
     c2d->deallocXYZ(halo_phi);
     c2d->deallocXYZ(halo_p);
+
+    //vtk file for grid.p
+    std::ofstream vtkFile("pressure"+std::to_string(time)+".vtk");
+    //header
+    vtkFile << "# vtk DataFile Version 3.0\n";
+    vtkFile << "Navier-Stokes solution\n";
+    vtkFile << "ASCII\n";
+    vtkFile << "DATASET STRUCTURED_POINTS\n";
+    vtkFile << "DIMENSIONS " <<  zSize[0] << " " << zSize[1] << " " << zSize[2] << "\n";
+    vtkFile << "ORIGIN 0 0 0\n";
+    vtkFile << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    //scalar data   
+    vtkFile << "POINT_DATA " << zSize[0]*zSize[1]*zSize[2] << "\n";
+    vtkFile << "SCALARS pressure double 1\n";
+    vtkFile << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < zSize[0]; i++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int k = 0; k < zSize[2]; k++)
+            {
+                vtkFile << grid.p[getp(i,j,k)] << "\n";
+            }
+        }
+    }
+    vtkFile.close();
+
+    //vtk file for grid.u
+    std::ofstream vtkFile2("grid_u"+std::to_string(time)+".vtk");
+    //header
+    vtkFile2 << "# vtk DataFile Version 3.0\n";
+    vtkFile2 << "Navier-Stokes solution\n";
+    vtkFile2 << "ASCII\n";
+    vtkFile2 << "DATASET STRUCTURED_POINTS\n";
+    vtkFile2 << "DIMENSIONS " <<  newDimX_x << " " << newDimY_x << " " << dim_z << "\n";
+    vtkFile2 << "ORIGIN 0 0 0\n";
+    vtkFile2 << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    //scalar data
+    vtkFile2 << "POINT_DATA " << newDimX_x*newDimY_x*dim_z << "\n";
+    vtkFile2 << "SCALARS u double 1\n";
+    vtkFile2 << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < newDimX_x; i++)
+    {
+        for (int j = 0; j < newDimY_x; j++)
+        {
+            for (int k = 0; k < dim_z; k++)
+            {
+                vtkFile2 << grid.u[getx(i,j,k)] << "\n";
+            }
+        }
+    }
+    vtkFile2.close();
+
+    //vtk file for grid.v
+    std::ofstream vtkFile3("grid_v"+std::to_string(time)+".vtk");
+    //header
+    vtkFile3 << "# vtk DataFile Version 3.0\n";
+    vtkFile3 << "Navier-Stokes solution\n";
+    vtkFile3 << "ASCII\n";
+    vtkFile3 << "DATASET STRUCTURED_POINTS\n";
+    vtkFile3 << "DIMENSIONS " <<  newDimX_y << " " << newDimY_y << " " << dim_z << "\n";
+    vtkFile3 << "ORIGIN 0 0 0\n";
+    vtkFile3 << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    //scalar data
+    vtkFile3 << "POINT_DATA " << newDimX_y*newDimY_y*dim_z << "\n";
+    vtkFile3 << "SCALARS v double 1\n";
+    vtkFile3 << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < newDimX_y; i++)
+    {
+        for (int j = 0; j < newDimY_y; j++)
+        {
+            for (int k = 0; k < dim_z; k++)
+            {
+                vtkFile3 << grid.v[gety(i,j,k)] << "\n";
+            }
+        }
+    }
+    vtkFile3.close();
+
+    //vtk file for grid.w
+    std::ofstream vtkFile4("grid_w"+std::to_string(time)+".vtk");
+    //header
+    vtkFile4 << "# vtk DataFile Version 3.0\n";
+    vtkFile4 << "Navier-Stokes solution\n";
+    vtkFile4 << "ASCII\n";
+    vtkFile4 << "DATASET STRUCTURED_POINTS\n";
+    vtkFile4 << "DIMENSIONS " <<  newDimX_z << " " << newDimY_z << " " << dim_z_z << "\n";
+    vtkFile4 << "ORIGIN 0 0 0\n";
+    vtkFile4 << "SPACING " << DX << " " << DY << " " << DZ << "\n";
+    //scalar data
+    vtkFile4 << "POINT_DATA " << newDimX_z*newDimY_z*dim_z_z << "\n";
+    vtkFile4 << "SCALARS w double 1\n";
+    vtkFile4 << "LOOKUP_TABLE default\n";
+    for (int i = 0; i < newDimX_z; i++)
+    {
+        for (int j = 0; j < newDimY_z; j++)
+        {
+            for (int k = 0; k < dim_z_z; k++)
+            {
+                vtkFile4 << grid.w[getz(i,j,k)] << "\n";
+            }
+        }
+    }
+    vtkFile4.close();
 }
 
 //TODO: maybe change everything with the indexing function

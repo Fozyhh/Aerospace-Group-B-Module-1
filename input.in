@@ -8,7 +8,7 @@
 0.001
 
 # Number of time steps: Nt
-20
+100
 
 # Start of domain: SX,SY,SZ
 0.0 0.0 0.0
@@ -17,7 +17,7 @@
 2.0*M_PI 2.0*M_PI 2.0*M_PI
 
 # Number of grid points: Nx, Ny, Nz
-50 50 50
+20 20 20
 
 # Process grid: Px, Py, Pz
 1 1 1
