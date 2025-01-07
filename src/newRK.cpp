@@ -188,7 +188,7 @@ void IcoNS::solve_time_step(Real time)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 -rby; j++)
         {
-            for (int k = 1; k < zSize[2]; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
                 Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
             }
@@ -309,7 +309,7 @@ void IcoNS::solve_time_step(Real time)
     {
         for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
         {
-            for (int k = 1; k < zSize[2]; k++)
+            for (int k = 1; k < zSize[2] - 1; k++)
             {
                 Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
             }
