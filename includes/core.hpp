@@ -117,6 +117,7 @@ public:
   void output_x();
   void output_y();
   void output_z();
+  void output_test();
 
 private:
 
