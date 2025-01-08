@@ -1088,7 +1088,9 @@ void IcoNS::parse_input(const std::string& input_file) {
         if (!(iss >> NX >> NY >> NZ)) continue;
         break;
     }
-
+    LX = 2*M_PI;
+    LY = 2*M_PI;
+    LZ = 2*M_PI;
     NX -= 1;
     NY -= 1;
     NZ -= 1;
