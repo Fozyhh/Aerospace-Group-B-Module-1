@@ -11,11 +11,11 @@ void IcoNS::solve_time_step(Real time)
     double* halo_p;
     c2d->updateHalo(grid.p, halo_p,1,ipencil);
     
-    for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
+    for (int i = 1; i < newDimX_x - 1; i++)
     {
-        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+        for (int j = 1; j < newDimY_x - 1; j++)
         {
-            for (int k = 1; k < dim_z - 1; k++)
+            for (int k = 0; k < dim_z ; k++)
             {
                 Y2_x[getx(i, j, k)] = grid.u[getx(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -26,11 +26,11 @@ void IcoNS::solve_time_step(Real time)
     }
 
 
-    for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
+    for (int i = 1 ; i < newDimX_y - 1; i++)
     {
-        for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_y - 1; j++)
         {
-            for (int k = 1; k < dim_z - 1; k++)
+            for (int k = 0; k < dim_z ; k++)
             {
                 Y2_y[gety(i, j, k)] = grid.v[gety(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -41,11 +41,11 @@ void IcoNS::solve_time_step(Real time)
     }
 
 
-    for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
+    for (int i = 1 ; i < newDimX_z - 1 ; i++)
     {
-        for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_z - 1 ; j++)
         {
-            for (int k = 1; k < dim_z_z - 1; k++)
+            for (int k = 0; k < dim_z_z ; k++)
             {
                 Y2_z[getz(i, j, k)] = grid.w[getz(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
@@ -56,24 +56,84 @@ void IcoNS::solve_time_step(Real time)
     }
 
     //TODO: boundary handling?
-    boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-    MPI_Barrier(cart_comm);
+    // boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
+    // MPI_Barrier(cart_comm);
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
+    for (int i = 1 ; i < zSize[0] + 1 ; i++)
     {
-        for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
+        for (int j = 1; j < zSize[1] + 1 ; j++)
         {
-            for (int k = 1; k < zSize[2] - 1; k++)
+            for (int k = 0; k < zSize[2]; k++)
             {
-                Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                // Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                // Y2_p[i * (NY+1) * (NZ+1) + j * (NZ+1) + k] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                Real diffx = 0.0;
+                Real diffy = 0.0;
+                Real diffz = 0.0;
+ 
+                if (i == 1)
+                {
+                    // continue;
+                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 1 - 0.5, j - 1, k, time + 64.0 / 120.0 * DT) + 9 * Y2_x[getx(i, j, k)] - Y2_x[getx(i + 1, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (i == zSize[0])
+                {
+                    // continue;
+                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j -1, k, time + 64.0 / 120.0 * DT) - 9 * Y2_x[getx(i - 1, j, k)] + Y2_x[getx(i - 2, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffx = (Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (j == 1)
+                {
+                    // continue;
+                    diffy = (-8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) + 9 * Y2_y[gety(i, j, k)] - Y2_y[gety(i, j + 1, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (j == zSize[1])
+                {
+                    // continue;
+                    diffy = (8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) - 9 * Y2_y[gety(i, j - 1, k)] + Y2_y[gety(i, j - 2, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffy = (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (k == 0)
+                {
+                    // continue;
+                    diffz = (-8 * boundary.boundary_value_w[0]->value(i -1, j - 1, k - 0.5, time + 64.0 / 120.0 * DT) + 9 * Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k + 1)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (k == zSize[2] - 1)
+                {
+                    // continue;
+                    diffz = (8 * boundary.boundary_value_w[0]->value(i - 1, j -1, k - 0.5, time + 64.0 / 120.0 * DT) - 9 * Y2_z[getz(i, j, k - 1)] + Y2_z[getz(i, j, k - 2)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffz = (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * (diffx + diffy + diffz);
             }
         }
     }
 
-    boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
+    //boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
 
     /* for (int i = 0; i < zSize[0]; i++)
     {
@@ -153,11 +213,11 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
-    for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
+    for (int i = 1; i < newDimX_x - 1 ; i++)
     {
-        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_x - 1; j++)
         {
-            for (int k = 1; k < dim_z - 1; k++)
+            for (int k = 0; k < dim_z ; k++)
 
             {
                 Y3_x[getx(i, j, k)] = Y2_x[getx(i, j, k)] +
@@ -168,11 +228,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
+    for (int i = 1; i < newDimX_y - 1 ; i++)
     {
-        for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_y - 1; j++)
         {
-            for (int k = 1; k < dim_z-1; k++)
+            for (int k = 0; k < dim_z; k++)
             {
                 Y3_y[gety(i, j, k)] = Y2_y[gety(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
@@ -182,11 +242,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
+    for (int i = 1; i < newDimX_z - 1 ; i++)
     {
-        for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_z - 1; j++)
         {
-            for (int k = 1; k < dim_z_z - 1; k++)
+            for (int k = 0; k < dim_z_z ; k++)
 
             {
                 Y3_z[getz(i, j, k)] = Y2_z[getz(i, j, k)] +
@@ -197,23 +257,82 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
+    //boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
     MPI_Barrier(cart_comm);
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
+    for (int i = 1 ; i < zSize[0] + 1 ; i++)
     {
-        for (int j = 1 + lby; j < zSize[1] + 1 -rby; j++)
+        for (int j = 1 ; j < zSize[1] + 1; j++)
         {
-            for (int k = 1; k < zSize[2] - 1; k++)
+            for (int k = 0; k < zSize[2]; k++)
             {
-                Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
+                //Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
+                Real diffx = 0.0;
+                Real diffy = 0.0;
+                Real diffz = 0.0;
+ 
+                if (i == 1)
+                {
+                    // continue;
+                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 1 - 0.5, j - 1, k, time + 64.0 / 120.0 * DT) + 9 * Y3_x[getx(i, j, k)] - Y3_x[getx(i + 1, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (i == zSize[0])
+                {
+                    // continue;
+                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j -1, k, time + 64.0 / 120.0 * DT) - 9 * Y3_x[getx(i - 1, j, k)] + Y3_x[getx(i - 2, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffx = (Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (j == 1)
+                {
+                    // continue;
+                    diffy = (-8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) + 9 * Y3_y[gety(i, j, k)] - Y3_y[gety(i, j + 1, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (j == zSize[1])
+                {
+                    // continue;
+                    diffy = (8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) - 9 * Y3_y[gety(i, j - 1, k)] + Y3_y[gety(i, j - 2, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffy = (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (k == 0)
+                {
+                    // continue;
+                    diffz = (-8 * boundary.boundary_value_w[0]->value(i -1, j - 1, k - 0.5, time + 64.0 / 120.0 * DT) + 9 * Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k + 1)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (k == zSize[2] - 1)
+                {
+                    // continue;
+                    diffz = (8 * boundary.boundary_value_w[0]->value(i - 1, j -1, k - 0.5, time + 64.0 / 120.0 * DT) - 9 * Y3_z[getz(i, j, k - 1)] + Y3_z[getz(i, j, k - 2)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffz = (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * (diffx + diffy + diffz);
             }
         }
     }
-    boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
+    //boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
 
     /* for (int i = 0; i < zSize[0]; i++)
     {
@@ -293,11 +412,11 @@ void IcoNS::solve_time_step(Real time)
     c2d->deallocXYZ(halo_phi);
     c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
 
-    for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
+    for (int i = 1; i < newDimX_x - 1 ; i++)
     {
-        for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_x - 1 ; j++)
         {
-            for (int k = 1; k < dim_z-1; k++)
+            for (int k = 0; k < dim_z; k++)
 
             {
                 grid.u[getx(i, j, k)] = Y3_x[getx(i, j, k)] +
@@ -308,11 +427,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
+    for (int i = 1 ; i < newDimX_y - 1; i++)
     {
-        for (int j = 1 + lby; j < newDimY_y - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_y - 1; j++)
         {
-            for (int k = 1; k < dim_z-1; k++)
+            for (int k = 0; k < dim_z; k++)
             {
                 grid.v[gety(i, j, k)] = Y3_y[gety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
@@ -322,11 +441,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 1 + lbx; i < newDimX_z - 1 - rbx; i++)
+    for (int i = 1 ; i < newDimX_z - 1; i++)
     {
-        for (int j = 1 + lby; j < newDimY_z - 1 - rby; j++)
+        for (int j = 1 ; j < newDimY_z - 1; j++)
         {
-            for (int k = 1; k < dim_z_z - 1; k++)
+            for (int k = 0; k < dim_z_z ; k++)
             {
                 grid.w[getz(i, j, k)] = Y3_z[getz(i, j, k)] +
                                                              90.0 / 120.0 * DT * functionF_w(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
@@ -336,7 +455,7 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
+    //boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
     exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
     exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
@@ -352,17 +471,77 @@ void IcoNS::solve_time_step(Real time)
         }
     } */
 
-    for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
+    for (int i = 1 ; i < zSize[0] + 1 ; i++)
     {
-        for (int j = 1 + lby; j < zSize[1] + 1 - rby; j++)
+        for (int j = 1 ; j < zSize[1] + 1 ; j++)
         {
-            for (int k = 1; k < zSize[2] - 1; k++)
+            for (int k = 0; k < zSize[2] ; k++)
             {
-                Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
+
+                //Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
+                Real diffx = 0.0;
+                Real diffy = 0.0;
+                Real diffz = 0.0;
+ 
+                if (i == 1)
+                {
+                    // continue;
+                    diffx = (-8 * boundary.boundary_value_u[0]->value(i - 1 - 0.5, j - 1, k, time + 64.0 / 120.0 * DT) + 9 * grid.u[getx(i, j, k)] - grid.u[getx(i + 1, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (i == zSize[0])
+                {
+                    // continue;
+                    diffx = (8 * boundary.boundary_value_u[0]->value(NX - 0.5, j -1, k, time + 64.0 / 120.0 * DT) - 9 * grid.u[getx(i - 1, j, k)] + grid.u[getx(i - 2, j, k)]) / (3 * DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffx = (grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX);
+                    // diffx =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (j == 1)
+                {
+                    // continue;
+                    diffy = (-8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) + 9 * grid.v[gety(i, j, k)] - grid.v[gety(i, j + 1, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (j == zSize[1])
+                {
+                    // continue;
+                    diffy = (8 * boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, time + 64.0 / 120.0 * DT) - 9 * grid.v[gety(i, j - 1, k)] + grid.v[gety(i, j - 2, k)]) / (3 * DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffy = (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY);
+                    // diffy =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                if (k == 0)
+                {
+                    // continue;
+                    diffz = (-8 * boundary.boundary_value_w[0]->value(i -1, j - 1, k - 0.5, time + 64.0 / 120.0 * DT) + 9 * grid.w[getz(i, j, k)] - grid.w[getz(i, j, k + 1)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else if (k == zSize[2] - 1)
+                {
+                    // continue;
+                    diffz = (8 * boundary.boundary_value_w[0]->value(i - 1, j -1, k - 0.5, time + 64.0 / 120.0 * DT) - 9 * grid.w[getz(i, j, k - 1)] + grid.w[getz(i, j, k - 2)]) / (3 * DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+                else
+                {
+                    diffz = (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ);
+                    // diffz =  64.0 * DT / (120.0) * std::cos(i * DX) * std::cos(j * DY) * std::cos(k * DZ) * (sin(time) - sin(time + 64.0 * DT / (120.0)));
+                }
+ 
+                Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * (diffx + diffy + diffz);
             }
         }
     }
-    boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
+    //boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
     //vtk file for grid.p
     std::ofstream vtkFile("pressure"+std::to_string(time)+".vtk");
@@ -544,7 +723,7 @@ void IcoNS::solve_time_step(Real time)
 //TODO: maybe change everything with the indexing function
 Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
-    int lu = i * newDimY_x * dim_z + j * dim_z + k;
+    /*int lu = i * newDimY_x * dim_z + j * dim_z + k;
     int lv = i * newDimY_y * dim_z + j * dim_z + k;
     int lw = i * newDimY_z * dim_z_z + j * dim_z_z + k;
 
@@ -556,65 +735,347 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
     if(testCase==0){
         value += functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + coords[1] * other_dim_y_x, k, t);
     }
-    return value;
-    // return -(u[lu] * (u[lu + newDimY_x * dim_z] - u[lu - newDimY_x * dim_z]) / (2.0 * DX) +
-    //          (v[lv] + v[lv + newDimY_y * dim_z] + v[lv - dim_z] + v[lv + newDimY_y * dim_z - dim_z]) / 4.0 * (u[lu + dim_z] - u[lu - dim_z]) / (2.0 * DY) +
-    //          (w[lw] + w[lw + newDimY_z * dim_z_z] + w[lw - 1] + w[lw + newDimY_z * dim_z_z - 1]) / 4.0 * (u[lu + 1] - u[lu - 1]) / (2.0 * DZ)) +
-    //        1 / RE * ((u[lu + newDimY_x * dim_z] - 2 * u[lu] + u[lu - newDimY_x * dim_z]) / (DX * DX) + (u[lu + dim_z] - 2 * u[lu] + u[lu - dim_z]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ)) +
-    //        functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + coords[1] * other_dim_y_x, k, t);
+    return value;  */ 
+    Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
+
+    u_value = u[getx(i, j, k)];
+    //TODO: global offsets
+    if (j == 1 || j == newDimY_x - 1)
+    {
+        v_value = boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, t);
+    }
+    else
+    {
+        v_value = (v[gety(i, j, k)] + v[gety(i + 1, j, k)] + v[gety(i, j - 1, k)] + v[gety(i + 1, j - 1, k)]) / 4.0;
+    }
+ 
+    if (k == 0 || k == NZ)
+    {
+        w_value = boundary.boundary_value_w[0]->value(i - 1, j - 1, k - 0.5, t);
+    }
+    else
+    {
+        w_value = (w[getz(i, j, k)] + w[getz(i + 1, j, k)] + w[getz(i, j, k - 1)] + w[getz(i + 1, j, k - 1)]) / 4.0;
+    }
+ 
+    if (i == 1)
+    {
+        diffx = (-4 * boundary.boundary_value_u[0]->value(i - 1 - 0.5, j - 1, k, t) + 3 * u[getx(i, j, k)] + u[getx(i + 1, j, k)]) / (3.0 * DX);
+    }
+    else if (i == newDimX_x - 1)
+    {
+        diffx = (4 * boundary.boundary_value_u[0]->value(NX - 0.5, j - 1, k, t) - 3 * u[getx(i, j, k)] - u[getx(i - 1, j, k)]) / (3.0 * DX);
+    }
+    else
+    {
+        diffx = (u[getx(i + 1, j, k)] - u[getx(i - 1, j, k)]) / (2.0 * DX);
+    }
+ 
+    if (j == 1)
+    {
+        diffy = (-3 * u[getx(i, j, k)] + 4 * u[getx(i, j + 1, k)] - u[getx(i, j + 2, k)]) / (2 * DY);
+    }
+    else if (j == newDimY_x -1)
+    {
+        diffy = (3 * u[getx(i, j, k)] - 4 * u[getx(i, j - 1, k)] + u[getx(i, j - 2, k)]) / (2 * DY);
+    }
+    else
+    {
+        diffy = (u[getx(i, j + 1, k)] - u[getx(i, j - 1, k)]) / (2.0 * DY);
+    }
+ 
+    if (k == 0)
+    {
+        diffz = (-3 * u[getx(i, j, k)] + 4 * u[getx(i, j, k + 1)] - u[getx(i, j, k + 2)]) / (2 * DZ);
+    }
+    else if (k == NZ)
+    {
+        diffz = (3 * u[getx(i, j, k)] - 4 * u[getx(i, j, k - 1)] + u[getx(i, j, k - 2)]) / (2 * DZ);
+    }
+    else
+    {
+        diffz = (u[getx(i, j, k + 1)] - u[getx(i, j, k - 1)]) / (2.0 * DZ);
+    }
+ 
+    if (i == 1)
+    {
+        diffsecx = (16 * boundary.boundary_value_u[0]->value(i - 1.5, j-1, k, t) - 25 * u[getx(i, j, k)] + 10 * u[getx(i + 1, j, k)] - u[getx(i + 2, j, k)]) / (5.0 * DX * DX);
+    }
+    else if (i == newDimX_x - 1)
+    {
+        diffsecx = (-16 * boundary.boundary_value_u[0]->value(i + 1.5, j-1, k, t) + 25 * u[getx(i, j, k)] - 10 * u[getx(i - 1, j, k)] + u[getx(i - 2, j, k)]) / (5.0 * DX * DX);
+    }
+    else
+    {
+        diffsecx = (u[getx(i + 1, j, k)] - 2 * u[getx(i, j, k)] + u[getx(i - 1, j, k)]) / (DX * DX);
+    }
+ 
+    if (j == 1)
+    {
+        diffsecy = (2 * u[getx(i, j, k)] - 5 * u[getx(i, j + 1, k)] + 4 * u[getx(i, j + 2, k)] - u[getx(i, j + 3, k)]) / (DY * DY);
+    }
+    else if (j == newDimY_x - 1)
+    {
+        diffsecy = (-2 * u[getx(i, j, k)] + 5 * u[getx(i, j - 1, k)] - 4 * u[getx(i, j - 2, k)] + u[getx(i, j - 3, k)]) / (DY * DY);
+    }
+    else
+    {
+        diffsecy = (u[getx(i, j + 1, k)] - 2 * u[getx(i, j, k)] + u[getx(i, j - 1, k)]) / (DY * DY);
+    }
+ 
+    if (k == 0)
+    {
+        diffsecz = (2 * u[getx(i, j, k)] - 5 * u[getx(i, j, k + 1)] + 4 * u[getx(i, j, k + 2)] - u[getx(i, j, k + 3)]) / (DZ * DZ);
+    }
+    else if (k == NZ)
+    {
+        diffsecz = (-2 * u[getx(i, j, k)] + 5 * u[getx(i, j, k - 1)] - 4 * u[getx(i, j, k - 2)] + u[getx(i, j, k - 3)]) / (DZ * DZ);
+    }
+    else
+    {
+        diffsecz = (u[getx(i, j, k + 1)] - 2 * u[getx(i, j, k)] + u[getx(i, j, k - 1)]) / (DZ * DZ);
+    }
+ 
+    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + coords[1] * other_dim_y_x, k, t);
 }
+
 
 Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
-    int lu = i * newDimY_x * dim_z + j * dim_z + k;
-    int lv = i * newDimY_y * dim_z + j * dim_z + k;
-    int lw = i * newDimY_z * dim_z_z + j * dim_z_z + k;
+    // int lu = i * newDimY_x * dim_z + j * dim_z + k;
+    // int lv = i * newDimY_y * dim_z + j * dim_z + k;
+    // int lw = i * newDimY_z * dim_z_z + j * dim_z_z + k;
     
-    Real value = -((u[lu] + u[lu + dim_z] + u[lu - newDimY_x * dim_z] + u[lu - newDimY_x * dim_z + dim_z]) / 4.0 * ((v[lv + newDimY_y * dim_z] - v[lv - newDimY_y * dim_z]) / (2.0 * DX)) +
-             v[lv] * (v[lv + dim_z] - v[lv - dim_z]) / (2.0 * DY) +
-             (w[lw] + w[lw - 1] + w[lw + dim_z_z] + w[lw + dim_z_z - 1]) / 4.0 * (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
-           (1.0 / RE) * ((v[lv + newDimY_y * dim_z] - 2.0 * v[lv] + v[lv - newDimY_y * dim_z]) / (DX * DX) +
-                         (v[lv + dim_z] - 2.0 * v[lv] + v[lv - dim_z]) / (DY * DY) +
-                         (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ));
-    if(testCase==0){
-        value += functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
-    }
-
-    return value;
-    // return -((u[lu] + u[lu + dim_z] + u[lu - newDimY_x * dim_z] + u[lu - newDimY_x * dim_z + dim_z]) / 4.0 * ((v[lv + newDimY_y * dim_z] - v[lv - newDimY_y * dim_z]) / (2.0 * DX)) +
+    // Real value = -((u[lu] + u[lu + dim_z] + u[lu - newDimY_x * dim_z] + u[lu - newDimY_x * dim_z + dim_z]) / 4.0 * ((v[lv + newDimY_y * dim_z] - v[lv - newDimY_y * dim_z]) / (2.0 * DX)) +
     //          v[lv] * (v[lv + dim_z] - v[lv - dim_z]) / (2.0 * DY) +
     //          (w[lw] + w[lw - 1] + w[lw + dim_z_z] + w[lw + dim_z_z - 1]) / 4.0 * (v[lv + 1] - v[lv - 1]) / (2.0 * DZ)) +
     //        (1.0 / RE) * ((v[lv + newDimY_y * dim_z] - 2.0 * v[lv] + v[lv - newDimY_y * dim_z]) / (DX * DX) +
     //                      (v[lv + dim_z] - 2.0 * v[lv] + v[lv - dim_z]) / (DY * DY) +
-    //                      (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ)) +
-    //        functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
+    //                      (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ));
+    // if(testCase==0){
+    //     value += functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
+    // }
+ 
+    // return value;
+    Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
+    v_value = v[gety(i, j, k)];
+ 
+    if (i == 1 || i == newDimX_y - 1)
+    {
+        u_value = boundary.boundary_value_u[0]->value(i - 1.5, j - 1, k, t);
+    }
+    else
+    {
+        u_value = (u[getx(i, j, k)] + u[getx(i, j + 1, k)] + u[getx(i - 1, j, k)] + u[getx(i - 1, j + 1, k)]) / 4.0;
+    }
+ 
+    if (k == 0 || k == NZ)
+    {
+        w_value = boundary.boundary_value_w[0]->value(i -1, j -1, k - 0.5, t);
+    }
+    else
+    {
+        w_value = (w[getz(i, j, k)] + w[getz(i, j + 1, k)] + w[getz(i, j, k - 1)] + w[getz(i, j + 1, k - 1)]) / 4.0;
+    }
+ 
+    if (i == 1)
+    {
+        diffx = (-3 * v[gety(i, j, k)] + 4 * v[gety(i + 1, j, k)] - v[gety(i + 2, j, k)]) / (2 * DX);
+    }
+    else if (i == newDimX_y - 1)
+    {
+        diffx = (3 * v[gety(i, j, k)] - 4 * v[gety(i - 1, j, k)] + v[gety(i - 2, j, k)]) / (2 * DX);
+    }
+    else
+    {
+        diffx = (v[gety(i + 1, j, k)] - v[gety(i - 1, j, k)]) / (2.0 * DX);
+    }
+ 
+    if (j == 1)
+    {
+        diffy = (-4 * boundary.boundary_value_v[0]->value(i -1, j - 1.5, k, t) + 3 * v[gety(i, j, k)] + v[gety(i, j + 1, k)]) / (3.0 * DY);
+    }
+    else if (j == newDimY_y - 1)
+    {
+        diffy = (4 * boundary.boundary_value_v[0]->value(i -1, NY - 0.5, k, t) - 3 * v[gety(i, j, k)] - v[gety(i, j - 1, k)]) / (3.0 * DY);
+    }
+    else
+    {
+        diffy = (v[gety(i, j + 1, k)] - v[gety(i, j - 1, k)]) / (2.0 * DY);
+    }
+ 
+    if (k == 0)
+    {
+        diffz = (-3 * v[gety(i, j, k)] + 4 * v[gety(i, j, k + 1)] - v[gety(i, j, k + 2)]) / (2 * DZ);
+    }
+    else if (k == NZ)
+    {
+        diffz = (3 * v[gety(i, j, k)] - 4 * v[gety(i, j, k - 1)] + v[gety(i, j, k - 2)]) / (2 * DZ);
+    }
+    else
+    {
+        diffz = (v[gety(i, j, k + 1)] - v[gety(i, j, k - 1)]) / (2.0 * DZ);
+    }
+ 
+    if (j == 1)
+    {
+        diffsecy = (16 * boundary.boundary_value_v[0]->value(i -1, j - 1.5, k, t) - 25 * v[gety(i, j, k)] + 10 * v[gety(i, j + 1, k)] - v[gety(i, j + 2, k)]) / (5.0 * DY * DY);
+    }
+    else if (j == newDimY_y - 1)
+    {
+        diffsecy = (-16 * boundary.boundary_value_v[0]->value(i -1, NY - 0.5, k, t) + 25 * v[gety(i, j, k)] - 10 * v[gety(i, j - 1, k)] + v[gety(i, j - 2, k)]) / (5.0 * DY * DY);
+    }
+    else
+    {
+        diffsecy = (v[gety(i, j + 1, k)] - 2 * v[gety(i, j, k)] + v[gety(i, j - 1, k)]) / (DY * DY);
+    }
+ 
+    if (i == 0)
+    {
+        diffsecx = (2 * v[gety(i, j, k)] - 5 * v[gety(i + 1, j, k)] + 4 * v[gety(i + 2, j, k)] - v[gety(i + 3, j, k)]) / (DX * DX);
+    }
+    else if (i == newDimX_y - 1)
+    {
+        diffsecx = (-2 * v[gety(i, j, k)] + 5 * v[gety(i - 1, j, k)] - 4 * v[gety(i - 2, j, k)] + v[gety(i - 3, j, k)]) / (DX * DX);
+    }
+    else
+    {
+        diffsecx = (v[gety(i + 1, j, k)] - 2 * v[gety(i, j, k)] + v[gety(i - 1, j, k)]) / (DX * DX);
+    }
+ 
+    if (k == 0)
+    {
+        diffsecz = (2 * v[gety(i, j, k)] - 5 * v[gety(i, j, k + 1)] + 4 * v[gety(i, j, k + 2)] - v[gety(i, j, k + 3)]) / (DZ * DZ);
+    }
+    else if (k == NZ)
+    {
+        diffsecz = (-2 * v[gety(i, j, k)] + 5 * v[gety(i, j, k - 1)] - 4 * v[gety(i, j, k - 2)] + v[gety(i, j, k - 3)]) / (DZ * DZ);
+    }
+    else
+    {
+        diffsecz = (v[gety(i, j, k + 1)] - 2 * v[gety(i, j, k)] + v[gety(i, j, k - 1)]) / (DZ * DZ);
+    }
+ 
+    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
 }
 
 Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 
 {
-    int lu = i * newDimY_x * dim_z + j * dim_z + k;
-    int lv = i * newDimY_y * dim_z + j * dim_z + k;
-    int lw = i * newDimY_z * dim_z_z + j * dim_z_z + k;
+    // int lu = i * newDimY_x * dim_z + j * dim_z + k;
+    // int lv = i * newDimY_y * dim_z + j * dim_z + k;
+    // int lw = i * newDimY_z * dim_z_z + j * dim_z_z + k;
 
-    Real value = -((u[lu] + u[lu - newDimY_x * dim_z] + u[lu + 1] + u[lu - dim_z * newDimY_x + 1]) / 4.0 * (w[lw + newDimY_z * dim_z_z] - w[lw - newDimY_z * dim_z_z]) / (2.0 * DX) +
-                  (v[lv + 1] + v[lv - dim_z + 1] + v[lv] + v[lv - dim_z]) / 4.0 * (w[lw + dim_z_z] - w[lw - dim_z_z]) / (2.0 * DY) +
-                  w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
-                  (1.0 / RE) * ((w[lw + newDimY_z * dim_z_z] - 2.0 * w[lw] + w[lw - newDimY_z * dim_z_z]) / (DX * DX) +
-                         (w[lw + dim_z_z] - 2.0 * w[lw] + w[lw - dim_z_z]) / (DY * DY) +
-                         (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ));
-    
-    if(testCase==0){
-        value += functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
-    }
-    return 0;
-    // return -((u[lu] + u[lu - newDimY_x * dim_z] + u[lu + 1] + u[lu - dim_z * newDimY_x + 1]) / 4.0 * (w[lw + newDimY_z * dim_z_z] - w[lw - newDimY_z * dim_z_z]) / (2.0 * DX) +
-    //          (v[lv + 1] + v[lv - dim_z + 1] + v[lv] + v[lv - dim_z]) / 4.0 * (w[lw + dim_z_z] - w[lw - dim_z_z]) / (2.0 * DY) +
-    //          w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
-    //        (1.0 / RE) * ((w[lw + newDimY_z * dim_z_z] - 2.0 * w[lw] + w[lw - newDimY_z * dim_z_z]) / (DX * DX) +
+    // Real value = -((u[lu] + u[lu - newDimY_x * dim_z] + u[lu + 1] + u[lu - dim_z * newDimY_x + 1]) / 4.0 * (w[lw + newDimY_z * dim_z_z] - w[lw - newDimY_z * dim_z_z]) / (2.0 * DX) +
+    //               (v[lv + 1] + v[lv - dim_z + 1] + v[lv] + v[lv - dim_z]) / 4.0 * (w[lw + dim_z_z] - w[lw - dim_z_z]) / (2.0 * DY) +
+    //               w[lw] * (w[lw + 1] - w[lw - 1]) / (2.0 * DZ)) +
+    //               (1.0 / RE) * ((w[lw + newDimY_z * dim_z_z] - 2.0 * w[lw] + w[lw - newDimY_z * dim_z_z]) / (DX * DX) +
     //                      (w[lw + dim_z_z] - 2.0 * w[lw] + w[lw - dim_z_z]) / (DY * DY) +
-    //                      (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ)) +
-    //        functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
+    //                      (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ));
+    
+    // if(testCase==0){
+    //     value += functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
+    // }
+    // return 0;
+
+    Real diffx, diffy, diffz, u_value, v_value, w_value, diffsecx, diffsecy, diffsecz;
+    w_value = w[getz(i, j, k)];
+    if (i == 1 || i == newDimX_z - 1)
+    {
+        u_value = boundary.boundary_value_u[0]->value(i - 1.5, j - 1, k, t);
+    }
+    else
+    {
+        u_value = (u[getx(i, j, k)] + u[getx(i, j, k + 1)] + u[getx(i - 1, j, k)] + u[getx(i - 1, j, k + 1)]) / 4.0;
+    }
+    if (j == 1 || j == newDimY_z - 1)
+    {
+        v_value = boundary.boundary_value_v[0]->value(i - 1, j - 1.5, k, t);
+    }
+    else
+    {
+        v_value = (v[gety(i, j, k)] + v[gety(i, j - 1, k)] + v[gety(i, j, k + 1)] + v[gety(i, j - 1, k + 1)]) / 4.0;
+    }
+ 
+    if (i == 1)
+    {
+        diffx = (-3 * w[getz(i, j, k)] + 4 * w[getz(i + 1, j, k)] - w[getz(i + 2, j, k)]) / (2 * DX);
+    }
+    else if (i == newDimX_z - 1)
+    {
+        diffx = (3 * w[getz(i, j, k)] - 4 * w[getz(i - 1, j, k)] + w[getz(i - 2, j, k)]) / (2 * DX);
+    }
+    else
+    {
+        diffx = (w[getz(i + 1, j, k)] - w[getz(i - 1, j, k)]) / (2.0 * DX);
+    }
+ 
+    if (j == 1)
+    {
+        diffy = (-3 * w[getz(i, j, k)] + 4 * w[getz(i, j + 1, k)] - w[getz(i, j + 2, k)]) / (2 * DY);
+    }
+    else if (j == newDimY_z -1)
+    {
+        diffy = (3 * w[getz(i, j, k)] - 4 * w[getz(i, j - 1, k)] + w[getz(i, j - 2, k)]) / (2 * DY);
+    }
+    else
+    {
+        diffy = (w[getz(i, j + 1, k)] - w[getz(i, j - 1, k)]) / (2.0 * DY);
+    }
+ 
+    if (k == 0)
+    {
+        diffz = (-4 * boundary.boundary_value_w[0]->value(i - 1, j - 1, k - 0.5, t) + 3 * w[getz(i, j, k)] + w[getz(i, j, k + 1)]) / (3.0 * DZ);
+    }
+    else if (k == NZ - 1)
+    {
+        diffz = (4 * boundary.boundary_value_w[0]->value(i - 1, j - 1, NZ - 0.5, t) - 3 * w[getz(i, j, k)] - w[getz(i, j, k - 1)]) / (3.0 * DZ);
+    }
+    else
+    {
+        diffz = (w[getz(i, j, k + 1)] - w[getz(i, j, k - 1)]) / (2.0 * DZ);
+    }
+ 
+    if (k == 0)
+    {
+        diffsecz = (16 * boundary.boundary_value_w[0]->value(i - 1, j - 1, k - 0.5, t) - 25 * w[getz(i, j, k)] + 10 * w[getz(i, j, k + 1)] - w[getz(i, j, k + 2)]) / (5.0 * DZ * DZ);
+    }
+    else if (k == NZ - 1)
+    {
+        diffsecz = (-16 * boundary.boundary_value_w[0]->value(i - 1, j - 1, NZ - 0.5, t) + 25 * w[getz(i, j, k)] - 10 * w[getz(i, j, k - 1)] + w[getz(i, j, k - 2)]) / (5.0 * DZ * DZ);
+    }
+    else
+    {
+        diffsecz = (w[getz(i, j, k + 1)] - 2 * w[getz(i, j, k)] + w[getz(i, j, k - 1)]) / (DZ * DZ);
+    }
+ 
+    if (i == 1)
+    {
+        diffsecx = (2 * w[getz(i, j, k)] - 5 * w[getz(i + 1, j, k)] + 4 * w[getz(i + 2, j, k)] - w[getz(i + 3, j, k)]) / (DX * DX);
+    }
+    else if (i == newDimX_z - 1)
+    {
+        diffsecx = (-2 * w[getz(i, j, k)] + 5 * w[getz(i - 1, j, k)] - 4 * w[getz(i - 2, j, k)] + w[getz(i - 3, j, k)]) / (DX * DX);
+    }
+    else
+    {
+        diffsecx = (w[getz(i + 1, j, k)] - 2 * w[getz(i, j, k)] + w[getz(i - 1, j, k)]) / (DX * DX);
+    }
+ 
+    if (j == 1)
+    {
+        diffsecy = (2 * w[getz(i, j, k)] - 5 * w[getz(i, j + 1, k)] + 4 * w[getz(i, j + 2, k)] - w[getz(i, j + 3, k)]) / (DY * DY);
+    }
+    else if (j == newDimY_z -1)
+    {
+        diffsecy = (-2 * w[getz(i, j, k)] + 5 * w[getz(i, j - 1, k)] - 4 * w[getz(i, j - 2, k)] + w[getz(i, j - 3, k)]) / (DY * DY);
+    }
+    else
+    {
+        diffsecy = (w[getz(i, j + 1, k)] - 2 * w[getz(i, j, k)] + w[getz(i, j - 1, k)]) / (DY * DY);
+    }
+ 
+    return -1 * (u_value * diffx + v_value * diffy + w_value * diffz) + 1 / RE * (diffsecx + diffsecy + diffsecz) + functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
 
 }
 
