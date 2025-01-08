@@ -19,6 +19,7 @@
 #include <sstream>
 #include "grid.hpp"
 #include "constants.hpp"
+#include <iomanip>
 
 /**
  * @enum Direction
@@ -184,23 +185,24 @@ public:
     * @return Result of the mathematical expression
     */
 inline double evaluateExpression(const std::string& expr) {
-    // Replace M_PI with its value if present
     std::string processedExpr = expr;
     size_t pos = processedExpr.find("M_PI");
     if (pos != std::string::npos) {
-        processedExpr.replace(pos, 4, std::to_string(M_PI));
+        std::ostringstream ss;
+        ss << std::setprecision(16) << std::fixed << std::numbers::pi_v<long double>;
+        processedExpr.replace(pos, 4, ss.str());
     }
 
-    // Evaluation for multiplication
     if (processedExpr.find('*') != std::string::npos) {
         std::istringstream iss(processedExpr);
-        double a, b;
+        long double a, b;
         char op;
         iss >> a >> op >> b;
-        return a * b;
+        return static_cast<double>(a * b);
     }
 
-    // If no operations, convert directly to double
-    return std::stod(processedExpr);
+    return static_cast<double>(std::stold(processedExpr));
 }
+
+
 #endif

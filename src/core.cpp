@@ -15,7 +15,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     setBoundaryConditions();
 
     setParallelization();
-   
+
     for(int i=0; i<zSize[0]*zSize[1]*zSize[2]; i++){
         grid.p[i]=0.0;
         Phi_p[i]=0.0;
@@ -39,7 +39,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         Y2_z[i]=0.0;
         Y3_z[i]=0.0;
     }
-    
+
     for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
     {
         helper[i][0] = 0.0;
@@ -63,13 +63,13 @@ void IcoNS::setBoundaryConditions(){
         u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { return 0; });
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { 
+                                                {
                                                     //TODO: da capire u(1,0,0) che cella è
                                                     if(SX + x==1.0){
                                                         return 1;
                                                     }else{
                                                         return 0;
-                                                    } 
+                                                    }
                                                 });
         w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { return 0; });
@@ -77,12 +77,12 @@ void IcoNS::setBoundaryConditions(){
         u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { return 0; });
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { 
+                                                {
                                                     if(SX + x==-0.5){
                                                         return 1;
                                                     }else{
                                                         return 0;
-                                                    } 
+                                                    }
                                                 });
         w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { return 0; });
@@ -92,7 +92,7 @@ void IcoNS::setBoundaryConditions(){
         v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
                                                 { return std::cos(SX + x * DX) * std::sin(SY + (y + 0.5) * DY) * std::sin(SZ + z * DZ) * std::sin(t); });
         w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 2 * (std::cos(SZ + x * DX) * std::cos(SY + y * DY) * std::cos(SZ + (z + 0.5) * DZ) * std::sin(t)); }); 
+                                                { return 2 * (std::cos(SZ + x * DX) * std::cos(SY + y * DY) * std::cos(SZ + (z + 0.5) * DZ) * std::sin(t)); });
     }
 
     for (int i = 0; i < 6 /*nfaces*/; i++)
@@ -264,12 +264,25 @@ void IcoNS::solve()
     while (i < Nt)
     {
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
+/*
+        std::cout << std::sin((NX) * 2*M_PI/NX) * std::cos( NY * 2*M_PI/NY) * std::sin( NZ * 2*M_PI/NZ) * std::sin(0.9) << "     "
+                            <<std::sin((NX - 0.5 + 0.5) * LX/NX) * std::cos( NY * LY/NY) * std::sin( NZ * LZ/NZ) * std::sin(0.9)
+                            << "-" <<boundary.boundary_value_u[1]->value(NX-0.5,NY,NZ,0.9) << "-at " << 0.9
+                << "dim" << NX << "LX" << LX << "DX" << DX<< std::endl;
+*/
 
+        /*
+        std::cout << std::sin((NX) * 2*M_PI/NX) * std::cos( NY * 2*M_PI/NY) * std::sin( NZ * 2*M_PI/NZ) * std::sin(0.9) << "     "
+                            <<std::sin((NX - 0.5 + 0.5) * LX/NX) * std::cos( NY * LY/NY) * std::sin( NZ * LZ/NZ) * std::sin(0.9)
+                            << " - " <<boundary.boundary_value_u[1]->value(NX-0.5,NY,NZ,0.9) << "-at :" << 0.9
+                << " dim  " << NX << " LX  " << LX << " DX  " << DX<< std::endl;
+        std::cout << std::setprecision(30) << "LX: " << LX << " LY: " << LY << " LZ: " << LZ << std::endl;
+        */
         MPI_Barrier(cart_comm);
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
         exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
-        
+
         if(testCase==0){
             L2_error(time);
         }
@@ -283,7 +296,7 @@ void IcoNS::solve()
         //             std::cout << grid.p[getp(in,j,k)] << " ";
         //         }
         //         std::cout << std::endl;
-        //     }            
+        //     }
         //     std::cout << std::endl;
         // }
         // std::cout << "Halos: "<< std::endl;
@@ -294,11 +307,11 @@ void IcoNS::solve()
         //             std::cout << halo_p[getHaloP(in,j,k)] << " ";
         //         }
         //         std::cout << std::endl;
-        //     }            
+        //     }
         //     std::cout << std::endl;
         // }
         // c2d->deallocXYZ(halo_p);
-        
+
         solve_time_step(time);
         MPI_Barrier(cart_comm);
         time += DT;
@@ -1003,7 +1016,7 @@ Real IcoNS::error_comp_P(const Real t)
             error += ((grid.p[getp(zSize[0] - 1,zSize[1]-1,zSize[2] - 1)] - exact_solution.value_p(zSize[0] -1, zSize[1] - 1, zSize[2] -1, t)) *
                       (grid.p[getp(zSize[0] - 1,zSize[1]-1,zSize[2] - 1)] - exact_solution.value_p(zSize[0] -1, zSize[1] - 1, zSize[2] -1, t)) *
                      DX*DY* DZ / 8);
-        }   
+        }
     }
 
     return error;
@@ -1283,7 +1296,7 @@ void IcoNS::output(){
             const double xCoord = SX+LX/2;
             const double yCoord = SY+LY/2;
             double zCoord = SZ;
-            
+
             double u, v, w, p;
             for(int k = 0; k < zSize[2]; k++)
             {
@@ -1462,7 +1475,7 @@ void IcoNS::output_x(){
     double* halo_p;
     c2d->updateHalo(grid.p, halo_p,1,2);
     if (x_index >= offset_x_x && x_index < dim_x_x + offset_x_x) {
-        
+
         int local_x_x = x_index - offset_x_x + 1;
         int local_x_y = x_index - offset_x_y + 1;
         int local_x_z = x_index - offset_x_z + 1;
@@ -1470,37 +1483,37 @@ void IcoNS::output_x(){
 
         for(int j = 1; j < newDimY_x - 1; j++){
             for(int k=0; k < dim_z ; k++){
-                
+
                 // Write grid points coordinate
                 points << SX + x_middle << " "
                            << static_cast<float>(SY + (j + offset_y_x) * DY) << " "
                            << static_cast<float>(SZ + (k) * DZ) << "\n";
-                
+
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid..v[local_x* newDimY_x * dim_z + j * dim_z + k];
                 valuesx << grid.u[local_x_x* newDimY_x * dim_z + j * dim_z + k] << "\n";
 
                 if(lby &&j==1){
-                    valuesy << (boundary.boundary_value_v[2]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[2]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
+                    valuesy << (boundary.boundary_value_v[2]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[2]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n";
                 }else if(rby && j==newDimY_x - 2){
-                    valuesy << (boundary.boundary_value_v[3]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[3]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n"; 
+                    valuesy << (boundary.boundary_value_v[3]->value(x_index,j + offset_y_y-0.5,k,T) + boundary.boundary_value_v[3]->value(x_index + 1,j + offset_y_y-0.5,k,T))/2 << "\n";
                 }else{
                     valuesy << (grid.v[local_x_y*newDimY_y * dim_z + j * dim_z + k] + grid.v[local_x_y*newDimY_y * dim_z + (j-1) * dim_z + k] +
                                 grid.v[(local_x_y+1)*newDimY_y * dim_z + j * dim_z + k] + grid.v[(local_x_y+1)*newDimY_y * dim_z + (j-1) * dim_z + k])/4 << "\n";
-                }  
+                }
 
                 if(k==0){
-                    valuesz << boundary.boundary_value_w[4]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
+                    valuesz << boundary.boundary_value_w[4]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n";
                 }else if(k==dim_z -1){
-                    valuesz << boundary.boundary_value_w[5]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n"; 
+                    valuesz << boundary.boundary_value_w[5]->value(x_index + 0.5,j + offset_y_z,k - 0.5,T) << "\n";
                 }else{
                     valuesz << (grid.w[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[local_x_z*newDimY_z * dim_z_z + j * dim_z_z + k-1] +
                                 grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k-1])/4 << "\n";
-                }       
+                }
 
-                valuesp << (halo_p[local_x_p * zSize[1]*zSize[2] + j * zSize[2] + k] +  halo_p[(local_x_p-1) * zSize[1]*zSize[2] + j * zSize[2] + k])/2 << "\n";         
+                valuesp << (halo_p[local_x_p * zSize[1]*zSize[2] + j * zSize[2] + k] +  halo_p[(local_x_p-1) * zSize[1]*zSize[2] + j * zSize[2] + k])/2 << "\n";
             }
         }
-        
+
     }
     c2d->deallocXYZ(halo_p);
     minepoints[rank] = points.str().size();
@@ -1540,7 +1553,7 @@ void IcoNS::output_x(){
     MPI_File_write_at(fh, offset + my_points, points.str().c_str(), points.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     offset += allpoints;
     if(rank==0){
-        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);  
+        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     }
     offset += header2.str().size() ;
     MPI_File_write_at(fh, offset + my_valuesx, valuesx.str().c_str(), valuesx.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
@@ -1648,12 +1661,12 @@ void IcoNS::output_y(){
 
         for(int i = 1; i < newDimX_y - 1; i++){
             for(int k=0; k < dim_z; k++){
-                
-                // Write grid points coordinate 
+
+                // Write grid points coordinate
                 points << static_cast<float>(SX + (i + offset_x_y) * DX) << " "
                            << SY + y_middle << " "
                            << static_cast<float>(SZ + (k) * DZ) << "\n";
-                
+
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid..v[local_x* newDimY_x * dim_z + j * dim_z + k];
                 valuesy << grid.v[local_y_y* newDimY_y * dim_z + i * dim_z + k] << "\n";
 
@@ -1673,8 +1686,8 @@ void IcoNS::output_y(){
                 }else{
                     valuesz << (grid.w[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k] + grid.w[local_y_z*newDimY_z * dim_z_z + i * dim_z_z + k-1] +
                                 grid.w[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k] + grid.w[(local_y_z+1)*newDimY_z * dim_z_z + i * dim_z_z + k-1])/4 << "\n";
-                }  
-                valuesp << (halo_p[i * zSize[1]*zSize[2] + local_y_p * zSize[2] + k] +  halo_p[i * zSize[1]*zSize[2] + (local_y_p - 1)* zSize[2] + k])/2 << "\n";                    
+                }
+                valuesp << (halo_p[i * zSize[1]*zSize[2] + local_y_p * zSize[2] + k] +  halo_p[i * zSize[1]*zSize[2] + (local_y_p - 1)* zSize[2] + k])/2 << "\n";
             }
         }
     }
@@ -1715,7 +1728,7 @@ void IcoNS::output_y(){
     MPI_File_write_at(fh, offset + my_points, points.str().c_str(), points.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     offset += allpoints;
     if(rank==0){
-        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);  
+        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     }
     offset += header2.str().size() ;
     MPI_File_write_at(fh, offset + my_valuesx, valuesx.str().c_str(), valuesx.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
@@ -1822,36 +1835,36 @@ void IcoNS::output_z(){
         int local_x_z = x_index - offset_x_z + 1; */
         for(int i = 1; i < newDimX_z - 1; i++){
             for(int j = 1; j < newDimY_z - 1; j++){
-                
+
                 // Write grid points coordinate
                 points << static_cast<float>(SX + (i + offset_x_z) * DX) << " "
                            << static_cast<float>(SY + (j + offset_y_z) * DY) << " "
                            << SZ + z_middle << "\n";
-                
+
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid.v[local_x* newDimY_x * dim_z + j * dim_z + k];
 
                 if(lby &&j==1){
                     //valuesx << (boundary.boundary_value_u[0]->value(i + offset_x_x-0.5,j,z_index,T) + boundary.boundary_value_u[0]->value(i + offset_x_x+0.5,j,z_index,T))/2 << "\n";
-                    valuesx << (boundary.boundary_value_u[0]->value(i + offset_x_x, j + offset_x_y, z_index, T))<< "\n"; ; 
+                    valuesx << (boundary.boundary_value_u[0]->value(i + offset_x_x, j + offset_x_y, z_index, T))<< "\n"; ;
                 }else if(rby && j==newDimY_z-2){
-                    valuesx << (boundary.boundary_value_u[1]->value(i + offset_x_x, j + offset_x_y, z_index, T))<< "\n"; ; 
+                    valuesx << (boundary.boundary_value_u[1]->value(i + offset_x_x, j + offset_x_y, z_index, T))<< "\n"; ;
                 }else{
                     valuesx << (grid.u[i*newDimY_x * dim_z + j * dim_z + z_index] + grid.u[(i-1)*newDimY_x * dim_z + j * dim_z + z_index] +
                                 grid.u[i*newDimY_x * dim_z + (j-1) * dim_z + z_index] + grid.u[(i-1)*newDimY_x * dim_z + (j-1) * dim_z + z_index])/4 << "\n";
-                } 
+                }
 
                 if(lbx &&i==1){
                     valuesy << (boundary.boundary_value_v[0]->value(i + offset_x_y + 0.5,j + offset_y_y -0.5,z_index,T))<< "\n";
                 }
                 else if(rbx && i==newDimX_z-2){
-                    valuesy << boundary.boundary_value_v[4]->value(i + offset_x_y + 0.5,j + offset_y_y -0.5,z_index,T)<< "\n"; ;  
+                    valuesy << boundary.boundary_value_v[4]->value(i + offset_x_y + 0.5,j + offset_y_y -0.5,z_index,T)<< "\n"; ;
                 }else{
                     valuesy << (grid.v[i*newDimY_y * dim_z + j * dim_z + z_index] + grid.v[(i-1)*newDimY_y * dim_z + j * dim_z + z_index] +
                                 grid.v[i*newDimY_y * dim_z + (j-1) * dim_z + z_index] + grid.v[(i-1)*newDimY_y * dim_z + (j-1) * dim_z + z_index])/4 << "\n";
-                } 
+                }
 
-                valuesz << grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index] << "\n";     
-                valuesp << (halo_p[i * zSize[1]*zSize[2] + j * zSize[2] + z_index] +  halo_p[i * zSize[1]*zSize[2] + j* zSize[2] + z_index-1])/2 << "\n";          
+                valuesz << grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index] << "\n";
+                valuesp << (halo_p[i * zSize[1]*zSize[2] + j * zSize[2] + z_index] +  halo_p[i * zSize[1]*zSize[2] + j* zSize[2] + z_index-1])/2 << "\n";
             }
         }
     }
@@ -1893,7 +1906,7 @@ void IcoNS::output_z(){
     MPI_File_write_at(fh, offset + my_points, points.str().c_str(), points.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     offset += allpoints;
     if(rank==0){
-        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);  
+        MPI_File_write_at(fh, offset, header2.str().c_str(), header2.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
     }
     offset += header2.str().size() ;
     MPI_File_write_at(fh, offset + my_valuesx, valuesx.str().c_str(), valuesx.str().size(), MPI_CHAR, MPI_STATUS_IGNORE);
@@ -1918,4 +1931,3 @@ void IcoNS::output_z(){
 
     MPI_File_close(&fh);
 }
-
