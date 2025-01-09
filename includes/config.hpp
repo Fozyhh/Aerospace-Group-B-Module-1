@@ -41,7 +41,7 @@ constexpr Real DY = LY / NY;
 constexpr Real DZ = LZ / NZ;
 
 /// @brief Time step size for the simulation.
-constexpr Real DT = 0.01;
+constexpr Real DT = 0.0025;
 
 /// @brief Total time interval for the simulation. 
 constexpr Real T = 1;
@@ -50,3 +50,10 @@ constexpr Real T = 1;
 constexpr Real RE = 1000.0;
 
 #endif // CONFIG_HPP
+
+/*Error in p: 1.64888
+0.99,99,0.260039
+Error in p: 0.388387
+0.995,199,0.0669692
+Error in p: 0.0753086
+1,400,0.0151575*/
