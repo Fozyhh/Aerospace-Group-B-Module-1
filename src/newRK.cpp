@@ -68,7 +68,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < zSize[2]; k++)
             {
-                if(i==1 || j==1 || k==0 || i==zSize[0] || j==zSize[1] || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
@@ -196,7 +196,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < zSize[2]; k++)
             {
-                if(i==1 || j==1 || k==0 || i==zSize[0] || j==zSize[1] || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
@@ -324,7 +324,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < zSize[2]; k++)
             {
-                if(i==1 || j==1 || k==0 || i==zSize[0] || j==zSize[1] || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{

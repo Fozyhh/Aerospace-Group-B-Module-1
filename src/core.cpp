@@ -264,20 +264,6 @@ void IcoNS::solve()
     while (i < Nt)
     {
         boundary.update_boundary(grid.u, grid.v, grid.w, time);
-/*
-        std::cout << std::sin((NX) * 2*M_PI/NX) * std::cos( NY * 2*M_PI/NY) * std::sin( NZ * 2*M_PI/NZ) * std::sin(0.9) << "     "
-                            <<std::sin((NX - 0.5 + 0.5) * LX/NX) * std::cos( NY * LY/NY) * std::sin( NZ * LZ/NZ) * std::sin(0.9)
-                            << "-" <<boundary.boundary_value_u[1]->value(NX-0.5,NY,NZ,0.9) << "-at " << 0.9
-                << "dim" << NX << "LX" << LX << "DX" << DX<< std::endl;
-*/
-
-        /*
-        std::cout << std::sin((NX) * 2*M_PI/NX) * std::cos( NY * 2*M_PI/NY) * std::sin( NZ * 2*M_PI/NZ) * std::sin(0.9) << "     "
-                            <<std::sin((NX - 0.5 + 0.5) * LX/NX) * std::cos( NY * LY/NY) * std::sin( NZ * LZ/NZ) * std::sin(0.9)
-                            << " - " <<boundary.boundary_value_u[1]->value(NX-0.5,NY,NZ,0.9) << "-at :" << 0.9
-                << " dim  " << NX << " LX  " << LX << " DX  " << DX<< std::endl;
-        std::cout << std::setprecision(30) << "LX: " << LX << " LY: " << LY << " LZ: " << LZ << std::endl;
-        */
         MPI_Barrier(cart_comm);
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
@@ -337,10 +323,10 @@ void IcoNS::L2_error(const Real t)
         totalError=sqrt(totalError);
         std::cout << " totalError: " << totalError << std::endl;
     }
-    std::cout << error_comp_X(t) << std::endl;
-    std::cout << error_comp_Y(t) << std::endl;
-    std::cout << error_comp_Z(t) << std::endl;
-    std::cout << error_comp_P(t) << std::endl << std::endl;
+    // std::cout << error_comp_X(t) << std::endl;
+    // std::cout << error_comp_Y(t) << std::endl;
+    // std::cout << error_comp_Z(t) << std::endl;
+    // std::cout << error_comp_P(t) << std::endl << std::endl;
 
 }
 
@@ -1093,6 +1079,9 @@ void IcoNS::parse_input(const std::string& input_file) {
             continue;
         }
     }
+    LX=2.0*M_PI;
+    LY=2.0*M_PI;
+    LZ=2.0*M_PI;
 
     // Skip comments and empty lines until we find grid points
     while (std::getline(file, line)) {
