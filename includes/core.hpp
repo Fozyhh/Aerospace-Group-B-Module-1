@@ -294,9 +294,9 @@ private:
   int other_dim_x_z, other_dim_y_z;
 
   /// @brief functions to access easier to each grid
-  inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
-  inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
-  inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+  inline int getx(int i, int j, int k) { return (i-lbx) * newDimY_x * dim_z + (j-lby) * dim_z + k; }
+  inline int gety(int i, int j, int k) { return (i-lbx) * newDimY_y * dim_z + (j-lby) * dim_z + k; }
+  inline int getz(int i, int j, int k) { return (i-lbx) * newDimY_z * dim_z_z + (j-lby) * dim_z_z + k; }
   inline int getp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
   inline int getHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
 
