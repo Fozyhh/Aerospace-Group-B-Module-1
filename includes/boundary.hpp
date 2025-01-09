@@ -183,9 +183,9 @@ public:
     void setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_);
     
     //SKIPPING GHOST POINT
-    inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
-    inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
-    inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+    inline int getx(int i, int j, int k) { return (i+1) * newDimY_x * dim_z + (j+1) * dim_z + k; }
+    inline int gety(int i, int j, int k) { return (i+1) * newDimY_y * dim_z + (j+1) * dim_z + k; }
+    inline int getz(int i, int j, int k) { return (i+1) * newDimY_z * dim_z_z + (j+1) * dim_z_z + k; }
     inline int getp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
 };
 #endif
