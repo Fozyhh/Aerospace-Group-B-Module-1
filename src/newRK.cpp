@@ -61,6 +61,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    MPI_Barrier(cart_comm);
 
     for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
     {
@@ -183,6 +184,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    MPI_Barrier(cart_comm);
 
     for (int i = 1 + lbx; i < zSize[0] + 1 - rbx; i++)
     {
@@ -301,9 +303,11 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
+    MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
     exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
+    MPI_Barrier(cart_comm);
 
     for (int i = 1 + lbx; i < zSize[0] + 1 -rbx; i++)
     {
