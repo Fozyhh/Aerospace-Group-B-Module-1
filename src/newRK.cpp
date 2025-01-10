@@ -137,7 +137,25 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+    MPI_Barrier(cart_comm);
+    exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
+    exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
+    exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    // if(rank==0){
 
+    //             std::cout << "Y2_x: "<< std::endl;
+    //             for(int in = 0; in < newDimX_x; in++){
+    //                 for (int j = 0; j < newDimY_x; j++){
+    //                     for (int k = 0; k < dim_z; k++)
+    //                     {
+    //                         std::cout << Y2_x[getx(in,j,k)] << " ";
+    //                     }
+    //                     std::cout << std::endl;
+    //                 }
+    //                 std::cout << std::endl;
+    //             }
+    //     }
+    //     int stop; std::cin >> stop;
     // 3) Phi_p exchange 
     copyPressureToHalo(Phi_p,halo_phi);
     MPI_Barrier(cart_comm);
@@ -194,6 +212,8 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
+
+
     for (int i = 1; i < xSize[2] + 1; i++)
     {
         for (int j = 1; j < xSize[1] + 1; j++)
@@ -204,7 +224,7 @@ void IcoNS::solve_time_step(Real time)
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
-                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
                 }
                 //Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
@@ -270,6 +290,9 @@ void IcoNS::solve_time_step(Real time)
     }
 
     MPI_Barrier(cart_comm);
+    exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
+    exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
+    exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
     // 4) Phi_p exchange
     copyPressureToHalo(Phi_p,halo_phi);
@@ -335,7 +358,7 @@ void IcoNS::solve_time_step(Real time)
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
-                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
                 }
                 //Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }

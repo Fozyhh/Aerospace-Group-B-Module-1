@@ -7,7 +7,6 @@
 #include <string>
 #include <memory>
 #include <mpi.h>
-#include <iomanip>
 
 
 void IcoNS::preprocessing(/*std::string &input_file*/)
@@ -358,7 +357,7 @@ void IcoNS::L2_error(const Real t)
     if (rank == 0)
     {
         totalError=sqrt(totalError);
-        std::cout <<std::fixed << std::setprecision(10)<< " totalError: " << totalError << std::endl;
+        std::cout << " totalError: " << totalError << std::endl;
     }
     // std::cout << error_comp_X(t) << std::endl;
     // std::cout << error_comp_Y(t) << std::endl;
