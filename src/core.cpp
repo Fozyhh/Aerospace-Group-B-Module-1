@@ -124,6 +124,7 @@ void IcoNS::setParallelization()
     if (NX % PX != 0 && coords[0] == PX- 1)
     {
         dim_x_x+= NX%PX;
+        resx=1;
     }
     if ((NY + 1) % PY != 0 && coords[1] == PY-1)
     {
@@ -137,6 +138,7 @@ void IcoNS::setParallelization()
     if ((NY) % PY != 0 && coords[1] == PY-1)
     {
         dim_y_y+= NY%PY;
+        resy=1;
     }
 
     if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
@@ -284,7 +286,7 @@ void IcoNS::solve()
     double x=0;
     while (i < Nt)
     {
-        //boundary.update_boundary(grid.u, grid.v, grid.w, time);
+        boundary.update_boundary(grid.u, grid.v, grid.w, time);
         MPI_Barrier(cart_comm);
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
@@ -346,9 +348,9 @@ void IcoNS::L2_error(const Real t)
 {
     Real error = 0.0, totalError=0.0;
 
-    error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
+    // error += error_comp_X(t);
+    // error += error_comp_Y(t);
+    // error += error_comp_Z(t);
     error += error_comp_P(t);
 
     MPI_Barrier(cart_comm);

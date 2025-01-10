@@ -294,6 +294,7 @@ private:
   int other_dim_x_x, other_dim_y_x;
   int other_dim_x_y, other_dim_y_y;
   int other_dim_x_z, other_dim_y_z;
+  int resx = 0,resy = 0;
 
   /// @brief functions to access easier to each grid
   inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }

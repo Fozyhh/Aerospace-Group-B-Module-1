@@ -20,8 +20,8 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_x[getx(i, j, k)] = grid.u[getx(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     64.0 / 120.0 * DT * (halo_p[getHaloP(i+1,j,k)] - 
-                                                     halo_p[getHaloP(i,j,k)]) / (DX);
+                                                     64.0 / 120.0 * DT * (halo_p[getHaloP(i+1 - resx,j,k)] - 
+                                                     halo_p[getHaloP(i - resx,j,k)]) / (DX);
             }
         }
     }
@@ -34,8 +34,8 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_y[gety(i, j, k)] = grid.v[gety(i, j, k)] + 
                                                      64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     64.0 / 120.0 * DT * (halo_p[getHaloP(i,j+1,k)] - 
-                                                     halo_p[getHaloP(i,j,k)]) / (DY);
+                                                     64.0 / 120.0 * DT * (halo_p[getHaloP(i,j+1 - resy,k)] - 
+                                                     halo_p[getHaloP(i,j - resy,k)]) / (DY);
             }
         }
     }
@@ -72,22 +72,35 @@ void IcoNS::solve_time_step(Real time)
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
-                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
+                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i + resx, j, k)] - Y2_x[getx(i - 1 + resx, j, k)]) / (DX) 
+                                                + (Y2_y[gety(i , j + resy, k)] - Y2_y[gety(i, j - 1 + resy, k)]) / (DY)
+                                                + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
                 }
                 //Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
 
+    // std::cout << "Y2_p: "<< std::endl;
+    // for(int in = 0; in < xSize[2]; in++){
+    //     for (int j = 0; j < xSize[1]; j++){
+    //         for (int k = 0; k < xSize[0]; k++)
+    //         {
+    //             std::cout << Y2_p[getp(in,j,k)] << " ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // }
+
     //boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
     poissonSolver.solveNeumannPoisson(Y2_p);
-
+    
 
     // 2) y2_p pressure point exchange
     copyPressureToHalo(Y2_p,halo_p);
     MPI_Barrier(cart_comm);
     exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
-
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -95,8 +108,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_x[getx(i, j, k)] = Y2_x[getx(i, j, k)] - 
-                                                     64.0 * DT / (120.0) * (halo_p[getHaloP(i + 1, j, k)] - 
-                                                     halo_p[getHaloP(i, j, k)]) / (DX);
+                                                     64.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - 
+                                                     halo_p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -108,8 +121,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_y[gety(i, j, k)] = Y2_y[gety(i, j, k)] - 
-                                                     64.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1, k)] - 
-                                                     halo_p[getHaloP(i, j, k)]) / (DY);
+                                                     64.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - 
+                                                     halo_p[getHaloP(i, j -resy, k)]) / (DY);
             }
         }
     }
@@ -143,25 +156,27 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
     // if(rank==0){
 
-    //             std::cout << "Y2_x: "<< std::endl;
-    //             for(int in = 0; in < newDimX_x; in++){
-    //                 for (int j = 0; j < newDimY_x; j++){
-    //                     for (int k = 0; k < dim_z; k++)
-    //                     {
-    //                         std::cout << Y2_x[getx(in,j,k)] << " ";
-    //                     }
-    //                     std::cout << std::endl;
+    //         std::cout << "Y2_x: "<< std::endl;
+    //         for(int in = 0; in < newDimX_x; in++){
+    //             for (int j = 0; j < newDimY_x; j++){
+    //                 for (int k = 0; k < dim_z; k++)
+    //                 {
+    //                     std::cout << Y2_x[getx(in,j,k)] << " ";
     //                 }
     //                 std::cout << std::endl;
     //             }
-    //     }
-    //     int stop; std::cin >> stop;
-    // 3) Phi_p exchange 
+    //             std::cout << std::endl;
+    //         }
+    // }
+    // int stop; std::cin >> stop;
+    
+    //3) Phi_p exchange 
     copyPressureToHalo(Phi_p,halo_phi);
     MPI_Barrier(cart_comm);
     exchangeData(halo_phi,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
 
-
+    
+    //std::cout << rank << " " << lbx << " " << rbx << " " << 1+ lbx << " " << newDimX_x - 1 - rbx << " " << newDimX_x << std::endl;
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -172,7 +187,14 @@ void IcoNS::solve_time_step(Real time)
                 Y3_x[getx(i, j, k)] = Y2_x[getx(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     16.0 / 120.0 * DT * (halo_phi[getHaloP(i+1,j,k)] - halo_phi[getHaloP(i,j,k)]) / (DX);
+                                                     16.0 / 120.0 * DT * (halo_phi[getHaloP(i+1 - resx,j,k)] - halo_phi[getHaloP(i - resx,j,k)]) / (DX);
+                //std::cout << rank << "??" << std::endl;
+                // if(rank==0)
+                // {
+                //     std::cout << getx(i,j ,k) << " is" << Y3_x[getx(i,j,k)] << " with " << Y2_x[getx(i,j,k)] << " "<<functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) << " "
+                //                                         << functionF_u(grid.u, grid.v, grid.w, i, j, k, time) << " " <<  (halo_phi[getHaloP(i+1,j,k)] - halo_phi[getHaloP(i,j,k)]) << std::endl;
+                //     int stop; std::cin >> stop;
+                // }
             }
         }
     }
@@ -186,7 +208,7 @@ void IcoNS::solve_time_step(Real time)
                 Y3_y[gety(i, j, k)] = Y2_y[gety(i, j, k)] +
                                                      50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
                                                      34.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                                     16.0 / 120.0 * DT * (halo_phi[getHaloP(i,j+1,k)] - halo_phi[getHaloP(i,j,k)]) / (DY);
+                                                     16.0 / 120.0 * DT * (halo_phi[getHaloP(i,j+1 - resy,k)] - halo_phi[getHaloP(i,j - resy,k)]) / (DY);
             }
         }
     }
@@ -212,7 +234,21 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
+    // if(rank==0){
 
+    //             std::cout << "Y3_x: "<< std::endl;
+    //             for(int in = 0; in < newDimX_x; in++){
+    //                 for (int j = 0; j < newDimY_x; j++){
+    //                     for (int k = 0; k < dim_z; k++)
+    //                     {
+    //                         std::cout << Y3_x[getx(in,j,k)] << " ";
+    //                     }
+    //                     std::cout << std::endl;
+    //                 }
+    //                 std::cout << std::endl;
+    //             }
+    //     }
+    //     int stop; std::cin >> stop;
 
     for (int i = 1; i < xSize[2] + 1; i++)
     {
@@ -224,7 +260,7 @@ void IcoNS::solve_time_step(Real time)
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
-                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i, j, k)] - Y3_x[getx(i - 1, j, k)]) / (DX) + (Y3_y[gety(i, j, k)] - Y3_y[gety(i, j - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
+                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i + resx, j, k)] - Y3_x[getx(i - 1 + resx, j, k)]) / (DX) + (Y3_y[gety(i, j + resy, k)] - Y3_y[gety(i, j + resy - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
                 }
                 //Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
@@ -246,8 +282,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_x[getx(i, j, k)] = Y3_x[getx(i, j, k)] - 
-                                                     16.0 * DT / (120.0) * (halo_p[getHaloP(i + 1, j, k)] - 
-                                                     halo_p[getHaloP(i, j, k)]) / (DX);
+                                                     16.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - 
+                                                     halo_p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -259,8 +295,8 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_y[gety(i, j, k)] = Y3_y[gety(i, j, k)] - 
-                                                     16.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1, k)] - 
-                                                     halo_p[getHaloP(i, j, k)]) / (DY);
+                                                     16.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - 
+                                                     halo_p[getHaloP(i, j - resy, k)]) / (DY);
             }
         }
     }
@@ -294,6 +330,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
+    
     // 4) Phi_p exchange
     copyPressureToHalo(Phi_p,halo_phi);
     MPI_Barrier(cart_comm);
@@ -309,7 +346,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.u[getx(i, j, k)] = Y3_x[getx(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_u(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_u(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                       40.0 / 120.0 * DT * (halo_phi[getHaloP(i + 1,j,k)] - halo_phi[getHaloP(i,j,k)]) / (DX);
+                                                       40.0 / 120.0 * DT * (halo_phi[getHaloP(i + 1 - resx,j,k)] - halo_phi[getHaloP(i - resx,j,k)]) / (DX);
             }
         }
     }
@@ -323,7 +360,7 @@ void IcoNS::solve_time_step(Real time)
                 grid.v[gety(i, j, k)] = Y3_y[gety(i, j, k)] +
                                                        90.0 / 120.0 * DT * functionF_v(Y3_x, Y3_y, Y3_z, i, j, k, time + 80.0 / 120.0 * DT) -
                                                        50.0 / 120.0 * DT * functionF_v(Y2_x, Y2_y, Y2_z, i, j, k, time + 64.0 / 120.0 * DT) -
-                                                       40.0 / 120.0 * DT * (halo_phi[getHaloP(i,j+1,k)] - halo_phi[getHaloP(i,j,k)]) / (DY);
+                                                       40.0 / 120.0 * DT * (halo_phi[getHaloP(i,j+1 - resy,k)] - halo_phi[getHaloP(i,j - resy,k)]) / (DY);
             }
         }
     }
@@ -358,7 +395,7 @@ void IcoNS::solve_time_step(Real time)
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
-                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i, j, k)] - grid.u[getx(i - 1, j, k)]) / (DX) + (grid.v[gety(i, j, k)] - grid.v[gety(i, j - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
+                    Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i + resx, j, k)] - grid.u[getx(i + resx - 1, j, k)]) / (DX) + (grid.v[gety(i, j + resy, k)] - grid.v[gety(i, j + resy - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
                 }
                 //Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
@@ -379,8 +416,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.u[getx(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i + 1, j, k)] - 
-                                                      halo_p[getHaloP(i, j, k)]) / (DX); 
+                grid.u[getx(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - 
+                                                      halo_p[getHaloP(i - resx, j, k)]) / (DX); 
             }
         }
     }
@@ -390,8 +427,8 @@ void IcoNS::solve_time_step(Real time)
         {
             for(int k = 0; k < dim_z; k++)
             {
-                grid.v[gety(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1, k)] - 
-                                                      halo_p[getHaloP(i, j, k)]) / (DY); 
+                grid.v[gety(i,j,k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - 
+                                                      halo_p[getHaloP(i, j - resy, k)]) / (DY); 
             }
         }
     }

@@ -120,7 +120,7 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     }
     return;
     fftw_destroy_plan(neumann);*/
-    //return;
+    return;
     double* py;
     double* pz;
 
