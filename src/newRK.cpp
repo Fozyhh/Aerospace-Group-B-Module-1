@@ -8,8 +8,9 @@ void IcoNS::solve_time_step(Real time)
     PoissonSolver poissonSolver(false,false,false, c2d);
 
     // 1) pressure point exchange
-    double* halo_p;
-    c2d->updateHalo(grid.p, halo_p,1,ipencil);
+    copyPressureToHalo(grid.p,halo_p);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
     
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -24,7 +25,6 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-
 
     for (int i = 1 + lbx; i < newDimX_y - 1 - rbx; i++)
     {
@@ -62,13 +62,13 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    for (int i = 1; i < zSize[0] + 1; i++)
+    for (int i = 1; i < xSize[2] + 1; i++)
     {
-        for (int j = 1; j < zSize[1] + 1; j++)
+        for (int j = 1; j < xSize[1] + 1; j++)
         {
-            for (int k = 0; k < zSize[2]; k++)
+            for (int k = 0; k < xSize[0]; k++)
             {
-                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==xSize[2]) || (rby && j==xSize[1]) || k==xSize[0]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
@@ -84,8 +84,10 @@ void IcoNS::solve_time_step(Real time)
 
 
     // 2) y2_p pressure point exchange
-    c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
+    copyPressureToHalo(Y2_p,halo_p);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
+
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -125,21 +127,23 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < zSize[0]; i++)
+    for (int i = 0; i < xSize[2]; i++)
     {
-        for (int j = 0; j < zSize[1]; j++)
+        for (int j = 0; j < xSize[1]; j++)
         {
-            for (int k = 0; k < zSize[2]; k++)
+            for (int k = 0; k < xSize[0]; k++)
             {
                 Phi_p[getp(i,j,k)] = Y2_p[getp(i,j,k)] + grid.p[getp(i,j,k)]; // phi^2
             }
         }
     }
 
-
     // 3) Phi_p exchange 
-    double* halo_phi;
-    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
+    copyPressureToHalo(Phi_p,halo_phi);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_phi,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
+
+
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -190,13 +194,13 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    for (int i = 1; i < zSize[0] + 1; i++)
+    for (int i = 1; i < xSize[2] + 1; i++)
     {
-        for (int j = 1; j < zSize[1] + 1; j++)
+        for (int j = 1; j < xSize[1] + 1; j++)
         {
-            for (int k = 0; k < zSize[2]; k++)
+            for (int k = 0; k < xSize[0]; k++)
             {
-                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==xSize[2]) || (rby && j==xSize[1]) || k==xSize[0]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
@@ -211,8 +215,10 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 
     // 3) y2_p exchange
-    c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
+    copyPressureToHalo(Y2_p,halo_p);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);;
+
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -252,11 +258,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < zSize[0]; i++)
+    for (int i = 0; i < xSize[2]; i++)
     {
-        for (int j = 0; j < zSize[1]; j++)
+        for (int j = 0; j < xSize[1]; j++)
         {
-            for (int k = 0; k < zSize[2]; k++)
+            for (int k = 0; k < xSize[0]; k++)
             {
                 Phi_p[getp(i,j,k)] = Y2_p[getp(i, j, k)] + Phi_p[getp(i,j,k)]; // Phi_p=phi^3
             }
@@ -266,8 +272,9 @@ void IcoNS::solve_time_step(Real time)
     MPI_Barrier(cart_comm);
 
     // 4) Phi_p exchange
-    c2d->deallocXYZ(halo_phi);
-    c2d->updateHalo(Phi_p, halo_phi, 1, ipencil);
+    copyPressureToHalo(Phi_p,halo_phi);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_phi,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
@@ -318,13 +325,13 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
     exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
 
-    for (int i = 1; i < zSize[0] + 1; i++)
+    for (int i = 1; i < xSize[2] + 1; i++)
     {
-        for (int j = 1; j < zSize[1] + 1; j++)
+        for (int j = 1; j < xSize[1] + 1; j++)
         {
-            for (int k = 0; k < zSize[2]; k++)
+            for (int k = 0; k < xSize[0]; k++)
             {
-                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==zSize[0]) || (rby && j==zSize[1]) || k==zSize[2]-1){
+                if((lbx && i==1) || (lby && j==1) || k==0 || (rbx && i==xSize[2]) || (rby && j==xSize[1]) || k==xSize[0]-1){
                     Y2_p[getp(i-1,j-1,k)] = 0.0;
                 }
                 else{
@@ -339,8 +346,9 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver.solveNeumannPoisson(Y2_p);
 
     // 5) y2_p exchange
-    c2d->deallocXYZ(halo_p);
-    c2d->updateHalo(Y2_p, halo_p, 1, ipencil);
+    copyPressureToHalo(Y2_p,halo_p);
+    MPI_Barrier(cart_comm);
+    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
 
     for(int i = 1; i < newDimX_x - 1; i++)
     {
@@ -375,18 +383,16 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-    for(int i = 0; i < zSize[0]; i++)
+    for(int i = 0; i < xSize[2]; i++)
     {
-        for(int j = 0; j < zSize[1]; j++)
+        for(int j = 0; j < xSize[1]; j++)
         {
-            for(int k = 0; k < zSize[2]; k++)
+            for(int k = 0; k < xSize[0]; k++)
             {
                 grid.p[getp(i,j,k)] = Y2_p[getp(i,j, k)]  + Phi_p[getp(i,j,k)]; 
             }
         }
     }
-    c2d->deallocXYZ(halo_phi);
-    c2d->deallocXYZ(halo_p);
 }
 
 //TODO: maybe change everything with the indexing function

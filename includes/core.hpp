@@ -23,7 +23,6 @@
 #include <mpi.h>
 #include <fftw3.h>
 
-//TODO: mixed races
 //#define PERIODIC
 #define DIRICHELET
 
@@ -55,12 +54,12 @@ public:
   {
     parse_input(input_file);
 
-    c2d = new C2Decomp(NX+1, NY+1, NZ+1, PX, PY, periodss);
+    c2d = new C2Decomp(NX+1, NY+1, NZ+1, PY, PX, periodss);
 
     // x-pencil size
-    xSize[0] = c2d->xSize[0];
-    xSize[1] = c2d->xSize[1];
-    xSize[2] = c2d->xSize[2];
+    xSize[0] = c2d->xSize[0]; //DIMENSIONE LUNGA, Z
+    xSize[1] = c2d->xSize[1]; //Y
+    xSize[2] = c2d->xSize[2]; //X
 
     // y-pencil size
     ySize[0] = c2d->ySize[0];
@@ -94,9 +93,9 @@ public:
     helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 
     // pencils allocation
-    c2d->allocZ(grid.p);
-    c2d->allocZ(Phi_p);
-    c2d->allocZ(Y2_p);
+    c2d->allocX(grid.p);
+    c2d->allocX(Phi_p);
+    c2d->allocX(Y2_p);
 
     std::cout << "End of constructor" << std::endl;
   }
@@ -125,6 +124,7 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
+  void copyPressureToHalo(double* p, std::vector<Real> &halo);
   /**
    * @brief Computes the F function for u-velocity component
    * @param u X-velocity vector
@@ -248,13 +248,14 @@ private:
   /// @brief Intermediate solution vectors
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
+  std::vector<Real> halo_p{},halo_phi{};
   double* Phi_p{};
 
   //TODO: change to vectors (*double))
   double* Y2_p;
 
   /// @brief periodicity for 2decomp
-  bool periodss[3] = {true, true, false};
+  bool periodss[3] = {false, true, true};
 
   /// @brief Input/output file paths
   std::string input_file;  // input file.
@@ -274,6 +275,7 @@ private:
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
   MPI_Datatype MPI_face_x_y, MPI_face_y_y;
   MPI_Datatype MPI_face_x_z, MPI_face_y_z;
+  MPI_Datatype MPI_face_x_p, MPI_face_y_p;
 
   /// @brief MPI request handles for non-blocking communication
   MPI_Request reqs[4];
@@ -297,8 +299,8 @@ private:
   inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
   inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
   inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
-  inline int getp(int i, int j, int k) { return i * zSize[1] * zSize[2] + j * zSize[2] + k; }
-  inline int getHaloP(int i, int j, int k) { return i * (zSize[1] + 2) * zSize[2] + j * zSize[2] + k; }
+  inline int getp(int i, int j, int k) { return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
+  inline int getHaloP(int i, int j, int k) { return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; }
 
 };
 

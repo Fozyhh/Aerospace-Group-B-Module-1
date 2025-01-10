@@ -166,6 +166,9 @@ void IcoNS::setParallelization()
     Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
+    halo_p.resize((xSize[2] +2)*(xSize[1] + 2)*xSize[0],0.0);
+    halo_phi.resize((xSize[2] +2)*(xSize[1] + 2)*xSize[0],0.0);
+
     if(BX){
         if (coords[0] == 0)
             lbx++;
@@ -214,6 +217,12 @@ void IcoNS::setParallelization()
 
     MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_DOUBLE, &MPI_face_y_z);
     MPI_Type_commit(&MPI_face_y_z);
+
+    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2)*xSize[0], MPI_DOUBLE, &MPI_face_x_p);
+    MPI_Type_commit(&MPI_face_x_p);
+
+    MPI_Type_vector(1, xSize[0] * (xSize[1]+2), 0, MPI_DOUBLE, &MPI_face_y_p);
+    MPI_Type_commit(&MPI_face_y_p);
 }
 
 void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY)
@@ -254,6 +263,18 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     }
 }
 
+void IcoNS::copyPressureToHalo(double* p, std::vector<Real> &halo)
+{
+    for(int k = 0; k < xSize[2]; k++){
+        for(int j = 0; j < xSize[1]; j++){	
+            for(int i = 0; i < xSize[0]; i++)
+            {
+            halo[(k+1)*(xSize[1] + 2)*xSize[0] + (j+1)*xSize[0] + i] = p[ k*xSize[1]*xSize[0] + j*xSize[0] + i];
+            }
+        }
+    }
+}
+
 void IcoNS::solve()
 {
     Real time = 0.0;
@@ -263,7 +284,7 @@ void IcoNS::solve()
     double x=0;
     while (i < Nt)
     {
-        boundary.update_boundary(grid.u, grid.v, grid.w, time);
+        //boundary.update_boundary(grid.u, grid.v, grid.w, time);
         MPI_Barrier(cart_comm);
         exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
         exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
@@ -272,33 +293,52 @@ void IcoNS::solve()
         if(testCase==0){
             L2_error(time);
         }
-        // std::cout << std::endl;
         // double* halo_p;
         // c2d->updateHalo(grid.p,halo_p,1,0);
-        // for(int in = 0; in < zSize[0]; in++){
-        //     for (int j = 0; j < zSize[1]; j++){
-        //         for (int k = 0; k < zSize[2]; k++)
-        //         {
-        //             std::cout << grid.p[getp(in,j,k)] << " ";
+        
+        // std::cout << rank << " " << coords[0] << " " << c2d->coord[0] << std::endl;
+        // if(rank==0){
+        //     std::cout <<"grid.p with: "<< xSize[2]<<"x"<<xSize[1]<<"x"<<xSize[0]<< std::endl;
+        //     std::cout << lby << " " << rby << std::endl; 
+            
+        //     for(int in = 0; in < xSize[2]; in++){
+        //         for (int j = 0; j < xSize[1]; j++){
+        //             for (int k = 0; k < xSize[0]; k++)
+        //             {
+        //                 std::cout << grid.p[getp(in,j,k)] << " ";
+        //             }
+        //             std::cout << std::endl;
         //         }
         //         std::cout << std::endl;
         //     }
-        //     std::cout << std::endl;
-        // }
-        // std::cout << "Halos: "<< std::endl;
-        // for(int in = 0; in < zSize[0] + 2; in++){
-        //     for (int j = 0; j < zSize[1] + 2; j++){
-        //         for (int k = 0; k < zSize[2]; k++)
-        //         {
-        //             std::cout << halo_p[getHaloP(in,j,k)] << " ";
+        //     std::cout << "Halos: "<< std::endl;
+        //     for(int in = 0; in < xSize[2] + 2; in++){
+        //         for (int j = 0; j < xSize[1] + 2; j++){
+        //             for (int k = 0; k < xSize[0]; k++)
+        //             {
+        //                 std::cout << halop[getHaloP(in,j,k)] << " ";
+        //             }
+        //             std::cout << std::endl;
         //         }
         //         std::cout << std::endl;
         //     }
-        //     std::cout << std::endl;
-        // }
+            // for(int in = 0; in < newDimX_x; in++){
+            //     for (int j = 0; j < newDimY_x; j++){
+            //         for (int k = 0; k < dim_z; k++)
+            //         {
+            //             std::cout << grid.u[getx(in,j,k)] << " ";
+            //         }
+            //         std::cout << std::endl;
+            //     }
+            //     std::cout << std::endl;
+            // }
+            
+            //int stop; std::cin >> stop;
+        
         // c2d->deallocXYZ(halo_p);
+        MPI_Barrier(cart_comm);
 
-        solve_time_step(time);
+        //solve_time_step(time);
         MPI_Barrier(cart_comm);
         time += DT;
         i++;
@@ -310,9 +350,9 @@ void IcoNS::L2_error(const Real t)
 {
     Real error = 0.0, totalError=0.0;
 
-    error += error_comp_X(t);
-    error += error_comp_Y(t);
-    error += error_comp_Z(t);
+    // error += error_comp_X(t);
+    // error += error_comp_Y(t);
+    // error += error_comp_Z(t);
     error += error_comp_P(t);
 
     MPI_Barrier(cart_comm);
@@ -866,7 +906,7 @@ Real IcoNS::error_comp_P(const Real t)
                     DX * DY * DZ / 8);
         }
 
-        for (int j = 0; j < zSize[1]; j++)
+        for (int j = lby; j < zSize[1] - rby; j++)
         {
             error += ((grid.p[getp(0,j,0)] - exact_solution.value_p(0, j + offset_y, 0, t)) *
                       (grid.p[getp(0,j,0)] - exact_solution.value_p(0, j + offset_y, 0, t)) *
@@ -901,7 +941,7 @@ Real IcoNS::error_comp_P(const Real t)
 
     // middle slices
     {
-        for (int i = 0; i < zSize[0] - 1; i++)
+        for (int i = lbx; i < zSize[0] - rbx; i++)
         {
             if(lby){
                 error += ((grid.p[getp(i,0,0)] - exact_solution.value_p(i + offset_x, 0, 0, t)) *
@@ -918,7 +958,7 @@ Real IcoNS::error_comp_P(const Real t)
                         (grid.p[getp(i,0,zSize[2] - 1)] - exact_solution.value_p(i + offset_x, 0, zSize[2] -1, t)) *
                         DX * DY * DZ / 4);
             }
-            for (int j = 0; j < zSize[1] - 1; j++)
+            for (int j = lby; j < zSize[1] - rby; j++)
             {
                 error += ((grid.p[getp(i,j,0)] - exact_solution.value_p(i + offset_x, j + offset_y, 0, t)) *
                           (grid.p[getp(i,j,0)] - exact_solution.value_p(i + offset_x, j + offset_y, 0, t)) *
@@ -972,7 +1012,7 @@ Real IcoNS::error_comp_P(const Real t)
                     (grid.p[getp(zSize[0] - 1,0,zSize[2] - 1)] - exact_solution.value_p(zSize[0] - 1, 0, zSize[2]- 1, t)) *
                     DX * DY * DZ / 8);
         }
-        for (int j = 0; j < zSize[1] - 1; j++)
+        for (int j = lby; j < zSize[1] - rby; j++)
         {
             error += ((grid.p[getp(zSize[0] - 1,j,0)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, 0, t)) *
                       (grid.p[getp(zSize[0] - 1,j,0)] - exact_solution.value_p(zSize[0] - 1, j + offset_y, 0, t)) *
