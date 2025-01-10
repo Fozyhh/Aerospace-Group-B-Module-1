@@ -20,12 +20,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // face 4 5 -> no partition on z
 
     // Global offsets
-    int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = coords[1] * other_dim_y_x -1;
-    int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = coords[1] * other_dim_y_y -1;
-    int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = coords[1] * other_dim_y_z -1;
+    //std::cout <<coords[0]<< " " << dim_x_x << " " << offset_x_x << std::endl;
 
     // X
     // LEFT FACE
@@ -565,12 +560,12 @@ void Boundary::setCoords(int coords_[2])
     coords[1] = coords_[1];
 }
 
-void Boundary::setOtherDim(int other_dim_x_x_, int other_dim_y_x_, int other_dim_x_y_, int other_dim_y_y_, int other_dim_x_z_, int other_dim_y_z_)
+void Boundary::setOffsets(int offset_x_x_, int offset_y_x_, int offset_x_y_, int offset_y_y_, int offset_x_z_, int offset_y_z_)
 {
-    other_dim_x_x = other_dim_x_x_;
-    other_dim_y_x = other_dim_y_x_;
-    other_dim_x_y = other_dim_x_y_;
-    other_dim_y_y = other_dim_y_y_;
-    other_dim_x_z = other_dim_x_z_;
-    other_dim_y_z = other_dim_y_z_;
+    offset_x_x = offset_x_x_ - 1;
+    offset_y_x = offset_y_x_ - 1;
+    offset_x_y = offset_x_y_ - 1;
+    offset_y_y = offset_y_y_ - 1;
+    offset_x_z = offset_x_z_ - 1;
+    offset_y_z = offset_y_z_ - 1;
 }

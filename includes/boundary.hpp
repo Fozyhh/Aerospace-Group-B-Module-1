@@ -40,11 +40,11 @@ private:
     int xSize[3];
 
     /// @brief Additional dimension parameters for x-direction mesh
-    int other_dim_x_x, other_dim_y_x;
+    int offset_x_x, offset_y_x;
     /// @brief Additional dimension parameters for y-direction mesh
-    int other_dim_x_y, other_dim_y_y;
+    int offset_x_y, offset_y_y;
     /// @brief Additional dimension parameters for z-direction mesh
-    int other_dim_x_z, other_dim_y_z;
+    int offset_x_z, offset_y_z;
 
 public:
     /// @brief Vector of boundary functions for u-velocity component
@@ -180,7 +180,7 @@ public:
      * @param other_dim_x_z_ Additional X dimension for z-direction mesh
      * @param other_dim_y_z_ Additional Y dimension for z-direction mesh
     */
-    void setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_);
+    void setOffsets(int offset_x_x_, int offset_y_x_,int offset_x_y_, int offset_y_y_,int offset_x_z_, int offset_y_z_);
     
     //SKIPPING GHOST POINT
     inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }

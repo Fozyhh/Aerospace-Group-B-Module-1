@@ -121,34 +121,78 @@ void IcoNS::setParallelization()
     MPI_Cart_shift(cart_comm, 1, 1, &neighbors[3], &neighbors[1]);
     std::cout << rank << "- neigh: " << neighbors[1] << neighbors[3] << std::endl;
 
-    if (NX % PX != 0 && coords[0] == PX- 1)
-    {
-        dim_x_x+= NX%PX;
+    // NX%PX numero righe da assegnare
+    // (PX - coords[0]) <= NX%PX
+
+    // 11
+    // 2
+    // 2- 0 <= 1
+    // 2-1 <= 1
+
+    // 3
+    // 3-0 <= 2
+    // 3-1 <= 2
+    // 3-2 <= 2
+
+    // offset = coords[0] * dim_x_x + (coords[0] - PX - NX%PX) 
+    offset_x_x = coords[0] * dim_x_x + std::max(0, coords[0] - (PX - NX%PX));
+    offset_y_x = coords[1] * dim_y_x + std::max(0, coords[1] - (PY - (NY+1)%PY));
+    if((PX - 1 - coords[0]) < NX%PX){
+        dim_x_x++;
         resx=1;
     }
-    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
-    {
-        dim_y_x+= (NY+1)%PY;
+
+    if((PY-1-coords[1]) < (NY+1)%PY){
+        dim_y_x++;
     }
 
-    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-    {
-        dim_x_y+= (NX+1)%PX;
+    offset_x_y = coords[0] * dim_x_y + std::max(0, coords[0] - (PX - (NX+1)%PX));
+    offset_y_y = coords[1] * dim_y_y + std::max(0, coords[1] - (PY - NY%PY));
+    if((PX - 1 - coords[0]) < (NX+1)%PX){
+        dim_x_y++;
     }
-    if ((NY) % PY != 0 && coords[1] == PY-1)
-    {
-        dim_y_y+= NY%PY;
+    if((PY-1-coords[1]) < NY%PY){
+        dim_y_y++;
         resy=1;
     }
 
-    if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
-    {
-        dim_x_z+= (NX+1)%PX;
+    offset_x_z = coords[0] * dim_x_z + std::max(0, coords[0] - (PX - (NX+1)%PX));
+    offset_y_z = coords[1] * dim_y_z + std::max(0, coords[1] - (PY - (NY+1)%PY));
+    if((PX - 1 - coords[0]) < (NX+1)%PX){
+        dim_x_z++;
     }
-    if ((NY + 1) % PY != 0 && coords[1] == PY-1)
-    {
-        dim_y_z+= (NY+1)%PY;
+    if((PY-1-coords[1]) < (NY+1)%PY){
+        dim_y_z++;
     }
+
+    // if (NX % PX != 0 && coords[0] == PX- 1)
+    // {
+    //     dim_x_x+= NX%PX;
+    //     resx=1;
+    // }
+    // if ((NY + 1) % PY != 0 && coords[1] == PY-1)
+    // {
+    //     dim_y_x+= (NY+1)%PY;
+    // }
+
+    // if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
+    // {
+    //     dim_x_y+= (NX+1)%PX;
+    // }
+    // if ((NY) % PY != 0 && coords[1] == PY-1)
+    // {
+    //     dim_y_y+= NY%PY;
+    //     resy=1;
+    // }
+
+    // if ((NX + 1) % PX != 0 && coords[0] == PX - 1)
+    // {
+    //     dim_x_z+= (NX+1)%PX;
+    // }
+    // if ((NY + 1) % PY != 0 && coords[1] == PY-1)
+    // {
+    //     dim_y_z+= (NY+1)%PY;
+    // }
 
     newDimX_x = dim_x_x + 2;
     newDimY_x = dim_y_x + 2;
@@ -200,7 +244,7 @@ void IcoNS::setParallelization()
 
     boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
     boundary.setCoords(coords);
-    boundary.setOtherDim(other_dim_x_x,other_dim_y_x,other_dim_x_y,other_dim_y_y,other_dim_x_z,other_dim_y_z);
+    boundary.setOffsets(offset_x_x,offset_y_x,offset_x_y,offset_y_y,offset_x_z,offset_y_z);
 
     MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
@@ -279,6 +323,13 @@ void IcoNS::copyPressureToHalo(double* p, std::vector<Real> &halo)
 
 void IcoNS::solve()
 {
+    std::cout <<coords[0]<< " " << dim_x_x << " " << offset_x_x << std::endl;
+    std::cout << rank << " " << dim_y_x << " " << offset_y_x << std::endl;
+    std::cout << rank << " " << dim_x_y << " " << offset_x_y << std::endl;
+    std::cout << rank << " " << dim_y_y << " " << offset_y_y << std::endl;
+    std::cout << rank << " " << dim_x_z << " " << offset_x_z << std::endl;
+    std::cout << rank << " " << dim_y_z << " " << offset_y_z << std::endl;
+
     Real time = 0.0;
     Real error;
     int i = 0;
@@ -348,9 +399,9 @@ void IcoNS::L2_error(const Real t)
 {
     Real error = 0.0, totalError=0.0;
 
-    // error += error_comp_X(t);
-    // error += error_comp_Y(t);
-    // error += error_comp_Z(t);
+    error += error_comp_X(t);
+    error += error_comp_Y(t);
+    error += error_comp_Z(t);
     error += error_comp_P(t);
 
     MPI_Barrier(cart_comm);
@@ -361,18 +412,18 @@ void IcoNS::L2_error(const Real t)
         totalError=sqrt(totalError);
         std::cout << " totalError: " << totalError << std::endl;
     }
-    // std::cout << error_comp_X(t) << std::endl;
-    // std::cout << error_comp_Y(t) << std::endl;
-    // std::cout << error_comp_Z(t) << std::endl;
-    // std::cout << error_comp_P(t) << std::endl << std::endl;
+    std::cout << error_comp_X(t) << std::endl;
+    std::cout << error_comp_Y(t) << std::endl;
+    std::cout << error_comp_Z(t) << std::endl;
+    std::cout << error_comp_P(t) << std::endl << std::endl;
 
 }
 
 Real IcoNS::error_comp_X(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_x -1;
-    int offset_y = coords[1] * other_dim_y_x -1;
+    int offset_x = offset_x_x -1;
+    int offset_y = offset_y_x -1;
     //first slice (left face)
     if (lbx)
     {
@@ -548,8 +599,8 @@ Real IcoNS::error_comp_X(const Real t)
 Real IcoNS::error_comp_Y(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_y -1;
-    int offset_y = coords[1] * other_dim_y_y -1;
+    int offset_x = offset_x_y -1;
+    int offset_y = offset_y_y -1;
     // first slice (left face)
     if(lbx)
     {
@@ -715,8 +766,8 @@ Real IcoNS::error_comp_Y(const Real t)
 Real IcoNS::error_comp_Z(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * other_dim_x_z -1;
-    int offset_y = coords[1] * other_dim_y_z -1;
+    int offset_x = offset_x_z -1;
+    int offset_y = offset_y_z -1;
     // first slice (left face)
     if(lbx)
     {
@@ -879,12 +930,13 @@ Real IcoNS::error_comp_Z(const Real t)
     return error;
 }
 
-//TODO: parallelization
+
 Real IcoNS::error_comp_P(const Real t)
 {
     Real error = 0.0;
-    int offset_x = coords[0] * xSize[2];
-    int offset_y = coords[1] * xSize[1];
+    //TODO: check as im not sure
+    int offset_x = coords[0] * xSize[2] + std::max(0,coords[0] - (PX - (NX+1)%PX));
+    int offset_y = coords[1] * xSize[1] + std::max(0,coords[1] - (PY - (NY+1)%PY));
     // first slice (left face)
     if(lbx)
     {
@@ -1203,6 +1255,7 @@ void IcoNS::output(){
     const std::string filename = "out" + std::to_string(testCase) + ".dat";
     MPI_File fh;
     MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    //TODO: fix global outputs
     MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
     // LINE 1
     if(coords[0] == (PX-1)/2){
@@ -1489,13 +1542,13 @@ void IcoNS::output_x(){
 
     // Find process containing middle slice
     int x_index = static_cast<int>(x_middle);
-    int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = coords[1] * other_dim_y_x -1;
-    int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = coords[1] * other_dim_y_y -1;
-    int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = coords[1] * other_dim_y_z -1;
-    int offset_x_p = coords[0] * zSize[0] - 1;
+    int offset_x_x = offset_x_x -1;
+    int offset_y_x = offset_y_x -1;
+    int offset_x_y = offset_x_y -1;
+    int offset_y_y = offset_y_y -1;
+    int offset_x_z = offset_x_z -1;
+    int offset_y_z = offset_y_z -1;
+    int offset_x_p = offset_x_p - 1;
     int offset_y_p = coords[1] * zSize[1] - 1;
     double* halo_p;
     c2d->updateHalo(grid.p, halo_p,1,2);
@@ -1666,12 +1719,12 @@ void IcoNS::output_y(){
 
     // Find process containing middle slice
     int y_index = static_cast<int>(y_middle);
-    int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = coords[1] * other_dim_y_x -1;
-    int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = coords[1] * other_dim_y_y -1;
-    int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = coords[1] * other_dim_y_z -1;
+    int offset_x_x =offset_x_x -1;
+    int offset_y_x = offset_y_x -1;
+    int offset_x_y =offset_x_y -1;
+    int offset_y_y = offset_y_y -1;
+    int offset_x_z =offset_x_z -1;
+    int offset_y_z = offset_y_z -1;
     int offset_x_p = coords[0] * zSize[0] - 1;
     int offset_y_p = coords[1] * zSize[1] - 1;
 
@@ -1841,12 +1894,12 @@ void IcoNS::output_z(){
 
     // Find process containing middle slice
     int z_index = static_cast<int>(z_middle);
-    int offset_x_x = coords[0] * other_dim_x_x -1;
-    int offset_y_x = coords[1] * other_dim_y_x -1;
-    int offset_x_y = coords[0] * other_dim_x_y -1;
-    int offset_y_y = coords[1] * other_dim_y_y -1;
-    int offset_x_z = coords[0] * other_dim_x_z -1;
-    int offset_y_z = coords[1] * other_dim_y_z -1;
+    int offset_x_x = offset_x_x -1;
+    int offset_y_x = offset_y_x -1;
+    int offset_x_y = offset_x_y -1;
+    int offset_y_y = offset_y_y -1;
+    int offset_x_z = offset_x_z -1;
+    int offset_y_z = offset_y_z -1;
     int offset_x_p = coords[0] * zSize[0] - 1;
     int offset_y_p = coords[1] * zSize[1] - 1;
 

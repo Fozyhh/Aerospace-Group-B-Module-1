@@ -468,7 +468,7 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
            1 / RE * ((u[lu + newDimY_x * dim_z] - 2 * u[lu] + u[lu - newDimY_x * dim_z]) / (DX * DX) + (u[lu + dim_z] - 2 * u[lu] + u[lu - dim_z]) / (DY * DY) + (u[lu + 1] - 2 * u[lu] + u[lu - 1]) / (DZ * DZ));
 
     if(testCase==0){
-        value += functionG_u(i-1 + coords[0] * other_dim_x_x, j-1 + coords[1] * other_dim_y_x, k, t);
+        value += functionG_u(i-1 + offset_x_x, j-1 + offset_y_x, k, t);
     }
     return value;
     // return -(u[lu] * (u[lu + newDimY_x * dim_z] - u[lu - newDimY_x * dim_z]) / (2.0 * DX) +
@@ -491,7 +491,7 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
                          (v[lv + dim_z] - 2.0 * v[lv] + v[lv - dim_z]) / (DY * DY) +
                          (v[lv + 1] - 2.0 * v[lv] + v[lv - 1]) / (DZ * DZ));
     if(testCase==0){
-        value += functionG_v(i-1 + coords[0] * other_dim_x_y, j-1 + coords[1] * other_dim_y_y, k, t);
+        value += functionG_v(i-1 + offset_x_y, j-1 + offset_y_y, k, t);
     }
 
     return value;
@@ -519,9 +519,8 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
                          (w[lw + 1] - 2.0 * w[lw] + w[lw - 1]) / (DZ * DZ));
     
     if(testCase==0){
-        value += functionG_w(i-1 + coords[0] * other_dim_x_z, j-1 + coords[1] * other_dim_y_z, k, t);
+        value += functionG_w(i-1 + offset_x_z, j-1 + offset_y_z, k, t);
     }
-    /* return 0; */
     return value;
 }
 

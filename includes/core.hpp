@@ -54,7 +54,7 @@ public:
   {
     parse_input(input_file);
 
-    c2d = new C2Decomp(NX+1, NY+1, NZ+1, PY, PX, periodss);
+    c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
 
     // x-pencil size
     xSize[0] = c2d->xSize[0]; //DIMENSIONE LUNGA, Z
@@ -82,13 +82,6 @@ public:
     dim_y_z = (NY + 1) / PY;
     dim_z = NZ + 1;
     dim_z_z = NZ;
-
-    other_dim_x_x = dim_x_x;
-    other_dim_y_x = dim_y_x;
-    other_dim_x_y = dim_x_y;
-    other_dim_y_y = dim_y_y;
-    other_dim_x_z = dim_x_z;
-    other_dim_y_z = dim_y_z;
 
     helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 
@@ -290,10 +283,8 @@ private:
   int newDimX_y, newDimY_y;
   int newDimX_z, newDimY_z;
 
-  /// @brief Additional dimension parameters to calculate the offset for each mesh
-  int other_dim_x_x, other_dim_y_x;
-  int other_dim_x_y, other_dim_y_y;
-  int other_dim_x_z, other_dim_y_z;
+  /// @brief Offsets for each mesh
+  int offset_x_x,offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z;
   int resx = 0,resy = 0;
 
   /// @brief functions to access easier to each grid
