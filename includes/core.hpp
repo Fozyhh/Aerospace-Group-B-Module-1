@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <mpi.h>
 #include <fftw3.h>
+#include "poissonSolver.hpp"
 
 //#define PERIODIC
 #define DIRICHELET
@@ -55,6 +56,7 @@ public:
     parse_input(input_file);
 
     c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
+    poissonSolver= new PoissonSolver(false,false,false, c2d);
 
     // x-pencil size
     xSize[0] = c2d->xSize[0]; //DIMENSIONE LUNGA, Z
@@ -234,6 +236,8 @@ private:
 
   /// @brief 2decomp library object
   C2Decomp *c2d;
+
+  PoissonSolver *poissonSolver;
 
   /// @brief Arrays to store the dimensions of the grid in each direction
   int xSize[3], ySize[3], zSize[3];

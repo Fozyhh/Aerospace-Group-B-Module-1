@@ -2,6 +2,7 @@
 #define POISSONSOLVER_HPP
 
 #include "utils.hpp"
+#include "grid.hpp"
 #include <cmath>
 #include <numbers>
 #include <complex>
@@ -34,6 +35,9 @@ private:
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
 
+    double *pz;                // z-pencil
+    double *py;                // y_pencil
+
 public: 
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
@@ -44,7 +48,10 @@ public:
       xSize{c2d->xSize[0], c2d->xSize[1], c2d->xSize[2]},
       ySize{c2d->ySize[0], c2d->ySize[1], c2d->ySize[2]},
       zSize{c2d->zSize[0], c2d->zSize[1], c2d->zSize[2]}
-    {}
+    {
+      c2d->allocY(py);
+      c2d->allocZ(pz);
+    }
 
       /**
      * @brief Solves Poisson's equation with Dirichlet boundary conditions.

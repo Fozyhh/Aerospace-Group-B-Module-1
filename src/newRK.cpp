@@ -1,11 +1,8 @@
 #include "core.hpp"
-#include "poissonSolver.hpp"
 
 
 void IcoNS::solve_time_step(Real time)
 {
-    int ipencil=0;
-    PoissonSolver poissonSolver(false,false,false, c2d);
 
     // 1) pressure point exchange
     copyPressureToHalo(grid.p,halo_p);
@@ -94,7 +91,7 @@ void IcoNS::solve_time_step(Real time)
     // }
 
     //boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
-    poissonSolver.solveNeumannPoisson(Y2_p);
+    poissonSolver->solveNeumannPoisson(Y2_p);
     
 
     // 2) y2_p pressure point exchange
@@ -268,7 +265,7 @@ void IcoNS::solve_time_step(Real time)
     }
     //boundary.divergence(Y3_x, Y3_y, Y3_z, Y2_p, time + 80.0 / 120.0 * DT, 16.0);
 
-    poissonSolver.solveNeumannPoisson(Y2_p);
+    poissonSolver->solveNeumannPoisson(Y2_p);
 
     // 3) y2_p exchange
     copyPressureToHalo(Y2_p,halo_p);
@@ -403,7 +400,7 @@ void IcoNS::solve_time_step(Real time)
     }
     //boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
-    poissonSolver.solveNeumannPoisson(Y2_p);
+    poissonSolver->solveNeumannPoisson(Y2_p);
 
     // 5) y2_p exchange
     copyPressureToHalo(Y2_p,halo_p);
