@@ -273,7 +273,7 @@ void IcoNS::solve_time_step(Real time)
     // 3) y2_p exchange
     copyPressureToHalo(Y2_p,halo_p);
     MPI_Barrier(cart_comm);
-    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);;
+    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
     {
