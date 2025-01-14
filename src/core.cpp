@@ -1171,9 +1171,11 @@ void IcoNS::parse_input(const std::string& input_file) {
             continue;
         }
     }
-    // LX=2.0*M_PI;
-    // LY=2.0*M_PI;
-    // LZ=2.0*M_PI;
+    if (testCase==0){
+    LX=2.0*M_PI;
+    LY=2.0*M_PI;
+    LZ=2.0*M_PI;
+    }
 
     // Skip comments and empty lines until we find grid points
     while (std::getline(file, line)) {
