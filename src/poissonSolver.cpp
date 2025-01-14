@@ -257,19 +257,6 @@ void PoissonSolver::solveNeumannPoisson(double *F)
             }
         }
     }
-    // TODO: è ancora coi DY inversi?
-    // if(c2d->nRank==0){
-    //     for (int i = 0; i < zSize[0]; i++) {
-    //         for (int j = 0; j < zSize[1]; j++) {
-    //             for (int k = 0; k < zSize[2]; k++) {
-    //                 std::cout << pz [i * (zSize[0]) * (zSize[2]) + j * (zSize[2]) + k] << " ";
-    //             }
-    //             std::cout<< std::endl;
-    //         }
-    //         std::cout<< std::endl;
-    //     }
-    // }
-    // int stop; std::cin >> stop;
 
     if (c2d->nRank == 0)
     {
