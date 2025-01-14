@@ -1,5 +1,5 @@
 #include "poissonSolver.hpp"
-
+#include <fstream>
 
 //TODO: 2Decomp parallellizazione
 void PoissonSolver::solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD)
@@ -133,6 +133,32 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     //         std::cout<< std::endl;
     //     }
     // }   
+        std::ofstream outFile("solver_output_seriale_rank_" + std::to_string(c2d->nRank) + ".txt");
+
+    outFile << "from " << c2d->nRank << ":" << std::endl;
+    outFile << "Neighbours: " << c2d->neighbor[0][0] << " " << c2d->neighbor[0][1] << " " << c2d->neighbor[0][2] << " " << c2d->neighbor[0][3]<< " " << c2d->neighbor[0][4] << " " << c2d->neighbor[0][5] << std::endl;
+    outFile << "prow: " << c2d->dims[0] << " pcol: " << c2d->dims[1] << std::endl;
+    outFile << "xSize: " << xSize[0] << " " << xSize[1] << " " << xSize[2] << std::endl;
+    outFile << "ySize: " << ySize[0] << " " << ySize[1] << " " << ySize[2] << std::endl;
+    outFile << "zSize: " << zSize[0] << " " << zSize[1] << " " << zSize[2] << std::endl;
+
+    
+    
+    // outFile << "-----------------------------" << std::endl;
+
+    // c2d->transposeX2Y_MajorIndex(F, py);
+
+    // outFile << "Displaying Y view from " << c2d->nRank << ":" << std::endl;
+    // for (int k = 0; k < ySize[0]; k++) {
+    //     for (int i = 0; i < ySize[2]; i++) {
+    //         for (int j = 0; j < ySize[1]; j++) {
+    //             outFile << py[k * (ySize[1]) * (ySize[2]) + i * (ySize[1]) + j] << " ";
+    //         }
+    //         outFile<< std::endl;
+    //     }
+    //     outFile << std::endl;
+    // }
+    
     fftw_plan neumann; 
     for (int i = 0; i < xSize[2]*xSize[1]; i++) 
     {
@@ -145,19 +171,28 @@ void PoissonSolver::solveNeumannPoisson(double* F)
 //     std::cout << "Rank: " << c2d->nRank << ", x1dist[" << i << "] = " << c2d->decompMain.x1dist[i] << std::endl;
 // }
 
-//     c2d->transposeX2Y_MajorIndex(F, py); // correct like this, not Z2Y
-//     if(c2d->nRank==0){
-//         std::cout << "py" << std::endl;
-//         for (int i = 0; i < ySize[2]; i++) {
-//             for (int j = 0; j < ySize[0]; j++) {
-//                 for (int k = 0; k < ySize[1]; k++) {
-//                     std::cout << py[i * (ySize[0]) * (ySize[1]) + j * (ySize[0]) + k] << " ";
-//                 }
-//                 std::cout<< std::endl;
-//             }
-//             std::cout<< std::endl;
-//         }
-//     }
+    outFile << "Displaying usual view (X) from " <<c2d->nRank << ":" << std::endl;
+    for (int i = 0; i < xSize[2]; i++) {
+        for (int j = 0; j < xSize[1]; j++) {
+            for (int k = 0; k < xSize[0]; k++) {
+                outFile << F[i * (xSize[1]) * (xSize[0]) + j * (xSize[0]) + k] << " ";
+            }
+            outFile<< std::endl;
+        }
+        outFile<< std::endl;
+    }
+
+   c2d->transposeX2Y_MajorIndex(F, py); // correct like this, not Z2Y
+   outFile << "Displaying Y view from " << c2d->nRank << ":" << std::endl;
+    for (int k = 0; k < ySize[0]; k++) {
+        for (int i = 0; i < ySize[2]; i++) {
+            for (int j = 0; j < ySize[1]; j++) {
+                outFile << py[k * (ySize[1]) * (ySize[2]) + i * (ySize[1]) + j] << " ";
+            }
+            outFile<< std::endl;
+        }
+        outFile << std::endl;
+    }
 
     for (int i = 0; i < ySize[0]*ySize[2]; i++) 
     {
@@ -167,20 +202,30 @@ void PoissonSolver::solveNeumannPoisson(double* F)
         fftw_destroy_plan(neumann);
     }
 
-    // if(c2d->nRank==0){
-    //     std::cout << "py" << std::endl;
-    //     for (int i = 0; i < ySize[2]; i++) {
-    //         for (int j = 0; j < ySize[0]; j++) {
-    //             for (int k = 0; k < ySize[1]; k++) {
-    //                 std::cout << py[i * (ySize[0]) * (ySize[1]) + j * (ySize[0]) + k] << " ";
-    //             }
-    //             std::cout<< std::endl;
-    //         }
-    //         std::cout<< std::endl;
-    //     }
-    // }
+    outFile << "Displaying Y view post trasformata from " << c2d->nRank << ":" << std::endl;
+    for (int k = 0; k < ySize[0]; k++) {
+        for (int i = 0; i < ySize[2]; i++) {
+            for (int j = 0; j < ySize[1]; j++) {
+                outFile << py[k * (ySize[1]) * (ySize[2]) + i * (ySize[1]) + j] << " ";
+            }
+            outFile<< std::endl;
+        }
+        outFile << std::endl;
+    }
 
     c2d->transposeY2Z_MajorIndex(py, pz); // correct like this, not Y2X
+
+    outFile << "Displaying Z view from " << c2d->nRank << ":" << std::endl;
+    for (int j = 0; j < zSize[1]; j++) {
+        for (int k = 0; k < zSize[0]; k++) {
+            for (int i = 0; i < zSize[2]; i++) {
+                outFile << pz[j * (zSize[0]) * (zSize[2]) + k * (zSize[2]) + i] << " ";
+            }
+            outFile<< std::endl;
+        }
+        outFile << std::endl;
+    }
+
     for (int i = 0; i < zSize[1]*zSize[0]; i++) 
     {
         neumann = fftw_plan_r2r_1d(zSize[2], &pz[i * zSize[2]], &pz[i * zSize[2]], 
@@ -189,16 +234,27 @@ void PoissonSolver::solveNeumannPoisson(double* F)
         fftw_destroy_plan(neumann);
     }
 
-    // Divide by the eigenvalues
-    for (int k = 0; k < zSize[0]; k++) {
-        for (int j = 0; j < zSize[1]; j++) {
+    outFile << "Displaying Z view post transformata from " << c2d->nRank << ":" << std::endl;
+    for (int j = 0; j < zSize[1]; j++) {
+        for (int k = 0; k < zSize[0]; k++) {
             for (int i = 0; i < zSize[2]; i++) {
-                pz[j * (zSize[1]) * (zSize[0]) + k * (zSize[0]) + i] /= (2/(DX*DX) * (std::cos(i * M_PI / (c2d->nxGlobal-1)) - 1) +
-                                                                        2/(DZ*DZ) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
-                                                                        2/(DY*DY) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal-1)) - 1));
+                outFile << pz[j * (zSize[0]) * (zSize[2]) + k * (zSize[2]) + i] << " ";
             }
-        }  
+            outFile<< std::endl;
+        }
+        outFile << std::endl;
     }
+
+    // Divide by the eigenvalues
+    // for (int k = 0; k < zSize[0]; k++) {
+    //     for (int j = 0; j < zSize[1]; j++) {
+    //         for (int i = 0; i < zSize[2]; i++) {
+    //             pz[j * (zSize[1]) * (zSize[0]) + k * (zSize[0]) + i] /= (2/(DX*DX) * (std::cos(i * M_PI / (c2d->nxGlobal-1)) - 1) +
+    //                                                                     2/(DZ*DZ) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
+    //                                                                     2/(DY*DY) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal-1)) - 1));
+    //         }
+    //     }  
+    // }
     //TODO: è ancora coi DY inversi?
     // if(c2d->nRank==0){
     //     for (int i = 0; i < zSize[0]; i++) {
@@ -250,5 +306,4 @@ void PoissonSolver::solveNeumannPoisson(double* F)
     for(int i = 0; i < xSize[0]*xSize[1]*xSize[2]; i++) {
         F[i] /= normalization_factor1;
     }
-     //   int stop; std::cin >> stop;
 }
