@@ -2,5 +2,4 @@ build/
 resources/
 build-cpuprof/
 build-memprof/
-dependencies/
 .vscode/
