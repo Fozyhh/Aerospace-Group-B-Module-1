@@ -390,13 +390,17 @@ void IcoNS::solve()
             // int stop; std::cin >> stop;
         
         MPI_Barrier(cart_comm);
-
+    
         solve_time_step(time);
         MPI_Barrier(cart_comm);
+        // if(rank==0) std::cout << "\rTime: " << time << std::flush;
         time += DT;
         i++;
     }
     output();
+    c2d->deallocXYZ(grid.p);
+    c2d->deallocXYZ(poissonSolver->py);
+    c2d->deallocXYZ(poissonSolver->pz);
 }
 
 void IcoNS::L2_error(const Real t)
@@ -1505,6 +1509,7 @@ void IcoNS::output_x(){
     const float x_middle = NX / 2;
     if(rank==0)
         std::remove("solution_x.vtk");
+    MPI_Barrier(cart_comm);
     MPI_File_open(cart_comm, "solution_x.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
     //===========================================
@@ -1618,7 +1623,7 @@ void IcoNS::output_x(){
                                 grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[(local_x_z+1)*newDimY_z * dim_z_z + j * dim_z_z + k + 1])/4;
                 }
     
-                value_p = (halo_p[local_x_p * zSize[1]*zSize[2] + j * zSize[2] + k] +  halo_p[(local_x_p-1) * zSize[1]*zSize[2] + j * zSize[2] + k])/2;
+                value_p = (halo_p[(local_x_p-resx) * (xSize[1]+2)*xSize[0] + j * xSize[0] + k] +  halo_p[(local_x_p - resx + 1) * (xSize[1]+2)*xSize[0] + j * zSize[0] + k])/2;
 
                 value_m = std::sqrt(value_x*value_x + value_y * value_y + value_z*value_z);
                 double bg_px = to_big_endian(point_x);
@@ -1659,6 +1664,7 @@ void IcoNS::output_y(){
     const float y_middle = NY / 2;
     if(rank==0)
         std::remove("solution_y.vtk");
+    MPI_Barrier(cart_comm);
     MPI_File_open(cart_comm, "solution_y.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
     //===========================================
@@ -1734,17 +1740,18 @@ void IcoNS::output_y(){
         int local_y_p = y_index - offset_y_p_;
         for(int i = 1; i < newDimX_y - 1; i++){
             for(int k=0; k < dim_z; k++){
+                double point_x = static_cast<float>(SX + (i + offset_x_y_) * DX) , point_y = SY + LY/2 , point_z = static_cast<float>(SZ + (k) * DZ);
 
                 Real value_x,value_y,value_z,value_p,value_m;
                 value_y = grid.v[i * newDimY_y * dim_z + local_y_y * dim_z + k];
 
                 if(lbx &&i==1){
-                    value_x =(boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index,k,T) + boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + 1,k,T))/2;
+                    value_x =(boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
                 }else if(rbx && i==newDimX_y-2){
-                    value_x =(boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index,k,T) + boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + 1,k,T))/2;
+                    value_x =(boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
                 }else{
-                    value_x =(grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k] + grid.u[(i+1)*newDimY_x * dim_z + local_y_x * dim_z + k] +
-                                grid.u[i*newDimY_x * dim_z + (local_y_x+1) * dim_z + k] + grid.u[(i+1)*newDimY_x * dim_z + ((local_y_x+1)) * dim_z + k])/4;
+                    value_x =(grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + local_y_x * dim_z + k] +
+                                grid.u[i*newDimY_x * dim_z + (local_y_x-1) * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + ((local_y_x-1)) * dim_z + k])/4;
                 }
 
                 if(k==0){
@@ -1756,12 +1763,11 @@ void IcoNS::output_y(){
                                 grid.w[i*newDimY_z * dim_z_z + (local_y_z + 1) * dim_z_z + k+1] + grid.w[i*newDimY_z * dim_z_z + (local_y_z+1) * dim_z_z + k+1])/4;
                 }
 
-                value_p = (halo_p[i * xSize[1]*xSize[0] + local_y_p * xSize[0] + k] +  halo_p[i * xSize[1]*xSize[0] + (local_y_p + 1)* xSize[0] + k])/2;
+                value_p = (halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p-resy) * xSize[0] + k] +  halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p -resy + 1)* xSize[0] + k])/2;
 
                 value_m = std::sqrt(value_x*value_x + value_y * value_y + value_z*value_z);
 
-                double point_x = static_cast<float>(SX + (i + offset_x_y_) * DX) , point_y = SY + LY/2 , point_z = static_cast<float>(SZ + (k) * DZ);
-
+                
                 double bg_px = to_big_endian(point_x);
                 double bg_py = to_big_endian(point_y);
                 double bg_pz = to_big_endian(point_z);
@@ -1797,6 +1803,7 @@ void IcoNS::output_z(){
     const float z_middle = NZ / 2;
     if(rank==0)
         std::remove("solution_z.vtk");
+    MPI_Barrier(cart_comm);
     MPI_File_open(cart_comm, "solution_z.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
     //===========================================
@@ -1886,12 +1893,12 @@ void IcoNS::output_z(){
                 //valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid.v[local_x* newDimY_x * dim_z + j * dim_z + k];
                 Real value_x,value_y,value_z,value_p,value_m;
                 if(lby &&j==1){
-                    value_x = (boundary.boundary_value_u[0]->value(i + offset_x_x_, j + offset_x_y_, z_index, T));
+                    value_x = (boundary.boundary_value_u[0]->value(i + offset_x_x_, j + offset_y_x_, z_index, T));
                 }else if(rby && j==newDimY_z-2){
-                    value_x = (boundary.boundary_value_u[1]->value(i + offset_x_x_, j + offset_x_y_, z_index, T));
+                    value_x = (boundary.boundary_value_u[1]->value(i + offset_x_x_, j + offset_y_x_, z_index, T));
                 }else{
-                    value_x = (grid.u[i*newDimY_x * dim_z + j * dim_z + z_index] + grid.u[(i+1)*newDimY_x * dim_z + j * dim_z + z_index] +
-                                grid.u[i*newDimY_x * dim_z + j * dim_z + z_index + 1] + grid.u[(i+1)*newDimY_x * dim_z + j * dim_z + z_index + 1])/4;
+                    value_x = (grid.u[i*newDimY_x * dim_z + j * dim_z + z_index] + grid.u[(i-1)*newDimY_x * dim_z + j * dim_z + z_index] +
+                                grid.u[i*newDimY_x * dim_z + j * dim_z + z_index - 1] + grid.u[(i-1)*newDimY_x * dim_z + j * dim_z + z_index - 1])/4;
                 }
 
                 if(lbx &&i==1){
@@ -1906,7 +1913,7 @@ void IcoNS::output_z(){
 
                 value_z = grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index];
 
-                value_p = (halo_p[i * xSize[1]*xSize[0] + j * xSize[0] + z_index] +  halo_p[i * xSize[1]*xSize[0] + j* xSize[0] + z_index-1])/2;
+                value_p = (halo_p[i * (xSize[1] + 2)*xSize[0] + j * xSize[0] + z_index] +  halo_p[i * (xSize[1] + 2)*xSize[0] + j* xSize[0] + z_index + 1])/2;
 
                 value_m = std::sqrt(value_x*value_x + value_y * value_y + value_z*value_z);
            

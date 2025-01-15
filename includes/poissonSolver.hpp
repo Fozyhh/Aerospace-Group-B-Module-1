@@ -35,10 +35,9 @@ private:
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
 
+public: 
     double *pz;                // z-pencil
     double *py;                // y_pencil
-
-public: 
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
     : periodicX(periodicX),
