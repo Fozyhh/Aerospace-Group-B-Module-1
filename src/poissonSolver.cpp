@@ -282,7 +282,7 @@ void PoissonSolver::solveNeumannPoisson(double *F)
     }
 
     c2d->transposeY2X_MajorIndex(py, F);
-    for (int i = 0; i < xSize[2] * zSize[1]; i++)
+    for (int i = 0; i < xSize[2] * xSize[1]; i++)
     {
         neumann = fftw_plan_r2r_1d(xSize[0], &F[i * xSize[0]], &F[i * xSize[0]],
                                    FFTW_REDFT00, FFTW_ESTIMATE);
