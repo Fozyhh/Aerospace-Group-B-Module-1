@@ -147,113 +147,45 @@ void PoissonSolver::solveNeumannPoisson(double *F)
     // }
 
     fftw_plan neumann;
+
+    // 1. X-Direction Transforms
+    neumann = fftw_plan_r2r_1d(xSize[0], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < xSize[2] * xSize[1]; i++)
     {
-        neumann = fftw_plan_r2r_1d(xSize[0], &F[i * xSize[0]], &F[i * xSize[0]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
-    //     for (int i = 0; i < c2d->dims[0]; i++) {
-    //     std::cout << "Rank: " << c2d->nRank << ", x1dist[" << i << "] = " << c2d->decompMain.x1dist[i] << std::endl;
-    // }
+    fftw_destroy_plan(neumann);
 
-    // outFile << "Displaying usual view (X) from " << c2d->nRank << ":" << std::endl;
-    // for (int i = 0; i < xSize[2]; i++)
-    // {
-    //     for (int j = 0; j < xSize[1]; j++)
-    //     {
-    //         for (int k = 0; k < xSize[0]; k++)
-    //         {
-    //             outFile << F[i * (xSize[1]) * (xSize[0]) + j * (xSize[0]) + k] << " ";
-    //         }
-    //         outFile << std::endl;
-    //     }
-    //     outFile << std::endl;
-    // }
+    c2d->transposeX2Y_MajorIndex(F, py); // Correct like this, not Z2Y
 
-    c2d->transposeX2Y_MajorIndex(F, py); // correct like this, not Z2Y
-    // outFile << "Displaying Y view from " << c2d->nRank << ":" << std::endl;
-    // for (int k = 0; k < ySize[0]; k++)
-    // {
-    //     for (int i = 0; i < ySize[2]; i++)
-    //     {
-    //         for (int j = 0; j < ySize[1]; j++)
-    //         {
-    //             outFile << py[k * (ySize[1]) * (ySize[2]) + i * (ySize[1]) + j] << " ";
-    //         }
-    //         outFile << std::endl;
-    //     }
-    //     outFile << std::endl;
-    // }
-
+    // 2. Y-Direction Transforms
+    neumann = fftw_plan_r2r_1d(ySize[1], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < ySize[0] * ySize[2]; i++)
     {
-        neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[1]], &py[i * ySize[1]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
+    fftw_destroy_plan(neumann);
 
-    // outFile << "Displaying Y view post trasformata from " << c2d->nRank << ":" << std::endl;
-    // for (int k = 0; k < ySize[0]; k++)
-    // {
-    //     for (int i = 0; i < ySize[2]; i++)
-    //     {
-    //         for (int j = 0; j < ySize[1]; j++)
-    //         {
-    //             outFile << py[k * (ySize[1]) * (ySize[2]) + i * (ySize[1]) + j] << " ";
-    //         }
-    //         outFile << std::endl;
-    //     }
-    //     outFile << std::endl;
-    // }
+    c2d->transposeY2Z_MajorIndex(py, pz); // Correct like this, not Y2X
 
-    c2d->transposeY2Z_MajorIndex(py, pz); // correct like this, not Y2X
-
-    // outFile << "Displaying Z view from " << c2d->nRank << ":" << std::endl;
-    // for (int j = 0; j < zSize[1]; j++)
-    // {
-    //     for (int k = 0; k < zSize[0]; k++)
-    //     {
-    //         for (int i = 0; i < zSize[2]; i++)
-    //         {
-    //             outFile << pz[j * (zSize[0]) * (zSize[2]) + k * (zSize[2]) + i] << " ";
-    //         }
-    //         outFile << std::endl;
-    //     }
-    //     outFile << std::endl;
-    // }
-
+    // 3. Z-Direction Transforms
+    neumann = fftw_plan_r2r_1d(zSize[2], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < zSize[1] * zSize[0]; i++)
     {
-        neumann = fftw_plan_r2r_1d(zSize[2], &pz[i * zSize[2]], &pz[i * zSize[2]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
-
-    // outFile << "Displaying Z view post transformata from " << c2d->nRank << ":" << std::endl;
-    // for (int j = 0; j < zSize[1]; j++)
-    // {
-    //     for (int k = 0; k < zSize[0]; k++)
-    //     {
-    //         for (int i = 0; i < zSize[2]; i++)
-    //         {
-    //             outFile << pz[j * (zSize[0]) * (zSize[2]) + k * (zSize[2]) + i] << " ";
-    //         }
-    //         outFile << std::endl;
-    //     }
-    //     outFile << std::endl;
-    // }
+    fftw_destroy_plan(neumann);
 
     // Divide by the eigenvalues
-    for (int k = 0; k < zSize[0]; k++) {
-        for (int j = 0; j < zSize[1]; j++) {
-            for (int i = 0; i < zSize[2]; i++) {
-                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + i] /= (2/(DX*DX) * (std::cos(i * M_PI / (c2d->nxGlobal-1)) - 1) +
-                                                                        2/(DY*DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal-1)) - 1) +
-                                                                        2/(DZ*DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal-1)) - 1));
+    for (int k = 0; k < zSize[0]; k++)
+    {
+        for (int j = 0; j < zSize[1]; j++)
+        {
+            for (int i = 0; i < zSize[2]; i++)
+            {
+                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + i] /= (2 / (DX * DX) * (std::cos(i * M_PI / (c2d->nxGlobal - 1)) - 1) +
+                                                                         2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
+                                                                         2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
             }
         }
     }
@@ -263,32 +195,33 @@ void PoissonSolver::solveNeumannPoisson(double *F)
         pz[0] = 0.0;
     }
 
-    // Inverse Fourier transform
+    // 1. Z-Direction Transforms
+    neumann = fftw_plan_r2r_1d(zSize[2], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < zSize[1] * zSize[0]; i++)
     {
-        neumann = fftw_plan_r2r_1d(zSize[2], &pz[i * zSize[2]], &pz[i * zSize[2]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
+    fftw_destroy_plan(neumann);
 
     c2d->transposeZ2Y_MajorIndex(pz, py);
+
+    // 2. Y-Direction Transforms
+    neumann = fftw_plan_r2r_1d(ySize[1], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < ySize[0] * ySize[2]; i++)
     {
-        neumann = fftw_plan_r2r_1d(ySize[1], &py[i * ySize[1]], &py[i * ySize[1]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
+    fftw_destroy_plan(neumann);
 
     c2d->transposeY2X_MajorIndex(py, F);
+
+    // 3. X-Direction Transforms
+    neumann = fftw_plan_r2r_1d(xSize[0], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < xSize[2] * xSize[1]; i++)
     {
-        neumann = fftw_plan_r2r_1d(xSize[0], &F[i * xSize[0]], &F[i * xSize[0]],
-                                   FFTW_REDFT00, FFTW_ESTIMATE);
-        fftw_execute(neumann);
-        fftw_destroy_plan(neumann);
+        fftw_execute_r2r(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
+    fftw_destroy_plan(neumann);
 
     // Normalization
     double normalization_factor1 = 2.0 * (xSize[0] - 1) * 2.0 * (ySize[1] - 1) * 2.0 * (zSize[2] - 1);
