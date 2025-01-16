@@ -120,7 +120,7 @@ void IcoNS::setParallelization()
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
+    // std::cout << rank << ", " << size << ", " << dims[0] << ", " << dims[1] << ", " << periods[0] << ", " << periods[1] << std::endl;
     // Create a Cartesian topology (2D)
     // MPI_Dims_create(size, 2, dims);
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
@@ -130,7 +130,7 @@ void IcoNS::setParallelization()
     MPI_Cart_shift(cart_comm, 0, 1, &neighbors[0], &neighbors[2]);
 
     MPI_Cart_shift(cart_comm, 1, 1, &neighbors[3], &neighbors[1]);
-    std::cout << rank << "- neigh: " << neighbors[1] << neighbors[3] << std::endl;
+    // std::cout << rank << "- neigh: " << neighbors[1] << neighbors[3] << std::endl;
 
     // NX%PX numero righe da assegnare
     // (PX - coords[0]) <= NX%PX
@@ -295,13 +295,13 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     {
 
         MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
-        MPI_Wait(&reqs[3], MPI_SUCCESS);
+        MPI_Wait(&reqs[3], &status);
         MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
     }
     if (!(BY &&  coords[1] == 0))
     {
         MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
-        MPI_Wait(&reqs[2], MPI_SUCCESS);
+        MPI_Wait(&reqs[2], &status);
     }
 
     // inviare al neighbours 0 dal processore con coords 0 vuol dire inviare al processo dall'altra parte >> inutile se dirichlet
@@ -311,12 +311,12 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     }
     if (!(BX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
-        MPI_Wait(&reqs[1], MPI_SUCCESS);
+        MPI_Wait(&reqs[1], &status);
         MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
     }
     if (!(BX && coords[0] == 0)){
         MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9  , cart_comm, &reqs[0]);
-        MPI_Wait(&reqs[0], MPI_SUCCESS);
+        MPI_Wait(&reqs[0], &status);
     }
 }
 
@@ -1264,7 +1264,7 @@ void IcoNS::output(){
 
     const std::string filename = "out" + std::to_string(testCase) + ".dat";
     MPI_File fh;
-    MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_File_open(cart_comm, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     //TODO: fix global outputs
     MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
     // LINE 1
@@ -1457,7 +1457,7 @@ void IcoNS::output(){
             }
         }
     }
-
+    MPI_Barrier(cart_comm);
     MPI_File_close(&fh);
 
     if(rank == 0){

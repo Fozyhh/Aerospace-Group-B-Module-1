@@ -206,6 +206,8 @@ public:
   void output_y();
   void output_z();
 
+  MPI_Status status;
+
 
   // fftw_complex* helper;
 

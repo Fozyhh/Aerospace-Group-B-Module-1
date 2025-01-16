@@ -23,14 +23,9 @@ set(CACHEGRIND_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memprof_reports" CACHE 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Debug and Release flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-    # Debug-specific flags
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -DDEBUG")
-    # Release-specific flags
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto -funroll-loops -DNDEBUG")
-endif()
+
+set(CMAKE_CXX_FLAGS "-O3 -march=native -flto -funroll-loops")
+
 # Source files
 set(SOURCES
     src/main.cpp
