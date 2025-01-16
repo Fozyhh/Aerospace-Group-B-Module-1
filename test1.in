@@ -17,10 +17,10 @@
 1.0 2.0 1.0 
 
 # Number of grid points: Nx, Ny, Nz
-60 60 60
+480 480 480
 
 # Process grid: Px, Py, Pz
-1 1 1
+8 8 1
 
 # Boundaries :
 1 1 1

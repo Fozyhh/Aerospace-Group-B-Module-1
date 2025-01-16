@@ -85,7 +85,7 @@ public:
     dim_z = NZ + 1;
     dim_z_z = NZ;
 
-    helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
+    // helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
 
     // pencils allocation
     c2d->allocX(grid.p);
@@ -207,7 +207,7 @@ public:
   void output_z();
 
 
-  fftw_complex* helper;
+  // fftw_complex* helper;
 
 private:
 

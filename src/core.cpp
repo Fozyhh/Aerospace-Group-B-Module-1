@@ -40,11 +40,11 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
         Y3_z[i]=0.0;
     }
 
-    for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
-    {
-        helper[i][0] = 0.0;
-        helper[i][1] = 0.0;
-    }
+    // for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
+    // {
+    //     helper[i][0] = 0.0;
+    //     helper[i][1] = 0.0;
+    // }
 
     boundary.initializeBoundary(
         dim_x_x, dim_y_x, dim_x_y, dim_y_y,
@@ -1746,12 +1746,11 @@ void IcoNS::output_y(){
                 value_y = grid.v[i * newDimY_y * dim_z + local_y_y * dim_z + k];
 
                 if(lbx &&i==1){
-                    value_x =(boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
+                    value_x =boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T);
                 }else if(rbx && i==newDimX_y-2){
-                    value_x =(boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
+                    value_x =boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T);
                 }else{
-                    value_x =(grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + local_y_x * dim_z + k] +
-                                grid.u[i*newDimY_x * dim_z + (local_y_x-1) * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + ((local_y_x-1)) * dim_z + k])/4;
+                    value_x =grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k];
                 }
 
                 if(k==0){
@@ -1759,11 +1758,10 @@ void IcoNS::output_y(){
                 }else if(k==dim_z -1){
                     value_z = boundary.boundary_value_w[5]->value(i + offset_x_z_,y_index + 0.5,k - 0.5,T);
                 }else{
-                    value_z = (grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k] + grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k+1] +
-                                grid.w[i*newDimY_z * dim_z_z + (local_y_z + 1) * dim_z_z + k+1] + grid.w[i*newDimY_z * dim_z_z + (local_y_z+1) * dim_z_z + k+1])/4;
+                    value_z = grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k];
                 }
 
-                value_p = (halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p-resy) * xSize[0] + k] +  halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p -resy + 1)* xSize[0] + k])/2;
+                value_p = halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p-resy) * xSize[0] + k];
 
                 value_m = std::sqrt(value_x*value_x + value_y * value_y + value_z*value_z);
 
