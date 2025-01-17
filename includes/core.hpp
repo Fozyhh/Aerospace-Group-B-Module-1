@@ -24,9 +24,6 @@
 #include <fftw3.h>
 #include "poissonSolver.hpp"
 
-//#define PERIODIC
-#define DIRICHELET
-
 
 /**
  * @class IcoNS
@@ -46,10 +43,9 @@ public:
    * @param rank MPI process rank
    * @param size Total number of MPI processes
    */
-  IcoNS(MPI_Comm cart_comm, const std::string &input_file, const std::string &output_file, int rank, int size)
+  IcoNS(MPI_Comm cart_comm, const std::string &input_file, int rank, int size)
       : cart_comm(cart_comm),
         input_file(input_file),
-        output_file(output_file),
         rank(rank),
         size(size)
   {
@@ -59,9 +55,9 @@ public:
     poissonSolver= new PoissonSolver(false,false,false, c2d);
 
     // x-pencil size
-    xSize[0] = c2d->xSize[0]; //DIMENSIONE LUNGA, Z
-    xSize[1] = c2d->xSize[1]; //Y
-    xSize[2] = c2d->xSize[2]; //X
+    xSize[0] = c2d->xSize[0]; 
+    xSize[1] = c2d->xSize[1]; 
+    xSize[2] = c2d->xSize[2]; 
 
     // y-pencil size
     ySize[0] = c2d->ySize[0];
@@ -85,20 +81,16 @@ public:
     dim_z = NZ + 1;
     dim_z_z = NZ;
 
-    helper = fftw_alloc_complex(NX * NY * (NZ/2 + 1));
-
     // pencils allocation
     c2d->allocX(grid.p);
     c2d->allocX(Phi_p);
     c2d->allocX(Y2_p);
-
-    std::cout << "End of constructor" << std::endl;
   }
 
   /**
    * @brief Initializes the grid and problem setup
    */
-  void preprocessing(/*std::string &input_file*/);
+  void preprocessing();
 
   void setBoundaryConditions();
   /**
@@ -201,20 +193,22 @@ public:
    */
   void parse_input(const std::string& input_file);
   
+  /**
+   * @brief Output functions at final timestep
+   */
   void output();
   void output_x();
   void output_y();
   void output_z();
+  void output_profile();
 
 
-  fftw_complex* helper;
+  //fftw_complex* helper;
 
 private:
 
   int testCase;
 
-  /// @brief MPI rank of current process
-  int rank, size;
 
   /// @brief MPI Cartesian communicator
   MPI_Comm cart_comm;
@@ -255,8 +249,11 @@ private:
   bool periodss[3] = {false, true, true};
 
   /// @brief Input/output file paths
-  std::string input_file;  // input file.
-  std::string output_file; // output file.
+  const std::string input_file;  // input file.
+
+  /// @brief MPI rank of current process
+  int rank, size;
+
 
   /// @brief Boundary flags for domain decomposition
   int lbx = 0, rbx = 0, lby = 0, rby = 0;

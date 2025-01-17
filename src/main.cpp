@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
     double start_time = MPI_Wtime();
 
-    IcoNS icoNS(MPI_COMM_WORLD, argv[1], "output.txt", rank, size);
+    IcoNS icoNS(MPI_COMM_WORLD, argv[1], rank, size);
 
     icoNS.preprocessing();
 

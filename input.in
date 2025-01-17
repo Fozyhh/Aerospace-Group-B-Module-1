@@ -8,7 +8,7 @@
 0.001
 
 # Number of time steps: Nt
-20
+2
 
 # Start of domain: SX,SY,SZ
 0.0 0.0 0.0
@@ -20,7 +20,7 @@
 50 50 50
 
 # Process grid: Px, Py, Pz
-1 1 1
+2 2 1
 
 # Boundaries :
 1 1 1

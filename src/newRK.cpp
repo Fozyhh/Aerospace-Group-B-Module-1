@@ -9,6 +9,7 @@ void IcoNS::solve_time_step(Real time)
     MPI_Barrier(cart_comm);
     exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
     
+    //Calculate Y2
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
     {
         for (int j = 1 + lby; j < newDimY_x - 1 - rby; j++)
@@ -52,13 +53,15 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    //TODO: boundary handling?
+    //3) Update boundaries
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
     MPI_Barrier(cart_comm);
+    //Update Halos
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
+    
     for (int i = 1; i < xSize[2] + 1; i++)
     {
         for (int j = 1; j < xSize[1] + 1; j++)
@@ -73,30 +76,18 @@ void IcoNS::solve_time_step(Real time)
                                                 + (Y2_y[gety(i , j + resy, k)] - Y2_y[gety(i, j - 1 + resy, k)]) / (DY)
                                                 + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
                 }
-                //Y2_p[getp(i-1,j-1,k)] = 120.0 / (64.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
 
-    // std::cout << "Y2_p: "<< std::endl;
-    // for(int in = 0; in < xSize[2]; in++){
-    //     for (int j = 0; j < xSize[1]; j++){
-    //         for (int k = 0; k < xSize[0]; k++)
-    //         {
-    //             std::cout << Y2_p[getp(in,j,k)] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    //boundary.divergence(Y2_x, Y2_y, Y2_z, Y2_p, time + 64.0 / 120.0 * DT, 64.0);
+    //Solve for Pressure
     poissonSolver->solveNeumannPoisson(Y2_p);
     MPI_Barrier(cart_comm);
-    // 2) y2_p pressure point exchange
     copyPressureToHalo(Y2_p,halo_p);
     MPI_Barrier(cart_comm);
     exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
+
+    //Update Velocities
     for (int i = 1; i < newDimX_x - 1; i++)
     {
         for (int j = 1; j < newDimY_x - 1; j++)
@@ -142,7 +133,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                Phi_p[getp(i,j,k)] = Y2_p[getp(i,j,k)] + grid.p[getp(i,j,k)]; // phi^2
+                Phi_p[getp(i,j,k)] = Y2_p[getp(i,j,k)] + grid.p[getp(i,j,k)];
             }
         }
     }
@@ -207,22 +198,6 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
 
-    // if(rank==0){
-
-    //             std::cout << "Y3_x: "<< std::endl;
-    //             for(int in = 0; in < newDimX_x; in++){
-    //                 for (int j = 0; j < newDimY_x; j++){
-    //                     for (int k = 0; k < dim_z; k++)
-    //                     {
-    //                         std::cout << Y3_x[getx(in,j,k)] << " ";
-    //                     }
-    //                     std::cout << std::endl;
-    //                 }
-    //                 std::cout << std::endl;
-    //             }
-    //     }
-    //     int stop; std::cin >> stop;
-
     for (int i = 1; i < xSize[2] + 1; i++)
     {
         for (int j = 1; j < xSize[1] + 1; j++)
@@ -235,7 +210,6 @@ void IcoNS::solve_time_step(Real time)
                 else{
                     Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y3_x[getx(i + resx, j, k)] - Y3_x[getx(i - 1 + resx, j, k)]) / (DX) + (Y3_y[gety(i, j + resy, k)] - Y3_y[gety(i, j + resy - 1, k)]) / (DY) + (Y3_z[getz(i, j, k)] - Y3_z[getz(i, j, k - 1)]) / (DZ));
                 }
-                //Y2_p[getp(i-1,j-1,k)] = 120.0 / (16.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
@@ -369,15 +343,12 @@ void IcoNS::solve_time_step(Real time)
                 else{
                     Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((grid.u[getx(i + resx, j, k)] - grid.u[getx(i + resx - 1, j, k)]) / (DX) + (grid.v[gety(i, j + resy, k)] - grid.v[gety(i, j + resy - 1, k)]) / (DY) + (grid.w[getz(i, j, k)] - grid.w[getz(i, j, k - 1)]) / (DZ));
                 }
-                //Y2_p[getp(i-1,j-1,k)] = 120.0 / (40.0 * DT) * ((Y2_x[getx(i, j, k)] - Y2_x[getx(i - 1, j, k)]) / (DX) + (Y2_y[gety(i, j, k)] - Y2_y[gety(i, j - 1, k)]) / (DY) + (Y2_z[getz(i, j, k)] - Y2_z[getz(i, j, k - 1)]) / (DZ));
             }
         }
     }
-    //boundary.divergence(grid.u, grid.v, grid.w, Y2_p, time + DT, 40.0);
 
     poissonSolver->solveNeumannPoisson(Y2_p);
     MPI_Barrier(cart_comm);
-    // 5) y2_p exchange
     copyPressureToHalo(Y2_p,halo_p);
     MPI_Barrier(cart_comm);
     exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
@@ -425,6 +396,13 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+
+    boundary.update_boundary(grid.u, grid.v, grid.w, time);
+    MPI_Barrier(cart_comm);
+    exchangeData(grid.u, newDimX_x, newDimY_x,dim_z,MPI_face_x_x,MPI_face_y_x,0,1);
+    exchangeData(grid.v, newDimX_y, newDimY_y,dim_z,MPI_face_x_y,MPI_face_y_y,1,0);
+    exchangeData(grid.w, newDimX_z, newDimY_z,dim_z_z,MPI_face_x_z,MPI_face_y_z,1,1);
+    MPI_Barrier(cart_comm);
 }
 
 Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)

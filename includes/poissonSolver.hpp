@@ -32,12 +32,16 @@ private:
     /// @brief Pointer to the C2Decomp object for parallel decomposition
     C2Decomp *c2d;
 
+    /// @brief Fourier tranform
+    fftw_plan neumann;
+
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
 
 public: 
     double *pz;                // z-pencil
     double *py;                // y_pencil
+
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
     : periodicX(periodicX),
@@ -58,7 +62,7 @@ public:
      * @param F_dP A vector containing the source term.
      * @param FD A pointer to an FFTW complex array for frequency-domain calculations.
      */
-    void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
+    //void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
 
 
     /**

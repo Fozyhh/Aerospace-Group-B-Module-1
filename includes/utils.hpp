@@ -36,6 +36,19 @@ enum Direction
     W   ///< Z-direction
 };
 
+enum Faces
+{
+  LEFT,
+  RIGHT,
+  FRONT,
+  BACK,
+  LOWER,
+  UPPER
+};
+
+
+
+
 /**
  * @class BoundaryFunction
  * @brief Abstract base class for boundary condition functions

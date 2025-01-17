@@ -23,14 +23,16 @@ set(CACHEGRIND_REPORT_DIR "${CMAKE_SOURCE_DIR}/resources/memprof_reports" CACHE 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Debug and Release flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-    # Debug-specific flags
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -DDEBUG")
-    # Release-specific flags
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto -funroll-loops -DNDEBUG")
-endif()
+# if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#     # Debug and Release flags
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+#     # Debug-specific flags
+#     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -DDEBUG")
+#     # Release-specific flags
+#     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto -funroll-loops -DNDEBUG")
+# endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O0 -Wall -Wextra -Wpedantic")
+
 # Source files
 set(SOURCES
     src/main.cpp
@@ -62,9 +64,9 @@ target_link_libraries(main ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
 # add_executable(c2dT Test/c2d.cpp)
 # target_include_directories(c2dT PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
 # target_link_libraries(c2dT ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
-add_executable(halo Test/haloTest.cpp)
-target_include_directories(halo PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
-target_link_libraries(halo ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
+# add_executable(halo Test/haloTest.cpp)
+# target_include_directories(halo PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
+# target_link_libraries(halo ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
 #add_executable(testBoundary Test/boundaryTest.cpp src/core.cpp src/boundary.cpp) have to make boundaries func public
 #target_include_directories(testBoundary PRIVATE ${CMAKE_SOURCE_DIR}/includes)
 #add_executable(conv Test/Conv.cpp src/core.cpp src/boundary.cpp src/newRK.cpp) #have to make boundaries func public
