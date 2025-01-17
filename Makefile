@@ -26,9 +26,11 @@ LIBS = -lfftw3_mpi -lfftw3 -lm \
 SOURCES = $(SRC_DIR)/main.cpp \
           $(SRC_DIR)/core.cpp \
           $(SRC_DIR)/boundary.cpp \
-          $(SRC_DIR)/newRK.cpp \
+          $(SRC_DIR)/rungeKutta.cpp \
           $(SRC_DIR)/poissonSolver.cpp \
-          $(SRC_DIR)/constants.cpp
+          $(SRC_DIR)/constants.cpp \
+          $(SRC_DIR)/error.cpp \
+          $(SRC_DIR)/output.cpp \
 
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
