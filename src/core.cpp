@@ -1166,15 +1166,15 @@ void IcoNS::output(){
 
     const std::string filename = "out" + std::to_string(testCase) + ".dat";
     MPI_File fh;
-    MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
-    MPI_Offset offset = coords[1] * zSize[1] * sizeof(double) * 7;
+    MPI_File_open(cart_comm, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_Offset offset = coords[1] * xSize[1] * sizeof(double) * 7;
     // LINE 1
     if(coords[0] == (PX-1)/2){
         const double xCoord = SX+LX/2;
-        double yCoord = SY+coords[1] * zSize[1] * DY;
+        double yCoord = SY + coords[1] * xSize[1] * DY;
         const double zCoord = SZ+LZ/2;
         double u, v, w, p;
-        for (int i = 0; i < zSize[1]; i++)
+        for (int i = 1; i < xSize[1] + 1; i++)
         {
             MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
@@ -1187,29 +1187,63 @@ void IcoNS::output(){
             offset += sizeof(double);
 
             if(PX%2 == 0){
-                u = grid.u[getx(newDimX_x-1, i, (dim_z-1)/2)];
-                v = (grid.v[gety(newDimX_y-1, i, (dim_z-1)/2)] +
-                    grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2)] +
-                    grid.v[gety(newDimX_y, i, (dim_z-1)/2)] +
-                    grid.v[gety(newDimX_y, i-1, (dim_z-1)/2)])/4;
-                w = (grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2)] +
-                    grid.w[getz(newDimX_z-1, i, (dim_z_z-1)/2-1)] +
-                    grid.w[getz(newDimX_z, i, (dim_z_z-1)/2)] +
-                    grid.w[getz(newDimX_z, i, (dim_z_z-1)/2-1)])/4;
-                p = grid.p[getp(zSize[0]-1, i, (zSize[2]-1)/2)];
-                    // + grid.p[getp(zSize[0], i, (zSize[2]-1)/2)])/2;
-            }else{
-                u = grid.u[getx((newDimX_x-1)/2, i, (dim_z-1)/2)];
-                v = (grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2)] +
-                    grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2)] +
-                    grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2)] +
-                    grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2)])/4;
-                w = (grid.w[getz((newDimX_z-1)/2, i, (dim_z_z-1)/2)] +
-                    grid.w[getz((newDimX_z-1)/2+1, i, (dim_z_z-1)/2)] +
-                    grid.w[getz((newDimX_z-1)/2, i, (dim_z_z-1)/2-1)] +
-                    grid.w[getz((newDimX_z-1)/2+1, i, (dim_z_z-1)/2-1)])/4;
-                p = (grid.p[getp((zSize[0]-1)/2, i, (zSize[2]-1)/2)] +
-                    grid.p[getp((zSize[0]-1)/2+1, i, (zSize[2]-1)/2)])/2;
+                u = (grid.u[getx(newDimX_x-2, i, (dim_z-1)/2)] +
+                    grid.u[getx(newDimX_x-2, i, (dim_z-1)/2+1)])/2;
+                if(lby && i==1){ // approximating at the front boundary, could use boundary_value_v[2]->value()
+                    v = (grid.v[gety(newDimX_y-2, i, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-2, i, (dim_z-1)/2+1)] +
+                        grid.v[gety(newDimX_y-1, i, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-1, i, (dim_z-1)/2+1)])/4;
+                }else if(rby && i==xSize[1]){ // approximating at the back boundary, could use boundary_value_v[2]->value()
+                    v = (grid.v[gety(newDimX_y-2, i-1, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-2, i-1, (dim_z-1)/2+1)] +
+                        grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2+1)])/4;
+                }else{
+                    v = (grid.v[gety(newDimX_y-2, i, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-2, i, (dim_z-1)/2+1)] +
+                        grid.v[gety(newDimX_y-2, i-1, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-2, i-1, (dim_z-1)/2+1)] +
+                        grid.v[gety(newDimX_y-1, i, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-1, i, (dim_z-1)/2+1)] +
+                        grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2)] +
+                        grid.v[gety(newDimX_y-1, i-1, (dim_z-1)/2+1)])/8;
+                }
+                w = (grid.w[getz(newDimX_z-2, i, (dim_z_z)/2)] +
+                    grid.w[getz(newDimX_z-1, i, (dim_z_z)/2)])/2;
+                p = (grid.p[getp(xSize[2]-1, i, (xSize[0]-1)/2)] +
+                    grid.p[getp(xSize[2]-1, i, (xSize[0]-1)/2+1)])/2; // approximation, should use halo
+            }else { // should distinguish between even or odd number of pressure points on interested processors
+                    // assuming even for now
+                    // with 480 cells this is slightly wrong for PX = 7, 11, 13, 21, 23, 27, 29 ...
+                u = (grid.u[getx((newDimX_x-1)/2, i, (dim_z-1)/2)] +
+                    grid.u[getx((newDimX_x-1)/2, i, (dim_z-1)/2+1)])/2;
+                if(lby && i==1){ // approximating at the front boundary, could use boundary_value_v[2]->value()
+                    v = (grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2+1)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2+1)])/4;
+                }else if(rby && i==xSize[1]){ // approximating at the back boundary, could use boundary_value_v[3]->value()
+                    v = (grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2+1)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2+1)])/4;
+                }else{
+                    v = (grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2, i, (dim_z-1)/2+1)] +
+                        grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2, i-1, (dim_z-1)/2+1)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i, (dim_z-1)/2+1)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2)] +
+                        grid.v[gety((newDimX_y-1)/2+1, i-1, (dim_z-1)/2+1)])/8;
+                }
+                w = (grid.w[getz((newDimX_z-1)/2, i, (dim_z_z)/2)] +
+                    grid.w[getz((newDimX_z-1)/2+1, i, (dim_z_z)/2)])/2;
+                p = (grid.p[getp((xSize[2]-1)/2, i, (xSize[0]-1)/2)] +
+                    grid.p[getp((xSize[2]-1)/2, i, (xSize[0]-1)/2+1)] +
+                    grid.p[getp((xSize[2]-1)/2+1, i, (xSize[0]-1)/2)] +
+                    grid.p[getp((xSize[2]-1)/2+1, i, (xSize[0]-1)/2+1)])/2;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
@@ -1224,12 +1258,12 @@ void IcoNS::output(){
 
     // LINE 2
     if(coords[1] == (PY-1)/2){
-        offset = PY * zSize[1] * sizeof(double) * 7 + coords[0] * zSize[0] * sizeof(double) * 7;
-        double xCoord = SX+coords[0] * zSize[0] * DX;
+        offset = PY * xSize[1] * sizeof(double) * 7 + coords[0] * xSize[2] * sizeof(double) * 7;
+        double xCoord = SX + coords[0] * xSize[2] * DX;
         const double yCoord = SY+LY/2;
         const double zCoord = SZ+LZ/2;
         double u, v, w, p;
-        for (int i = 0; i < zSize[0]; i++)
+        for (int i = 1; i < xSize[2] + 1; i++)
         {
             MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             xCoord += DX;
@@ -1242,29 +1276,61 @@ void IcoNS::output(){
             offset += sizeof(double);
 
             if(PY%2 == 0){
-                u = (grid.u[getx(i, newDimY_x-1, (dim_z-1)/2)] +
-                    grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2)] +
-                    grid.u[getx(i, newDimY_x, (dim_z-1)/2)] +
-                    grid.u[getx(i-1, newDimY_x, (dim_z-1)/2)])/4;
-                v = grid.v[gety(i, newDimY_y-1, (dim_z-1)/2)];
-                w = (grid.w[getz(i, newDimY_z-1, (dim_z-1)/2)] +
-                    grid.w[getz(i, newDimY_z-1, (dim_z-1)/2-1)] +
-                    grid.w[getz(i, newDimY_z, (dim_z-1)/2)] +
-                    grid.w[getz(i, newDimY_z, (dim_z-1)/2-1)])/4;
-                p = grid.p[getp(i, zSize[1]-1, (zSize[2]-1)/2)];
-                    // + grid.p[getp(i, zSize[1], (zSize[2]-1)/2)])/2;
-            }else{
-                u = (grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2)] +
-                    grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2)] +
-                    grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
-                    grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2)])/4;
-                v = grid.v[gety(i, (newDimY_y-1)/2, (dim_z-1)/2)];
-                w = (grid.w[getz(i, (newDimY_z-1)/2, (dim_z-1)/2)] +
-                    grid.w[getz(i, (newDimY_z-1)/2+1, (dim_z-1)/2)] +
-                    grid.w[getz(i, (newDimY_z-1)/2, (dim_z-1)/2)-1] +
-                    grid.w[getz(i, (newDimY_z-1)/2+1, (dim_z-1)/2-1)-1])/4;
-                p = (grid.p[getp(i, (zSize[1]-1)/2, (zSize[2]-1)/2)] +
-                    grid.p[getp(i, (zSize[1]-1)/2+1, (zSize[2]-1)/2)])/2;
+                if(lbx && i==1){ // approximating at the left boundary, could use boundary_value_u[0]->value()
+                    u = (grid.u[getx(i, newDimY_x-2, (dim_z-1)/2)] +
+                        grid.u[getx(i, newDimY_x-2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i, newDimY_x-1, (dim_z-1)/2)] +
+                        grid.u[getx(i, newDimY_x-1, (dim_z-1)/2+1)])/4;
+                }else if(rbx && i==xSize[2]){ // approximating at the right boundary, could use boundary_value_u[1]->value()
+                    u = (grid.u[getx(i-1, newDimY_x-2, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, newDimY_x-2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2+1)])/4;
+                }else{
+                    u = (grid.u[getx(i, newDimY_x-2, (dim_z-1)/2)] +
+                        grid.u[getx(i, newDimY_x-2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i, newDimY_x-1, (dim_z-1)/2)] +
+                        grid.u[getx(i, newDimY_x-1, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, newDimY_x-2, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, newDimY_x-2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, newDimY_x-1, (dim_z-1)/2+1)])/8;
+                }
+                v = (grid.v[gety(i, newDimY_y-2, (dim_z-1)/2)] +
+                    grid.v[gety(i, newDimY_y-2, (dim_z-1)/2+1)])/2;
+                w = (grid.w[getz(i, newDimY_z-2, (dim_z_z)/2)] +
+                    grid.w[getz(i, newDimY_z-1, (dim_z_z)/2)])/2;
+                p = (grid.p[getp(i, xSize[1]-1, (xSize[0]-1)/2)] +
+                    grid.p[getp(i, xSize[1]-1, (xSize[0]-1)/2+1)])/2; // approximation, should use halo
+            }else{ // same as above
+                if(lbx && i==1){ // approximating at the left boundary, could use boundary_value_u[0]->value()
+                    u = (grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                        grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
+                        grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2+1)])/4;
+                }else if(rbx && i==xSize[2]){ // approximating at the right boundary, could use boundary_value_u[1]->value()
+                    u = (grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2+1)])/4;
+                }else{
+                    u = (grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                        grid.u[getx(i, (newDimY_x-1)/2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
+                        grid.u[getx(i, (newDimY_x-1)/2+1, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2, (dim_z-1)/2+1)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2)] +
+                        grid.u[getx(i-1, (newDimY_x-1)/2+1, (dim_z-1)/2+1)])/8;
+                }
+                v = (grid.v[gety(i, (newDimY_y-1)/2, (dim_z-1)/2)] +
+                    grid.v[gety(i, (newDimY_y-1)/2, (dim_z-1)/2+1)])/2;
+                w = (grid.w[getz(i, (newDimY_z-1)/2, (dim_z_z)/2)] +
+                    grid.w[getz(i, (newDimY_z-1)/2+1, (dim_z_z)/2)])/2;
+                p = (grid.p[getp(i, (xSize[1]-1)/2, (xSize[0]-1)/2)] +
+                    grid.p[getp(i, (xSize[1]-1)/2, (xSize[0]-1)/2+1)] +
+                    grid.p[getp(i, (xSize[1]-1)/2+1, (xSize[0]-1)/2)] +
+                    grid.p[getp(i, (xSize[1]-1)/2+1, (xSize[0]-1)/2+1)])/4;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
             offset += sizeof(double);
@@ -1281,13 +1347,40 @@ void IcoNS::output(){
     if(testCase == 2){
         if(coords[0] == (PX-1)/2 && coords[1] == (PY-1)/2)
         {
-            offset = (PX * zSize[0] + PY * zSize[1]) * sizeof(double) * 7;
+            offset = (PX * xSize[2] + PY * xSize[1]) * sizeof(double) * 7;
             const double xCoord = SX+LX/2;
             const double yCoord = SY+LY/2;
             double zCoord = SZ;
 
             double u, v, w, p;
-            for(int k = 0; k < zSize[2]; k++)
+            int iX, iY, iZ, iP, jX, jY, jZ, jP;
+            if(PX % 2 == 0)
+            {
+                iX = newDimX_x-2;
+                iY = newDimX_y-2;
+                iZ = newDimX_z-2;
+                iP = xSize[2]-1;
+            }else
+            {
+                iX = (newDimX_x-1)/2;
+                iY = (newDimX_y-1)/2;
+                iZ = (newDimX_z-1)/2;
+                iP = (xSize[2]-1)/2;
+            }
+            if(PY % 2 == 0)
+            {
+                jX = newDimY_x-2;
+                jY = newDimY_y-2;
+                jZ = newDimY_z-2;
+                jP = xSize[1]-1;
+            }else
+            {
+                jX = (newDimY_x-1)/2;
+                jY = (newDimY_y-1)/2;
+                jZ = (newDimY_z-1)/2;
+                jP = (xSize[1]-1)/2;
+            }
+            for(int k = 0; k < xSize[0]; k++)
             {
                 MPI_File_write_at(fh, offset, &xCoord, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
                 offset += sizeof(double);
@@ -1299,53 +1392,44 @@ void IcoNS::output(){
                 zCoord += DZ;
                 offset += sizeof(double);
 
-                int iX, iY, iZ, iP, jX, jY, jZ, jP;
-                if(PX % 2 == 0)
-                {
-                    iX = newDimX_x-1;
-                    iY = newDimX_y-1;
-                    iZ = newDimX_z-1;
-                    iP = zSize[0]-1;
-                }else
-                {
-                    iX = (newDimX_x-1)/2;
-                    iY = (newDimX_y-1)/2;
-                    iZ = (newDimX_z-1)/2;
-                    iP = (zSize[0]-1)/2;
-                }
-                if(PY % 2 == 0)
-                {
-                    jX = newDimY_x-1;
-                    jY = newDimY_y-1;
-                    jZ = newDimY_z-1;
-                    jP = zSize[1]-1;
-                }else
-                {
-                    jX = (newDimY_x-1)/2;
-                    jY = (newDimY_y-1)/2;
-                    jZ = (newDimY_z-1)/2;
-                    jP = (zSize[1]-1)/2;
-                }
                 u = (grid.u[getx(iX, jX, k)] +
-                    grid.u[getx(iX, jX+1, k)] +
-                    grid.u[getx(iX, jX, k+1)] +
-                    grid.u[getx(iX, jX+1, k+1)])/4;
+                    grid.u[getx(iX, jX+1, k)])/2;
                 v = (grid.v[gety(iY, jY, k)] +
-                    grid.v[gety(iY+1, jY, k)] +
-                    grid.v[gety(iY, jY, k+1)] +
-                    grid.v[gety(iY+1, jY, k+1)])/4;
-                w = grid.w[getz(iZ, jZ, k)] +
-                    grid.w[getz(iZ+1, jZ, k)] +
-                    grid.w[getz(iZ, jZ+1, k)] +
-                    grid.w[getz(iZ+1, jZ+1, k)]/4;
-                p = grid.p[getp(iP, jP, k)];
-                    // + grid.p[getp(iP+1, jP, k)]
-                    // + grid.p[getp(iP, jP+1, k)]
-                    // + grid.p[getp(iP, jP, k+1)]
-                    // + grid.p[getp(iP+1, jP+1, k)]
-                    // + grid.p[getp(iP+1, jP, k+1)]
-                    // + grid.p[getp(iP, jP+1, k+1)]
-                    // + grid.p[getp(iP+1, jP+1, k+1)])/8;
+                    grid.v[gety(iY+1, jY, k)])/2;
+                if(k == 0){ // approximating at the lower boundary, could use boundary_value_w[4]->value()
+                    w = (grid.w[getz(iZ, jZ, k)] +
+                        grid.w[getz(iZ, jZ+1, k)] +
+                        grid.w[getz(iZ+1, jZ, k)] +
+                        grid.w[getz(iZ+1, jZ+1, k)])/4;
+                }else if(k == xSize[0]-1){ // approximating at the upper boundary, could use boundary_value_w[5]->value()
+                    w = (grid.w[getz(iZ, jZ, k-1)] +
+                        grid.w[getz(iZ, jZ+1, k-1)] +
+                        grid.w[getz(iZ+1, jZ, k-1)] +
+                        grid.w[getz(iZ+1, jZ+1, k-1)])/4;
+                }else{
+                    w = (grid.w[getz(iZ, jZ, k)] +
+                        grid.w[getz(iZ, jZ, k-1)] +
+                        grid.w[getz(iZ, jZ+1, k)] +
+                        grid.w[getz(iZ, jZ+1, k-1)] +
+                        grid.w[getz(iZ+1, jZ, k)] +
+                        grid.w[getz(iZ+1, jZ, k-1)] +
+                        grid.w[getz(iZ+1, jZ+1, k)] +
+                        grid.w[getz(iZ+1, jZ+1, k-1)])/8;
+                }
+                if(PX%2 == 0 && PY%2 == 0){ // no halo, approximate
+                    p = grid.p[getp(iP, jP, k)];
+                }else if(PX%2 == 0 && PY%2 == 1){ // no halo on x, use y
+                    p = (grid.p[getp(iP, jP, k)] +
+                        grid.p[getp(iP, jP+1, k)])/2;
+                }else if(PX%2 == 1 && PY%2 == 0){ // no halo on y, use x
+                    p = (grid.p[getp(iP, jP, k)] +
+                        grid.p[getp(iP+1, jP, k)])/2;
+                }else{ // use both
+                    p = (grid.p[getp(iP, jP, k)] +
+                        grid.p[getp(iP, jP+1, k)] +
+                        grid.p[getp(iP+1, jP, k)] +
+                        grid.p[getp(iP+1, jP+1, k)])/4;
+                }
 
                 MPI_File_write_at(fh, offset, &u, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
                 offset += sizeof(double);
@@ -1358,7 +1442,7 @@ void IcoNS::output(){
             }
         }
     }
-
+    MPI_Barrier(cart_comm);
     MPI_File_close(&fh);
 
     if(rank == 0){
