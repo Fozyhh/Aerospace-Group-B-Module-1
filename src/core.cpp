@@ -271,6 +271,7 @@ void IcoNS::solve()
 {
     Real time = 0.0;
     int i = 0;
+    double solve_start_time = MPI_Wtime();
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time);
     MPI_Barrier(cart_comm);
@@ -294,7 +295,8 @@ void IcoNS::solve()
 
     double solve_end_time = MPI_Wtime();
     if(rank==0){
-        printf("Total solving time: %f seconds\n", solve_end_time - solve_start_time);
+        std::cout<<std::endl;
+        std::cout<< "Total time without init and output: " << solve_end_time - solve_start_time << " seconds" << std::endl;
     }
 
     output();

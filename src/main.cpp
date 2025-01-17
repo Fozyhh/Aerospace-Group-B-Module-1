@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     double end_time = MPI_Wtime();
 
     if (rank == 0) {
-        printf("Total time with init and output: %f seconds\n", end_time - start_time);
+        std::cout << "Total time with init and output: " << end_time - start_time << " seconds" << std::endl;
     }
 
 
