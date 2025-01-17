@@ -33,9 +33,11 @@ set(SOURCES
     src/main.cpp
     src/core.cpp
     src/boundary.cpp
-    src/newRK.cpp
+    src/rungeKutta.cpp
     src/poissonSolver.cpp
     src/constants.cpp
+    src/error.cpp
+    src/output.cpp
 )
 include_directories(${DECOMP_DIR})
 add_library(

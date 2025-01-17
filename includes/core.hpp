@@ -23,7 +23,9 @@
 #include <mpi.h>
 #include <fftw3.h>
 #include "poissonSolver.hpp"
-
+#include <math.h>
+#include <fstream>
+#include <memory>
 
 /**
  * @class IcoNS
