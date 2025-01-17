@@ -2,7 +2,7 @@
 # Compiler and Basic Flags     #
 ################################
 CXX = mpic++
-CXXFLAGS = -std=c++23 -O3 -march=native -flto -funroll-loops
+CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops
 
 ################################
 # Directories                  #
@@ -17,7 +17,7 @@ DECOMP_DIR = dependencies/2Decomp_C
 INCLUDES = -I./includes \
           -I$(DECOMP_DIR) \
           -I$(mkFftwInc)
-LIBS = -lfftw3_mpi -lfftw3 -lm \
+LIBS = -lfftw3_mpi -lfftw3 -lm -lstdc++ \
         -L$(mkFftwLib) 
 
 ################################
@@ -71,3 +71,4 @@ $(DECOMP_LIB): $(DECOMP_OBJECTS)
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -f $(DECOMP_OBJECTS)
