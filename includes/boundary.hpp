@@ -22,13 +22,6 @@ private:
     /// @brief Process coordinates in the 2D grid
     int coords[2];
 
-    /// @brief Vector of boundary functions for u-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
-    /// @brief Vector of boundary functions for v-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
-    /// @brief Vector of boundary functions for w-velocity component
-    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
-
     /// @brief Dimension parameters for x-direction mesh
     int dim_x_x, dim_y_x;
     /// @brief Dimension parameters for y-direction mesh
@@ -43,14 +36,23 @@ private:
     /// @brief New dimension parameters for z-direction mesh
     int newDimX_z, newDimY_z;
 
+    /// @brief Array containing pressure dimensions in the z-direction
+    int xSize[3];
+
     /// @brief Additional dimension parameters for x-direction mesh
-    int other_dim_x_x, other_dim_y_x;
+    int offset_x_x, offset_y_x;
     /// @brief Additional dimension parameters for y-direction mesh
-    int other_dim_x_y, other_dim_y_y;
+    int offset_x_y, offset_y_y;
     /// @brief Additional dimension parameters for z-direction mesh
-    int other_dim_x_z, other_dim_y_z;
+    int offset_x_z, offset_y_z;
 
 public:
+    /// @brief Vector of boundary functions for u-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
+    /// @brief Vector of boundary functions for v-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
+    /// @brief Vector of boundary functions for w-velocity component
+    std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
     /**
     * @brief Initialize boundary dimensions and parameters
     * @param dim_x_x_ X dimension for x-direction mesh
@@ -67,12 +69,14 @@ public:
     * @param newDimY_y_ New Y dimension for y-direction mesh
     * @param newDimX_z_ New X dimension for z-direction mesh
     * @param newDimY_z_ New Y dimension for z-direction mesh
+    * @param zSize_ Array containing pressure dimensions in the z-direction
     */
     void initializeBoundary(
         int dim_x_x_, int dim_y_x_, int dim_x_y_, int dim_y_y_,
         int dim_x_z_, int dim_y_z_, int dim_z_, int dim_z_z_,
         int newDimX_x_, int newDimY_x_, int newDimX_y_, int newDimY_y_,
-        int newDimX_z_, int newDimY_z_)
+        int newDimX_z_, int newDimY_z_,
+        int xSize_[3])
     {
         dim_x_x = dim_x_x_;
         dim_y_x = dim_y_x_;
@@ -88,10 +92,13 @@ public:
         newDimY_y = newDimY_y_;
         newDimX_z = newDimX_z_;
         newDimY_z = newDimY_z_;
+        xSize[0] = xSize_[0];
+        xSize[1] = xSize_[1];
+        xSize[2] = xSize_[2];
     }
 
     /**
-     * @brief The method is called by the program multiple during the time step,
+     * @brief The method is called by the program multiple times during the time step,
      *        in order to update the values of the boundaries at each
      *        requested time t, calculating the approximated ones too.
      *
@@ -170,8 +177,12 @@ public:
      * @param other_dim_x_z_ Additional X dimension for z-direction mesh
      * @param other_dim_y_z_ Additional Y dimension for z-direction mesh
     */
-    void setOtherDim(int other_dim_x_x_, int other_dim_y_x_,int other_dim_x_y_, int other_dim_y_y_,int other_dim_x_z_, int other_dim_y_z_);
-
-
+    void setOffsets(int offset_x_x_, int offset_y_x_,int offset_x_y_, int offset_y_y_,int offset_x_z_, int offset_y_z_);
+    
+    //SKIPPING GHOST POINT
+    inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
+    inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
+    inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+    inline int getp(int i, int j, int k) { return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
 };
 #endif

@@ -5,7 +5,6 @@
 
 int main(int argc, char* argv[])
 {
-
     //Parallel vars
     int rank, size;
 
@@ -16,21 +15,18 @@ int main(int argc, char* argv[])
 
     double start_time = MPI_Wtime();
 
-    IcoNS icoNS(MPI_COMM_WORLD, argv[1], "output.txt", rank, size);
+    IcoNS icoNS(MPI_COMM_WORLD, argv[1], rank, size);
 
     icoNS.preprocessing();
 
-    double solve_start_time = MPI_Wtime();
-
     icoNS.solve();
 
-    double solve_end_time = MPI_Wtime();
     double end_time = MPI_Wtime();
 
     if (rank == 0) {
-        printf("Total solving time: %f seconds\n", solve_end_time - solve_start_time);
-        printf("Total time with init: %f seconds\n", end_time - start_time);
+        std::cout << "Total time with init and output: " << end_time - start_time << " seconds" << std::endl;
     }
+
 
     MPI_Finalize();
 

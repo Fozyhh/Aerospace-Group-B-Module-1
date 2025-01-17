@@ -5,7 +5,6 @@
  * This file declares external variables used for setting up the physical domain and the parameters
  * for a numerical simulation. These parameters are defined elsewhere and include domain dimensions,
  * grid resolution, discretization steps, temporal parameters, and flow characteristics.
- * Unlike config.hpp, these values can be modified at runtime.
  */
 
 #ifndef CONSTANTS_HPP
@@ -19,6 +18,9 @@
  */
 #define Real double
 
+
+
+extern Real SX,SY,SZ;
 /**
  * @brief Physical length of the domain in the x-direction.
  * @details Defines the size of the computational domain along the x-axis in physical units.
@@ -117,6 +119,14 @@ extern Real DT;
  * This value is externally defined and can be modified at runtime.
  */
 extern Real T;
+
+/**
+ * @brief Total number of time steps for the simulation.
+ * @details Specifies how long the simulation should run in physical time units.
+ * The total simulation time is calculated as Nt * DT.
+ * This value is externally defined and can be modified at runtime.
+ */
+extern Real Nt;
 
 /**
  * @brief Reynolds number for the simulation.

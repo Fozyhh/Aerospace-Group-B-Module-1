@@ -15,10 +15,17 @@
 #include "utils.hpp"
 #include "boundary.hpp"
 #include "grid.hpp"
+#include "constants.hpp"
+#include "C2Decomp.hpp"
 #include <string>
 #include <cmath>
 #include <filesystem>
 #include <mpi.h>
+#include <fftw3.h>
+#include "poissonSolver.hpp"
+#include <math.h>
+#include <fstream>
+#include <memory>
 
 /**
  * @class IcoNS
@@ -38,14 +45,31 @@ public:
    * @param rank MPI process rank
    * @param size Total number of MPI processes
    */
-  IcoNS(MPI_Comm cart_comm, const std::string &input_file, const std::string &output_file, int rank, int size)
+  IcoNS(MPI_Comm cart_comm, const std::string &input_file, int rank, int size)
       : cart_comm(cart_comm),
         input_file(input_file),
-        output_file(output_file),
         rank(rank),
         size(size)
   {
     parse_input(input_file);
+
+    c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
+    poissonSolver= new PoissonSolver(false,false,false, c2d);
+
+    // x-pencil size
+    xSize[0] = c2d->xSize[0]; 
+    xSize[1] = c2d->xSize[1]; 
+    xSize[2] = c2d->xSize[2]; 
+
+    // y-pencil size
+    ySize[0] = c2d->ySize[0];
+    ySize[1] = c2d->ySize[1];
+    ySize[2] = c2d->ySize[2];
+
+    // z-pencil size
+    zSize[0] = c2d->zSize[0];
+    zSize[1] = c2d->zSize[1];
+    zSize[2] = c2d->zSize[2];
 
     dims[0] = PX;
     dims[1] = PY;
@@ -59,19 +83,18 @@ public:
     dim_z = NZ + 1;
     dim_z_z = NZ;
 
-    other_dim_x_x = dim_x_x;
-    other_dim_y_x = dim_y_x;
-    other_dim_x_y = dim_x_y;
-    other_dim_y_y = dim_y_y;
-    other_dim_x_z = dim_x_z;
-    other_dim_y_z = dim_y_z;
+    // pencils allocation
+    c2d->allocX(grid.p);
+    c2d->allocX(Phi_p);
+    c2d->allocX(Y2_p);
   }
 
   /**
    * @brief Initializes the grid and problem setup
    */
-  void preprocessing(/*std::string &input_file*/);
+  void preprocessing();
 
+  void setBoundaryConditions();
   /**
    * @brief Sets up parallel communication patterns and domain decomposition
    */
@@ -90,6 +113,7 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
+  void copyPressureToHalo(double* p, std::vector<Real> &halo);
   /**
    * @brief Computes the F function for u-velocity component
    * @param u X-velocity vector
@@ -157,23 +181,37 @@ public:
   Real error_comp_Z(const Real t);
 
   /**
+   * @brief Computes L2 error for pressure component
+   */
+  Real error_comp_P(const Real t);
+  /**
    * @brief Computes total L2 error
    */
-  Real L2_error(const Real t);
+  void L2_error(const Real t);
 
   /**
    * @brief Parses input configuration file
    * @param input_file Path to input file
    */
   void parse_input(const std::string& input_file);
+  
+  /**
+   * @brief Output functions at final timestep
+   */
+  void output();
+  void output_x();
+  void output_y();
+  void output_z();
+  void output_profile();
 
-  // TODO write the output file.
+  MPI_Status status;
 
+  //fftw_complex* helper;
 
 private:
 
-  /// @brief MPI rank of current process
-  int rank, size;
+  int testCase;
+
 
   /// @brief MPI Cartesian communicator
   MPI_Comm cart_comm;
@@ -187,16 +225,38 @@ private:
   /// @brief Boundary conditions handler
   Boundary boundary;
 
-  /// @brief Exact solution computer
+  /// @brief Exact solution object
   ExactSolution exact_solution;
+
+  /// @brief Grid data structure
+  Grid grid;
+
+  /// @brief 2decomp library object
+  C2Decomp *c2d;
+
+  PoissonSolver *poissonSolver;
+
+  /// @brief Arrays to store the dimensions of the grid in each direction
+  int xSize[3], ySize[3], zSize[3];
 
   /// @brief Intermediate solution vectors
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
+  std::vector<Real> halo_p{},halo_phi{};
+  double* Phi_p{};
+
+  //TODO: change to vectors (*double))
+  double* Y2_p;
+
+  /// @brief periodicity for 2decomp
+  bool periodss[3] = {false, true, true};
 
   /// @brief Input/output file paths
-  std::string input_file;  // input file.
-  std::string output_file; // output file.
+  const std::string input_file;  // input file.
+
+  /// @brief MPI rank of current process
+  int rank, size;
+
 
   /// @brief Boundary flags for domain decomposition
   int lbx = 0, rbx = 0, lby = 0, rby = 0;
@@ -208,13 +268,11 @@ private:
   int coords[2];
   int neighbors[4];
 
-  /// @brief Local grid data for each direction
-  std::vector<Real> grid_loc_x{},grid_loc_y{}, grid_loc_z{};
-
   /// @brief MPI datatypes for face communication
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
   MPI_Datatype MPI_face_x_y, MPI_face_y_y;
   MPI_Datatype MPI_face_x_z, MPI_face_y_z;
+  MPI_Datatype MPI_face_x_p, MPI_face_y_p;
 
   /// @brief MPI request handles for non-blocking communication
   MPI_Request reqs[4];
@@ -224,13 +282,21 @@ private:
   int dim_x_y, dim_y_y, dim_y_z;
   int dim_z, dim_x_z, dim_z_z;
 
+  /// @brief New dimension parameters for each mesh after decomposition
   int newDimX_x, newDimY_x;
   int newDimX_y, newDimY_y;
   int newDimX_z, newDimY_z;
 
-  int other_dim_x_x, other_dim_y_x;
-  int other_dim_x_y, other_dim_y_y;
-  int other_dim_x_z, other_dim_y_z;
+  /// @brief Offsets for each mesh
+  int offset_x_x,offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z;
+  int resx = 0,resy = 0;
+
+  /// @brief functions to access easier to each grid
+  inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
+  inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
+  inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
+  inline int getp(int i, int j, int k) { return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
+  inline int getHaloP(int i, int j, int k) { return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; }
 
 };
 

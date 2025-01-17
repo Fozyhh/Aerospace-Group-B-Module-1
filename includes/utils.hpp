@@ -15,7 +15,11 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <string>
+#include <sstream>
 #include "grid.hpp"
+#include "constants.hpp"
+#include <iomanip>
 
 /**
  * @enum Direction
@@ -31,6 +35,19 @@ enum Direction
     V,  ///< Y-direction
     W   ///< Z-direction
 };
+
+enum Faces
+{
+  LEFT,
+  RIGHT,
+  FRONT,
+  BACK,
+  LOWER,
+  UPPER
+};
+
+
+
 
 /**
  * @class BoundaryFunction
@@ -140,7 +157,7 @@ public:
     * @param y Y-coordinate
     * @param z Z-coordinate
     * @param t Time
-    * @return Exact x-velocity value
+    * @return Exact y-velocity value
     */
   Real value_y(Real x, Real y, Real z, Real t) const
   {
@@ -153,11 +170,52 @@ public:
     * @param y Y-coordinate
     * @param z Z-coordinate
     * @param t Time
-    * @return Exact x-velocity value
+    * @return Exact z-velocity value
     */
   Real value_z(Real x, Real y, Real z, Real t) const
   {
     return 2 * std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
   }
+
+  /**
+    * @brief Calculates exact solution for z-velocity component
+    * @param x X-coordinate
+    * @param y Y-coordinate
+    * @param z Z-coordinate
+    * @param t Time
+    * @return Exact pressure value
+    */
+  Real value_p(Real x, Real y, Real z, Real t) const
+  {
+    return std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
+  }
+
 };
+
+/**
+    * @brief Evaluates input string as mathematical expression
+    * @param expr Mathematical expression as a string
+    * @return Result of the mathematical expression
+    */
+inline double evaluateExpression(const std::string& expr) {
+    std::string processedExpr = expr;
+    size_t pos = processedExpr.find("M_PI");
+    if (pos != std::string::npos) {
+        std::ostringstream ss;
+        ss << std::setprecision(16) << std::fixed << std::numbers::pi_v<long double>;
+        processedExpr.replace(pos, 4, ss.str());
+    }
+
+    if (processedExpr.find('*') != std::string::npos) {
+        std::istringstream iss(processedExpr);
+        long double a, b;
+        char op;
+        iss >> a >> op >> b;
+        return static_cast<double>(a * b);
+    }
+
+    return static_cast<double>(std::stold(processedExpr));
+}
+
+
 #endif
