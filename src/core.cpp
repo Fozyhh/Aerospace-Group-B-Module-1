@@ -1433,7 +1433,7 @@ void IcoNS::output(){
     }
 
     // LINE 3
-    if(testCase == 0){
+    if(testCase == 2){
         if(coords[0] == (PX-1)/2 && coords[1] == (PY-1)/2)
         {
             offset = (PX * xSize[2] + PY * xSize[1]) * sizeof(double) * 7;
