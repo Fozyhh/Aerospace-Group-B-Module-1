@@ -202,6 +202,7 @@ public:
   void output_z();
   void output_profile();
 
+  MPI_Status status;
 
   //fftw_complex* helper;
 

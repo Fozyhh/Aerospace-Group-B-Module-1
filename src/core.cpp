@@ -16,29 +16,12 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
     setParallelization();
 
-    for(int i=0; i<xSize[0]*xSize[1]*xSize[2]; i++){
-        grid.p[i]=0.0;
-        Phi_p[i]=0.0;
-        Y2_p[i]=0.0;
-    }
+    // for(int i=0; i<xSize[0]*xSize[1]*xSize[2]; i++){
+    //     grid.p[i]=0.0;
+    //     Phi_p[i]=0.0;
+    //     Y2_p[i]=0.0;
+    // } // should be done at resize like the others
 
-    for(int i=0; i<newDimX_x * newDimY_x * (NZ + 1); i++){
-        grid.u[i]=0.0;
-        Y2_x[i]=0.0;
-        Y3_x[i]=0.0;
-    }
-
-    for(int i=0; i<newDimX_y * newDimY_y * (NZ + 1); i++){
-        grid.v[i]=0.0;
-        Y2_y[i]=0.0;
-        Y3_y[i]=0.0;
-    }
-
-    for(int i=0; i<newDimX_z * newDimY_z * (NZ); i++){
-        grid.w[i]=0.0;
-        Y2_z[i]=0.0;
-        Y3_z[i]=0.0;
-    }
 
     // for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
     // {
@@ -248,13 +231,13 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     {
 
         MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
-        MPI_Wait(&reqs[3], MPI_SUCCESS);
+        MPI_Wait(&reqs[3], &status);
         MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
     }
     if (!(BY &&  coords[1] == 0))
     {
         MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
-        MPI_Wait(&reqs[2], MPI_SUCCESS);
+        MPI_Wait(&reqs[2], &status);
     }
 
     if (!(BX && coords[0] == 0))
@@ -263,12 +246,12 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     }
     if (!(BX && coords[0] == PX - 1)){
         MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
-        MPI_Wait(&reqs[1], MPI_SUCCESS);
+        MPI_Wait(&reqs[1], &status);
         MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
     }
     if (!(BX && coords[0] == 0)){
         MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9  , cart_comm, &reqs[0]);
-        MPI_Wait(&reqs[0], MPI_SUCCESS);
+        MPI_Wait(&reqs[0], &status);
     }
 }
 
@@ -308,6 +291,12 @@ void IcoNS::solve()
         time += DT;
         i++;
     }
+
+    double solve_end_time = MPI_Wtime();
+    if(rank==0){
+        printf("Total solving time: %f seconds\n", solve_end_time - solve_start_time);
+    }
+
     output();
     MPI_Barrier(cart_comm);
     c2d->deallocXYZ(grid.p);
@@ -1436,12 +1425,11 @@ void IcoNS::output_y(){
                 value_y = grid.v[i * newDimY_y * dim_z + local_y_y * dim_z + k];
 
                 if(lbx &&i==1){
-                    value_x =(boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
+                    value_x =boundary.boundary_value_u[0]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T);
                 }else if(rbx && i==newDimX_y-2){
-                    value_x =(boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T) + boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index  + 1+offset_y_x_,k,T))/2;
+                    value_x =boundary.boundary_value_u[1]->value(i + offset_x_x_-0.5,y_index + offset_y_x_,k,T);
                 }else{
-                    value_x =(grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + local_y_x * dim_z + k] +
-                                grid.u[i*newDimY_x * dim_z + (local_y_x-1) * dim_z + k] + grid.u[(i-1)*newDimY_x * dim_z + ((local_y_x-1)) * dim_z + k])/4;
+                    value_x =grid.u[i*newDimY_x * dim_z + local_y_x * dim_z + k];
                 }
 
                 if(k==0){
@@ -1449,11 +1437,10 @@ void IcoNS::output_y(){
                 }else if(k==dim_z -1){
                     value_z = boundary.boundary_value_w[5]->value(i + offset_x_z_,y_index + 0.5,k - 0.5,T);
                 }else{
-                    value_z = (grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k] + grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k+1] +
-                                grid.w[i*newDimY_z * dim_z_z + (local_y_z + 1) * dim_z_z + k+1] + grid.w[i*newDimY_z * dim_z_z + (local_y_z+1) * dim_z_z + k+1])/4;
+                    value_z = grid.w[i*newDimY_z * dim_z_z + local_y_z * dim_z_z + k];
                 }
 
-                value_p = (halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p-resy) * xSize[0] + k] +  halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p -resy + 1)* xSize[0] + k])/2;
+                value_p = halo_p[i * (xSize[1]+2)*xSize[0] + (local_y_p-resy) * xSize[0] + k];
 
                 value_m = std::sqrt(value_x*value_x + value_y * value_y + value_z*value_z);
 
