@@ -525,7 +525,7 @@ void IcoNS::L2_error(const Real t)
     if (rank == 0)
     {
         velocityError = sqrt(velocityError);
-        totalPressureError = sqrt(pressureError);
+        totalPressureError = sqrt(totalPressureError);
         std::cout << " Time : " << t << std::endl
                   << " Velocity error: " << velocityError << " Pressure error: " << totalPressureError << std::endl
                   << std::endl;
