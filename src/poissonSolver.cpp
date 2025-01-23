@@ -39,10 +39,10 @@ void PoissonSolver::solveNeumannPoisson(double *F)
         {
             for (int i = 0; i < zSize[2]/2+1; i++)
             {
-                helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][0] /= (2 / (DX * DX) * (std::cos(i * M_PI / (c2d->nxGlobal - 1)) - 1) +
+                helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][0] /= (2 / (DX * DX) * (std::cos(2.0*i * M_PI / (c2d->nxGlobal - 1)) - 1) +
                                                                          2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
                                                                          2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
-                helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][1] /= (2 / (DX * DX) * (std::cos(i * M_PI / (c2d->nxGlobal - 1)) - 1) +
+                helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][1] /= (2 / (DX * DX) * (std::cos(2.0*i * M_PI / (c2d->nxGlobal - 1)) - 1) +
                                                                                 2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
                                                                                 2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
             }
