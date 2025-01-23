@@ -8,7 +8,7 @@
 0.001
 
 # Number of time steps: Nt
-5000
+25000
 
 # Start of domain: SX,SY,SZ
 -0.5 -0.5 -0.5
