@@ -121,7 +121,7 @@ void IcoNS::output_x()
                 point_y = static_cast<double>(SY + (j + offset_y_x_) * DY);
                 point_z = static_cast<double>(SZ + (k)*DZ);
 
-                value_x = grid.u[local_x_x * newDimY_x * dim_z + j * dim_z + k];
+                value_x = grid.u[getx(local_x_x,j,k)];
 
                 if (lby && j == 1)
                 {
@@ -133,27 +133,23 @@ void IcoNS::output_x()
                 }
                 else
                 {
-                    value_y = (grid.v[local_x_y * newDimY_y * dim_z + j * dim_z + k] + grid.v[local_x_y * newDimY_y * dim_z + (j + 1) * dim_z + k] +
-                               grid.v[(local_x_y + 1) * newDimY_y * dim_z + j * dim_z + k] + grid.v[(local_x_y + 1) * newDimY_y * dim_z + (j + 1) * dim_z + k]) /
-                              4;
+                    value_y = (grid.v[gety(local_x_y,j,k)]);
                 }
 
-                if (k == 0)
+                if (k == 0 && lbz)
                 {
                     value_z = boundary.boundary_value_w[4]->value(x_index + 0.5, j + offset_y_z_, k - 0.5, T);
                 }
-                else if (k == dim_z - 1)
+                else if (k == dim_z - 1 && rbz)
                 {
                     value_z = boundary.boundary_value_w[5]->value(x_index + 0.5, j + offset_y_z_, k - 0.5, T);
                 }
                 else
                 {
-                    value_z = (grid.w[local_x_z * newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[local_x_z * newDimY_z * dim_z_z + j * dim_z_z + k + 1] +
-                               grid.w[(local_x_z + 1) * newDimY_z * dim_z_z + j * dim_z_z + k] + grid.w[(local_x_z + 1) * newDimY_z * dim_z_z + j * dim_z_z + k + 1]) /
-                              4;
+                    value_z = (grid.w[getz(local_x_z,j,k)]);
                 }
 
-                value_p = (halo_p[(local_x_p - resx) * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k] + halo_p[(local_x_p - resx + 1) * (xSize[1] + 2) * xSize[0] + j * zSize[0] + k]) / 2;
+                value_p = (halo_p[getHaloP(local_x_p - resx,j,k)]);
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
                 bg_px = to_big_endian(point_x);
@@ -282,7 +278,7 @@ void IcoNS::output_y()
                 point_y = SY + LY / 2;
                 point_z = static_cast<double>(SZ + (k)*DZ);
 
-                value_y = grid.v[i * newDimY_y * dim_z + local_y_y * dim_z + k];
+                value_y = grid.v[gety(i,local_y_y,k)];
 
                 if (lbx && i == 1)
                 {
@@ -294,23 +290,23 @@ void IcoNS::output_y()
                 }
                 else
                 {
-                    value_x = grid.u[i * newDimY_x * dim_z + local_y_x * dim_z + k];
+                    value_x = grid.u[getx(i,local_y_x,k)];
                 }
 
-                if (k == 0)
+                if (k == 0 && lbz)
                 {
                     value_z = boundary.boundary_value_w[4]->value(i + offset_x_z_, y_index + 0.5, k - 0.5, T);
                 }
-                else if (k == dim_z - 1)
+                else if (k == dim_z - 1 && rbz)
                 {
                     value_z = boundary.boundary_value_w[5]->value(i + offset_x_z_, y_index + 0.5, k - 0.5, T);
                 }
                 else
                 {
-                    value_z = grid.w[i * newDimY_z * dim_z_z + local_y_z * dim_z_z + k];
+                    value_z = grid.w[getz(i,local_y_z,k)];
                 }
 
-                value_p = halo_p[i * (xSize[1] + 2) * xSize[0] + (local_y_p - resy) * xSize[0] + k];
+                value_p = halo_p[getHaloP(i,local_y_p - resy,k)];
 
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
@@ -442,9 +438,7 @@ void IcoNS::output_z()
             }
             else
             {
-                value_x = (grid.u[i * newDimY_x * dim_z + j * dim_z + z_index] + grid.u[(i - 1) * newDimY_x * dim_z + j * dim_z + z_index] +
-                           grid.u[i * newDimY_x * dim_z + j * dim_z + z_index - 1] + grid.u[(i - 1) * newDimY_x * dim_z + j * dim_z + z_index - 1]) /
-                          4;
+                value_x = (grid.u[getx(i,j,z_index)]);
             }
 
             if (lbx && i == 1)
@@ -458,14 +452,12 @@ void IcoNS::output_z()
             }
             else
             {
-                value_y = (grid.v[i * newDimY_y * dim_z + j * dim_z + z_index] + grid.v[i * newDimY_y * dim_z + j * dim_z + z_index + 1] +
-                           grid.v[i * newDimY_y * dim_z + (j + 1) * dim_z + z_index] + grid.v[i * newDimY_y * dim_z + (j + 1) * dim_z + z_index + 1]) /
-                          4;
+                value_y = (grid.v[gety(i,j,z_index)]);
             }
 
-            value_z = grid.w[i * newDimY_z * dim_z_z + j * dim_z_z + z_index_z];
+            value_z = grid.w[getz(i,j,z_index_z)];
 
-            value_p = (halo_p[i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + z_index] + halo_p[i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + z_index + 1]) / 2;
+            value_p = (halo_p[getHaloP(i,j,z_index)]);
 
             value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 

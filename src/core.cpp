@@ -618,7 +618,7 @@ void IcoNS::parse_input(const std::string &input_file)
         }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-    std::cout << "BX " << BX << " BY " << BY << " BZ " << BZ << std::endl;
+    // std::cout << "BX " << BX << " BY " << BY << " BZ " << BZ << std::endl;
     // Calculate grid spacing
     DX = LX / NX;
     DY = LY / NY;
