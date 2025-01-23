@@ -259,7 +259,7 @@ private:
 
 
   /// @brief Boundary flags for domain decomposition
-  int lbx = 0, rbx = 0, lby = 0, rby = 0;
+  int lbx = 0, rbx = 0, lby = 0, rby = 0,lbz=0,rbz=0;
 
   /// @brief Brief to handle boundary cores()
   int firstX=0,firstY=0,lastX=0,lastY=0;
@@ -292,12 +292,48 @@ private:
   int resx = 0,resy = 0;
 
   /// @brief functions to access easier to each grid
-  inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
-  inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
-  inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
-  inline int getp(int i, int j, int k) { return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
-  inline int getHaloP(int i, int j, int k) { return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; }
-
+  inline int getx(int i, int j, int k) {
+    if(k==-1)
+    {
+      k=dim_z-2;
+    }
+    if(k==dim_z)
+    {
+      k=1;
+    }
+     return i * newDimY_x * dim_z + j * dim_z + k; }
+  inline int gety(int i, int j, int k) {
+    if (k == -1)
+    {
+      k = dim_z - 2;
+    }
+    if (k == dim_z)
+    {
+      k = 1;
+    }
+     return i * newDimY_y * dim_z + j * dim_z + k; }
+  inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + (k+(dim_z_z))%(dim_z_z); }
+  inline int getp(int i, int j, int k) {
+    if (k == -1)
+    {
+      k = xSize[0] - 2;
+    }
+    if (k == xSize[0])
+    {
+      k = 1;
+    }
+     return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
+  inline int getHaloP(int i, int j, int k) {
+    if (k == -1)
+    {
+      k = xSize[0] - 2;
+    }
+    if (k == xSize[0])
+    {
+      k = 1;
+    }
+     return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; }
 };
 
 #endif // CORE_HPP
+

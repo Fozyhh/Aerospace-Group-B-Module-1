@@ -1,6 +1,5 @@
 #include "core.hpp"
 
-
 void IcoNS::preprocessing(/*std::string &input_file*/)
 
 {
@@ -14,7 +13,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
     //     Y2_p[i]=0.0;
     // } // should be done at resize like the others
 
-    // for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
+    // for (int i = 0; i < xSize[2]* ySize[1] * (NZ/2 + 1); i++)
     // {
     //     helper[i][0] = 0.0;
     //     helper[i][1] = 0.0;
@@ -31,7 +30,7 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 void IcoNS::setBoundaryConditions()
 {
     std::shared_ptr<BoundaryFunction> u_func;
-    std::shared_ptr<BoundaryFunction> v_func;
+    std::shared_ptr<BoundaryFunction> v_func, v_func1;
     std::shared_ptr<BoundaryFunction> w_func, w_func1;
 
     if (testCase == 1)
@@ -61,18 +60,28 @@ void IcoNS::setBoundaryConditions()
     }
     else if (testCase == 2)
     {
-        /*u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });
-        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                {
-                                                    if(SX + x==-0.5){
-                                                        return 1;
-                                                    }else{
-                                                        return 0;
-                                                    }
-                                                });
-        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });*/
+        u_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0.0; });
+        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                              { return 1.0; });
+        w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        for (int i = 0; i < 6 /*nfaces*/; i++)
+        {
+            boundary.addFunction(U, u_func);
+
+            boundary.addFunction(W, v_func);
+            if (i == LEFT)
+            {
+                boundary.addFunction(V, v_func1);
+            }
+            else
+            {
+                boundary.addFunction(V, v_func);
+            }
+        }
     }
     else
     {
@@ -180,6 +189,12 @@ void IcoNS::setParallelization()
 
         if (coords[1] == 0)
             lby++;
+    }
+
+    if (BZ)
+    {
+        lbz = 1;
+        rbz = 1;
     }
 
     if (coords[0] == 0)
@@ -292,7 +307,124 @@ void IcoNS::solve()
         {
             L2_error(time);
         }
+        if(false)
+        {
+            int counter=0;
+            std::cout << "grid.x" << std::endl;
+            for (int i = 0; i < newDimX_x; i++)
+            {
+                for (int j = 0; j < newDimY_x; j++)
+                {
+                    for (int k = 0; k < dim_z; k++)
+                    {
+                        grid.u[getx(i, j, k)] = counter++;
+                        // std::cout << grid.p[getp(i, j, k)] << " ";
+                    }
+                    // std::cout << std::endl;
+                }
+                // std::cout << std::endl;
+            }
+            for (int i = 0; i < newDimX_x; i++)
+            {
+                for (int j = 0; j < newDimY_x; j++)
+                {
+                    for (int k = -1; k < dim_z + 1; k++)
+                    {
+                        // grid.p[getp(i, j, k)] = j * k + k;
+                        std::cout << grid.u[getx(i, j, k)] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << std::endl;
+            }
+            counter = 0;
 
+            std::cout << "grid.y" << std::endl;
+            for (int i = 0; i < newDimY_y; i++)
+            {
+                for (int j = 0; j < newDimY_y; j++)
+                {
+                    for (int k = 0; k < dim_z; k++)
+                    {
+                        grid.v[gety(i, j, k)] = counter++;
+                        // std::cout << grid.p[getp(i, j, k)] << " ";
+                    }
+                    // std::cout << std::endl;
+                }
+                // std::cout << std::endl;
+            }
+            for (int i = 0; i < newDimX_y; i++)
+            {
+                for (int j = 0; j < newDimY_y; j++)
+                {
+                    for (int k = -1; k < dim_z + 1; k++)
+                    {
+                        // grid.p[getp(i, j, k)] = j * k + k;
+                        std::cout << grid.v[gety(i, j, k)] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << std::endl;
+            }
+            counter = 0;
+            std::cout << "grid.w" << std::endl;
+            for (int i = 0; i < newDimX_z; i++)
+            {
+                for (int j = 0; j < newDimY_z; j++)
+                {
+                    for (int k = 0; k < dim_z_z; k++)
+                    {
+                        grid.w[getz(i, j, k)] = counter++;
+                        // std::cout << grid.p[getp(i, j, k)] << " ";
+                    }
+                    // std::cout << std::endl;
+                }
+                // std::cout << std::endl;
+            }
+            for (int i = 0; i < newDimX_z; i++)
+            {
+                for (int j = 0; j < newDimY_z; j++)
+                {
+                    for (int k = -1; k < dim_z_z + 1; k++)
+                    {
+                        // grid.p[getp(i, j, k)] = j * k + k;
+                        std::cout << grid.w[getz(i, j, k)] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << std::endl;
+            }
+            counter = 0;
+            std::cout << "grid.p" << std::endl;
+            for (int i = 0; i < xSize[2]; i++)
+            {
+                for (int j = 0; j < xSize[1]; j++)
+                {
+                    for (int k = 0; k < xSize[0] ; k++)
+                    {
+                        grid.p[getp(i, j, k)] = counter++;
+                        // std::cout << grid.p[getp(i, j, k)] << " ";
+                    }
+                    // std::cout << std::endl;
+                }
+                // std::cout << std::endl;
+            }
+            for (int i = 0; i < xSize[2]; i++)
+            {
+                for (int j = 0; j < xSize[1]; j++)
+                {
+                    for (int k = -1; k < xSize[0]+1; k++)
+                    {
+                        // grid.p[getp(i, j, k)] = j * k + k;
+                        std::cout << grid.p[getp(i, j, k)] << " ";
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << std::endl;
+            }
+
+            // std::cout << "Prints: " << grid.p[getp(1, 1, xSize[0] - 1)] << " " << grid.p[getp(1, 1, xSize[0])] << std::endl;
+        }
         MPI_Barrier(cart_comm);
         solve_time_step(time);
 
@@ -314,6 +446,7 @@ void IcoNS::solve()
     c2d->deallocXYZ(grid.p);
     c2d->deallocXYZ(poissonSolver->py);
     c2d->deallocXYZ(poissonSolver->pz);
+    fftw_free(poissonSolver->helper);
 }
 
 /*
@@ -485,7 +618,7 @@ void IcoNS::parse_input(const std::string &input_file)
         }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-
+    std::cout << "BX " << BX << " BY " << BY << " BZ " << BZ << std::endl;
     // Calculate grid spacing
     DX = LX / NX;
     DY = LY / NY;
@@ -525,7 +658,7 @@ void IcoNS::L2_error(const Real t)
     if (rank == 0)
     {
         velocityError = sqrt(velocityError);
-        totalPressureError = sqrt(pressureError);
+        totalPressureError = sqrt(totalPressureError);
         std::cout << " Time : " << t << std::endl
                   << " Velocity error: " << velocityError << " Pressure error: " << totalPressureError << std::endl
                   << std::endl;

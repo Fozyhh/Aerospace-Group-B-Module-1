@@ -41,7 +41,7 @@ private:
 public: 
     double *pz;                // z-pencil
     double *py;                // y_pencil
-
+    fftw_complex *helper;
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
     : periodicX(periodicX),
@@ -54,6 +54,7 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
+      helper = fftw_alloc_complex(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
     }
 
       /**
