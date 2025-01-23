@@ -17,7 +17,7 @@ class Boundary
 {
 private:
     /// @brief Left and right boundary offsets in x and y directions
-    int lbx,lby,rbx,rby;
+    int lbx,lby,rbx,rby,lbz,rbz;
 
     /// @brief Process coordinates in the 2D grid
     int coords[2];
@@ -160,7 +160,7 @@ public:
      * @param lby_ Left boundary offset in y-direction
      * @param rby_ Right boundary offset in y-direction
     */
-    void setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_);
+    void setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_, int lbz_, int rbz_);
 
     /**
      * @brief Sets process coordinates in the 2D grid
@@ -180,9 +180,42 @@ public:
     void setOffsets(int offset_x_x_, int offset_y_x_,int offset_x_y_, int offset_y_y_,int offset_x_z_, int offset_y_z_);
     
     //SKIPPING GHOST POINT
-    inline int getx(int i, int j, int k) { return i * newDimY_x * dim_z + j * dim_z + k; }
-    inline int gety(int i, int j, int k) { return i * newDimY_y * dim_z + j * dim_z + k; }
-    inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + k; }
-    inline int getp(int i, int j, int k) { return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
+    inline int getx(int i, int j, int k)
+    {
+        if (k == -1)
+        {
+            k = dim_z - 2;
+        }
+        if (k == dim_z)
+        {
+            k = 1;
+        }
+        return i * newDimY_x * dim_z + j * dim_z + k;
+    }
+    inline int gety(int i, int j, int k)
+    {
+        if (k == -1)
+        {
+            k = dim_z - 2;
+        }
+        if (k == dim_z)
+        {
+            k = 1;
+        }
+        return i * newDimY_y * dim_z + j * dim_z + k;
+    }
+    inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + (k + (dim_z_z)) % (dim_z_z); }
+    inline int getp(int i, int j, int k)
+    {
+        if (k == -1)
+        {
+            k = xSize[0] - 2;
+        }
+        if (k == xSize[0])
+        {
+            k = 1;
+        }
+        return i * xSize[1] * xSize[0] + j * xSize[0] + k;
+    }
 };
 #endif

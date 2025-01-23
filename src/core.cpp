@@ -209,7 +209,7 @@ void IcoNS::setParallelization()
     if (coords[1] == 0)
         firstY = 1;
 
-    boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
+    boundary.setBoundaryOffsets(lbx, rbx, lby, rby,lbz,rbz);
     boundary.setCoords(coords);
     boundary.setOffsets(offset_x_x, offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z);
 
@@ -618,7 +618,6 @@ void IcoNS::parse_input(const std::string &input_file)
         }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-    // std::cout << "BX " << BX << " BY " << BY << " BZ " << BZ << std::endl;
     // Calculate grid spacing
     DX = LX / NX;
     DY = LY / NY;
