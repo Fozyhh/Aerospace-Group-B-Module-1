@@ -113,6 +113,10 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
+  void receiveData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
+
+  void sendData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
+
   void copyPressureToHalo(double* p, std::vector<Real> &halo);
   /**
    * @brief Computes the F function for u-velocity component
@@ -152,6 +156,10 @@ public:
    */
   Real functionG_w(int i, int j, int k, Real t);
 
+  void computeY2(Real time);
+  void computeY3(Real time);
+  void computeGrids(Real time);
+  void velocityCorrection(std::vector<Real> &Y_x, std::vector<Real> &Y_y, std::vector<Real> &Y_z,Real c, Real time);
   /**
    * @brief Main solution loop
    */

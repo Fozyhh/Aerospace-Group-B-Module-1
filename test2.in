@@ -23,7 +23,7 @@
 1 1 1
 
 # Boundaries :
-0 1 1
+1 0 1
 
 # 0 : periodic
 # 1 : dirichlet

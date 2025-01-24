@@ -61,18 +61,28 @@ void IcoNS::setBoundaryConditions()
     }
     else if (testCase == 2)
     {
-        /*u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });
-        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                {
-                                                    if(SX + x==-0.5){
-                                                        return 1;
-                                                    }else{
-                                                        return 0;
-                                                    }
-                                                });
-        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });*/
+         u_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0.0; });
+        w_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                              { return 1.0; });
+        w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        for (int i = 0; i < 6 /*nfaces*/; i++)
+        {
+            boundary.addFunction(U, u_func);
+
+            boundary.addFunction(V, v_func);
+            if (i == LEFT)
+            {
+                boundary.addFunction(W, w_func1);
+            }
+            else
+            {
+                boundary.addFunction(W, w_func);
+            }
+        }
     }
     else
     {
@@ -260,6 +270,48 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     }
 }
 
+void IcoNS::receiveData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY){
+
+    if (!(BY && coords[1] == PY - 1))
+    {
+        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
+    }
+    if (!(BY && coords[1] == 0))
+    {
+        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
+    }
+
+    if (!(BX && coords[0] == PX - 1))
+    {
+        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
+    }
+    if (!(BX && coords[0] == 0))
+    {
+        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &reqs[0]);
+    }
+}
+
+void IcoNS::sendData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY){
+if (!(BY && coords[1] == 0))
+    {
+        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * firstY], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
+    }
+
+    if (!(BY && coords[1] == PY - 1))
+    {
+        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
+    }
+
+    if (!(BX && coords[0] == 0))
+    {
+        MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
+    }
+    if (!(BX && coords[0] == PX - 1))
+    {
+
+        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
+    }
+}
 void IcoNS::copyPressureToHalo(double *p, std::vector<Real> &halo)
 {
     for (int i = 0; i < xSize[2]; i++)
@@ -525,7 +577,7 @@ void IcoNS::L2_error(const Real t)
     if (rank == 0)
     {
         velocityError = sqrt(velocityError);
-        totalPressureError = sqrt(pressureError);
+        totalPressureError = sqrt(totalPressureError);
         std::cout << " Time : " << t << std::endl
                   << " Velocity error: " << velocityError << " Pressure error: " << totalPressureError << std::endl
                   << std::endl;
