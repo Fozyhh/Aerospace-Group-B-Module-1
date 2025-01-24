@@ -54,7 +54,7 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
-      helper = fftw_alloc_complex(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
+      helper = fftw_alloc_complex(zSize[0] * zSize[1] * (zSize[2] / 2 + 1));
     }
 
       /**
@@ -72,6 +72,7 @@ public:
      * @param F A pointer to the grid data for Neumann boundary conditions.
      */
     void solveNeumannPoisson(double* F);
+    void solvePeriodicPoisson(double* F);
 };
 
 #endif

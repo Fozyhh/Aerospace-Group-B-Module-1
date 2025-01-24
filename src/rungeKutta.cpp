@@ -77,6 +77,7 @@ void IcoNS::solve_time_step(Real time)
 
     // Solve for Pressure
     poissonSolver->solveNeumannPoisson(Y2_p);
+    //poissonSolver->solvePeriodicPoisson(Y2_p); // for test case 2
     // MPI_Barrier(cart_comm);
     copyPressureToHalo(Y2_p, halo_p);
     // MPI_Barrier(cart_comm);
@@ -209,6 +210,7 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solveNeumannPoisson(Y2_p);
+    //poissonSolver->solvePeriodicPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
     // 3) y2_p exchange
     copyPressureToHalo(Y2_p, halo_p);
@@ -340,6 +342,7 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solveNeumannPoisson(Y2_p);
+    //poissonSolver->solvePeriodicPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
     copyPressureToHalo(Y2_p, halo_p);
     // MPI_Barrier(cart_comm);
