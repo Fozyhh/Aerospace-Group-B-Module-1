@@ -34,7 +34,7 @@ void IcoNS::solve_time_step(Real time)
    poissonSolver->solveNeumannPoisson(Y2_p);
    //MPI_Barrier(cart_comm);
    copyPressureToHalo(Y2_p,halo_p);
-   //MPI_Barrier(cart_comm);
+   MPI_Barrier(cart_comm);
    exchangeData(halo_p,(xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p,MPI_face_y_p,1,1);
 
    velocityCorrection(Y2_x, Y2_y, Y2_z, 64.0 * DT / (120.0),time);
@@ -221,10 +221,10 @@ Real IcoNS::functionG_w(int i, int j, int k, Real t)
 
 
 void IcoNS::computeY2(Real time){
-    receiveData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    receiveData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    receiveData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
-    
+    int count_x = receiveData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    int count_y = receiveData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    int count_z = receiveData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
+    int count = count_x + count_y + count_z;
 
     //CALCULATE DATA TO SEND;
     int index =1 + lbx;
@@ -375,9 +375,9 @@ void IcoNS::computeY2(Real time){
     }
 
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-    sendData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    sendData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    sendData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    sendData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    sendData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    sendData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
     
    //Calculate Y2
    for (int i = 1+ 1 + lbx; i < newDimX_x - 1 - rbx -1 ; i++)
@@ -431,14 +431,15 @@ void IcoNS::computeY2(Real time){
        }
    }
 
-   MPI_Barrier(cart_comm);
+   // std::cout << rank << " " <<count_x << " " << " " <<count << std::endl;
+   MPI_Waitall(count,reqs, status);
 }
 
 void IcoNS::computeY3(Real time){
-    receiveData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    receiveData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    receiveData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
-    
+    int count_x = receiveData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    int count_y = receiveData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    int count_z = receiveData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
+    int count = count_x + count_y + count_z;
 
     //CALCULATE DATA TO SEND;
     int index =1 + lbx;
@@ -578,9 +579,9 @@ void IcoNS::computeY3(Real time){
     }
 
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
-    sendData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    sendData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    sendData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    sendData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    sendData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    sendData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
     
    //Calculate Y2
    for (int i = 1+ 1 + lbx; i < newDimX_x - 1 - rbx -1 ; i++)
@@ -629,15 +630,16 @@ void IcoNS::computeY3(Real time){
            }
        }
    }
+    
+   MPI_Waitall(count,reqs, status);
 
-   MPI_Barrier(cart_comm);
 }
 
 void IcoNS::computeGrids(Real time){
-    receiveData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    receiveData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    receiveData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
-    
+    int count_x = receiveData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    int count_y = receiveData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    int count_z = receiveData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
+    int count = count_x + count_y + count_z;
 
     //CALCULATE DATA TO SEND;
     int index =1 + lbx;
@@ -751,9 +753,9 @@ void IcoNS::computeGrids(Real time){
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
-    sendData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    sendData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    sendData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    sendData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    sendData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    sendData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
     
    //Calculate Y2
    for (int i = 1+ 1 + lbx; i < newDimX_x - 1 - rbx -1 ; i++)
@@ -798,13 +800,14 @@ void IcoNS::computeGrids(Real time){
        }
    }
 
-   MPI_Barrier(cart_comm);
+   MPI_Waitall(count,reqs, status);
 }
 
 void IcoNS::velocityCorrection(std::vector<Real> &Y_x, std::vector<Real> &Y_y, std::vector<Real> &Y_z, Real c,Real time){  
-    receiveData(Y_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    receiveData(Y_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    receiveData(Y_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    int count_x = receiveData(Y_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    int count_y = receiveData(Y_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    int count_z = receiveData(Y_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
+    int count = count_x + count_y + count_z;
 
     int index = 1;
     for (int j = 1; j < newDimY_x - 1; j++)
@@ -914,9 +917,9 @@ void IcoNS::velocityCorrection(std::vector<Real> &Y_x, std::vector<Real> &Y_y, s
                                                 halo_p[getHaloP(index, j, k)]) / (DZ);
         }
     }
-    sendData(Y_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1);
-    sendData(Y_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0);
-    sendData(Y_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1);
+    sendData(Y_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x,0,1,0);
+    sendData(Y_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y,1,0,count_x);
+    sendData(Y_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z,1,1,count_x+count_y);
 
     //Update Velocities
    for (int i = 1 + 1; i < newDimX_x - 1 - 1; i++)
@@ -959,5 +962,5 @@ void IcoNS::velocityCorrection(std::vector<Real> &Y_x, std::vector<Real> &Y_y, s
    }
 
 
-   MPI_Barrier(cart_comm);
+   MPI_Waitall(count,reqs, status);
 }

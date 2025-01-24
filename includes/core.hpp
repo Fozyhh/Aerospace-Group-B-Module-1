@@ -113,9 +113,9 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
-  void receiveData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
+  int receiveData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY,int reqOff);
 
-  void sendData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
+  void sendData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY, int reqOff);
 
   void copyPressureToHalo(double* p, std::vector<Real> &halo);
   /**
@@ -212,7 +212,7 @@ public:
   void output_z();
   void output_profile();
 
-  MPI_Status status;
+  
 
   //fftw_complex* helper;
 
@@ -283,7 +283,8 @@ private:
   MPI_Datatype MPI_face_x_p, MPI_face_y_p;
 
   /// @brief MPI request handles for non-blocking communication
-  MPI_Request reqs[4];
+  MPI_Request reqs[12];
+  MPI_Status status[4];
 
   /// @brief Grid dimensions and decomposition parameters
   int dim_x_x, dim_y_x;
