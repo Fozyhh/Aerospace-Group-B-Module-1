@@ -95,7 +95,7 @@ void PoissonSolver::solveNeumannPoisson(double *F)
     }
 }
 
-void PoissonSolver::solvePeriodicPoisson(double *F)
+void PoissonSolver::solvePeriodicPoisson(double *F) // both functions are periodic right now, this one uses HalfComplex
 {
     // 1. X-Direction Transforms
     neumann = fftw_plan_r2r_1d(xSize[0], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
