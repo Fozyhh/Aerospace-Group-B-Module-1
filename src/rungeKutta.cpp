@@ -6,7 +6,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 1) pressure point exchange
     copyPressureToHalo(grid.p, halo_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     // Calculate Y2
@@ -51,7 +51,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 3) Update boundaries
     boundary.update_boundary(Y2_x, Y2_y, Y2_z, time + 64.0 / 120.0 * DT);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     // Update Halos
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
@@ -77,9 +77,9 @@ void IcoNS::solve_time_step(Real time)
 
     // Solve for Pressure
     poissonSolver->solveNeumannPoisson(Y2_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     copyPressureToHalo(Y2_p, halo_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     // Update Velocities
@@ -130,14 +130,14 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(Y2_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(Y2_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 3) Phi_p exchange
     copyPressureToHalo(Phi_p, halo_phi);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -185,7 +185,7 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(Y3_x, Y3_y, Y3_z, time + 80.0 / 120.0 * DT);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -209,10 +209,10 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solveNeumannPoisson(Y2_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     // 3) y2_p exchange
     copyPressureToHalo(Y2_p, halo_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
@@ -262,14 +262,14 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(Y3_x, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(Y3_y, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 4) Phi_p exchange
     copyPressureToHalo(Phi_p, halo_phi);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -316,7 +316,7 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -340,9 +340,9 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solveNeumannPoisson(Y2_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     copyPressureToHalo(Y2_p, halo_p);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
@@ -387,11 +387,11 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
-    MPI_Barrier(cart_comm);
+    // MPI_Barrier(cart_comm);
 }
 
 Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
