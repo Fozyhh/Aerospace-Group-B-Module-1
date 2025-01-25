@@ -213,28 +213,28 @@ void IcoNS::setParallelization()
     boundary.setCoords(coords);
     boundary.setOffsets(offset_x_x, offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z);
 
-    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
+    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_REAL, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
 
-    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_DOUBLE, &MPI_face_y_x);
+    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_REAL, &MPI_face_y_x);
     MPI_Type_commit(&MPI_face_y_x);
 
-    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_DOUBLE, &MPI_face_x_y);
+    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_REAL, &MPI_face_x_y);
     MPI_Type_commit(&MPI_face_x_y);
 
-    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_DOUBLE, &MPI_face_y_y);
+    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_REAL, &MPI_face_y_y);
     MPI_Type_commit(&MPI_face_y_y);
 
-    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_DOUBLE, &MPI_face_x_z);
+    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_REAL, &MPI_face_x_z);
     MPI_Type_commit(&MPI_face_x_z);
 
-    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_DOUBLE, &MPI_face_y_z);
+    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_REAL, &MPI_face_y_z);
     MPI_Type_commit(&MPI_face_y_z);
 
-    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_DOUBLE, &MPI_face_x_p);
+    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_REAL, &MPI_face_x_p);
     MPI_Type_commit(&MPI_face_x_p);
 
-    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_DOUBLE, &MPI_face_y_p);
+    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_REAL, &MPI_face_y_p);
     MPI_Type_commit(&MPI_face_y_p);
 }
 
@@ -275,7 +275,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     }
 }
 
-void IcoNS::copyPressureToHalo(double *p, std::vector<Real> &halo)
+void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
 {
     for (int i = 0; i < xSize[2]; i++)
     {
@@ -303,128 +303,128 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
-        if (testCase == 0)
-        {
-            L2_error(time);
-        }
-        if(false)
-        {
-            int counter=0;
-            std::cout << "grid.x" << std::endl;
-            for (int i = 0; i < newDimX_x; i++)
-            {
-                for (int j = 0; j < newDimY_x; j++)
-                {
-                    for (int k = 0; k < dim_z; k++)
-                    {
-                        grid.u[getx(i, j, k)] = counter++;
-                        // std::cout << grid.p[getp(i, j, k)] << " ";
-                    }
-                    // std::cout << std::endl;
-                }
-                // std::cout << std::endl;
-            }
-            for (int i = 0; i < newDimX_x; i++)
-            {
-                for (int j = 0; j < newDimY_x; j++)
-                {
-                    for (int k = -1; k < dim_z + 1; k++)
-                    {
-                        // grid.p[getp(i, j, k)] = j * k + k;
-                        std::cout << grid.u[getx(i, j, k)] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-            }
-            counter = 0;
+        // if (testCase == 0)
+        // {
+        //     L2_error(time);
+        // }
+        // if(false)
+        // {
+        //     int counter=0;
+        //     std::cout << "grid.x" << std::endl;
+        //     for (int i = 0; i < newDimX_x; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_x; j++)
+        //         {
+        //             for (int k = 0; k < dim_z; k++)
+        //             {
+        //                 grid.u[getx(i, j, k)] = counter++;
+        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
+        //             }
+        //             // std::cout << std::endl;
+        //         }
+        //         // std::cout << std::endl;
+        //     }
+        //     for (int i = 0; i < newDimX_x; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_x; j++)
+        //         {
+        //             for (int k = -1; k < dim_z + 1; k++)
+        //             {
+        //                 // grid.p[getp(i, j, k)] = j * k + k;
+        //                 std::cout << grid.u[getx(i, j, k)] << " ";
+        //             }
+        //             std::cout << std::endl;
+        //         }
+        //         std::cout << std::endl;
+        //     }
+        //     counter = 0;
 
-            std::cout << "grid.y" << std::endl;
-            for (int i = 0; i < newDimY_y; i++)
-            {
-                for (int j = 0; j < newDimY_y; j++)
-                {
-                    for (int k = 0; k < dim_z; k++)
-                    {
-                        grid.v[gety(i, j, k)] = counter++;
-                        // std::cout << grid.p[getp(i, j, k)] << " ";
-                    }
-                    // std::cout << std::endl;
-                }
-                // std::cout << std::endl;
-            }
-            for (int i = 0; i < newDimX_y; i++)
-            {
-                for (int j = 0; j < newDimY_y; j++)
-                {
-                    for (int k = -1; k < dim_z + 1; k++)
-                    {
-                        // grid.p[getp(i, j, k)] = j * k + k;
-                        std::cout << grid.v[gety(i, j, k)] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-            }
-            counter = 0;
-            std::cout << "grid.w" << std::endl;
-            for (int i = 0; i < newDimX_z; i++)
-            {
-                for (int j = 0; j < newDimY_z; j++)
-                {
-                    for (int k = 0; k < dim_z_z; k++)
-                    {
-                        grid.w[getz(i, j, k)] = counter++;
-                        // std::cout << grid.p[getp(i, j, k)] << " ";
-                    }
-                    // std::cout << std::endl;
-                }
-                // std::cout << std::endl;
-            }
-            for (int i = 0; i < newDimX_z; i++)
-            {
-                for (int j = 0; j < newDimY_z; j++)
-                {
-                    for (int k = -1; k < dim_z_z + 1; k++)
-                    {
-                        // grid.p[getp(i, j, k)] = j * k + k;
-                        std::cout << grid.w[getz(i, j, k)] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-            }
-            counter = 0;
-            std::cout << "grid.p" << std::endl;
-            for (int i = 0; i < xSize[2]; i++)
-            {
-                for (int j = 0; j < xSize[1]; j++)
-                {
-                    for (int k = 0; k < xSize[0] ; k++)
-                    {
-                        grid.p[getp(i, j, k)] = counter++;
-                        // std::cout << grid.p[getp(i, j, k)] << " ";
-                    }
-                    // std::cout << std::endl;
-                }
-                // std::cout << std::endl;
-            }
-            for (int i = 0; i < xSize[2]; i++)
-            {
-                for (int j = 0; j < xSize[1]; j++)
-                {
-                    for (int k = -1; k < xSize[0]+1; k++)
-                    {
-                        // grid.p[getp(i, j, k)] = j * k + k;
-                        std::cout << grid.p[getp(i, j, k)] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-            }
+        //     std::cout << "grid.y" << std::endl;
+        //     for (int i = 0; i < newDimY_y; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_y; j++)
+        //         {
+        //             for (int k = 0; k < dim_z; k++)
+        //             {
+        //                 grid.v[gety(i, j, k)] = counter++;
+        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
+        //             }
+        //             // std::cout << std::endl;
+        //         }
+        //         // std::cout << std::endl;
+        //     }
+        //     for (int i = 0; i < newDimX_y; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_y; j++)
+        //         {
+        //             for (int k = -1; k < dim_z + 1; k++)
+        //             {
+        //                 // grid.p[getp(i, j, k)] = j * k + k;
+        //                 std::cout << grid.v[gety(i, j, k)] << " ";
+        //             }
+        //             std::cout << std::endl;
+        //         }
+        //         std::cout << std::endl;
+        //     }
+        //     counter = 0;
+        //     std::cout << "grid.w" << std::endl;
+        //     for (int i = 0; i < newDimX_z; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_z; j++)
+        //         {
+        //             for (int k = 0; k < dim_z_z; k++)
+        //             {
+        //                 grid.w[getz(i, j, k)] = counter++;
+        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
+        //             }
+        //             // std::cout << std::endl;
+        //         }
+        //         // std::cout << std::endl;
+        //     }
+        //     for (int i = 0; i < newDimX_z; i++)
+        //     {
+        //         for (int j = 0; j < newDimY_z; j++)
+        //         {
+        //             for (int k = -1; k < dim_z_z + 1; k++)
+        //             {
+        //                 // grid.p[getp(i, j, k)] = j * k + k;
+        //                 std::cout << grid.w[getz(i, j, k)] << " ";
+        //             }
+        //             std::cout << std::endl;
+        //         }
+        //         std::cout << std::endl;
+        //     }
+        //     counter = 0;
+        //     std::cout << "grid.p" << std::endl;
+        //     for (int i = 0; i < xSize[2]; i++)
+        //     {
+        //         for (int j = 0; j < xSize[1]; j++)
+        //         {
+        //             for (int k = 0; k < xSize[0] ; k++)
+        //             {
+        //                 grid.p[getp(i, j, k)] = counter++;
+        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
+        //             }
+        //             // std::cout << std::endl;
+        //         }
+        //         // std::cout << std::endl;
+        //     }
+        //     for (int i = 0; i < xSize[2]; i++)
+        //     {
+        //         for (int j = 0; j < xSize[1]; j++)
+        //         {
+        //             for (int k = -1; k < xSize[0]+1; k++)
+        //             {
+        //                 // grid.p[getp(i, j, k)] = j * k + k;
+        //                 std::cout << grid.p[getp(i, j, k)] << " ";
+        //             }
+        //             std::cout << std::endl;
+        //         }
+        //         std::cout << std::endl;
+        //     }
 
-            // std::cout << "Prints: " << grid.p[getp(1, 1, xSize[0] - 1)] << " " << grid.p[getp(1, 1, xSize[0])] << std::endl;
-        }
+        //     // std::cout << "Prints: " << grid.p[getp(1, 1, xSize[0] - 1)] << " " << grid.p[getp(1, 1, xSize[0])] << std::endl;
+        // }
         // MPI_Barrier(cart_comm);
         solve_time_step(time);
 
@@ -446,7 +446,7 @@ void IcoNS::solve()
     c2d->deallocXYZ(grid.p);
     c2d->deallocXYZ(poissonSolver->py);
     c2d->deallocXYZ(poissonSolver->pz);
-    fftw_free(poissonSolver->helper);
+    // fftw_free(poissonSolver->helper);
 }
 
 /*
@@ -651,8 +651,8 @@ void IcoNS::L2_error(const Real t)
 
     MPI_Barrier(cart_comm);
 
-    MPI_Reduce(&error, &velocityError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&error, &velocityError, 1, MPI_REAL, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_REAL, MPI_SUM, 0, cart_comm);
 
     if (rank == 0)
     {

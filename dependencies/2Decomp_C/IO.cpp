@@ -1,6 +1,6 @@
 #include "C2Decomp.hpp"
 
-void C2Decomp::writeOne(int ipencil, double *var, string filename){
+void C2Decomp::writeOne(int ipencil, Real *var, string filename){
 
     MPI_Offset disp, filesize;
     MPI_File fh;
@@ -29,7 +29,7 @@ void C2Decomp::writeOne(int ipencil, double *var, string filename){
 	}
     }
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, data_type, &new_type);
     MPI_Type_commit(&new_type);
@@ -50,7 +50,7 @@ void C2Decomp::writeOne(int ipencil, double *var, string filename){
 
 }
 
-void C2Decomp::readOne(int ipencil, double *var, string filename){
+void C2Decomp::readOne(int ipencil, Real *var, string filename){
     
     MPI_Offset disp;
     MPI_File fh;
@@ -79,7 +79,7 @@ void C2Decomp::readOne(int ipencil, double *var, string filename){
 	}
     }
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, data_type, &new_type);
     MPI_Type_commit(&new_type);
@@ -96,7 +96,7 @@ void C2Decomp::readOne(int ipencil, double *var, string filename){
     MPI_Type_free(&new_type);
 }
 
-void C2Decomp::writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var){
+void C2Decomp::writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, Real *var){
 
     int sizes[3], subsizes[3], starts[3];
     MPI_Datatype data_type, new_type;
@@ -122,7 +122,7 @@ void C2Decomp::writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var
         }
     }
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, data_type, &new_type);
     MPI_Type_commit(&new_type);
@@ -137,7 +137,7 @@ void C2Decomp::writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var
     
 }
 
-void C2Decomp::readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var){
+void C2Decomp::readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, Real *var){
 
     int sizes[3], subsizes[3], starts[3];
     MPI_Datatype data_type, new_type;
@@ -163,7 +163,7 @@ void C2Decomp::readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var)
         }
     }
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_FORTRAN, data_type, &new_type);
     MPI_Type_commit(&new_type);
@@ -178,12 +178,12 @@ void C2Decomp::readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var)
 
 }
 
-void C2Decomp::writeScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var){
+void C2Decomp::writeScalar(MPI_File &fh, MPI_Offset &disp, int n, Real *var){
 
     int m;
 
     MPI_Datatype data_type;
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     MPI_File_set_view(fh, disp, data_type, data_type, "native", MPI_INFO_NULL);
     
@@ -198,10 +198,10 @@ void C2Decomp::writeScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var){
     disp += n*myTypeBytes;
 }
 
-void C2Decomp::readScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var){
+void C2Decomp::readScalar(MPI_File &fh, MPI_Offset &disp, int n, Real *var){
 
     MPI_Datatype data_type;
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
    
     MPI_File_set_view(fh, disp, data_type, data_type, "native", MPI_INFO_NULL);
 
@@ -210,10 +210,10 @@ void C2Decomp::readScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var){
     disp += n*myTypeBytes;
 }
 
-void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string filename){
+void C2Decomp::writePlane(int ipencil, Real *var, int iplane, int n, string filename){
 
-    double *wk, *wk2;
-    double *wk2d = NULL;
+    Real *wk, *wk2;
+    Real *wk2d = NULL;
 
     int sizes[3], subsizes[3], starts[3];
 
@@ -221,7 +221,7 @@ void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string fi
     MPI_File fh;
     MPI_Offset filesize, disp;
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
 
     if(iplane == 0){
 	bool allocFlag = 0;
@@ -238,7 +238,7 @@ void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string fi
 	    deallocXYZ(wk2);
 	}
 	
-	wk2d = new double[decompMain.xsz[1]*decompMain.xsz[2]];
+	wk2d = new Real[decompMain.xsz[1]*decompMain.xsz[2]];
 	
 	for(int kp = 0; kp < decompMain.xsz[2]; kp++){
 	    for(int jp = 0; jp < decompMain.xsz[1]; jp++){
@@ -273,7 +273,7 @@ void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string fi
 	    transposeZ2Y(var,wk);
 	}
 	
-	wk2d = new double[decompMain.ysz[0]*decompMain.ysz[2]];
+	wk2d = new Real[decompMain.ysz[0]*decompMain.ysz[2]];
 	
 	for(int kp = 0; kp < decompMain.ysz[2]; kp++){
 	    for(int ip = 0; ip < decompMain.ysz[0]; ip++){
@@ -312,7 +312,7 @@ void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string fi
 	    wk = var;
 	}
 	
-	wk2d = new double[decompMain.zsz[0]*decompMain.zsz[1]];
+	wk2d = new Real[decompMain.zsz[0]*decompMain.zsz[1]];
 	
 	for(int jp = 0; jp < decompMain.zsz[1]; jp++){
 	    for(int ip = 0; ip < decompMain.zsz[0]; ip++){
@@ -359,9 +359,9 @@ void C2Decomp::writePlane(int ipencil, double *var, int iplane, int n, string fi
 
 }
 
-void C2Decomp::writeEvery(int ipencil, double *var, int iskip, int jskip, int kskip, string filename, bool from1){
+void C2Decomp::writeEvery(int ipencil, Real *var, int iskip, int jskip, int kskip, string filename, bool from1){
 
-    double *wk, *wk2;
+    Real *wk, *wk2;
     MPI_Offset filesize, disp;
     MPI_File fh;
     MPI_Datatype data_type, new_type;
@@ -375,7 +375,7 @@ void C2Decomp::writeEvery(int ipencil, double *var, int iskip, int jskip, int ks
     int xen[3], yen[3], zen[3];
     int skip[3];
 
-    data_type = MPI_DOUBLE;
+    data_type = MPI_REAL;
     
     skip[0] = iskip;
     skip[1] = jskip;

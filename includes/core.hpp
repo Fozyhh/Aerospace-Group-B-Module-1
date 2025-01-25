@@ -10,8 +10,7 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#define Real double
-
+#include "real.hpp"
 #include "utils.hpp"
 #include "boundary.hpp"
 #include "grid.hpp"
@@ -113,7 +112,7 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
-  void copyPressureToHalo(double* p, std::vector<Real> &halo);
+  void copyPressureToHalo(Real* p, std::vector<Real> &halo);
   /**
    * @brief Computes the F function for u-velocity component
    * @param u X-velocity vector
@@ -243,10 +242,10 @@ private:
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
   std::vector<Real> halo_p{},halo_phi{};
-  double* Phi_p{};
+  Real* Phi_p{};
 
   //TODO: change to vectors (*double))
-  double* Y2_p;
+  Real* Y2_p;
 
   /// @brief periodicity for 2decomp
   bool periodss[3] = {false, true, true};

@@ -11,6 +11,7 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include "real.hpp"
 #include <iostream>
 #include <vector>
 
@@ -36,10 +37,10 @@
  */
 struct Grid
 {
-    std::vector<double> u;     ///< x-velocity components
-    std::vector<double> v;     ///< y-velocity components
-    std::vector<double> w;     ///< z-velocity components
-    double *p;                 // x-pencil
+    std::vector<Real> u;     ///< x-velocity components
+    std::vector<Real> v;     ///< y-velocity components
+    std::vector<Real> w;     ///< z-velocity components
+    Real *p;                 // x-pencil
 
 };
 

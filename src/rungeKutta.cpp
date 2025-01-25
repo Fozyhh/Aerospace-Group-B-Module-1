@@ -401,10 +401,10 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
                    (w[getz(i - resx, j - resy, k)] + w[getz(i + 1 - resx, j - resy, k)] + w[getz(i - resx, j - resy, k - 1)] + w[getz(i + 1 - resx, j - resy, k - 1)]) / 4.0 * (u[getx(i, j, k + 1)] - u[getx(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((u[getx(i + 1, j, k)] - 2 * u[getx(i, j, k)] + u[getx(i - 1, j, k)]) / (DX * DX) + (u[getx(i, j + 1, k)] - 2 * u[getx(i, j, k)] + u[getx(i, j - 1, k)]) / (DY * DY) + (u[getx(i, j, k + 1)] - 2 * u[getx(i, j, k)] + u[getx(i, j, k - 1)]) / (DZ * DZ));
 
-    if (testCase == 0)
-    {
-        value += functionG_u(i - 1 + offset_x_x, j - 1 + offset_y_x, k, t);
-    }
+    // if (testCase == 0)
+    // {
+    //     value += functionG_u(i - 1 + offset_x_x, j - 1 + offset_y_x, k, t);
+    // }
     return value;
 }
 
@@ -415,10 +415,10 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
                    (w[getz(i, j - resy, k)] + w[getz(i, j - resy + 1, k)] + w[getz(i, j - resy, k - 1)] + w[getz(i, j - resy + 1, k - 1)]) / 4.0 * (v[gety(i, j, k + 1)] - v[gety(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((v[gety(i + 1, j, k)] - 2 * v[gety(i, j, k)] + v[gety(i - 1, j, k)]) / (DX * DX) + (v[gety(i, j + 1, k)] - 2 * v[gety(i, j, k)] + v[gety(i, j - 1, k)]) / (DY * DY) + (v[gety(i, j, k + 1)] - 2 * v[gety(i, j, k)] + v[gety(i, j, k - 1)]) / (DZ * DZ));
 
-    if (testCase == 0)
-    {
-        value += functionG_v(i - 1 + offset_x_y, j - 1 + offset_y_y, k, t);
-    }
+    // if (testCase == 0)
+    // {
+    //     value += functionG_v(i - 1 + offset_x_y, j - 1 + offset_y_y, k, t);
+    // }
 
     return value;
 }
@@ -430,10 +430,10 @@ Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
                    (v[gety(i, j + resy, k)] + v[gety(i, j + resy - 1, k)] + v[gety(i, j + resy, k + 1)] + v[gety(i, j + resy - 1, k + 1)]) / 4.0 * (w[getz(i, j + 1, k)] - w[getz(i, j - 1, k)]) / (2.0 * DY) +
                    w[getz(i, j, k)] * (w[getz(i, j, k + 1)] - w[getz(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((w[getz(i + 1, j, k)] - 2 * w[getz(i, j, k)] + w[getz(i - 1, j, k)]) / (DX * DX) + (w[getz(i, j + 1, k)] - 2 * w[getz(i, j, k)] + w[getz(i, j - 1, k)]) / (DY * DY) + (w[getz(i, j, k + 1)] - 2 * w[getz(i, j, k)] + w[getz(i, j, k - 1)]) / (DZ * DZ));
-    if (testCase == 0)
-    {
-        value += functionG_w(i - 1 + offset_x_z, j - 1 + offset_y_z, k, t);
-    }
+    // if (testCase == 0)
+    // {
+    //     value += functionG_w(i - 1 + offset_x_z, j - 1 + offset_y_z, k, t);
+    // }
     return value;
 }
 

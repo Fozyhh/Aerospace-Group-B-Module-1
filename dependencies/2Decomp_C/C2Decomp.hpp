@@ -1,6 +1,9 @@
 #ifndef _2DECOMPCH_
 #define _2DECOMPCH_
 
+#define Real float
+#define MPI_REAL MPI_FLOAT
+
 #include "mpi.h"
 #include <cstdlib>
 #include <cstddef>
@@ -14,8 +17,8 @@ using namespace::std;
 class C2Decomp{
 
     public:	
-	//Just assume that we're using double precision all of the time
-	typedef double myType; 
+	//Just assume that we're using Real precision all of the time
+	typedef Real myType; 
 	MPI_Datatype realType;
 	int myTypeBytes;
 	
@@ -78,7 +81,7 @@ class C2Decomp{
 
     private:
 	//These are the buffers used by MPI_ALLTOALL(V) calls
-	double *work1_r, *work2_r; //Only implementing real for now... 
+	Real *work1_r, *work2_r; //Only implementing real for now... 
         
 
     public:
@@ -97,7 +100,7 @@ class C2Decomp{
 	    work1_r = NULL;
 	    work2_r = NULL;
 	
-	    realType = MPI_DOUBLE_PRECISION;
+	    realType = MPI_REAL;
 
 	    decomp2DInit(pRow, pCol);
 	} 
@@ -110,43 +113,43 @@ class C2Decomp{
 	void decomp2DFinalize();
 
 	//Just get it running without the optional decomp for now...
-	void transposeX2Y(double *src, double *dst);
-	void transposeY2Z(double *src, double *dst);
-	void transposeZ2Y(double *src, double *dst);
-	void transposeY2X(double *src, double *dst);
+	void transposeX2Y(Real *src, Real *dst);
+	void transposeY2Z(Real *src, Real *dst);
+	void transposeZ2Y(Real *src, Real *dst);
+	void transposeY2X(Real *src, Real *dst);
 
 	//Get Transposes but with array indexing with the major index of the pencil...
-	void transposeX2Y_MajorIndex(double *src, double *dst);
-	void transposeY2Z_MajorIndex(double *src, double *dst);
-	void transposeZ2Y_MajorIndex(double *src, double *dst);
-	void transposeY2X_MajorIndex(double *src, double *dst);
+	void transposeX2Y_MajorIndex(Real *src, Real *dst);
+	void transposeY2Z_MajorIndex(Real *src, Real *dst);
+	void transposeZ2Y_MajorIndex(Real *src, Real *dst);
+	void transposeY2X_MajorIndex(Real *src, Real *dst);
 	
 	
 	//calls for overlapping communication and computation...
-	void transposeX2Y_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeX2Y_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeX2Y_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeX2Y_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 
-	void transposeY2Z_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeY2Z_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeY2Z_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeY2Z_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 
-	void transposeZ2Y_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeZ2Y_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeZ2Y_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeZ2Y_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 	
-	void transposeY2X_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeY2X_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeY2X_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeY2X_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 
 	//calls for overlapping communication and computation...
-	void transposeX2Y_MajorIndex_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeX2Y_MajorIndex_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeX2Y_MajorIndex_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeX2Y_MajorIndex_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 
-	void transposeY2Z_MajorIndex_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeY2Z_MajorIndex_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeY2Z_MajorIndex_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeY2Z_MajorIndex_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 
-	void transposeZ2Y_MajorIndex_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeZ2Y_MajorIndex_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeZ2Y_MajorIndex_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeZ2Y_MajorIndex_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 	
-	void transposeY2X_MajorIndex_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
-	void transposeY2X_MajorIndex_Wait (MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf);
+	void transposeY2X_MajorIndex_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
+	void transposeY2X_MajorIndex_Wait (MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf);
 	
 	
 	void decompInfoInit();
@@ -154,12 +157,12 @@ class C2Decomp{
 
 
 	//only doing real 
-	void allocX(double *&var); 
-	void allocY(double *&var); 
-	void allocZ(double *&var); 
-	void deallocXYZ(double *&var);
+	void allocX(Real *&var); 
+	void allocY(Real *&var); 
+	void allocZ(Real *&var); 
+	void deallocXYZ(Real *&var);
 
-	void updateHalo(double *in, double *&out, int level, int ipencil);
+	void updateHalo(Real *in, Real *&out, int level, int ipencil);
 
 	void decomp2DAbort(int errorCode, string msg);
 	void initNeighbor();	
@@ -170,38 +173,38 @@ class C2Decomp{
 
 	void getDecompInfo(DecompInfo dcompinfo_in);
 	
-	void memSplitXY(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memSplitXY(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memMergeXY(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memMergeXY_YMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memMergeXY(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memMergeXY_YMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memSplitYZ(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memSplitYZ_YMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memSplitYZ(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memSplitYZ_YMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memMergeYZ(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memMergeYZ_ZMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memMergeYZ(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memMergeYZ_ZMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memSplitZY(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memSplitZY_ZMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memSplitZY(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memSplitZY_ZMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memMergeZY(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memMergeZY_YMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memMergeZY(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memMergeZY_YMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memSplitYX(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
-	void memSplitYX_YMajor(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memSplitYX(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
+	void memSplitYX_YMajor(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 
-	void memMergeYX(double *in, int n1, int n2, int n3, double *out, int iproc, int *dist);
+	void memMergeYX(Real *in, int n1, int n2, int n3, Real *out, int iproc, int *dist);
 	
   	//IO
-	void writeOne(int ipencil, double *var, string filename);
-	void writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var);
-	void writeScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var);
-	void writePlane(int ipencil, double *var, int iplane, int n, string filename);
-	void writeEvery(int ipencil, double *var, int iskip, int jskip, int kskip, string filename, bool from1);
+	void writeOne(int ipencil, Real *var, string filename);
+	void writeVar(MPI_File &fh, MPI_Offset &disp, int ipencil, Real *var);
+	void writeScalar(MPI_File &fh, MPI_Offset &disp, int n, Real *var);
+	void writePlane(int ipencil, Real *var, int iplane, int n, string filename);
+	void writeEvery(int ipencil, Real *var, int iskip, int jskip, int kskip, string filename, bool from1);
 	
-	void readOne(int ipencil, double *var, string filename);
-	void readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, double *var);
-	void readScalar(MPI_File &fh, MPI_Offset &disp, int n, double *var);
+	void readOne(int ipencil, Real *var, string filename);
+	void readVar(MPI_File &fh, MPI_Offset &disp, int ipencil, Real *var);
+	void readScalar(MPI_File &fh, MPI_Offset &disp, int n, Real *var);
 	
 
 	 
