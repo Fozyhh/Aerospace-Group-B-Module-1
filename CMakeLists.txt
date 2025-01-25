@@ -26,7 +26,7 @@ endif()
 
 
 
-set(CMAKE_CXX_FLAGS "-O3 -march=native -flto -funroll-loops")
+set(CMAKE_CXX_FLAGS "-O3 -march=native -flto -funroll-loops -march=native")
 
 # Source files
 set(SOURCES

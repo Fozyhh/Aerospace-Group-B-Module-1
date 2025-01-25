@@ -1,9 +1,7 @@
 #ifndef _2DECOMPCH_
 #define _2DECOMPCH_
 
-#define Real float
-#define MPI_REAL MPI_FLOAT
-
+#include "real.hpp"
 #include "mpi.h"
 #include <cstdlib>
 #include <cstddef>
