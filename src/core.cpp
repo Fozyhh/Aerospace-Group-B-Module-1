@@ -209,32 +209,32 @@ void IcoNS::setParallelization()
     if (coords[1] == 0)
         firstY = 1;
 
-    boundary.setBoundaryOffsets(lbx, rbx, lby, rby,lbz,rbz);
+    boundary.setBoundaryOffsets(lbx, rbx, lby, rby, lbz, rbz);
     boundary.setCoords(coords);
     boundary.setOffsets(offset_x_x, offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z);
 
-    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_REAL, &MPI_face_x_x);
+    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_REALL, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
 
-    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_REAL, &MPI_face_y_x);
+    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_REALL, &MPI_face_y_x);
     MPI_Type_commit(&MPI_face_y_x);
 
-    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_REAL, &MPI_face_x_y);
+    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_REALL, &MPI_face_x_y);
     MPI_Type_commit(&MPI_face_x_y);
 
-    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_REAL, &MPI_face_y_y);
+    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_REALL, &MPI_face_y_y);
     MPI_Type_commit(&MPI_face_y_y);
 
-    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_REAL, &MPI_face_x_z);
+    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_REALL, &MPI_face_x_z);
     MPI_Type_commit(&MPI_face_x_z);
 
-    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_REAL, &MPI_face_y_z);
+    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_REALL, &MPI_face_y_z);
     MPI_Type_commit(&MPI_face_y_z);
 
-    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_REAL, &MPI_face_x_p);
+    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_REALL, &MPI_face_x_p);
     MPI_Type_commit(&MPI_face_x_p);
 
-    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_REAL, &MPI_face_y_p);
+    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_REALL, &MPI_face_y_p);
     MPI_Type_commit(&MPI_face_y_p);
 }
 
@@ -651,8 +651,8 @@ void IcoNS::L2_error(const Real t)
 
     MPI_Barrier(cart_comm);
 
-    MPI_Reduce(&error, &velocityError, 1, MPI_REAL, MPI_SUM, 0, cart_comm);
-    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_REAL, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&error, &velocityError, 1, MPI_REALL, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_REALL, MPI_SUM, 0, cart_comm);
 
     if (rank == 0)
     {

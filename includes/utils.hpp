@@ -212,10 +212,10 @@ inline double evaluateExpression(const std::string& expr) {
         long double a, b;
         char op;
         iss >> a >> op >> b;
-        return static_cast<Real>(a * b);
+        return static_cast<double>(a * b);
     }
 
-    return static_cast<Real>(std::stold(processedExpr));
+    return static_cast<double>(std::stold(processedExpr));
 }
 
 

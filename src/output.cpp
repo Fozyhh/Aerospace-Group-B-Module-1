@@ -14,12 +14,11 @@ T to_big_endian(T value)
     return result;
 }
 
-
 void IcoNS::output_x()
 {
     MPI_File fh;
-    const  Real x_middle_x = NX / 2;
-    const  Real x_middle = (NX + 1) / 2;
+    const Real x_middle_x = NX / 2;
+    const Real x_middle = (NX + 1) / 2;
 
     if (rank == 0)
         std::remove("solution_x.vtk");
@@ -108,9 +107,9 @@ void IcoNS::output_x()
         int local_x_z = x_index - offset_x_z_;
         int local_x_p = x_index - offset_x_p_;
 
-        Real  value_x = 0, value_y = 0, value_z = 0, value_p = 0, value_m = 0;
-         Real bg_px = 0, bg_py = 0, bg_pz = 0, bg_vx = 0, bg_vy = 0, bg_vz = 0, bg_vp = 0, bg_vm = 0;
-         Real point_x = 0, point_y = 0, point_z = 0;
+        Real value_x = 0, value_y = 0, value_z = 0, value_p = 0, value_m = 0;
+        Real bg_px = 0, bg_py = 0, bg_pz = 0, bg_vx = 0, bg_vy = 0, bg_vz = 0, bg_vp = 0, bg_vm = 0;
+        Real point_x = 0, point_y = 0, point_z = 0;
         for (int j = 1; j < newDimY_x - 1; j++)
         {
             for (int k = 0; k < dim_z; k++)
@@ -121,7 +120,7 @@ void IcoNS::output_x()
                 point_y = static_cast<Real>(SY + (j + offset_y_x_) * DY);
                 point_z = static_cast<Real>(SZ + (k)*DZ);
 
-                value_x = grid.u[getx(local_x_x,j,k)];
+                value_x = grid.u[getx(local_x_x, j, k)];
 
                 if (lby && j == 1)
                 {
@@ -133,7 +132,7 @@ void IcoNS::output_x()
                 }
                 else
                 {
-                    value_y = (grid.v[gety(local_x_y,j,k)]);
+                    value_y = (grid.v[gety(local_x_y, j, k)]);
                 }
 
                 if (k == 0 && lbz)
@@ -146,10 +145,10 @@ void IcoNS::output_x()
                 }
                 else
                 {
-                    value_z = (grid.w[getz(local_x_z,j,k)]);
+                    value_z = (grid.w[getz(local_x_z, j, k)]);
                 }
 
-                value_p = (halo_p[getHaloP(local_x_p - resx,j,k)]);
+                value_p = (halo_p[getHaloP(local_x_p - resx, j, k)]);
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
                 bg_px = to_big_endian(point_x);
@@ -161,21 +160,21 @@ void IcoNS::output_x()
                 bg_vp = to_big_endian(value_p);
                 bg_vm = to_big_endian(value_m);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k), &bg_px, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k), &bg_px, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k) + sizeof(Real), &bg_py, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k) + sizeof(Real), &bg_py, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k) + 2 * sizeof(Real), &bg_pz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((j + offset_y_x_) * dim_z + k) + 2 * sizeof(Real), &bg_pz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vx, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vx, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vy, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vy, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vp, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vp, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vm, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((j + offset_y_x_) * dim_z + k), &bg_vm, 1, MPI_REALL, MPI_STATUS_IGNORE);
             }
         }
     }
@@ -186,8 +185,8 @@ void IcoNS::output_x()
 void IcoNS::output_y()
 {
     MPI_File fh;
-    const  Real y_middle = (NY + 1) / 2;
-    const  Real y_middle_y = NY / 2;
+    const Real y_middle = (NY + 1) / 2;
+    const Real y_middle_y = NY / 2;
     if (rank == 0)
         std::remove("solution_y.vtk");
     MPI_Barrier(cart_comm);
@@ -267,9 +266,9 @@ void IcoNS::output_y()
         int local_y_z = y_index - offset_y_z_;
         int local_y_p = y_index - offset_y_p_;
 
-        Real  value_x = 0, value_y = 0, value_z = 0, value_p = 0, value_m = 0;
-         Real bg_px = 0, bg_py = 0, bg_pz = 0, bg_vx = 0, bg_vy = 0, bg_vz = 0, bg_vp = 0, bg_vm = 0;
-         Real point_x = 0, point_y = 0, point_z = 0;
+        Real value_x = 0, value_y = 0, value_z = 0, value_p = 0, value_m = 0;
+        Real bg_px = 0, bg_py = 0, bg_pz = 0, bg_vx = 0, bg_vy = 0, bg_vz = 0, bg_vp = 0, bg_vm = 0;
+        Real point_x = 0, point_y = 0, point_z = 0;
         for (int i = 1; i < newDimX_y - 1; i++)
         {
             for (int k = 0; k < dim_z; k++)
@@ -278,7 +277,7 @@ void IcoNS::output_y()
                 point_y = SY + LY / 2;
                 point_z = static_cast<Real>(SZ + (k)*DZ);
 
-                value_y = grid.v[gety(i,local_y_y,k)];
+                value_y = grid.v[gety(i, local_y_y, k)];
 
                 if (lbx && i == 1)
                 {
@@ -290,7 +289,7 @@ void IcoNS::output_y()
                 }
                 else
                 {
-                    value_x = grid.u[getx(i,local_y_x,k)];
+                    value_x = grid.u[getx(i, local_y_x, k)];
                 }
 
                 if (k == 0 && lbz)
@@ -303,10 +302,10 @@ void IcoNS::output_y()
                 }
                 else
                 {
-                    value_z = grid.w[getz(i,local_y_z,k)];
+                    value_z = grid.w[getz(i, local_y_z, k)];
                 }
 
-                value_p = halo_p[getHaloP(i,local_y_p - resy,k)];
+                value_p = halo_p[getHaloP(i, local_y_p - resy, k)];
 
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
@@ -318,21 +317,21 @@ void IcoNS::output_y()
                 bg_vz = to_big_endian(value_z);
                 bg_vp = to_big_endian(value_p);
                 bg_vm = to_big_endian(value_m);
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k), &bg_px, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k), &bg_px, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k) + sizeof(Real), &bg_py, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k) + sizeof(Real), &bg_py, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k) + 2 * sizeof(Real), &bg_pz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_y_) * dim_z + k) + 2 * sizeof(Real), &bg_pz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vx, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vx, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vy, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vy, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vp, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vp, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vm, 1, MPI_REAL, MPI_STATUS_IGNORE);
+                MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((i + offset_x_y_) * dim_z + k), &bg_vm, 1, MPI_REALL, MPI_STATUS_IGNORE);
             }
         }
     }
@@ -343,8 +342,8 @@ void IcoNS::output_y()
 void IcoNS::output_z()
 {
     MPI_File fh;
-    const  Real z_middle_z = (NZ + 1) / 2;
-    const  Real z_middle = NZ / 2;
+    const Real z_middle_z = (NZ + 1) / 2;
+    const Real z_middle = NZ / 2;
     if (rank == 0)
         std::remove("solution_z.vtk");
     MPI_Barrier(cart_comm);
@@ -422,12 +421,12 @@ void IcoNS::output_z()
         {
 
             // Write grid points coordinate
-             Real point_x = static_cast<Real>(SX + (i + offset_x_z_) * DX),
-                   point_y = static_cast<Real>(SY + (j + offset_y_z_) * DY),
-                   point_z = SZ + LZ / 2;
+            Real point_x = static_cast<Real>(SX + (i + offset_x_z_) * DX),
+                 point_y = static_cast<Real>(SY + (j + offset_y_z_) * DY),
+                 point_z = SZ + LZ / 2;
 
             // valuesx[rank*(dim_y_x * dim_z + dim_z) + ((j-1) * dim_z + k)] = grid.v[local_x* newDimY_x * dim_z + j * dim_z + k];
-            Real  value_x, value_y, value_z, value_p, value_m;
+            Real value_x, value_y, value_z, value_p, value_m;
             if (lby && j == 1)
             {
                 value_x = (boundary.boundary_value_u[0]->value(i + offset_x_x_, j + offset_y_x_, z_index, T));
@@ -438,7 +437,7 @@ void IcoNS::output_z()
             }
             else
             {
-                value_x = (grid.u[getx(i,j,z_index)]);
+                value_x = (grid.u[getx(i, j, z_index)]);
             }
 
             if (lbx && i == 1)
@@ -452,39 +451,39 @@ void IcoNS::output_z()
             }
             else
             {
-                value_y = (grid.v[gety(i,j,z_index)]);
+                value_y = (grid.v[gety(i, j, z_index)]);
             }
 
-            value_z = grid.w[getz(i,j,z_index_z)];
+            value_z = grid.w[getz(i, j, z_index_z)];
 
-            value_p = (halo_p[getHaloP(i,j,z_index)]);
+            value_p = (halo_p[getHaloP(i, j, z_index)]);
 
             value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
-             Real bg_px = to_big_endian(point_x);
-             Real bg_py = to_big_endian(point_y);
-             Real bg_pz = to_big_endian(point_z);
-             Real bg_vx = to_big_endian(value_x);
-             Real bg_vy = to_big_endian(value_y);
-             Real bg_vz = to_big_endian(value_z);
-             Real bg_vp = to_big_endian(value_p);
-             Real bg_vm = to_big_endian(value_m);
+            Real bg_px = to_big_endian(point_x);
+            Real bg_py = to_big_endian(point_y);
+            Real bg_pz = to_big_endian(point_z);
+            Real bg_vx = to_big_endian(value_x);
+            Real bg_vy = to_big_endian(value_y);
+            Real bg_vz = to_big_endian(value_z);
+            Real bg_vp = to_big_endian(value_p);
+            Real bg_vm = to_big_endian(value_m);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_px, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_px, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_) + sizeof(Real), &bg_py, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_) + sizeof(Real), &bg_py, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_) + 2 * sizeof(Real), &bg_pz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetpoints * ((i + offset_x_z_) * dim_z + j + offset_y_z_) + 2 * sizeof(Real), &bg_pz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vx, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vx, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vy, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + offsetallvalue + offsetheader3 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vy, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vz, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 2 * offsetallvalue + offsetheader3 + offsetheader4 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vz, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vp, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 3 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vp, 1, MPI_REALL, MPI_STATUS_IGNORE);
 
-            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vm, 1, MPI_REAL, MPI_STATUS_IGNORE);
+            MPI_File_write_at(fh, offsetheader1 + offsetallpoints + offsetheader2 + 4 * offsetallvalue + offsetheader3 + offsetheader4 + offsetheader5 + offsetheader6 + offsetvalue * ((i + offset_x_z_) * dim_z + j + offset_y_z_), &bg_vm, 1, MPI_REALL, MPI_STATUS_IGNORE);
         }
     }
 
@@ -506,14 +505,14 @@ void IcoNS::output_profile()
     //      Real u, v, w, p;
     //     for (int i = 1; i < xSize[1] + 1; i++)
     //     {
-    //         MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
 
-    //         MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         yCoord += DY;
     //         offset += sizeof(Real);
 
-    //         MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
 
     //         if (PX % 2 == 0)
@@ -601,13 +600,13 @@ void IcoNS::output_profile()
     //                  grid.p[getp((xSize[2] - 1) / 2 + 1, i, (xSize[0] - 1) / 2 + 1)]) /
     //                 2;
     //         }
-    //         MPI_File_write_at(fh, offset, &u, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &v, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &v, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &w, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &w, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &p, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &p, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
     //     }
     // }
@@ -622,14 +621,14 @@ void IcoNS::output_profile()
     //      Real u, v, w, p;
     //     for (int i = 1; i < xSize[2] + 1; i++)
     //     {
-    //         MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         xCoord += DX;
     //         offset += sizeof(Real);
 
-    //         MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
 
-    //         MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
 
     //         if (PY % 2 == 0)
@@ -715,13 +714,13 @@ void IcoNS::output_profile()
     //                  grid.p[getp(i, (xSize[1] - 1) / 2 + 1, (xSize[0] - 1) / 2 + 1)]) /
     //                 4;
     //         }
-    //         MPI_File_write_at(fh, offset, &u, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &v, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &v, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &w, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &w, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
-    //         MPI_File_write_at(fh, offset, &p, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //         MPI_File_write_at(fh, offset, &p, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //         offset += sizeof(Real);
     //     }
     // }
@@ -768,13 +767,13 @@ void IcoNS::output_profile()
     //         }
     //         for (int k = 0; k < xSize[0]; k++)
     //         {
-    //             MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &xCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
 
-    //             MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &yCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
 
-    //             MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &zCoord, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             zCoord += DZ;
     //             offset += sizeof(Real);
 
@@ -837,13 +836,13 @@ void IcoNS::output_profile()
     //                     4;
     //             }
 
-    //             MPI_File_write_at(fh, offset, &u, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
-    //             MPI_File_write_at(fh, offset, &v, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &v, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
-    //             MPI_File_write_at(fh, offset, &w, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &w, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
-    //             MPI_File_write_at(fh, offset, &p, 1, MPI_REAL, MPI_STATUS_IGNORE);
+    //             MPI_File_write_at(fh, offset, &p, 1, MPI_REALL, MPI_STATUS_IGNORE);
     //             offset += sizeof(Real);
     //         }
     //     }
