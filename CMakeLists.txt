@@ -57,7 +57,7 @@ add_library(
 # Executable
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
-target_link_libraries(main ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
+target_link_libraries(main ${MPI_LIBRARIES} $ENV{mkFftwLib}/libfftw3f.so m decomp)
 # add_executable(c2dT Test/c2d.cpp)
 # target_include_directories(c2dT PRIVATE ${CMAKE_SOURCE_DIR}/includes $ENV{mkFftwInc} ${CMAKE_SOURCE_DIR}/2Decomp_C)
 # target_link_libraries(c2dT ${MPI_LIBRARIES} $ENV{mkFftwLib} m decomp)
