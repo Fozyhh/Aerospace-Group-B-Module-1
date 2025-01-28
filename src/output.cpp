@@ -42,19 +42,19 @@ void IcoNS::output_x()
             << "BINARY\n"
             << "DATASET STRUCTURED_GRID\n"
             << "DIMENSIONS 1 " << NY + 1 << " " << NZ + 1 << "\n"
-            << "POINTS " << (NY + 1) * (NZ + 1) << " double\n";
+            << "POINTS " << (NY + 1) * (NZ + 1) << " " << STRINGA_REAL << "\n";
 
     // Define data format
     header2 << "POINT_DATA " << (NY + 1) * (NZ + 1) << "\n"
-            << "SCALARS u double\n"
+            << "SCALARS u " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header3 << "SCALARS v double\n"
+    header3 << "SCALARS v " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header4 << "SCALARS w double\n"
+    header4 << "SCALARS w " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header5 << "SCALARS p double\n"
+    header5 << "SCALARS p " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header6 << "SCALARS Magnitude double\n"
+    header6 << "SCALARS Magnitude " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
 
     MPI_Offset offsetheader1 = header1.str().size(),
@@ -209,19 +209,19 @@ void IcoNS::output_y()
             << "BINARY\n"
             << "DATASET STRUCTURED_GRID\n"
             << "DIMENSIONS " << NX + 1 << " " << 1 << " " << NZ + 1 << "\n"
-            << "POINTS " << (NX + 1) * (NZ + 1) << " double\n";
+            << "POINTS " << (NX + 1) * (NZ + 1) << " " << STRINGA_REAL << "\n";
 
     // Define data format
     header2 << "POINT_DATA " << (NX + 1) * (NZ + 1) << "\n"
-            << "SCALARS u double\n"
+            << "SCALARS u " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header3 << "SCALARS v double\n"
+    header3 << "SCALARS v " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header4 << "SCALARS w double\n"
+    header4 << "SCALARS w " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header5 << "SCALARS p double\n"
+    header5 << "SCALARS p " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header6 << "SCALARS Magnitude double\n"
+    header6 << "SCALARS Magnitude " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
 
     MPI_Offset offsetheader1 = header1.str().size(),
@@ -366,19 +366,19 @@ void IcoNS::output_z()
             << "BINARY\n"
             << "DATASET STRUCTURED_GRID\n"
             << "DIMENSIONS " << NX + 1 << " " << NY + 1 << " " << "1" << "\n"
-            << "POINTS " << (NY + 1) * (NX + 1) << " double\n";
+            << "POINTS " << (NY + 1) * (NX + 1) << " " << STRINGA_REAL << "\n";
 
     // Define data format
     header2 << "POINT_DATA " << (NY + 1) * (NX + 1) << "\n"
-            << "SCALARS u double\n"
+            << "SCALARS u " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header3 << "SCALARS v double\n"
+    header3 << "SCALARS v " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header4 << "SCALARS w double\n"
+    header4 << "SCALARS w " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header5 << "SCALARS p double\n"
+    header5 << "SCALARS p " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
-    header6 << "SCALARS Magnitude double\n"
+    header6 << "SCALARS Magnitude " << STRINGA_REAL << "\n"
             << "LOOKUP_TABLE default\n";
 
     MPI_Offset offsetheader1 = header1.str().size(),

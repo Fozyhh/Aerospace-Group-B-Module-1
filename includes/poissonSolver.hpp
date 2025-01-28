@@ -33,7 +33,12 @@ private:
     C2Decomp *c2d;
 
     /// @brief Fourier tranform
+    #ifdef STO_USANDO_DOUBLE
     fftw_plan neumann;
+    #endif
+    #ifdef STO_USANDO_FLOAT
+    fftwf_plan neumann;
+    #endif
 
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
@@ -41,7 +46,12 @@ private:
 public: 
     Real *pz;                // z-pencil
     Real *py;                // y_pencil
+#ifdef STO_USANDO_FLOAT
+    fftwf_complex *helper;
+#endif
+#ifdef STO_USANDO_DOUBLE
     fftw_complex *helper;
+#endif
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
     : periodicX(periodicX),
@@ -54,7 +64,12 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
+#ifdef STO_USANDO_FLOAT
+      helper = fftwf_alloc_complex(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
+#endif
+#ifdef STO_USANDO_DOUBLE
       helper = fftw_alloc_complex(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
+#endif
     }
 
       /**
