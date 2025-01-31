@@ -1,7 +1,7 @@
 #include "poissonSolver.hpp"
 
 
-void PoissonSolver::solveNeumannPoisson(double *F)
+void NeumannPoissonSolver::solvePoisson(double *F)
 {
     
     // 1. X-Direction Transforms

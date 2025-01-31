@@ -21,7 +21,7 @@
 class PoissonSolver
 {
 
-private:
+protected:
     /// @brief Flag for periodic boundary condition along the x-axis
     const bool periodicX;
     /// @brief Flag for periodic boundary condition along the y-axis
@@ -70,7 +70,30 @@ public:
      * 
      * @param F A pointer to the grid data for Neumann boundary conditions.
      */
-    void solveNeumannPoisson(double* F);
+    virtual void solvePoisson(double* F) = 0;
+};
+
+class NeumannPoissonSolver : public PoissonSolver
+{
+public:
+    NeumannPoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
+                  C2Decomp *c2d)
+    : PoissonSolver(periodicX, periodicY, periodicZ, c2d)
+    {}
+
+    void solvePoisson(double* F) override;
+};
+
+
+class DirichletPoissonSolver : public PoissonSolver
+{
+public:
+    DirichletPoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
+                  C2Decomp *c2d)
+    : PoissonSolver(periodicX, periodicY, periodicZ, c2d)
+    {}
+
+    void solvePoisson(double* F) override;
 };
 
 #endif

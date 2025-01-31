@@ -54,7 +54,7 @@ public:
     parse_input(input_file);
 
     c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
-    poissonSolver= new PoissonSolver(false,false,false, c2d);
+    poissonSolver = new NeumannPoissonSolver(false,false,false, c2d);
 
     // x-pencil size
     xSize[0] = c2d->xSize[0]; 
