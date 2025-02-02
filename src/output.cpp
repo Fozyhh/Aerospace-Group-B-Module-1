@@ -96,7 +96,6 @@ void IcoNS::output_x()
     int offset_x_z_ = offset_x_z - 1;
     int offset_y_z_ = offset_y_z - 1;
     int offset_x_p_ = coords[0] * xSize[2] - 1;
-    // int offset_y_p_ = coords[1] * zSize[1] - 1;
 
     MPI_Barrier(cart_comm);
     if (x_index >= offset_x_x_ + 1 && x_index < dim_x_x + offset_x_x_ + 1)
@@ -124,31 +123,32 @@ void IcoNS::output_x()
 
                 if (lby && j == 1)
                 {
-                    value_y = (boundary.boundary_value_v[2]->value(x_index, j + offset_y_y_ - 0.5, k, T) + boundary.boundary_value_v[2]->value(x_index + 1, j + offset_y_y_ - 0.5, k, T)) / 2;
+                    value_y = boundary.boundary_value_v[FRONT]->value(x_index, j + offset_y_y_ - 0.5, k, T);
                 }
                 else if (rby && j == newDimY_x - 2)
                 {
-                    value_y = (boundary.boundary_value_v[3]->value(x_index, j + offset_y_y_ - 0.5, k, T) + boundary.boundary_value_v[3]->value(x_index + 1, j + offset_y_y_ - 0.5, k, T)) / 2;
+                    value_y = boundary.boundary_value_v[BACK]->value(x_index, j + offset_y_y_ - 0.5, k, T);
                 }
                 else
                 {
-                    value_y = (grid.v[gety(local_x_y, j, k)]);
+                    value_y = (grid.v[gety(local_x_y, j + resy, k)] + grid.v[gety(local_x_y, j + resy - 1, k)] + 
+                                grid.v[gety(local_x_y - 1, j + resy, k)] + grid.v[gety(local_x_y-1, j + resy-1, k)])/4;
                 }
 
                 if (k == 0 && lbz)
                 {
-                    value_z = boundary.boundary_value_w[4]->value(x_index + 0.5, j + offset_y_z_, k - 0.5, T);
+                    value_z = boundary.boundary_value_w[LOWER]->value(x_index, j + offset_y_z_, k - 0.5, T);
                 }
                 else if (k == dim_z - 1 && rbz)
                 {
-                    value_z = boundary.boundary_value_w[5]->value(x_index + 0.5, j + offset_y_z_, k - 0.5, T);
+                    value_z = boundary.boundary_value_w[UPPER]->value(x_index, j + offset_y_z_, k - 0.5, T);
                 }
                 else
                 {
-                    value_z = (grid.w[getz(local_x_z, j, k)]);
+                    value_z = (grid.w[getz(local_x_z, j, k)] + grid.w[getz(local_x_z, j, k - 1)] + grid.w[getz(local_x_z-1, j, k)] + grid.w[getz(local_x_z -1, j, k -1)])/4;
                 }
 
-                value_p = (halo_p[getHaloP(local_x_p - resx, j, k)]);
+                value_p = (halo_p[getHaloP(local_x_p, j, k)] + halo_p[getHaloP(local_x_p -1, j, k)])/2;
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
                 bg_px = to_big_endian(point_x);
@@ -255,11 +255,12 @@ void IcoNS::output_y()
     int offset_y_y_ = offset_y_y - 1;
     int offset_x_z_ = offset_x_z - 1;
     int offset_y_z_ = offset_y_z - 1;
-    // int offset_x_p_ = coords[0] * zSize[0] - 1;
+
     int offset_y_p_ = coords[1] * zSize[1] - 1;
 
+
     MPI_Barrier(cart_comm);
-    if (y_index >= offset_y_y_ && y_index < dim_y_y + offset_y_y_)
+    if (y_index >= offset_y_y && y_index < dim_y_y + offset_y_y)
     {
         int local_y_x = y_index - offset_y_x_;
         int local_y_y = y_index_y - offset_y_y_;
@@ -289,7 +290,7 @@ void IcoNS::output_y()
                 }
                 else
                 {
-                    value_x = grid.u[getx(i, local_y_x, k)];
+                    value_x = (grid.u[getx(i + resx, local_y_x, k)] + grid.u[getx(i + resx - 1, local_y_x, k)] + grid.u[getx(i + resx, local_y_x - 1, k)] + grid.u[getx(i + resx - 1, local_y_x - 1, k)])/4;
                 }
 
                 if (k == 0 && lbz)
@@ -302,10 +303,10 @@ void IcoNS::output_y()
                 }
                 else
                 {
-                    value_z = grid.w[getz(i, local_y_z, k)];
+                    value_z = (grid.w[getz(i, local_y_z, k)] + grid.w[getz(i, local_y_z, k-1)] + grid.w[getz(i, local_y_z-1, k)] + grid.w[getz(i, local_y_z-1, k-1)])/4;
                 }
 
-                value_p = halo_p[getHaloP(i, local_y_p - resy, k)];
+                value_p = (halo_p[getHaloP(i, local_y_p, k)] + halo_p[getHaloP(i, local_y_p - 1, k)])/2;
 
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
@@ -342,12 +343,14 @@ void IcoNS::output_y()
 void IcoNS::output_z()
 {
     MPI_File fh;
-    const Real z_middle_z = (NZ + 1) / 2;
-    const Real z_middle = NZ / 2;
+    const Real z_middle= (NZ + 1) / 2;
+    const Real z_middle_z = NZ / 2;
     if (rank == 0)
         std::remove("solution_z.vtk");
     MPI_Barrier(cart_comm);
     MPI_File_open(cart_comm, "solution_z.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+
+
 
     //===========================================
     // Header Writing (Rank 0 only)
@@ -429,34 +432,34 @@ void IcoNS::output_z()
             Real value_x, value_y, value_z, value_p, value_m;
             if (lby && j == 1)
             {
-                value_x = (boundary.boundary_value_u[0]->value(i + offset_x_x_, j + offset_y_x_, z_index, T));
+                value_x = (boundary.boundary_value_u[FRONT]->value(i + offset_x_x_, j + offset_y_x_, z_index_z + 0.5, T));
             }
             else if (rby && j == newDimY_z - 2)
             {
-                value_x = (boundary.boundary_value_u[1]->value(i + offset_x_x_, j + offset_y_x_, z_index, T));
+                value_x = (boundary.boundary_value_u[BACK]->value(i + offset_x_x_, j + offset_y_x_, z_index_z + 0.5, T));
             }
             else
             {
-                value_x = (grid.u[getx(i, j, z_index)]);
+                value_x = (grid.u[getx(i + resx, j, z_index)] + grid.u[getx(i + resx, j, z_index -1)] + grid.u[getx(i + resx - 1, j, z_index)] + grid.u[getx(i + resx-1, j, z_index-1)])/4;
             }
 
             if (lbx && i == 1)
             {
-                value_y = (boundary.boundary_value_v[0]->value(i + offset_x_y_ + 0.5, j + offset_y_y_ - 0.5, z_index, T));
+                value_y = (boundary.boundary_value_v[LEFT]->value(i + offset_x_y_, j + offset_y_y_ - 0.5, z_index_z + 0.5, T));
             }
             else if (rbx && i == newDimX_z - 2)
             {
-                value_y = boundary.boundary_value_v[4]->value(i + offset_x_y_ + 0.5, j + offset_y_y_ - 0.5, z_index, T);
-                ;
+                value_y = boundary.boundary_value_v[RIGHT]->value(i + offset_x_y, j + offset_y_y_ - 0.5, z_index_z + 0.5, T);
             }
             else
             {
-                value_y = (grid.v[gety(i, j, z_index)]);
+                value_y = (grid.v[gety(i, j + resy, z_index)] + grid.v[gety(i, j + resy - 1, z_index)] + grid.v[gety(i, j + resy, z_index - 1)] + grid.v[gety(i, j + resy - 1, z_index - 1)])/4;
             }
-
+            // std::cout << i <<" "<< j<< " " << z_index_z << ",   " << grid.w[getz(i, j, z_index_z)] << std::endl;
+            // int stop; std::cin >> stop;
             value_z = grid.w[getz(i, j, z_index_z)];
 
-            value_p = (halo_p[getHaloP(i, j, z_index)]);
+            value_p = (halo_p[getHaloP(i, j, z_index)] + halo_p[getHaloP(i, j, z_index - 1)])/2;
 
             value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
