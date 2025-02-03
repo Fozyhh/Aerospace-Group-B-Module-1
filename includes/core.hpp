@@ -1,6 +1,6 @@
 /**
  * @file core.hpp
- * @brief Core implementation of the incompressible Navier-Stokes solver
+ * @brief Core implementation of the incompressible Navier-Stokes solver.
  *
  * This file contains the main solver class for incompressible Navier-Stokes equations.
  * It handles grid management, parallel computation, boundary conditions, and time-stepping
@@ -37,11 +37,10 @@ class IcoNS
 {
 public:
   /**
-   * @brief Constructor for the IcoNS solver
+   * @brief Constructor for the IcoNS solver.
    * 
    * @param cart_comm MPI Cartesian communicator
    * @param input_file Path to input configuration file
-   * @param output_file Path to output results file
    * @param rank MPI process rank
    * @param size Total number of MPI processes
    */
@@ -103,7 +102,8 @@ public:
    * @param sameX Only for periodic boundary, skip identical datas during communication(set to 0 only for communication x grids)
    * @param sameY Only for periodic boundary, skip identical datas during communication(set to 0 only for communication y grids)
    */
-  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
+  void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, 
+                    MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
   /**
    * @brief Pressure copy for halo exchange.
@@ -123,49 +123,54 @@ public:
    * @param t Current time
    * @return Computed F function value
    */
-  inline Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
+  inline Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
+                          const std::vector<Real> &w, int i, int j, int k, Real t);
 
   /**
    * @brief Computes the F function for v-velocity component.
+   * 
+   * @see functionF_u for parameter and return details.
    */
-  inline Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
+  inline Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
+                          const std::vector<Real> &w, int i, int j, int k, Real t);
 
   /**
    * @brief Computes the F function for w-velocity component.
+   * 
+   * @see functionF_u for parameter and return details.
    */
-  inline Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
-
+  inline Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, 
+                          const std::vector<Real> &w, int i, int j, int k, Real t);
 
   /**
-   * @brief Manufactured solution function for u-velocity
+   * @brief Manufactured solution function for u-velocity.
    */
   Real functionG_u(int i, int j, int k, Real t);
 
-
   /**
-   * @brief Manufactured solution function for v-velocity
+   * @brief Manufactured solution function for v-velocity.
    */
   Real functionG_v(int i, int j, int k, Real t);
 
   /**
-   * @brief Manufactured solution function for w-velocity
+   * @brief Manufactured solution function for w-velocity.
    */
   Real functionG_w(int i, int j, int k, Real t);
 
   /**
-   * @brief Main solution loop
+   * @brief Main solution loop.
    */
   void solve();
 
   /**
-   * @brief Advances solution by one time step
+   * @brief Advances solution by one time step.
    * 
    * @param time Current simulation time
    */
   void solve_time_step(Real time);
 
   /**
-   * @brief Computes L2 error for X-velocity component
+   * @brief Computes L2 error for X-velocity component.
    * 
    * @param t Current time
    * @return L2 error value
@@ -186,6 +191,7 @@ public:
    * @brief Computes L2 error for pressure component
    */
   Real error_comp_P(const Real t);
+
   /**
    * @brief Computes total L2 error
    */
@@ -211,88 +217,85 @@ public:
 
 private:
 
+  // Test case number.
   int testCase;
 
-  /// @brief MPI Cartesian communicator
+  // MPI Cartesian communicator
   MPI_Comm cart_comm;
 
-  /// @brief Domain decomposition dimensions
+  // Domain decomposition dimensions
   int dims[2];
 
-  /// @brief Periodic boundary conditions flags
+  // Periodic boundary conditions flags
   int periods[2] = {1, 1};
 
-  /// @brief Boundary conditions handler
+  // Boundary conditions handler
   Boundary boundary;
 
-  /// @brief Exact solution object
+  // Exact solution object
   ExactSolution exact_solution;
 
-  /// @brief Grid data structures
+  // Grid data structures
   Grid grid;
   Y2Grid y2Grid;
   Y3Grid y3Grid;
 
-  /// @brief 2decomp library object
+  // 2decomp library object
   C2Decomp *c2d;
 
-  /// @brief Poisson solver object
+  // Poisson solver object
   PoissonSolver *poissonSolver;
 
-  /// @brief Arrays to store the dimensions of the grid in each direction
+  // Arrays to store the dimensions of the grid in each direction
   int xSize[3], ySize[3], zSize[3];
 
-  /// @brief Intermediate solution vectors
-
+  // Intermediate solution vector.
   std::vector<Real> halo_phi{};
-  // Real* Phi_p{};
-
-  //TODO: change to vectors (*double))
   Real* Y2_p;
 
-  /// @brief periodicity for 2decomp
+  // periodicity for 2decomp
   bool periodss[3] = {false, true, true};
 
-  /// @brief Input/output file paths
-  const std::string input_file;  // input file.
+  // Input file.
+  const std::string input_file;  
 
-  /// @brief MPI rank of current process
+  // MPI rank of current process.
   int rank, size;
 
-  /// @brief Boundary flags for domain decomposition
+  // Boundary flags for domain decomposition.
   int lbx = 0, rbx = 0, lby = 0, rby = 0,lbz=0,rbz=0;
 
-  /// @brief Brief to handle boundary cores()
+  // Brief to handle boundary cores.
   int firstX=0,firstY=0,lastX=0,lastY=0;
 
-  /// @brief Process coordinates and neighbors in cartesian grid
+  // Process coordinates and neighbors in cartesian grid.
   int coords[2];
   int neighbors[4];
 
-  /// @brief MPI datatypes for face communication
+  // MPI datatypes for face communication.
   MPI_Datatype MPI_face_x_x, MPI_face_y_x;
   MPI_Datatype MPI_face_x_y, MPI_face_y_y;
   MPI_Datatype MPI_face_x_z, MPI_face_y_z;
   MPI_Datatype MPI_face_x_p, MPI_face_y_p;
 
-  /// @brief MPI request handles for non-blocking communication
+  // MPI request handles for non-blocking communication.
   MPI_Request reqs[4];
 
-  /// @brief Grid dimensions and decomposition parameters
+  // Grid dimensions and decomposition parameters.
   int dim_x_x, dim_y_x;
   int dim_x_y, dim_y_y, dim_y_z;
   int dim_z, dim_x_z, dim_z_z;
 
-  /// @brief New dimension parameters for each mesh after decomposition
+  // New dimension parameters for each mesh after decomposition.
   int newDimX_x, newDimY_x;
   int newDimX_y, newDimY_y;
   int newDimX_z, newDimY_z;
 
-  /// @brief Offsets for each mesh
+  // Offsets for each mesh.
   int offset_x_x,offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z;
   int resx = 0,resy = 0;
 
-  /// @brief functions to access easier to each grid
+  // functions to access easier to each grid.
   inline int getx(int i, int j, int k) 
   {
     if(k==-1)
