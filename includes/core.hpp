@@ -38,6 +38,7 @@ class IcoNS
 public:
   /**
    * @brief Constructor for the IcoNS solver
+   * 
    * @param cart_comm MPI Cartesian communicator
    * @param input_file Path to input configuration file
    * @param output_file Path to output results file
@@ -85,12 +86,14 @@ public:
   void set2Decomp();
 
   /**
-   * @brief Sets up Poisson solver for pressure calculation.
+   * @brief Sets up Poisson solver for pressure calculation 
+   *        depending on the test case.
    */
   void setPoissonSolver();
 
   /**
    * @brief Exchanges ghost cell data between neighboring processes
+   * 
    * @param grid_loc Local grid data
    * @param newDimX New X dimension after decomposition
    * @param newDimY New Y dimension after decomposition
@@ -102,9 +105,17 @@ public:
    */
   void exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y,int sameX, int sameY);
 
-  void copyPressureToHalo(Real* p, std::vector<Real> &halo);
   /**
-   * @brief Computes the F function for u-velocity component
+   * @brief Pressure copy for halo exchange.
+   * 
+   * @param p Pressure vector
+   * @param halo pressure vector containing halo points
+   */
+  void copyPressureToHalo(Real* p, std::vector<Real> &halo);
+
+  /**
+   * @brief Computes the F function for u-velocity component.
+   * 
    * @param u X-velocity vector
    * @param v Y-velocity vector
    * @param w Z-velocity vector
@@ -112,17 +123,17 @@ public:
    * @param t Current time
    * @return Computed F function value
    */
-  Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
+  inline Real functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
 
   /**
-   * @brief Computes the F function for v-velocity component
+   * @brief Computes the F function for v-velocity component.
    */
-  Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
+  inline Real functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
 
   /**
-   * @brief Computes the F function for w-velocity component
+   * @brief Computes the F function for w-velocity component.
    */
-  Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
+  inline Real functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t);
 
 
   /**
@@ -148,12 +159,14 @@ public:
 
   /**
    * @brief Advances solution by one time step
+   * 
    * @param time Current simulation time
    */
   void solve_time_step(Real time);
 
   /**
    * @brief Computes L2 error for X-velocity component
+   * 
    * @param t Current time
    * @return L2 error value
    */
@@ -180,6 +193,7 @@ public:
 
   /**
    * @brief Parses input configuration file
+   * 
    * @param input_file Path to input file
    */
   void parse_input(const std::string& input_file);
@@ -195,12 +209,9 @@ public:
 
   MPI_Status status;
 
-  //fftw_complex* helper;
-
 private:
 
   int testCase;
-
 
   /// @brief MPI Cartesian communicator
   MPI_Comm cart_comm;
@@ -222,10 +233,10 @@ private:
   Y2Grid y2Grid;
   Y3Grid y3Grid;
 
-
   /// @brief 2decomp library object
   C2Decomp *c2d;
 
+  /// @brief Poisson solver object
   PoissonSolver *poissonSolver;
 
   /// @brief Arrays to store the dimensions of the grid in each direction
@@ -247,7 +258,6 @@ private:
 
   /// @brief MPI rank of current process
   int rank, size;
-
 
   /// @brief Boundary flags for domain decomposition
   int lbx = 0, rbx = 0, lby = 0, rby = 0,lbz=0,rbz=0;
@@ -283,7 +293,8 @@ private:
   int resx = 0,resy = 0;
 
   /// @brief functions to access easier to each grid
-  inline int getx(int i, int j, int k) {
+  inline int getx(int i, int j, int k) 
+  {
     if(k==-1)
     {
       k=dim_z-2;
@@ -292,8 +303,11 @@ private:
     {
       k=1;
     }
-     return i * newDimY_x * dim_z + j * dim_z + k; }
-  inline int gety(int i, int j, int k) {
+     return i * newDimY_x * dim_z + j * dim_z + k; 
+  }
+
+  inline int gety(int i, int j, int k) 
+  {
     if (k == -1)
     {
       k = dim_z - 2;
@@ -302,9 +316,13 @@ private:
     {
       k = 1;
     }
-     return i * newDimY_y * dim_z + j * dim_z + k; }
+     return i * newDimY_y * dim_z + j * dim_z + k; 
+  }
+
   inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + (k+(dim_z_z))%(dim_z_z); }
-  inline int getp(int i, int j, int k) {
+
+  inline int getp(int i, int j, int k) 
+  {
     if (k == -1)
     {
       k = xSize[0] - 2;
@@ -313,8 +331,11 @@ private:
     {
       k = 1;
     }
-     return i * xSize[1] * xSize[0] + j * xSize[0] + k; }
-  inline int getHaloP(int i, int j, int k) {
+     return i * xSize[1] * xSize[0] + j * xSize[0] + k; 
+  }
+
+  inline int getHaloP(int i, int j, int k) 
+  {
     if (k == -1)
     {
       k = xSize[0] - 2;
@@ -323,7 +344,8 @@ private:
     {
       k = 1;
     }
-     return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; }
+     return i * (xSize[1] + 2) * xSize[0] + j * xSize[0] + k; 
+  }
 };
 
 #endif // CORE_HPP

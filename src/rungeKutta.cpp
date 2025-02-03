@@ -406,7 +406,7 @@ void IcoNS::solve_time_step(Real time)
 }
 
 
-Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
+inline Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
     Real value = -(u[getx(i, j, k)] * (u[getx(i + 1, j, k)] - u[getx(i - 1, j, k)]) / (2.0 * DX) +
                     (v[gety(i - resx, j + resy, k)] + v[gety(i + 1 - resx, j + resy, k)] + 
@@ -425,7 +425,7 @@ Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Real> &v, 
     return value;
 }
 
-Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
+inline Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {   
     Real value = -((u[getx(i + resx, j - resy, k)] + u[getx(i + resx, j - resy + 1, k)] + u[getx(i + resx - 1, j - resy, k)] + u[getx(i + resx - 1, j - resy + 1, k)]) / 4.0 * (v[gety(i + 1, j, k)] - v[gety(i - 1, j, k)]) / (2.0 * DX) +
              v[gety(i, j, k)] * (v[gety(i, j + 1, k)] - v[gety(i, j - 1, k)]) / (2.0 * DY) +
@@ -439,7 +439,7 @@ Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, 
     return value;
 }
 
-Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
+inline Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 
 {
     Real value = -((u[getx(i + resx, j, k)] + u[getx(i + resx, j, k + 1)] + u[getx(i + resx - 1, j, k)] + u[getx(i + resx - 1, j, k + 1)]) / 4.0 * (w[getz(i + 1, j, k)] - w[getz(i - 1, j, k)]) / (2.0 * DX) +
