@@ -2,7 +2,10 @@
 # Compiler and Basic Flags     #
 ################################
 CXX = mpic++
-CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native -Wall
+REALTYPE = -DUSING_DOUBLE #-DUSING_FLOAT
+CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) 
+CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE)
+
 
 ################################
 # Directories                  #
@@ -18,7 +21,8 @@ INCLUDES = -I./includes \
           -I$(DECOMP_DIR) \
           -I$(mkFftwInc)
 LIBS = -lfftw3_mpi -lfftw3 -lm -lstdc++ \
-        -L$(mkFftwLib) 
+        -L$(mkFftwLib)  \
+        -lfftw3f
 
 ################################
 # Source Files                 #
@@ -64,6 +68,9 @@ $(BUILD_DIR)/main: $(OBJECTS) $(DECOMP_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS3) $(INCLUDES) -c $< -o $@
+
+$(DECOMP_DIR)/%.o: $(DECOMP_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(DECOMP_LIB): $(DECOMP_OBJECTS)

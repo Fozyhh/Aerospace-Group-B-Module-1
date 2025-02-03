@@ -17,22 +17,19 @@
  * This class leverages the FFTW library for efficient Fourier transforms and integrates with the 
  * C2Decomp library for parallel decomposition. It provides methods for solving Poisson's equation.
  */
-
 class PoissonSolver
 {
 
 protected:
     
-    /// @brief Pointer to the C2Decomp object for parallel decomposition
+    // Pointer to the C2Decomp object for parallel decomposition.
     C2Decomp *c2d;
 
-    /// @brief Fourier tranform
-
-
-    /// @brief Arrays holding grid size information for each view
+    // Arrays holding grid size information for each view.
     int xSize[3], ySize[3], zSize[3];
 
 public: 
+
     Real *pz;                // z-pencil
     Real *py;                // y_pencil
     FFTW_TYPE(plan) neumann;
@@ -45,26 +42,19 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
-      // helper = FFTW_PREFIX(alloc_complex)(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
     }
 
-      /**
-     * @brief Solves Poisson's equation with Dirichlet boundary conditions.
-     * 
-     * @param F_dP A vector containing the source term.
-     * @param FD A pointer to an FFTW complex array for frequency-domain calculations.
-     */
-    //void solveDirichletPoisson(std::vector<Real>& F_dP, fftw_complex *FD);
-
-
     /**
-     * @brief Solves Poisson's equation with Neumann boundary conditions.
+     * @brief Solves Poisson's equation. 
      * 
-     * @param F A pointer to the grid data for Neumann boundary conditions.
+     * @param F A pointer to the grid data for pressure.
      */
     virtual void solvePoisson(Real* F) = 0;
 };
 
+/**
+ * @brief Poisson solver for Neumann boundary conditions. (test1)
+ */
 class NeumannPoissonSolver : public PoissonSolver
 {
 public:
@@ -74,11 +64,13 @@ public:
     void solvePoisson(Real* F) override;
 };
 
-
-class DirichletPoissonSolver : public PoissonSolver
+/**
+ * @brief Poisson solver for Dirichlet boundary conditions. (test2)
+ */
+class PeriodicPoissonSolver : public PoissonSolver
 {
 public:
-    DirichletPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
+    PeriodicPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
     {}
 
     void solvePoisson(Real* F) override;

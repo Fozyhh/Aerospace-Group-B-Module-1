@@ -12,7 +12,7 @@ void IcoNS::setBoundaryConditions()
                                              { return 0; });
         v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                              { return 0.0; });
-        w_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                               { return 1.0; });
         w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                              { return 0; });
@@ -20,14 +20,14 @@ void IcoNS::setBoundaryConditions()
         {
             boundary.addFunction(U, u_func);
 
-            boundary.addFunction(V, v_func);
+            boundary.addFunction(W, v_func);
             if (i == RIGHT)
             {
-                boundary.addFunction(W, w_func1);
+                boundary.addFunction(V, v_func1);
             }
             else
             {
-                boundary.addFunction(W, w_func);
+                boundary.addFunction(V, v_func);
             }
         }
     }
@@ -73,6 +73,7 @@ void IcoNS::setBoundaryConditions()
     }
 }
 
+
 void IcoNS::setParallelization()
 {
     dims[0] = PX;
@@ -86,7 +87,6 @@ void IcoNS::setParallelization()
     dim_y_z = (NY + 1) / PY;
     dim_z = NZ + 1;
     dim_z_z = NZ;
-
 
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
@@ -152,7 +152,6 @@ void IcoNS::setParallelization()
     y3Grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
     grid.p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
-    // halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
     halo_phi.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
 
     if (BX)
@@ -219,6 +218,7 @@ void IcoNS::setParallelization()
     MPI_Type_commit(&MPI_face_y_p);
 }
 
+
 void IcoNS::set2Decomp()
 {
     c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
@@ -244,6 +244,7 @@ void IcoNS::set2Decomp()
     c2d->allocX(Y2_p);
 }
 
+
 void IcoNS::setPoissonSolver()
 {
     if (testCase == 1)
@@ -252,13 +253,14 @@ void IcoNS::setPoissonSolver()
     }
     else if (testCase == 2)
     {
-        poissonSolver = new DirichletPoissonSolver(c2d);
+        poissonSolver = new PeriodicPoissonSolver(c2d);
     }
     else
     {
         poissonSolver = new NeumannPoissonSolver(c2d);
     }
 }
+
 
 void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY)
 {
@@ -273,6 +275,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         MPI_Recv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &status);
         MPI_Send(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm);
     }
+
     if (!(BY && coords[1] == 0))
     {
         MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &status);
@@ -282,16 +285,19 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     {
         MPI_Send(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm);
     }
+
     if (!(BX && coords[0] == PX - 1))
     {
         MPI_Recv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &status);
         MPI_Send(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm);
     }
+
     if (!(BX && coords[0] == 0))
     {
         MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &status);
     }
 }
+
 
 void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
 {
@@ -307,6 +313,7 @@ void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
     }
 }
 
+
 void IcoNS::solve()
 {
     Real time = 0.0;
@@ -321,15 +328,7 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
-        // if (testCase == 0)
-        // {
-        //     L2_error(time);
-        // }
-        // MPI_Barrier(cart_comm);
         solve_time_step(time);
-
-        // if (rank == 0)
-        //     std::cout << "\rTime: " << time << std::flush;
         time += DT;
         i++;
     }
@@ -347,14 +346,9 @@ void IcoNS::solve()
     c2d->deallocXYZ(poissonSolver->pz);
     c2d->deallocXYZ(Y2_p);
     FFTW_PREFIX(destroy_plan)(poissonSolver->neumann);
-    // fftw_free(poissonSolver->helper);
 }
 
-/*
-vtk file : 3 slices for x=0, y=0, z=0
-    all of it for all vars u,v,w,p
-two profile*.dat , containing 3 1D arrays of the solution at time=0 and time=final
-*/
+
 void IcoNS::parse_input(const std::string &input_file)
 {
     std::ifstream file(input_file);
@@ -416,7 +410,7 @@ void IcoNS::parse_input(const std::string &input_file)
         if (line.empty() || line[0] == '#')
             continue;
         std::istringstream iss(line);
-        if (!(iss >> SX >> SZ >> SY))
+        if (!(iss >> SX >> SY >> SZ))
             continue;
         break;
     }
@@ -434,8 +428,8 @@ void IcoNS::parse_input(const std::string &input_file)
         try
         {
             LX = evaluateExpression(sx);
-            LZ = evaluateExpression(sy);
-            LY = evaluateExpression(sz);
+            LY = evaluateExpression(sy);
+            LZ = evaluateExpression(sz);
             break;
         }
         catch (const std::exception &e)
@@ -528,6 +522,7 @@ void IcoNS::parse_input(const std::string &input_file)
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+
 void IcoNS::output()
 {
     copyPressureToHalo(Y2_p, grid.p);
@@ -539,6 +534,7 @@ void IcoNS::output()
     output_z();
     output_profile();
 }
+
 
 void IcoNS::L2_error(const Real t)
 {

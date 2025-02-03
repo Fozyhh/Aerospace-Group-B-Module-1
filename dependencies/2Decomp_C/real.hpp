@@ -1,4 +1,7 @@
+#ifndef USING_DOUBLE || USING_FLOAT
 #define USING_DOUBLE
+#endif
+
 
 #ifdef USING_DOUBLE
 #define Real double

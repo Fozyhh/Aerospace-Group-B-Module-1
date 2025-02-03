@@ -24,7 +24,7 @@
 
 /**
  * @enum Direction
- * @brief Enumeration for velocity components direction
+ * @brief Enumeration for velocity components direction.
  *
  * @var Direction::U X-direction velocity component
  * @var Direction::V Y-direction velocity component
@@ -37,6 +37,17 @@ enum Direction
     W   ///< Z-direction
 };
 
+/**
+ * @enum Faces
+ * @brief Enumeration for boundary faces.
+ * 
+ * @var Faces::LEFT Left boundary face
+ * @var Faces::RIGHT Right boundary face
+ * @var Faces::FRONT Front boundary face
+ * @var Faces::BACK Back boundary face
+ * @var Faces::LOWER Lower boundary face
+ * @var Faces::UPPER Upper boundary face
+ */
 enum Faces
 {
   LEFT,
@@ -47,12 +58,9 @@ enum Faces
   UPPER
 };
 
-
-
-
 /**
  * @class BoundaryFunction
- * @brief Abstract base class for boundary condition functions
+ * @brief Abstract base class for boundary condition functions. 
  *
  * Defines the interface for boundary condition functions. All specific boundary
  * condition types must inherit from this class and implement the value method.
@@ -60,8 +68,10 @@ enum Faces
 class BoundaryFunction
 {
 public:
+
     /**
-    * @brief Pure virtual function to calculate boundary value
+    * @brief Pure virtual function to calculate boundary value.
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -73,7 +83,7 @@ public:
 
 /**
  * @class FunctionZero
- * @brief Implements zero boundary condition
+ * @brief Implements zero boundary condition.
  *
  * Derived class from BoundaryFunction that returns zero regardless of position or time.
  * Useful for no-slip or zero-flux boundary conditions.
@@ -82,7 +92,8 @@ class FunctionZero : public BoundaryFunction
 {
 public:
   /**
-   * @brief Implements zero boundary condition
+   * @brief Implements zero boundary condition. 
+   * 
    * @param x X-coordinate (unused)
    * @param y Y-coordinate (unused)
    * @param z Z-coordinate (unused)
@@ -97,7 +108,7 @@ public:
 
 /**
  * @class Dirichlet
- * @brief Implements Dirichlet boundary condition
+ * @brief Implements Dirichlet boundary condition.
  *
  * Allows specification of arbitrary function for Dirichlet boundary conditions.
  * The boundary value is determined by the provided function.
@@ -109,13 +120,15 @@ public:
   std::function<Real(Real, Real, Real, Real)> func;
 
   /**
-    * @brief Constructor taking a function object
+    * @brief Constructor taking a function object. 
+    * 
     * @param func_ Function object defining boundary values
     */
   Dirichlet(std::function<Real(Real, Real, Real, Real)> func_) : func(func_) {};
 
   /**
-    * @brief Calculates boundary value using the stored function
+    * @brief Calculates boundary value using the stored function. 
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -130,7 +143,7 @@ public:
 
 /**
  * @class ExactSolution
- * @brief Provides exact solutions for velocity components
+ * @brief Provides exact solutions for velocity components.
  *
  * Contains analytical solutions for velocity components in x, y, and z directions.
  * Used for validation and error analysis of numerical solutions.
@@ -140,7 +153,8 @@ class ExactSolution
 public:
 
   /**
-    * @brief Calculates exact solution for x-velocity component
+    * @brief Calculates exact solution for x-velocity component. 
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -153,7 +167,8 @@ public:
   }
 
   /**
-    * @brief Calculates exact solution for y-velocity component
+    * @brief Calculates exact solution for y-velocity component. 
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -166,7 +181,8 @@ public:
   }
 
   /**
-    * @brief Calculates exact solution for z-velocity component
+    * @brief Calculates exact solution for z-velocity component. 
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -179,7 +195,8 @@ public:
   }
 
   /**
-    * @brief Calculates exact solution for z-velocity component
+    * @brief Calculates exact solution for z-velocity component.
+    * 
     * @param x X-coordinate
     * @param y Y-coordinate
     * @param z Z-coordinate
@@ -190,11 +207,11 @@ public:
   {
     return std::cos(x * DX) * std::cos(y * DY) * std::cos(z * DZ) * std::sin(t);
   }
-
 };
 
 /**
-    * @brief Evaluates input string as mathematical expression
+    * @brief Evaluates input string as mathematical expression.
+    * 
     * @param expr Mathematical expression as a string
     * @return Result of the mathematical expression
     */
