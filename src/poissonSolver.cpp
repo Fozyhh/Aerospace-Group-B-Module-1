@@ -1,7 +1,7 @@
 #include "poissonSolver.hpp"
 
 
-void PoissonSolver::solveNeumannPoisson(double *F)
+void NeumannPoissonSolver::solvePoisson(double *F)
 {
     
     // 1. X-Direction Transforms
@@ -85,6 +85,11 @@ void PoissonSolver::solveNeumannPoisson(double *F)
     {
         F[i] /= normalization_factor1;
     }
+}
+
+void DirichletPoissonSolver::solvePoisson(double *F)
+{
+    return;
 }
 
 // void PoissonSolver::solveDirichletPoisson(std::vector<Real> &F_dP, fftw_complex *FD)

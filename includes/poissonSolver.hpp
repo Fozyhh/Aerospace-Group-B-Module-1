@@ -21,13 +21,7 @@
 class PoissonSolver
 {
 
-private:
-    /// @brief Flag for periodic boundary condition along the x-axis
-    const bool periodicX;
-    /// @brief Flag for periodic boundary condition along the y-axis
-    const bool periodicY;
-    /// @brief Flag for periodic boundary condition along the z-axis
-    const bool periodicZ;
+protected:
     
     /// @brief Pointer to the C2Decomp object for parallel decomposition
     C2Decomp *c2d;
@@ -42,12 +36,8 @@ public:
     double *pz;                // z-pencil
     double *py;                // y_pencil
 
-    PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
-                  C2Decomp *c2d)
-    : periodicX(periodicX),
-      periodicY(periodicY),
-      periodicZ(periodicZ),
-      c2d(c2d),
+    PoissonSolver(C2Decomp *c2d)
+    : c2d(c2d),
       xSize{c2d->xSize[0], c2d->xSize[1], c2d->xSize[2]},
       ySize{c2d->ySize[0], c2d->ySize[1], c2d->ySize[2]},
       zSize{c2d->zSize[0], c2d->zSize[1], c2d->zSize[2]}
@@ -70,7 +60,26 @@ public:
      * 
      * @param F A pointer to the grid data for Neumann boundary conditions.
      */
-    void solveNeumannPoisson(double* F);
+    virtual void solvePoisson(double* F) = 0;
+};
+
+class NeumannPoissonSolver : public PoissonSolver
+{
+public:
+    NeumannPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
+    {}
+
+    void solvePoisson(double* F) override;
+};
+
+
+class DirichletPoissonSolver : public PoissonSolver
+{
+public:
+    DirichletPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
+    {}
+
+    void solvePoisson(double* F) override;
 };
 
 #endif

@@ -1,33 +1,5 @@
 #include "core.hpp"
 
-
-void IcoNS::preprocessing(/*std::string &input_file*/)
-
-{
-    setBoundaryConditions();
-
-    setParallelization();
-
-    // for(int i=0; i<xSize[0]*xSize[1]*xSize[2]; i++){
-    //     grid.p[i]=0.0;
-    //     Phi_p[i]=0.0;
-    //     Y2_p[i]=0.0;
-    // } // should be done at resize like the others
-
-    // for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
-    // {
-    //     helper[i][0] = 0.0;
-    //     helper[i][1] = 0.0;
-    // }
-
-    boundary.initializeBoundary(
-        dim_x_x, dim_y_x, dim_x_y, dim_y_y,
-        dim_x_z, dim_y_z, dim_z, dim_z_z,
-        newDimX_x, newDimY_x, newDimX_y, newDimY_y,
-        newDimX_z, newDimY_z,
-        c2d->xSize);
-}
-
 void IcoNS::setBoundaryConditions()
 {
     std::shared_ptr<BoundaryFunction> u_func;
@@ -93,6 +65,17 @@ void IcoNS::setBoundaryConditions()
 
 void IcoNS::setParallelization()
 {
+    dims[0] = PX;
+    dims[1] = PY;
+
+    dim_x_x = NX / PX;
+    dim_y_x = (NY + 1) / PY;
+    dim_x_y = (NX + 1) / PX;
+    dim_y_y = NY / PY;
+    dim_x_z = (NX + 1) / PX;
+    dim_y_z = (NY + 1) / PY;
+    dim_z = NZ + 1;
+    dim_z_z = NZ;
 
     // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     // MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -221,6 +204,47 @@ void IcoNS::setParallelization()
 
     MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_DOUBLE, &MPI_face_y_p);
     MPI_Type_commit(&MPI_face_y_p);
+}
+
+void IcoNS::set2Decomp()
+{
+    c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
+
+    // x-pencil size
+    xSize[0] = c2d->xSize[0]; 
+    xSize[1] = c2d->xSize[1]; 
+    xSize[2] = c2d->xSize[2]; 
+
+    // y-pencil size
+    ySize[0] = c2d->ySize[0];
+    ySize[1] = c2d->ySize[1];
+    ySize[2] = c2d->ySize[2];
+
+    // z-pencil size
+    zSize[0] = c2d->zSize[0];
+    zSize[1] = c2d->zSize[1];
+    zSize[2] = c2d->zSize[2];
+
+    // pencils allocation
+    c2d->allocX(grid.p);
+    c2d->allocX(Phi_p);
+    c2d->allocX(Y2_p);
+}
+
+void IcoNS::setPoissonSolver()
+{
+    if (testCase == 1)
+    {
+        poissonSolver = new NeumannPoissonSolver(c2d);
+    }
+    else if (testCase == 2)
+    {
+        poissonSolver = new DirichletPoissonSolver(c2d);
+    }
+    else
+    {
+        poissonSolver = new DirichletPoissonSolver(c2d);
+    }
 }
 
 void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY)

@@ -53,52 +53,42 @@ public:
   {
     parse_input(input_file);
 
-    c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
-    poissonSolver= new PoissonSolver(false,false,false, c2d);
+    set2Decomp();
 
-    // x-pencil size
-    xSize[0] = c2d->xSize[0]; 
-    xSize[1] = c2d->xSize[1]; 
-    xSize[2] = c2d->xSize[2]; 
+    setPoissonSolver();
 
-    // y-pencil size
-    ySize[0] = c2d->ySize[0];
-    ySize[1] = c2d->ySize[1];
-    ySize[2] = c2d->ySize[2];
+    setBoundaryConditions();
 
-    // z-pencil size
-    zSize[0] = c2d->zSize[0];
-    zSize[1] = c2d->zSize[1];
-    zSize[2] = c2d->zSize[2];
+    setParallelization();
 
-    dims[0] = PX;
-    dims[1] = PY;
+    boundary.initializeBoundary(
+        dim_x_x, dim_y_x, dim_x_y, dim_y_y,
+        dim_x_z, dim_y_z, dim_z, dim_z_z,
+        newDimX_x, newDimY_x, newDimX_y, newDimY_y,
+        newDimX_z, newDimY_z,
+        c2d->xSize);
 
-    dim_x_x = NX / PX;
-    dim_y_x = (NY + 1) / PY;
-    dim_x_y = (NX + 1) / PX;
-    dim_y_y = NY / PY;
-    dim_x_z = (NX + 1) / PX;
-    dim_y_z = (NY + 1) / PY;
-    dim_z = NZ + 1;
-    dim_z_z = NZ;
-
-    // pencils allocation
-    c2d->allocX(grid.p);
-    c2d->allocX(Phi_p);
-    c2d->allocX(Y2_p);
   }
 
   /**
-   * @brief Initializes the grid and problem setup
+   * @brief Sets up boundary conditions for the simulation.
    */
-  void preprocessing();
-
   void setBoundaryConditions();
+
   /**
-   * @brief Sets up parallel communication patterns and domain decomposition
+   * @brief Sets up parallel communication patterns and domain decomposition.
    */
   void setParallelization();
+
+  /**
+   * @brief Sets up 2decomp library for domain decomposition.
+   */
+  void set2Decomp();
+
+  /**
+   * @brief Sets up Poisson solver for pressure calculation.
+   */
+  void setPoissonSolver();
 
   /**
    * @brief Exchanges ghost cell data between neighboring processes
