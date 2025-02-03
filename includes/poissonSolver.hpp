@@ -34,7 +34,6 @@ private:
 
     /// @brief Fourier tranform
 
-    FFTW_TYPE(plan) neumann;
 
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
@@ -42,7 +41,9 @@ private:
 public: 
     Real *pz;                // z-pencil
     Real *py;                // y_pencil
-    FFTW_TYPE(complex) * helper;
+    FFTW_TYPE(plan) neumann;
+
+    // FFTW_TYPE(complex) * helper;
     PoissonSolver(const bool periodicX, const bool periodicY, const bool periodicZ, 
                   C2Decomp *c2d)
     : periodicX(periodicX),
@@ -55,7 +56,7 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
-      helper = FFTW_PREFIX(alloc_complex)(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
+      // helper = FFTW_PREFIX(alloc_complex)(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
     }
 
       /**

@@ -5,9 +5,20 @@ void IcoNS::solve_time_step(Real time)
 {
 
     // 1) pressure point exchange
-    copyPressureToHalo(grid.p, halo_p);
+    // copyPressureToHalo(grid.p, grid.p);
     // MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+
+    for (int i = 0; i < xSize[2]; i++)
+    {
+        for (int j = 0; j < xSize[1]; j++)
+        {
+            for (int k = 0; k < xSize[0]; k++)
+            {
+                halo_phi[getHaloP(i + 1, j + 1, k)] = grid.p[getHaloP(i + 1, j + 1, k)];
+            }
+        }
+    }
 
     // Calculate Y2
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -18,7 +29,7 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_x[getx(i, j, k)] = grid.u[getx(i, j, k)] +
                                       64.0 / 120.0 * DT * functionF_u(grid.u, grid.v, grid.w, i, j, k, time) -
-                                      64.0 / 120.0 * DT * (halo_p[getHaloP(i + 1 - resx, j, k)] - halo_p[getHaloP(i - resx, j, k)]) / (DX);
+                                      64.0 / 120.0 * DT * (grid.p[getHaloP(i + 1 - resx, j, k)] - grid.p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -31,7 +42,7 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_y[gety(i, j, k)] = grid.v[gety(i, j, k)] +
                                       64.0 / 120.0 * DT * functionF_v(grid.u, grid.v, grid.w, i, j, k, time) -
-                                      64.0 / 120.0 * DT * (halo_p[getHaloP(i, j + 1 - resy, k)] - halo_p[getHaloP(i, j - resy, k)]) / (DY);
+                                      64.0 / 120.0 * DT * (grid.p[getHaloP(i, j + 1 - resy, k)] - grid.p[getHaloP(i, j - resy, k)]) / (DY);
             }
         }
     }
@@ -44,7 +55,7 @@ void IcoNS::solve_time_step(Real time)
             {
                 Y2_z[getz(i, j, k)] = grid.w[getz(i, j, k)] +
                                       64.0 / 120.0 * DT * functionF_w(grid.u, grid.v, grid.w, i, j, k, time) -
-                                      64.0 / 120.0 * DT * (halo_p[getHaloP(i, j, k + 1)] - halo_p[getHaloP(i, j, k)]) / (DZ);
+                                      64.0 / 120.0 * DT * (grid.p[getHaloP(i, j, k + 1)] - grid.p[getHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -78,9 +89,9 @@ void IcoNS::solve_time_step(Real time)
     // Solve for Pressure
     poissonSolver->solveNeumannPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
-    copyPressureToHalo(Y2_p, halo_p);
+    copyPressureToHalo(Y2_p, grid.p);
     // MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     // Update Velocities
     for (int i = 1; i < newDimX_x - 1; i++)
@@ -90,7 +101,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_x[getx(i, j, k)] = Y2_x[getx(i, j, k)] -
-                                      64.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - halo_p[getHaloP(i - resx, j, k)]) / (DX);
+                                      64.0 * DT / (120.0) * (grid.p[getHaloP(i + 1 - resx, j, k)] - grid.p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -102,7 +113,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y2_y[gety(i, j, k)] = Y2_y[gety(i, j, k)] -
-                                      64.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - halo_p[getHaloP(i, j - resy, k)]) / (DY);
+                                      64.0 * DT / (120.0) * (grid.p[getHaloP(i, j + 1 - resy, k)] - grid.p[getHaloP(i, j - resy, k)]) / (DY);
             }
         }
     }
@@ -114,7 +125,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z_z; k++)
             {
                 Y2_z[getz(i, j, k)] = Y2_z[getz(i, j, k)] -
-                                      64.0 * DT / (120.0) * (halo_p[getHaloP(i, j, k + 1)] - halo_p[getHaloP(i, j, k)]) / (DZ);
+                                      64.0 * DT / (120.0) * (grid.p[getHaloP(i, j, k + 1)] - grid.p[getHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -125,7 +136,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                halo_phi[getHaloP(i+1, j+1, k)] = Y2_p[getp(i, j, k)] + grid.p[getp(i, j, k)];
+                halo_phi[getHaloP(i+1, j+1, k)] += Y2_p[getp(i, j, k)];
             }
         }
     }
@@ -211,9 +222,9 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver->solveNeumannPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
     // 3) y2_p exchange
-    copyPressureToHalo(Y2_p, halo_p);
+    copyPressureToHalo(Y2_p, grid.p);
     // MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
     {
@@ -222,7 +233,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_x[getx(i, j, k)] = Y3_x[getx(i, j, k)] -
-                                      16.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - halo_p[getHaloP(i - resx, j, k)]) / (DX);
+                                      16.0 * DT / (120.0) * (grid.p[getHaloP(i + 1 - resx, j, k)] - grid.p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -234,7 +245,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z; k++)
             {
                 Y3_y[gety(i, j, k)] = Y3_y[gety(i, j, k)] -
-                                      16.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - halo_p[getHaloP(i, j - resy, k)]) / (DY);
+                                      16.0 * DT / (120.0) * (grid.p[getHaloP(i, j + 1 - resy, k)] - grid.p[getHaloP(i, j - resy, k)]) / (DY);
             }
         }
     }
@@ -246,7 +257,7 @@ void IcoNS::solve_time_step(Real time)
             for (int k = 0; k < dim_z_z; k++)
             {
                 Y3_z[getz(i, j, k)] = Y3_z[getz(i, j, k)] -
-                                      16.0 * DT / (120.0) * (halo_p[getHaloP(i, j, k + 1)] - halo_p[getHaloP(i, j, k)]) / (DZ);
+                                      16.0 * DT / (120.0) * (grid.p[getHaloP(i, j, k + 1)] - grid.p[getHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -342,9 +353,9 @@ void IcoNS::solve_time_step(Real time)
     poissonSolver->solveNeumannPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
 
-    copyPressureToHalo(Y2_p, halo_p);
+    copyPressureToHalo(Y2_p, grid.p);
     // MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
     {
@@ -352,7 +363,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                grid.u[getx(i, j, k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i + 1 - resx, j, k)] - halo_p[getHaloP(i - resx, j, k)]) / (DX);
+                grid.u[getx(i, j, k)] -= 40.0 * DT / (120.0) * (grid.p[getHaloP(i + 1 - resx, j, k)] - grid.p[getHaloP(i - resx, j, k)]) / (DX);
             }
         }
     }
@@ -362,7 +373,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z; k++)
             {
-                grid.v[gety(i, j, k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i, j + 1 - resy, k)] - halo_p[getHaloP(i, j - resy, k)]) / (DY);
+                grid.v[gety(i, j, k)] -= 40.0 * DT / (120.0) * (grid.p[getHaloP(i, j + 1 - resy, k)] - grid.p[getHaloP(i, j - resy, k)]) / (DY);
             }
         }
     }
@@ -372,7 +383,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < dim_z_z; k++)
             {
-                grid.w[getz(i, j, k)] -= 40.0 * DT / (120.0) * (halo_p[getHaloP(i, j, k + 1)] - halo_p[getHaloP(i, j, k)]) / (DZ);
+                grid.w[getz(i, j, k)] -= 40.0 * DT / (120.0) * (grid.p[getHaloP(i, j, k + 1)] - grid.p[getHaloP(i, j, k)]) / (DZ);
             }
         }
     }
@@ -382,7 +393,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                grid.p[getp(i, j, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i+1, j+1, k)];
+                grid.p[getHaloP(i+1, j+1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i+1, j+1, k)];
             }
         }
     }

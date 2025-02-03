@@ -40,7 +40,7 @@ struct Grid
     std::vector<Real> u;     ///< x-velocity components
     std::vector<Real> v;     ///< y-velocity components
     std::vector<Real> w;     ///< z-velocity components
-    Real *p;                 // x-pencil
+    std::vector<Real> p;                 // x-pencil
 
 };
 

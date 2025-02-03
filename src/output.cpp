@@ -148,7 +148,7 @@ void IcoNS::output_x()
                     value_z = (grid.w[getz(local_x_z, j, k)] + grid.w[getz(local_x_z, j, k - 1)] + grid.w[getz(local_x_z-1, j, k)] + grid.w[getz(local_x_z -1, j, k -1)])/4;
                 }
 
-                value_p = (halo_p[getHaloP(local_x_p, j, k)] + halo_p[getHaloP(local_x_p -1, j, k)])/2;
+                value_p = (grid.p[getHaloP(local_x_p, j, k)] + grid.p[getHaloP(local_x_p -1, j, k)])/2;
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
                 bg_px = to_big_endian(point_x);
@@ -306,7 +306,7 @@ void IcoNS::output_y()
                     value_z = (grid.w[getz(i, local_y_z, k)] + grid.w[getz(i, local_y_z, k-1)] + grid.w[getz(i, local_y_z-1, k)] + grid.w[getz(i, local_y_z-1, k-1)])/4;
                 }
 
-                value_p = (halo_p[getHaloP(i, local_y_p, k)] + halo_p[getHaloP(i, local_y_p - 1, k)])/2;
+                value_p = (grid.p[getHaloP(i, local_y_p, k)] + grid.p[getHaloP(i, local_y_p - 1, k)])/2;
 
                 value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 
@@ -459,7 +459,7 @@ void IcoNS::output_z()
             // int stop; std::cin >> stop;
             value_z = grid.w[getz(i, j, z_index_z)];
 
-            value_p = (halo_p[getHaloP(i, j, z_index)] + halo_p[getHaloP(i, j, z_index - 1)])/2;
+            value_p = (grid.p[getHaloP(i, j, z_index)] + grid.p[getHaloP(i, j, z_index - 1)])/2;
 
             value_m = std::sqrt(value_x * value_x + value_y * value_y + value_z * value_z);
 

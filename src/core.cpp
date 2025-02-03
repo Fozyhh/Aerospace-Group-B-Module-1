@@ -7,17 +7,6 @@ void IcoNS::preprocessing(/*std::string &input_file*/)
 
     setParallelization();
 
-    // for(int i=0; i<xSize[0]*xSize[1]*xSize[2]; i++){
-    //     grid.p[i]=0.0;
-    //     Phi_p[i]=0.0;
-    //     Y2_p[i]=0.0;
-    // } // should be done at resize like the others
-
-    // for (int i = 0; i < xSize[2]* ySize[1] * (NZ/2 + 1); i++)
-    // {
-    //     helper[i][0] = 0.0;
-    //     helper[i][1] = 0.0;
-    // }
 
     boundary.initializeBoundary(
         dim_x_x, dim_y_x, dim_x_y, dim_y_y,
@@ -103,11 +92,7 @@ void IcoNS::setBoundaryConditions()
 void IcoNS::setParallelization()
 {
 
-    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    // MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // Create a Cartesian topology (2D)
-    // MPI_Dims_create(size, 2, dims);
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
     MPI_Cart_coords(cart_comm, rank, 2, coords);
@@ -171,7 +156,8 @@ void IcoNS::setParallelization()
     Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
-    halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
+    grid.p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
+    // halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
     halo_phi.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
 
     if (BX)
@@ -249,13 +235,11 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     {
 
         MPI_Recv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &status);
-        // MPI_Wait(&reqs[3], &status);
         MPI_Send(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm);
     }
     if (!(BY && coords[1] == 0))
     {
         MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &status);
-        // MPI_Wait(&reqs[2], &status);
     }
 
     if (!(BX && coords[0] == 0))
@@ -265,13 +249,11 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     if (!(BX && coords[0] == PX - 1))
     {
         MPI_Recv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &status);
-        // MPI_Wait(&reqs[1], &status);
         MPI_Send(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm);
     }
     if (!(BX && coords[0] == 0))
     {
         MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &status);
-        // MPI_Wait(&reqs[0], &status);
     }
 }
 
@@ -307,124 +289,6 @@ void IcoNS::solve()
         // {
         //     L2_error(time);
         // }
-        // if(false)
-        // {
-        //     int counter=0;
-        //     std::cout << "grid.x" << std::endl;
-        //     for (int i = 0; i < newDimX_x; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_x; j++)
-        //         {
-        //             for (int k = 0; k < dim_z; k++)
-        //             {
-        //                 grid.u[getx(i, j, k)] = counter++;
-        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
-        //             }
-        //             // std::cout << std::endl;
-        //         }
-        //         // std::cout << std::endl;
-        //     }
-        //     for (int i = 0; i < newDimX_x; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_x; j++)
-        //         {
-        //             for (int k = -1; k < dim_z + 1; k++)
-        //             {
-        //                 // grid.p[getp(i, j, k)] = j * k + k;
-        //                 std::cout << grid.u[getx(i, j, k)] << " ";
-        //             }
-        //             std::cout << std::endl;
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        //     counter = 0;
-
-        //     std::cout << "grid.y" << std::endl;
-        //     for (int i = 0; i < newDimY_y; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_y; j++)
-        //         {
-        //             for (int k = 0; k < dim_z; k++)
-        //             {
-        //                 grid.v[gety(i, j, k)] = counter++;
-        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
-        //             }
-        //             // std::cout << std::endl;
-        //         }
-        //         // std::cout << std::endl;
-        //     }
-        //     for (int i = 0; i < newDimX_y; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_y; j++)
-        //         {
-        //             for (int k = -1; k < dim_z + 1; k++)
-        //             {
-        //                 // grid.p[getp(i, j, k)] = j * k + k;
-        //                 std::cout << grid.v[gety(i, j, k)] << " ";
-        //             }
-        //             std::cout << std::endl;
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        //     counter = 0;
-        //     std::cout << "grid.w" << std::endl;
-        //     for (int i = 0; i < newDimX_z; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_z; j++)
-        //         {
-        //             for (int k = 0; k < dim_z_z; k++)
-        //             {
-        //                 grid.w[getz(i, j, k)] = counter++;
-        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
-        //             }
-        //             // std::cout << std::endl;
-        //         }
-        //         // std::cout << std::endl;
-        //     }
-        //     for (int i = 0; i < newDimX_z; i++)
-        //     {
-        //         for (int j = 0; j < newDimY_z; j++)
-        //         {
-        //             for (int k = -1; k < dim_z_z + 1; k++)
-        //             {
-        //                 // grid.p[getp(i, j, k)] = j * k + k;
-        //                 std::cout << grid.w[getz(i, j, k)] << " ";
-        //             }
-        //             std::cout << std::endl;
-        //         }
-        //         std::cout << std::endl;
-        //     }
-        //     counter = 0;
-        //     std::cout << "grid.p" << std::endl;
-        //     for (int i = 0; i < xSize[2]; i++)
-        //     {
-        //         for (int j = 0; j < xSize[1]; j++)
-        //         {
-        //             for (int k = 0; k < xSize[0] ; k++)
-        //             {
-        //                 grid.p[getp(i, j, k)] = counter++;
-        //                 // std::cout << grid.p[getp(i, j, k)] << " ";
-        //             }
-        //             // std::cout << std::endl;
-        //         }
-        //         // std::cout << std::endl;
-        //     }
-        //     for (int i = 0; i < xSize[2]; i++)
-        //     {
-        //         for (int j = 0; j < xSize[1]; j++)
-        //         {
-        //             for (int k = -1; k < xSize[0]+1; k++)
-        //             {
-        //                 // grid.p[getp(i, j, k)] = j * k + k;
-        //                 std::cout << grid.p[getp(i, j, k)] << " ";
-        //             }
-        //             std::cout << std::endl;
-        //         }
-        //         std::cout << std::endl;
-        //     }
-
-        //     // std::cout << "Prints: " << grid.p[getp(1, 1, xSize[0] - 1)] << " " << grid.p[getp(1, 1, xSize[0])] << std::endl;
-        // }
         // MPI_Barrier(cart_comm);
         solve_time_step(time);
 
@@ -443,9 +307,10 @@ void IcoNS::solve()
 
     output();
     MPI_Barrier(cart_comm);
-    c2d->deallocXYZ(grid.p);
     c2d->deallocXYZ(poissonSolver->py);
     c2d->deallocXYZ(poissonSolver->pz);
+    c2d->deallocXYZ(Y2_p);
+    FFTW_PREFIX(destroy_plan)(poissonSolver->neumann);
     // fftw_free(poissonSolver->helper);
 }
 
@@ -629,14 +494,13 @@ void IcoNS::parse_input(const std::string &input_file)
 
 void IcoNS::output()
 {
-    copyPressureToHalo(Y2_p, halo_p);
+    copyPressureToHalo(Y2_p, grid.p);
     MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
     MPI_Barrier(cart_comm);
     output_x();
     output_y();
     output_z();
-
     output_profile();
 }
 
