@@ -16,8 +16,7 @@
  *
  * Set to double for double-precision floating-point calculations
  */
-#define Real double
-
+#include "real.hpp"
 
 
 extern Real SX,SY,SZ;

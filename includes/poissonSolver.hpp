@@ -27,14 +27,15 @@ protected:
     C2Decomp *c2d;
 
     /// @brief Fourier tranform
-    fftw_plan neumann;
+
 
     /// @brief Arrays holding grid size information for each view
     int xSize[3], ySize[3], zSize[3];
 
 public: 
-    double *pz;                // z-pencil
-    double *py;                // y_pencil
+    Real *pz;                // z-pencil
+    Real *py;                // y_pencil
+    FFTW_TYPE(plan) neumann;
 
     PoissonSolver(C2Decomp *c2d)
     : c2d(c2d),
@@ -44,6 +45,7 @@ public:
     {
       c2d->allocY(py);
       c2d->allocZ(pz);
+      // helper = FFTW_PREFIX(alloc_complex)(xSize[2] * ySize[1] * (zSize[2] / 2 + 1));
     }
 
       /**
@@ -60,7 +62,7 @@ public:
      * 
      * @param F A pointer to the grid data for Neumann boundary conditions.
      */
-    virtual void solvePoisson(double* F) = 0;
+    virtual void solvePoisson(Real* F) = 0;
 };
 
 class NeumannPoissonSolver : public PoissonSolver
@@ -69,7 +71,7 @@ public:
     NeumannPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
     {}
 
-    void solvePoisson(double* F) override;
+    void solvePoisson(Real* F) override;
 };
 
 
@@ -79,7 +81,7 @@ public:
     DirichletPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
     {}
 
-    void solvePoisson(double* F) override;
+    void solvePoisson(Real* F) override;
 };
 
 #endif

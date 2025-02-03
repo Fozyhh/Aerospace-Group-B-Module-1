@@ -10,6 +10,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "real.hpp"
 #include <functional>
 #include <cmath>
 #include <iostream>

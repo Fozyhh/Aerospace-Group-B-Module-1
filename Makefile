@@ -2,7 +2,7 @@
 # Compiler and Basic Flags     #
 ################################
 CXX = mpic++
-CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops
+CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native -Wall
 
 ################################
 # Directories                  #

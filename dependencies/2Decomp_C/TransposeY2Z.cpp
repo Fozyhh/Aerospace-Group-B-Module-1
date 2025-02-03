@@ -1,6 +1,6 @@
 #include "C2Decomp.hpp"
 
-void C2Decomp::transposeY2Z(double *src, double *dst){
+void C2Decomp::transposeY2Z(Real *src, Real *dst){
 
     int s1, s2, s3, d1, d2, d3;
 
@@ -21,7 +21,7 @@ void C2Decomp::transposeY2Z(double *src, double *dst){
 
 }
 
-void C2Decomp::transposeY2Z_MajorIndex(double *src, double *dst){
+void C2Decomp::transposeY2Z_MajorIndex(Real *src, Real *dst){
 
     int s1, s2, s3, d1, d2, d3;
 
@@ -52,7 +52,7 @@ void C2Decomp::transposeY2Z_MajorIndex(double *src, double *dst){
 
 }
 
-void C2Decomp::transposeY2Z_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf){
+void C2Decomp::transposeY2Z_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf){
 
     int s1, s2, s3;
 
@@ -69,7 +69,7 @@ void C2Decomp::transposeY2Z_Start(MPI_Request &handle, double *src, double *dst,
 
 }
 
-void C2Decomp::transposeY2Z_Wait(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf){
+void C2Decomp::transposeY2Z_Wait(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf){
 
     int d1, d2, d3;
     MPI_Status status;
@@ -80,11 +80,11 @@ void C2Decomp::transposeY2Z_Wait(MPI_Request &handle, double *src, double *dst, 
 
     MPI_Wait(&handle, &status);
 
-    memcpy(dst, rbuf, d1*d2*d3*sizeof(double));
+    memcpy(dst, rbuf, d1*d2*d3*sizeof(Real));
 
 }
 
-void C2Decomp::transposeY2Z_MajorIndex_Start(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf){
+void C2Decomp::transposeY2Z_MajorIndex_Start(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf){
 
     int s1, s2, s3;
 
@@ -101,7 +101,7 @@ void C2Decomp::transposeY2Z_MajorIndex_Start(MPI_Request &handle, double *src, d
 
 }
 
-void C2Decomp::transposeY2Z_MajorIndex_Wait(MPI_Request &handle, double *src, double *dst, double *sbuf, double *rbuf){
+void C2Decomp::transposeY2Z_MajorIndex_Wait(MPI_Request &handle, Real *src, Real *dst, Real *sbuf, Real *rbuf){
 
     int d1, d2, d3;
     MPI_Status status;

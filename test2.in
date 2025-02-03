@@ -8,7 +8,7 @@
 0.001
 
 # Number of time steps: Nt
-1000
+25000
 
 # Start of domain: SX,SY,SZ
 -0.5 -0.5 -0.5
@@ -20,10 +20,10 @@
 480 480 480
 
 # Process grid: Px, Py, Pz
-1 1 1
+8 8 1
 
 # Boundaries :
-0 1 1
+1 1 0
 
 # 0 : periodic
 # 1 : dirichlet

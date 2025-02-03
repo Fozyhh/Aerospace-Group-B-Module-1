@@ -3,7 +3,7 @@
 void IcoNS::setBoundaryConditions()
 {
     std::shared_ptr<BoundaryFunction> u_func;
-    std::shared_ptr<BoundaryFunction> v_func;
+    std::shared_ptr<BoundaryFunction> v_func, v_func1;
     std::shared_ptr<BoundaryFunction> w_func, w_func1;
 
     if (testCase == 1)
@@ -33,18 +33,28 @@ void IcoNS::setBoundaryConditions()
     }
     else if (testCase == 2)
     {
-        /*u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });
-        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                {
-                                                    if(SX + x==-0.5){
-                                                        return 1;
-                                                    }else{
-                                                        return 0;
-                                                    }
-                                                });
-        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                                { return 0; });*/
+        u_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0.0; });
+        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                              { return 1.0; });
+        w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+                                             { return 0; });
+        for (int i = 0; i < 6 /*nfaces*/; i++)
+        {
+            boundary.addFunction(U, u_func);
+
+            boundary.addFunction(W, v_func);
+            if (i == LEFT)
+            {
+                boundary.addFunction(V, v_func1);
+            }
+            else
+            {
+                boundary.addFunction(V, v_func);
+            }
+        }
     }
     else
     {
@@ -77,11 +87,7 @@ void IcoNS::setParallelization()
     dim_z = NZ + 1;
     dim_z_z = NZ;
 
-    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    // MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // Create a Cartesian topology (2D)
-    // MPI_Dims_create(size, 2, dims);
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
     MPI_Cart_coords(cart_comm, rank, 2, coords);
@@ -145,7 +151,8 @@ void IcoNS::setParallelization()
     y3Grid.v.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     y3Grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
-    halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
+    grid.p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
+    // halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
     halo_phi.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
 
     if (BX)
@@ -165,6 +172,12 @@ void IcoNS::setParallelization()
             lby++;
     }
 
+    if (BZ)
+    {
+        lbz = 1;
+        rbz = 1;
+    }
+
     if (coords[0] == 0)
         firstX = 1;
 
@@ -177,32 +190,32 @@ void IcoNS::setParallelization()
     if (coords[1] == 0)
         firstY = 1;
 
-    boundary.setBoundaryOffsets(lbx, rbx, lby, rby);
+    boundary.setBoundaryOffsets(lbx, rbx, lby, rby, lbz, rbz);
     boundary.setCoords(coords);
     boundary.setOffsets(offset_x_x, offset_y_x, offset_x_y, offset_y_y, offset_x_z, offset_y_z);
 
-    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_DOUBLE, &MPI_face_x_x);
+    MPI_Type_vector(dim_x_x, dim_z, (newDimY_x)*dim_z, MPI_REALL, &MPI_face_x_x);
     MPI_Type_commit(&MPI_face_x_x);
 
-    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_DOUBLE, &MPI_face_y_x);
+    MPI_Type_vector(1, dim_z * newDimY_x, 0, MPI_REALL, &MPI_face_y_x);
     MPI_Type_commit(&MPI_face_y_x);
 
-    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_DOUBLE, &MPI_face_x_y);
+    MPI_Type_vector(dim_x_y, dim_z, (newDimY_y)*dim_z, MPI_REALL, &MPI_face_x_y);
     MPI_Type_commit(&MPI_face_x_y);
 
-    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_DOUBLE, &MPI_face_y_y);
+    MPI_Type_vector(1, dim_z * newDimY_y, 0, MPI_REALL, &MPI_face_y_y);
     MPI_Type_commit(&MPI_face_y_y);
 
-    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_DOUBLE, &MPI_face_x_z);
+    MPI_Type_vector(dim_x_z, dim_z_z, (newDimY_z)*dim_z_z, MPI_REALL, &MPI_face_x_z);
     MPI_Type_commit(&MPI_face_x_z);
 
-    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_DOUBLE, &MPI_face_y_z);
+    MPI_Type_vector(1, dim_z_z * newDimY_z, 0, MPI_REALL, &MPI_face_y_z);
     MPI_Type_commit(&MPI_face_y_z);
 
-    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_DOUBLE, &MPI_face_x_p);
+    MPI_Type_vector(xSize[2], xSize[0], (xSize[1] + 2) * xSize[0], MPI_REALL, &MPI_face_x_p);
     MPI_Type_commit(&MPI_face_x_p);
 
-    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_DOUBLE, &MPI_face_y_p);
+    MPI_Type_vector(1, xSize[0] * (xSize[1] + 2), 0, MPI_REALL, &MPI_face_y_p);
     MPI_Type_commit(&MPI_face_y_p);
 }
 
@@ -226,8 +239,8 @@ void IcoNS::set2Decomp()
     zSize[2] = c2d->zSize[2];
 
     // pencils allocation
-    c2d->allocX(grid.p);
-    c2d->allocX(Phi_p);
+    // c2d->allocX(grid.p);
+    // c2d->allocX(Phi_p);
     c2d->allocX(Y2_p);
 }
 
@@ -251,40 +264,36 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
 {
     if (!(BY && coords[1] == 0))
     {
-        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * firstY], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
+        MPI_Send(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * firstY], 1, MPI_face_x, neighbors[3], 11, cart_comm);
     }
 
     if (!(BY && coords[1] == PY - 1))
     {
 
-        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
-        MPI_Wait(&reqs[3], &status);
-        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
+        MPI_Recv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &status);
+        MPI_Send(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm);
     }
     if (!(BY && coords[1] == 0))
     {
-        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
-        MPI_Wait(&reqs[2], &status);
+        MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &status);
     }
 
     if (!(BX && coords[0] == 0))
     {
-        MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
+        MPI_Send(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm);
     }
     if (!(BX && coords[0] == PX - 1))
     {
-        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
-        MPI_Wait(&reqs[1], &status);
-        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
+        MPI_Recv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &status);
+        MPI_Send(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm);
     }
     if (!(BX && coords[0] == 0))
     {
-        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &reqs[0]);
-        MPI_Wait(&reqs[0], &status);
+        MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &status);
     }
 }
 
-void IcoNS::copyPressureToHalo(double *p, std::vector<Real> &halo)
+void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
 {
     for (int i = 0; i < xSize[2]; i++)
     {
@@ -312,16 +321,15 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
-        if (testCase == 0)
-        {
-            L2_error(time);
-        }
-
-        MPI_Barrier(cart_comm);
+        // if (testCase == 0)
+        // {
+        //     L2_error(time);
+        // }
+        // MPI_Barrier(cart_comm);
         solve_time_step(time);
 
-        if (rank == 0)
-            std::cout << "\rTime: " << time << std::flush;
+        // if (rank == 0)
+        //     std::cout << "\rTime: " << time << std::flush;
         time += DT;
         i++;
     }
@@ -335,9 +343,11 @@ void IcoNS::solve()
 
     output();
     MPI_Barrier(cart_comm);
-    c2d->deallocXYZ(grid.p);
     c2d->deallocXYZ(poissonSolver->py);
     c2d->deallocXYZ(poissonSolver->pz);
+    c2d->deallocXYZ(Y2_p);
+    FFTW_PREFIX(destroy_plan)(poissonSolver->neumann);
+    // fftw_free(poissonSolver->helper);
 }
 
 /*
@@ -509,7 +519,6 @@ void IcoNS::parse_input(const std::string &input_file)
         }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-
     // Calculate grid spacing
     DX = LX / NX;
     DY = LY / NY;
@@ -521,14 +530,13 @@ void IcoNS::parse_input(const std::string &input_file)
 
 void IcoNS::output()
 {
-    copyPressureToHalo(Y2_p, halo_p);
+    copyPressureToHalo(Y2_p, grid.p);
     MPI_Barrier(cart_comm);
-    exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
+    exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
     MPI_Barrier(cart_comm);
     output_x();
     output_y();
     output_z();
-
     output_profile();
 }
 
@@ -543,8 +551,8 @@ void IcoNS::L2_error(const Real t)
 
     MPI_Barrier(cart_comm);
 
-    MPI_Reduce(&error, &velocityError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
-    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_DOUBLE, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&error, &velocityError, 1, MPI_REALL, MPI_SUM, 0, cart_comm);
+    MPI_Reduce(&pressureError, &totalPressureError, 1, MPI_REALL, MPI_SUM, 0, cart_comm);
 
     if (rank == 0)
     {
