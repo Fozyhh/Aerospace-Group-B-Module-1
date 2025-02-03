@@ -70,14 +70,11 @@ public:
   }
 
   /**
-   * @brief Sets up boundary conditions for the simulation.
+   * @brief Parses input configuration file
+   * 
+   * @param input_file Path to input file
    */
-  void setBoundaryConditions();
-
-  /**
-   * @brief Sets up parallel communication patterns and domain decomposition.
-   */
-  void setParallelization();
+  void parse_input(const std::string& input_file);
 
   /**
    * @brief Sets up 2decomp library for domain decomposition.
@@ -89,6 +86,16 @@ public:
    *        depending on the test case.
    */
   void setPoissonSolver();
+
+  /**
+   * @brief Sets up boundary conditions for the simulation.
+   */
+  void setBoundaryConditions();
+
+  /**
+   * @brief Sets up parallel communication patterns and domain decomposition.
+   */
+  void setParallelization();
 
   /**
    * @brief Exchanges ghost cell data between neighboring processes
@@ -197,13 +204,6 @@ public:
    */
   void L2_error(const Real t);
 
-  /**
-   * @brief Parses input configuration file
-   * 
-   * @param input_file Path to input file
-   */
-  void parse_input(const std::string& input_file);
-  
   /**
    * @brief Output functions at final timestep
    */

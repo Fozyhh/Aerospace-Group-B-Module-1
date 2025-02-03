@@ -73,6 +73,7 @@ void IcoNS::setBoundaryConditions()
     }
 }
 
+
 void IcoNS::setParallelization()
 {
     dims[0] = PX;
@@ -86,7 +87,6 @@ void IcoNS::setParallelization()
     dim_y_z = (NY + 1) / PY;
     dim_z = NZ + 1;
     dim_z_z = NZ;
-
 
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &cart_comm);
 
@@ -219,6 +219,7 @@ void IcoNS::setParallelization()
     MPI_Type_commit(&MPI_face_y_p);
 }
 
+
 void IcoNS::set2Decomp()
 {
     c2d = new C2Decomp(NZ+1, NY+1, NX+1, PY, PX, periodss);
@@ -244,6 +245,7 @@ void IcoNS::set2Decomp()
     c2d->allocX(Y2_p);
 }
 
+
 void IcoNS::setPoissonSolver()
 {
     if (testCase == 1)
@@ -260,6 +262,7 @@ void IcoNS::setPoissonSolver()
     }
 }
 
+
 void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, int dim_z, MPI_Datatype MPI_face_x, MPI_Datatype MPI_face_y, int sameX, int sameY)
 {
     if (!(BY && coords[1] == 0))
@@ -273,6 +276,7 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
         MPI_Recv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &status);
         MPI_Send(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm);
     }
+
     if (!(BY && coords[1] == 0))
     {
         MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &status);
@@ -282,16 +286,19 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
     {
         MPI_Send(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm);
     }
+
     if (!(BX && coords[0] == PX - 1))
     {
         MPI_Recv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &status);
         MPI_Send(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm);
     }
+
     if (!(BX && coords[0] == 0))
     {
         MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &status);
     }
 }
+
 
 void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
 {
@@ -306,6 +313,7 @@ void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
         }
     }
 }
+
 
 void IcoNS::solve()
 {
@@ -350,11 +358,7 @@ void IcoNS::solve()
     // fftw_free(poissonSolver->helper);
 }
 
-/*
-vtk file : 3 slices for x=0, y=0, z=0
-    all of it for all vars u,v,w,p
-two profile*.dat , containing 3 1D arrays of the solution at time=0 and time=final
-*/
+
 void IcoNS::parse_input(const std::string &input_file)
 {
     std::ifstream file(input_file);

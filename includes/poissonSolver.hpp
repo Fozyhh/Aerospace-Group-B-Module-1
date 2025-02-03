@@ -17,16 +17,15 @@
  * This class leverages the FFTW library for efficient Fourier transforms and integrates with the 
  * C2Decomp library for parallel decomposition. It provides methods for solving Poisson's equation.
  */
-
 class PoissonSolver
 {
 
 protected:
     
-    /// @brief Pointer to the C2Decomp object for parallel decomposition.
+    // Pointer to the C2Decomp object for parallel decomposition.
     C2Decomp *c2d;
 
-    /// @brief Arrays holding grid size information for each view.
+    // Arrays holding grid size information for each view.
     int xSize[3], ySize[3], zSize[3];
 
 public: 
