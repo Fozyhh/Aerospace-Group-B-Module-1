@@ -496,11 +496,16 @@ void IcoNS::output_z()
 void IcoNS::output_profile()
 {
     const std::string filename = "profile" + std::to_string(testCase) + ".dat";
+    const std::string filenametxt = "profile" + std::to_string(testCase) + ".txt";
+    if (rank == 0){
+        std::remove(filename.c_str());
+        std::remove(filenametxt.c_str());
+    }
     MPI_File fh;
     MPI_File_open(cart_comm, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     MPI_Offset offset = coords[1] * xSize[1] * sizeof(Real) * 7;
     // LINE 1
-    if (coords[0] == (PX - 1) / 2)
+    if (coords[0] == static_cast<int>(PX / 2))
     {
         const Real xCoord = SX + LX / 2;
         Real yCoord = SY + coords[1] * xSize[1] * DY;
@@ -520,36 +525,36 @@ void IcoNS::output_profile()
 
             if (PX % 2 == 0)
             {
-                u = (grid.u[getx(newDimX_x - 2, i, (dim_z - 1) / 2)] +
-                     grid.u[getx(newDimX_x - 2, i, (dim_z - 1) / 2 + 1)]) /
+                u = (grid.u[getx(1, i, (dim_z - 1) / 2)] +
+                     grid.u[getx(1, i, (dim_z - 1) / 2 + 1)]) /
                     2;
                 if (lby && i == 1)
                 {
-                    v = boundary.boundary_value_v[2]->value(xCoord, yCoord-DY/2, zCoord, DT*Nt);
+                    v = boundary.boundary_value_v[FRONT]->value(xCoord, yCoord-DY/2, zCoord, DT*Nt);
                 }
                 else if (rby && i == xSize[1])
                 {
-                    v = boundary.boundary_value_v[3]->value(xCoord, yCoord-DY/2, zCoord, DT*Nt);
+                    v = boundary.boundary_value_v[BACK]->value(xCoord, yCoord-DY/2, zCoord, DT*Nt);
                 }
                 else
                 {
-                    v = (grid.v[gety(newDimX_y - 2, i, (dim_z - 1) / 2)] +
-                         grid.v[gety(newDimX_y - 2, i, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(newDimX_y - 2, i - 1, (dim_z - 1) / 2)] +
-                         grid.v[gety(newDimX_y - 2, i - 1, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(newDimX_y - 1, i, (dim_z - 1) / 2)] +
-                         grid.v[gety(newDimX_y - 1, i, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(newDimX_y - 1, i - 1, (dim_z - 1) / 2)] +
-                         grid.v[gety(newDimX_y - 1, i - 1, (dim_z - 1) / 2 + 1)]) /
+                    v = (grid.v[gety(0, i, (dim_z - 1) / 2)] +
+                         grid.v[gety(0, i, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(0, i - 1, (dim_z - 1) / 2)] +
+                         grid.v[gety(0, i - 1, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(1, i, (dim_z - 1) / 2)] +
+                         grid.v[gety(1, i, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(1, i - 1, (dim_z - 1) / 2)] +
+                         grid.v[gety(1, i - 1, (dim_z - 1) / 2 + 1)]) /
                         8;
                 }
-                w = (grid.w[getz(newDimX_z - 2, i, (dim_z_z) / 2)] +
-                     grid.w[getz(newDimX_z - 1, i, (dim_z_z) / 2)]) /
+                w = (grid.w[getz(0, i, (dim_z_z) / 2)] +
+                     grid.w[getz(1, i, (dim_z_z) / 2)]) /
                     2;
-                p = (grid.p[getHaloP(xSize[2] - 2, i, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(xSize[2] - 2, i, (xSize[0] - 1) / 2 + 1)] +
-                     grid.p[getHaloP(xSize[2] - 1, i, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(xSize[2] - 1, i, (xSize[0] - 1) / 2 + 1)]) /
+                p = (grid.p[getHaloP(0, i, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(0, i, (xSize[0] - 1) / 2 + 1)] +
+                     grid.p[getHaloP(1, i, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(1, i, (xSize[0] - 1) / 2 + 1)]) /
                     4;
             }
             else
@@ -600,7 +605,7 @@ void IcoNS::output_profile()
     }
 
     // LINE 2
-    if (coords[1] == (PY - 1) / 2)
+    if (coords[1] == static_cast<int>(PY / 2))
     {
         offset = PY * xSize[1] * sizeof(Real) * 7 + coords[0] * xSize[2] * sizeof(Real) * 7;
         Real xCoord = SX + coords[0] * xSize[2] * DX;
@@ -623,34 +628,34 @@ void IcoNS::output_profile()
             {
                 if (lbx && i == 1)
                 {
-                    u = boundary.boundary_value_u[0]->value(xCoord - DX / 2, yCoord, zCoord, DT*Nt);
+                    u = boundary.boundary_value_u[LEFT]->value(xCoord - DX / 2, yCoord, zCoord, DT*Nt);
                 }
                 else if (rbx && i == xSize[2])
                 {
-                    u = boundary.boundary_value_u[1]->value(xCoord - DX / 2, yCoord, zCoord, DT*Nt);
+                    u = boundary.boundary_value_u[RIGHT]->value(xCoord - DX / 2, yCoord, zCoord, DT*Nt);
                 }
                 else
                 {
-                    u = (grid.u[getx(i, newDimY_x - 2, (dim_z - 1) / 2)] +
-                         grid.u[getx(i, newDimY_x - 2, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i, newDimY_x - 1, (dim_z - 1) / 2)] +
-                         grid.u[getx(i, newDimY_x - 1, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i - 1, newDimY_x - 2, (dim_z - 1) / 2)] +
-                         grid.u[getx(i - 1, newDimY_x - 2, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i - 1, newDimY_x - 1, (dim_z - 1) / 2)] +
-                         grid.u[getx(i - 1, newDimY_x - 1, (dim_z - 1) / 2 + 1)]) /
+                    u = (grid.u[getx(i, 0, (dim_z - 1) / 2)] +
+                         grid.u[getx(i, 0, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i, 1, (dim_z - 1) / 2)] +
+                         grid.u[getx(i, 1, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i - 1, 0, (dim_z - 1) / 2)] +
+                         grid.u[getx(i - 1, 0, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i - 1, 1, (dim_z - 1) / 2)] +
+                         grid.u[getx(i - 1, 1, (dim_z - 1) / 2 + 1)]) /
                         8;
                 }
-                v = (grid.v[gety(i, newDimY_y - 2, (dim_z - 1) / 2)] +
-                     grid.v[gety(i, newDimY_y - 2, (dim_z - 1) / 2 + 1)]) /
+                v = (grid.v[gety(i, 0, (dim_z - 1) / 2)] +
+                     grid.v[gety(i, 0, (dim_z - 1) / 2 + 1)]) /
                     2;
-                w = (grid.w[getz(i, newDimY_z - 2, (dim_z_z) / 2)] +
-                     grid.w[getz(i, newDimY_z - 1, (dim_z_z) / 2)]) /
+                w = (grid.w[getz(i, 0, (dim_z_z) / 2)] +
+                     grid.w[getz(i, 1, (dim_z_z) / 2)]) /
                     2;
-                p = (grid.p[getHaloP(i, xSize[1] - 2, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(i, xSize[1] - 2, (xSize[0] - 1) / 2 + 1)] +
-                     grid.p[getHaloP(i, xSize[1] - 1, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(i, xSize[1] - 1, (xSize[0] - 1) / 2 + 1)]) /
+                p = (grid.p[getHaloP(i, 0, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(i, 0, (xSize[0] - 1) / 2 + 1)] +
+                     grid.p[getHaloP(i, 1, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(i, 1, (xSize[0] - 1) / 2 + 1)]) /
                     4;
             }
             else
@@ -701,7 +706,7 @@ void IcoNS::output_profile()
     // LINE 3
     if (testCase == 2)
     {
-        if (coords[0] == (PX - 1) / 2 && coords[1] == (PY - 1) / 2)
+        if (coords[0] == static_cast<int>(PX / 2) && coords[1] == static_cast<int>(PY / 2))
         {
             offset = (PX * xSize[2] + PY * xSize[1]) * sizeof(Real) * 7;
             const Real xCoord = SX + LX / 2;
@@ -712,10 +717,10 @@ void IcoNS::output_profile()
             int iX, iY, iZ, iP, jX, jY, jZ, jP;
             if (PX % 2 == 0)
             {
-                iX = newDimX_x - 2;
-                iY = newDimX_y - 2;
-                iZ = newDimX_z - 2;
-                iP = xSize[2] - 2;
+                iX = 0;
+                iY = 0;
+                iZ = 0;
+                iP = 0;
             }
             else
             {
@@ -726,10 +731,10 @@ void IcoNS::output_profile()
             }
             if (PY % 2 == 0)
             {
-                jX = newDimY_x - 2;
-                jY = newDimY_y - 2;
-                jZ = newDimY_z - 2;
-                jP = xSize[1] - 2;
+                jX = 0;
+                jY = 0;
+                jZ = 0;
+                jP = 0;
             }
             else
             {
@@ -800,7 +805,7 @@ void IcoNS::output_profile()
     {
         int count = 0;
         std::ifstream input(filename, std::ios::binary);
-        std::ofstream output("profile" + std::to_string(testCase) + ".txt");
+        std::ofstream output(filenametxt);
         output << "Line 1" << std::endl;
         output << "x y z u v w p" << std::endl;
         Real value;
