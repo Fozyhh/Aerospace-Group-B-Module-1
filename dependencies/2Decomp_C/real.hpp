@@ -1,4 +1,4 @@
-#ifndef USING_DOUBLE || USING_FLOAT
+#if !defined(USING_FLOAT) && !defined(USING_DOUBLE) 
 #define USING_DOUBLE
 #endif
 
