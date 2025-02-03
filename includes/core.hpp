@@ -84,7 +84,7 @@ public:
 
     // pencils allocation
     c2d->allocX(grid.p);
-    c2d->allocX(Phi_p);
+    // c2d->allocX(Phi_p);
     c2d->allocX(Y2_p);
   }
 
@@ -242,7 +242,7 @@ private:
   std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
   std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
   std::vector<Real> halo_p{},halo_phi{};
-  Real* Phi_p{};
+  // Real* Phi_p{};
 
   //TODO: change to vectors (*double))
   Real* Y2_p;

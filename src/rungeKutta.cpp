@@ -125,7 +125,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                Phi_p[getp(i, j, k)] = Y2_p[getp(i, j, k)] + grid.p[getp(i, j, k)];
+                halo_phi[getHaloP(i+1, j+1, k)] = Y2_p[getp(i, j, k)] + grid.p[getp(i, j, k)];
             }
         }
     }
@@ -136,7 +136,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y2_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 3) Phi_p exchange
-    copyPressureToHalo(Phi_p, halo_phi);
+    // copyPressureToHalo(Phi_p, halo_phi);
     // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
@@ -257,7 +257,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                Phi_p[getp(i, j, k)] = Y2_p[getp(i, j, k)] + Phi_p[getp(i, j, k)]; // Phi_p=phi^3
+                halo_phi[getHaloP(i+1, j+1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i+1, j+1, k)]; // Phi_p=phi^3
             }
         }
     }
@@ -268,7 +268,7 @@ void IcoNS::solve_time_step(Real time)
     exchangeData(Y3_z, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 4) Phi_p exchange
-    copyPressureToHalo(Phi_p, halo_phi);
+    // copyPressureToHalo(Phi_p, halo_phi);
     // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
@@ -341,6 +341,7 @@ void IcoNS::solve_time_step(Real time)
 
     poissonSolver->solveNeumannPoisson(Y2_p);
     // MPI_Barrier(cart_comm);
+
     copyPressureToHalo(Y2_p, halo_p);
     // MPI_Barrier(cart_comm);
     exchangeData(halo_p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
@@ -381,7 +382,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                grid.p[getp(i, j, k)] = Y2_p[getp(i, j, k)] + Phi_p[getp(i, j, k)];
+                grid.p[getp(i, j, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i+1, j+1, k)];
             }
         }
     }
