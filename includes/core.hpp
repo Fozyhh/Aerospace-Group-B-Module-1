@@ -71,24 +71,22 @@ public:
   }
 
   /**
-   * @brief Initializes the grid and problem setup
+   * @brief Sets up boundary conditions for the simulation.
    */
-  void preprocessing();
-
   void setBoundaryConditions();
 
   /**
-   * @brief Sets up parallel communication patterns and domain decomposition
+   * @brief Sets up parallel communication patterns and domain decomposition.
    */
   void setParallelization();
 
   /**
-   * 
+   * @brief Sets up 2decomp library for domain decomposition.
    */
   void set2Decomp();
 
   /**
-   * 
+   * @brief Sets up Poisson solver for pressure calculation.
    */
   void setPoissonSolver();
 

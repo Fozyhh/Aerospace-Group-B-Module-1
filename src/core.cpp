@@ -1,26 +1,5 @@
 #include "core.hpp"
 
-
-void IcoNS::preprocessing(/*std::string &input_file*/)
-
-{
-    
-
-    // for(int i=0; i<xSize[0]*xSize[1]*xSize[2]; i++){
-    //     grid.p[i]=0.0;
-    //     Phi_p[i]=0.0;
-    //     Y2_p[i]=0.0;
-    // } // should be done at resize like the others
-
-    // for (int i = 0; i < NX * NY * (NZ/2 + 1); i++)
-    // {
-    //     helper[i][0] = 0.0;
-    //     helper[i][1] = 0.0;
-    // }
-
-    
-}
-
 void IcoNS::setBoundaryConditions()
 {
     std::shared_ptr<BoundaryFunction> u_func;
