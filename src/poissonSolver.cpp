@@ -85,7 +85,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     }
 }
 
-void DirichletPoissonSolver::solvePoisson(Real *F)
+void PeriodicPoissonSolver::solvePoisson(Real *F)
 {
 
     // 1. X-Direction Transforms

@@ -253,7 +253,7 @@ void IcoNS::setPoissonSolver()
     }
     else if (testCase == 2)
     {
-        poissonSolver = new DirichletPoissonSolver(c2d);
+        poissonSolver = new PeriodicPoissonSolver(c2d);
     }
     else
     {

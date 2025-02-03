@@ -67,10 +67,10 @@ public:
 /**
  * @brief Poisson solver for Dirichlet boundary conditions. (test2)
  */
-class DirichletPoissonSolver : public PoissonSolver
+class PeriodicPoissonSolver : public PoissonSolver
 {
 public:
-    DirichletPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
+    PeriodicPoissonSolver(C2Decomp *c2d): PoissonSolver(c2d)
     {}
 
     void solvePoisson(Real* F) override;
