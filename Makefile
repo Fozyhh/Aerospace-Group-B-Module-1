@@ -2,8 +2,9 @@
 # Compiler and Basic Flags     #
 ################################
 CXX = mpic++
-CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native 
-CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall
+REALTYPE = -DUSING_DOUBLE #-DUSING_FLOAT
+CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) 
+CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE)
 
 
 ################################
@@ -20,7 +21,8 @@ INCLUDES = -I./includes \
           -I$(DECOMP_DIR) \
           -I$(mkFftwInc)
 LIBS = -lfftw3_mpi -lfftw3 -lm -lstdc++ \
-        -L$(mkFftwLib)  $(mkFftwLib)/libfftw3f.so
+        -L$(mkFftwLib)  \
+        -lfftw3f
 
 ################################
 # Source Files                 #

@@ -1,5 +1,3 @@
-#define USING_DOUBLE
-
 #ifdef USING_DOUBLE
 #define Real double
 #define MPI_REALL MPI_DOUBLE
