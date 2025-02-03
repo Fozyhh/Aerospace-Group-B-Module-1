@@ -1,15 +1,7 @@
 #include "boundary.hpp"
 #include <iostream>
 
-/**
- * @brief The method is called by the program multiple during the time step, in order to update the values of the boundaries at each
- * requested time t, calculating the approximated ones too.
- *
- * @param Yx Boundary x velocities for the Y intermediate function related to the x direction.
- * @param Yy Boundary y velocities for the Y intermediate function related to the y direction.
- * @param Yz Boundary z velocities for the Y intermediate function related to the z direction.
- * @param t Time of the time discretization we are considering.
- */
+
 void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std::vector<Real> &Yz, Real t)
 {
     int face;
@@ -283,6 +275,7 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     }
 }
 
+
 Real Boundary::approximate_boundary_u(int x, int y, int z, Real t, int face, int side)
 {
 
@@ -291,6 +284,7 @@ Real Boundary::approximate_boundary_u(int x, int y, int z, Real t, int face, int
 
     return boundary_value_u[face]->value((x - 0.5), y, z, t) - (dv + dw) * (DX / 2) * side;
 }
+
 
 Real Boundary::approximate_boundary_v(int x, int y, int z, Real t, int face, int side)
 {
@@ -305,6 +299,7 @@ Real Boundary::approximate_boundary_v(int x, int y, int z, Real t, int face, int
     return boundary_value_v[face]->value(x, y - 0.5, z, t) - (du + dw) * (DY / 2.0) * side;
 }
 
+
 Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int side)
 {
     Real du = ((boundary_value_u[face]->value(x, y, z, t)) -
@@ -316,6 +311,7 @@ Real Boundary::approximate_boundary_w(int x, int y, int z, Real t, int face, int
               (DY);
     return boundary_value_w[face]->value(x, y, z - 0.5, t) - (du + dv) * (DZ / 2) * side;
 }
+
 
 void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x)
 {
@@ -331,7 +327,8 @@ void Boundary::addFunction(Direction direction, std::shared_ptr<BoundaryFunction
         boundary_value_w.push_back(x);
         break;
     }
-};
+}
+
 
 void Boundary::setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_, int lbz_, int rbz_)
 {
@@ -343,11 +340,13 @@ void Boundary::setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_, int lb
     rbz = rbz_;
 }
 
+
 void Boundary::setCoords(int coords_[2])
 {
     coords[0] = coords_[0];
     coords[1] = coords_[1];
 }
+
 
 void Boundary::setOffsets(int offset_x_x_, int offset_y_x_, int offset_x_y_, int offset_y_y_, int offset_x_z_, int offset_y_z_)
 {

@@ -253,7 +253,7 @@ private:
   std::vector<Real> halo_phi{};
   Real* Y2_p;
 
-  // periodicity for 2decomp
+  // Periodicity for 2decomp
   bool periodss[3] = {false, true, true};
 
   // Input file.

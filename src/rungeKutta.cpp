@@ -2,10 +2,6 @@
 
 void IcoNS::solve_time_step(Real time)
 {
-
-    // 1) pressure point exchange
-    // copyPressureToHalo(grid.p, grid.p);
-    // MPI_Barrier(cart_comm);
     exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 0; i < xSize[2]; i++)
@@ -61,8 +57,7 @@ void IcoNS::solve_time_step(Real time)
 
     // 3) Update boundaries
     boundary.update_boundary(y2Grid.u, y2Grid.v, y2Grid.w, time + 64.0 / 120.0 * DT);
-    // MPI_Barrier(cart_comm);
-    // Update Halos
+    
     exchangeData(y2Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y2Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y2Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -87,9 +82,7 @@ void IcoNS::solve_time_step(Real time)
 
     // Solve for Pressure
     poissonSolver->solvePoisson(Y2_p);
-    // MPI_Barrier(cart_comm);
     copyPressureToHalo(Y2_p, grid.p);
-    // MPI_Barrier(cart_comm);
     exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     // Update Velocities
@@ -140,14 +133,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    // MPI_Barrier(cart_comm);
     exchangeData(y2Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y2Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y2Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 3) Phi_p exchange
-    // copyPressureToHalo(Phi_p, halo_phi);
-    // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -195,7 +185,6 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(y3Grid.u, y3Grid.v, y3Grid.w, time + 80.0 / 120.0 * DT);
-    // MPI_Barrier(cart_comm);
     exchangeData(y3Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y3Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y3Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -219,10 +208,10 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solvePoisson(Y2_p);
-    // MPI_Barrier(cart_comm);
+    
     // 3) y2_p exchange
     copyPressureToHalo(Y2_p, grid.p);
-    // MPI_Barrier(cart_comm);
+    
     exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
@@ -272,14 +261,11 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    // MPI_Barrier(cart_comm);
     exchangeData(y3Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y3Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y3Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
 
     // 4) Phi_p exchange
-    // copyPressureToHalo(Phi_p, halo_phi);
-    // MPI_Barrier(cart_comm);
     exchangeData(halo_phi, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1 + lbx; i < newDimX_x - 1 - rbx; i++)
@@ -326,7 +312,6 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time + DT);
-    // MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -350,10 +335,7 @@ void IcoNS::solve_time_step(Real time)
     }
 
     poissonSolver->solvePoisson(Y2_p);
-    // MPI_Barrier(cart_comm);
-
     copyPressureToHalo(Y2_p, grid.p);
-    // MPI_Barrier(cart_comm);
     exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
 
     for (int i = 1; i < newDimX_x - 1; i++)
@@ -366,6 +348,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+
     for (int i = 1; i < newDimX_y - 1; i++)
     {
         for (int j = 1; j < newDimY_y - 1; j++)
@@ -376,6 +359,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+
     for (int i = 1; i < newDimX_z - 1; i++)
     {
         for (int j = 1; j < newDimY_z - 1; j++)
@@ -386,6 +370,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+    
     for (int i = 0; i < xSize[2]; i++)
     {
         for (int j = 0; j < xSize[1]; j++)
@@ -398,11 +383,9 @@ void IcoNS::solve_time_step(Real time)
     }
 
     boundary.update_boundary(grid.u, grid.v, grid.w, time);
-    // MPI_Barrier(cart_comm);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
-    // MPI_Barrier(cart_comm);
 }
 
 
@@ -425,6 +408,7 @@ inline Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Rea
     return value;
 }
 
+
 inline Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {   
     Real value = -((u[getx(i + resx, j - resy, k)] + u[getx(i + resx, j - resy + 1, k)] + u[getx(i + resx - 1, j - resy, k)] + u[getx(i + resx - 1, j - resy + 1, k)]) / 4.0 * (v[gety(i + 1, j, k)] - v[gety(i - 1, j, k)]) / (2.0 * DX) +
@@ -439,8 +423,8 @@ inline Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Rea
     return value;
 }
 
-inline Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 
+inline Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
     Real value = -((u[getx(i + resx, j, k)] + u[getx(i + resx, j, k + 1)] + u[getx(i + resx - 1, j, k)] + u[getx(i + resx - 1, j, k + 1)]) / 4.0 * (w[getz(i + 1, j, k)] - w[getz(i - 1, j, k)]) / (2.0 * DX) +
              (v[gety(i, j + resy, k)] + v[gety(i, j + resy - 1, k)] + v[gety(i, j + resy, k + 1)] + v[gety(i, j + resy - 1, k + 1)]) / 4.0 * (w[getz(i, j + 1, k)] - w[getz(i, j - 1, k)]) / (2.0 * DY) +
@@ -466,6 +450,7 @@ Real IcoNS::functionG_u(int i, int j, int k, Real t)
            3.0 / RE * std::sin(x) * std::cos(y) * std::sin(z) * std::sin(t) - std::sin(x) * std::cos(y) * std::cos(z) * std::sin(t);
 }
 
+
 Real IcoNS::functionG_v(int i, int j, int k, Real t)
 {
     Real x = i * DX;
@@ -478,6 +463,7 @@ Real IcoNS::functionG_v(int i, int j, int k, Real t)
            2.0 * std::cos(x) * std::cos(x) * std::sin(y) * std::cos(y) * std::cos(z) * std::cos(z) * std::sin(t) * std::sin(t) +
            3.0 / RE * std::cos(x) * std::sin(y) * std::sin(z) * std::sin(t) - std::cos(x) * std::sin(y) * std::cos(z) * std::sin(t);
 }
+
 
 Real IcoNS::functionG_w(int i, int j, int k, Real t)
 {

@@ -152,7 +152,6 @@ void IcoNS::setParallelization()
     y3Grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
     grid.p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
-    // halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
     halo_phi.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
 
     if (BX)
@@ -329,15 +328,7 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
-        // if (testCase == 0)
-        // {
-        //     L2_error(time);
-        // }
-        // MPI_Barrier(cart_comm);
         solve_time_step(time);
-
-        // if (rank == 0)
-        //     std::cout << "\rTime: " << time << std::flush;
         time += DT;
         i++;
     }
@@ -355,7 +346,6 @@ void IcoNS::solve()
     c2d->deallocXYZ(poissonSolver->pz);
     c2d->deallocXYZ(Y2_p);
     FFTW_PREFIX(destroy_plan)(poissonSolver->neumann);
-    // fftw_free(poissonSolver->helper);
 }
 
 
@@ -532,6 +522,7 @@ void IcoNS::parse_input(const std::string &input_file)
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
+
 void IcoNS::output()
 {
     copyPressureToHalo(Y2_p, grid.p);
@@ -543,6 +534,7 @@ void IcoNS::output()
     output_z();
     output_profile();
 }
+
 
 void IcoNS::L2_error(const Real t)
 {

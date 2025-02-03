@@ -1,9 +1,7 @@
 #include "poissonSolver.hpp"
 
 void NeumannPoissonSolver::solvePoisson(Real *F)
-
 {
-
     // 1. X-Direction Transforms
     neumann = FFTW_PREFIX(plan_r2r_1d)(xSize[0], nullptr, nullptr, FFTW_REDFT00, FFTW_ESTIMATE);
     for (int i = 0; i < xSize[2] * xSize[1]; i++)
