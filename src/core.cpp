@@ -12,7 +12,7 @@ void IcoNS::setBoundaryConditions()
                                              { return 0; });
         v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                              { return 0.0; });
-        w_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
+        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                               { return 1.0; });
         w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
                                              { return 0; });
@@ -20,14 +20,14 @@ void IcoNS::setBoundaryConditions()
         {
             boundary.addFunction(U, u_func);
 
-            boundary.addFunction(V, v_func);
+            boundary.addFunction(W, v_func);
             if (i == RIGHT)
             {
-                boundary.addFunction(W, w_func1);
+                boundary.addFunction(V, v_func1);
             }
             else
             {
-                boundary.addFunction(W, w_func);
+                boundary.addFunction(V, v_func);
             }
         }
     }
@@ -420,7 +420,7 @@ void IcoNS::parse_input(const std::string &input_file)
         if (line.empty() || line[0] == '#')
             continue;
         std::istringstream iss(line);
-        if (!(iss >> SX >> SZ >> SY))
+        if (!(iss >> SX >> SY >> SZ))
             continue;
         break;
     }
@@ -438,8 +438,8 @@ void IcoNS::parse_input(const std::string &input_file)
         try
         {
             LX = evaluateExpression(sx);
-            LZ = evaluateExpression(sy);
-            LY = evaluateExpression(sz);
+            LY = evaluateExpression(sy);
+            LZ = evaluateExpression(sz);
             break;
         }
         catch (const std::exception &e)
