@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
     IcoNS icoNS(MPI_COMM_WORLD, argv[1], rank, size);
 
-    icoNS.preprocessing();
+    // icoNS.preprocessing();
 
     icoNS.solve();
 

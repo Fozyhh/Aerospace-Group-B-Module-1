@@ -87,6 +87,11 @@ void NeumannPoissonSolver::solvePoisson(double *F)
     }
 }
 
+void DirichletPoissonSolver::solvePoisson(double *F)
+{
+    return;
+}
+
 // void PoissonSolver::solveDirichletPoisson(std::vector<Real> &F_dP, fftw_complex *FD)
 // {
 //     bool periodicBC[3] = {periodicX, periodicY, periodicZ};
