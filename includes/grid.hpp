@@ -3,9 +3,8 @@
  * @brief Defines the staggered grid structure for the fluid simulation domain
  *
  * This file implements a staggered grid arrangement commonly used in computational
- * fluid dynamics. In a staggered grid, velocity components are stored at cell faces
- * while pressure values are stored at cell centers, improving numerical stability
- * and avoiding checker-board pressure patterns.
+ * fluid dynamics. The grid structure stores velocity at cell faces and 
+ * pressure at cell vertices.
  */
 
 #ifndef GRID_HPP
