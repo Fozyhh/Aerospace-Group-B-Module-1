@@ -17,7 +17,7 @@
 
 /**
  * @struct Grid
- * @brief Structure representing the staggered grid arrangement for the fluid domain
+ * @brief Structure representing the staggered grid arrangement for the fluid domain.
  *
  * @details
  * The grid uses a staggered arrangement where:
@@ -39,8 +39,28 @@ struct Grid
     std::vector<double> u;     ///< x-velocity components
     std::vector<double> v;     ///< y-velocity components
     std::vector<double> w;     ///< z-velocity components
-    double *p;                 // x-pencil
+    double *p;                 // x-pencil      
 
+};
+
+/**
+ * @brief Structure representing the intermediate velocity components.
+ */
+struct Y2Grid
+{
+    std::vector<double> u;     ///< x-velocity components
+    std::vector<double> v;     ///< y-velocity components
+    std::vector<double> w;     ///< z-velocity components
+};
+
+/**
+ * @brief Structure representing the intermediate velocity components.
+ */
+struct Y3Grid
+{
+    std::vector<double> u;     ///< x-velocity components
+    std::vector<double> v;     ///< y-velocity components
+    std::vector<double> w;     ///< z-velocity components
 };
 
 #endif // GRID_HPP

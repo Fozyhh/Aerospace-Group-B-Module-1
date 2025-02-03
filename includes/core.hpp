@@ -218,8 +218,11 @@ private:
   /// @brief Exact solution object
   ExactSolution exact_solution;
 
-  /// @brief Grid data structure
+  /// @brief Grid data structures
   Grid grid;
+  Y2Grid y2Grid;
+  Y3Grid y3Grid;
+
 
   /// @brief 2decomp library object
   C2Decomp *c2d;
@@ -230,8 +233,6 @@ private:
   int xSize[3], ySize[3], zSize[3];
 
   /// @brief Intermediate solution vectors
-  std::vector<Real> Y2_x{}, Y2_y{}, Y2_z{};
-  std::vector<Real> Y3_x{}, Y3_y{}, Y3_z{};
   std::vector<Real> halo_p{},halo_phi{};
   double* Phi_p{};
 

@@ -137,13 +137,13 @@ void IcoNS::setParallelization()
     grid.u.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
     grid.v.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
     grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
-    Y2_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y2_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y2_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    y2Grid.u.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+    y2Grid.v.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+    y2Grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
-    Y3_x.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
-    Y3_y.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
-    Y3_z.resize(newDimX_z * newDimY_z * (NZ), 0.0);
+    y3Grid.u.resize(newDimX_x * newDimY_x * (NZ + 1), 0.0);
+    y3Grid.v.resize(newDimX_y * newDimY_y * (NZ + 1), 0.0);
+    y3Grid.w.resize(newDimX_z * newDimY_z * (NZ), 0.0);
 
     halo_p.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
     halo_phi.resize((xSize[2] + 2) * (xSize[1] + 2) * xSize[0], 0.0);
@@ -243,7 +243,7 @@ void IcoNS::setPoissonSolver()
     }
     else
     {
-        poissonSolver = new DirichletPoissonSolver(c2d);
+        poissonSolver = new NeumannPoissonSolver(c2d);
     }
 }
 
