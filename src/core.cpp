@@ -1,5 +1,6 @@
 #include "core.hpp"
 
+
 void IcoNS::setBoundaryConditions()
 {
     std::shared_ptr<BoundaryFunction> u_func;
@@ -324,9 +325,11 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
+        #ifdef ERROR
         if(testCase==0){
             L2_error(time);
         }
+        #endif
         solve_time_step(time);
         time += DT;
         i++;

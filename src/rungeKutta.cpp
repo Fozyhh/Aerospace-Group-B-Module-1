@@ -128,17 +128,16 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < xSize[2]; i++)
+    for (int i = lbx; i < xSize[2] -rbx; i++)
     {
-        for (int j = 0; j < xSize[1]; j++)
+        for (int j = lby; j < xSize[1] - rby; j++)
         {
-            for (int k = 0; k < xSize[0]; k++)
+            for (int k = lbz; k < xSize[0] - rbz; k++)
             {
                 halo_phi[getHaloP(i + 1, j + 1, k)] += Y2_p[getp(i, j, k)];
             }
         }
     }
-    boundary.update_boundary(y2Grid.u, y2Grid.v, y2Grid.w, time + 64.0 / 120.0 * DT);
 
     exchangeData(y2Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y2Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
@@ -259,17 +258,17 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < xSize[2]; i++)
+    for (int i = lbx; i < xSize[2] - rbx; i++)
     {
-        for (int j = 0; j < xSize[1]; j++)
+        for (int j = lby; j < xSize[1] - rby; j++)
         {
-            for (int k = 0; k < xSize[0]; k++)
+            for (int k = lbz; k < xSize[0] - rbz; k++)
             {
                 halo_phi[getHaloP(i + 1, j + 1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i + 1, j + 1, k)]; // Phi_p=phi^3
             }
         }
     }
-    boundary.update_boundary(y3Grid.u, y3Grid.v, y3Grid.w, time + 80.0 / 120.0 * DT);
+
     exchangeData(y3Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y3Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y3Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -377,18 +376,17 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    for (int i = 0; i < xSize[2]; i++)
+    for (int i = lbx; i < xSize[2] - rbx; i++)
     {
-        for (int j = 0; j < xSize[1]; j++)
+        for (int j = lby; j < xSize[1] - rby; j++)
         {
-            for (int k = 0; k < xSize[0]; k++)
+            for (int k = lbz; k < xSize[0] - rbz; k++)
             {
                 grid.p[getHaloP(i + 1, j + 1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i + 1, j + 1, k)];
             }
         }
     }
 
-    boundary.update_boundary(grid.u, grid.v, grid.w, time+DT);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -406,11 +404,12 @@ inline Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Rea
                        4.0 *
                        (u[getx(i, j, k + 1)] - u[getx(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((u[getx(i + 1, j, k)] - 2 * u[getx(i, j, k)] + u[getx(i - 1, j, k)]) / (DX * DX) + (u[getx(i, j + 1, k)] - 2 * u[getx(i, j, k)] + u[getx(i, j - 1, k)]) / (DY * DY) + (u[getx(i, j, k + 1)] - 2 * u[getx(i, j, k)] + u[getx(i, j, k - 1)]) / (DZ * DZ));
-
+    #ifdef ERROR
     if (testCase == 0)
     {
         value += functionG_u(i - 1 + offset_x_x, j - 1 + offset_y_x, k, t);
     }
+    #endif
     return value;
 }
 
@@ -421,12 +420,12 @@ inline Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Rea
                    v[gety(i, j, k)] * (v[gety(i, j + 1, k)] - v[gety(i, j - 1, k)]) / (2.0 * DY) +
                    (w[getz(i, j - resy, k)] + w[getz(i, j - resy + 1, k)] + w[getz(i, j - resy, k - 1)] + w[getz(i, j - resy + 1, k - 1)]) / 4.0 * (v[gety(i, j, k + 1)] - v[gety(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((v[gety(i + 1, j, k)] - 2 * v[gety(i, j, k)] + v[gety(i - 1, j, k)]) / (DX * DX) + (v[gety(i, j + 1, k)] - 2 * v[gety(i, j, k)] + v[gety(i, j - 1, k)]) / (DY * DY) + (v[gety(i, j, k + 1)] - 2 * v[gety(i, j, k)] + v[gety(i, j, k - 1)]) / (DZ * DZ));
-
+    #ifdef ERROR
     if (testCase == 0)
     {
         value += functionG_v(i - 1 + offset_x_y, j - 1 + offset_y_y, k, t);
     }
-
+    #endif
     return value;
 }
 
@@ -436,10 +435,12 @@ inline Real IcoNS::functionF_w(const std::vector<Real> &u, const std::vector<Rea
                    (v[gety(i, j + resy, k)] + v[gety(i, j + resy - 1, k)] + v[gety(i, j + resy, k + 1)] + v[gety(i, j + resy - 1, k + 1)]) / 4.0 * (w[getz(i, j + 1, k)] - w[getz(i, j - 1, k)]) / (2.0 * DY) +
                    w[getz(i, j, k)] * (w[getz(i, j, k + 1)] - w[getz(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((w[getz(i + 1, j, k)] - 2 * w[getz(i, j, k)] + w[getz(i - 1, j, k)]) / (DX * DX) + (w[getz(i, j + 1, k)] - 2 * w[getz(i, j, k)] + w[getz(i, j - 1, k)]) / (DY * DY) + (w[getz(i, j, k + 1)] - 2 * w[getz(i, j, k)] + w[getz(i, j, k - 1)]) / (DZ * DZ));
+    #ifdef ERROR
     if (testCase == 0)
     {
         value += functionG_w(i - 1 + offset_x_z, j - 1 + offset_y_z, k, t);
     }
+    #endif
     return value;
 }
 

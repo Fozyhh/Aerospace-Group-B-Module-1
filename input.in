@@ -5,10 +5,10 @@
 1000
 
 # Time step: dt
-0.001
+0.01
 
 # Number of time steps: Nt
-2
+250
 
 # Start of domain: SX,SY,SZ
 0.0 0.0 0.0

@@ -13,10 +13,16 @@ aerospace-group-b-module-1/
 
 ## Building and Running
 
-### Standard Build
+### Error Calculate Build 
 ```bash
 make
-mpirun -np X ./build/main input.in   # Where X is number of processes
+mpirun -n X ./build/main input.in   # Where X is number of processes 
+```
+Need to de-comment "#define ERROR" and do a make clean
+### Test Build 
+```bash
+make
+mpirun -n X ./build/main test1.in   # Or test2
 ```
 
 ### Clean Build
@@ -24,13 +30,9 @@ mpirun -np X ./build/main input.in   # Where X is number of processes
 make clean
 ```
 
-### Running Tests
-Tests can be run using the test executable in the Test directory:
+### Small note
+Complications with 2 decomp compatibility lead to have only codes where every processor has the same number of points for pressure being able to run.
 
-```bash
-cd Test
-./run_tests
-```
 
 ## Python Analysis Scripts
 ### Dependencies
@@ -51,4 +53,4 @@ python3 script.py
 Additional documentation can be found in the doc directory.
 
 ## Input Configuration
-Program settings can be modified in input.in file.
+Program settings can be modified in input.in and test1.in and test2.in files.

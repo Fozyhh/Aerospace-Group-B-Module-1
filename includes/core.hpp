@@ -10,6 +10,8 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+//#define ERROR
+
 #include "real.hpp"
 #include "utils.hpp"
 #include "boundary.hpp"
