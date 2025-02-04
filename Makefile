@@ -5,9 +5,13 @@ CXX = mpic++
 REALTYPE = -DUSING_DOUBLE
 # REALTYPE = -DUSING_FLOAT
 
+MPI_CXXFLAGS  = $(shell mpic++ --showme:compile)  # Get MPI compile flags
+MPI_LDFLAGS   = $(shell mpic++ --showme:link)     # Get MPI link flags
+
+
 # Optimized flags for performance
-CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) 
-CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE)
+CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) $(MPI_CXXFLAGS)
+CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE) $(MPI_CXXFLAGS)
 
 # Debug flags for Valgrind
 CXXFLAGS_DEBUG = -std=c++23 -O0 -g -Wall -DDEBUG $(REALTYPE)
@@ -71,13 +75,13 @@ dirs:
 	@mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/main: $(OBJECTS) $(DECOMP_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS) $(MPI_LDFLAGS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS3) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS3) $(INCLUDES) -c $< -o $@ $(MPI_LDFLAGS)
 
 $(DECOMP_DIR)/%.o: $(DECOMP_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@ $(MPI_LDFLAGS)
 
 $(DECOMP_LIB): $(DECOMP_OBJECTS)
 	ar rcs $@ $(DECOMP_OBJECTS)
