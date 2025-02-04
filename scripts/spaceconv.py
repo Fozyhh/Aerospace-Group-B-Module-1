@@ -38,5 +38,7 @@ plt.savefig('convergence_plot.png', dpi=300)  # Save as a high-resolution PNG fi
 plt.show()
 
 # Calculate the convergence rate between the first and last points
-p = np.log(errors[1] / errors[0]) / np.log(grid_sizes[1] / grid_sizes[0])
-print(f'Estimated order of convergence: {p:.2f}')
+p1 = np.log(errors[1] / errors[0]) / np.log(grid_sizes[0] / grid_sizes[1])
+p2 = np.log(errors[2] / errors[1]) / np.log(grid_sizes[1] / grid_sizes[2])
+print(f'Estimated order of convergence 1: {p1:.2f}')
+print(f'Estimated order of convergence 2: {p2:.2f}')

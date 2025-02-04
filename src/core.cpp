@@ -324,7 +324,7 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
-        if(testCase==0){
+        if(testCase==2){
             L2_error(time);
         }
         solve_time_step(time);
