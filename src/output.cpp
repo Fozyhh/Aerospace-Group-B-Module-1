@@ -504,6 +504,7 @@ void IcoNS::output_profile()
     MPI_File fh;
     MPI_File_open(cart_comm, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     MPI_Offset offset = coords[1] * xSize[1] * sizeof(Real) * 7;
+
     // LINE 1
     if (coords[0] == static_cast<int>(PX / 2))
     {
@@ -538,14 +539,14 @@ void IcoNS::output_profile()
                 }
                 else
                 {
-                    v = (grid.v[gety(0, i, (dim_z - 1) / 2)] +
-                         grid.v[gety(0, i, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(0, i - 1, (dim_z - 1) / 2)] +
-                         grid.v[gety(0, i - 1, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(1, i, (dim_z - 1) / 2)] +
-                         grid.v[gety(1, i, (dim_z - 1) / 2 + 1)] +
-                         grid.v[gety(1, i - 1, (dim_z - 1) / 2)] +
-                         grid.v[gety(1, i - 1, (dim_z - 1) / 2 + 1)]) /
+                    v = (grid.v[gety(0, i + resy, (dim_z - 1) / 2)] +
+                         grid.v[gety(0, i + resy, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(0, i + resy - 1, (dim_z - 1) / 2)] +
+                         grid.v[gety(0, i + resy - 1, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(1, i + resy, (dim_z - 1) / 2)] +
+                         grid.v[gety(1, i + resy, (dim_z - 1) / 2 + 1)] +
+                         grid.v[gety(1, i + resy - 1, (dim_z - 1) / 2)] +
+                         grid.v[gety(1, i + resy - 1, (dim_z - 1) / 2 + 1)]) /
                         8;
                 }
                 w = (grid.w[getz(0, i, (dim_z_z) / 2)] +
@@ -587,11 +588,11 @@ void IcoNS::output_profile()
                 w = (grid.w[getz((newDimX_z - 1) / 2, i, (dim_z_z) / 2)] +
                      grid.w[getz((newDimX_z - 1) / 2 + 1, i, (dim_z_z) / 2)]) /
                     2;
-                p = (grid.p[getp((xSize[2] - 1) / 2, i, (xSize[0] - 1) / 2)] +
-                     grid.p[getp((xSize[2] - 1) / 2, i, (xSize[0] - 1) / 2 + 1)] +
-                     grid.p[getp((xSize[2] - 1) / 2 + 1, i, (xSize[0] - 1) / 2)] +
-                     grid.p[getp((xSize[2] - 1) / 2 + 1, i, (xSize[0] - 1) / 2 + 1)]) /
-                    2;
+                p = (grid.p[getHaloP((xSize[2] - 0) / 2, i, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP((xSize[2] - 0) / 2, i, (xSize[0] - 1) / 2 + 1)] +
+                     grid.p[getHaloP((xSize[2] - 0) / 2 + 1, i, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP((xSize[2] - 0) / 2 + 1, i, (xSize[0] - 1) / 2 + 1)]) /
+                    4;
             }
             MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
             offset += sizeof(Real);
@@ -636,18 +637,18 @@ void IcoNS::output_profile()
                 }
                 else
                 {
-                    u = (grid.u[getx(i, 0, (dim_z - 1) / 2)] +
-                         grid.u[getx(i, 0, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i, 1, (dim_z - 1) / 2)] +
-                         grid.u[getx(i, 1, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i - 1, 0, (dim_z - 1) / 2)] +
-                         grid.u[getx(i - 1, 0, (dim_z - 1) / 2 + 1)] +
-                         grid.u[getx(i - 1, 1, (dim_z - 1) / 2)] +
-                         grid.u[getx(i - 1, 1, (dim_z - 1) / 2 + 1)]) /
+                    u = (grid.u[getx(i + resx, 0, (dim_z - 1) / 2)] +
+                         grid.u[getx(i + resx, 0, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i + resx, 1, (dim_z - 1) / 2)] +
+                         grid.u[getx(i + resx, 1, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i + resx - 1, 0, (dim_z - 1) / 2)] +
+                         grid.u[getx(i + resx - 1, 0, (dim_z - 1) / 2 + 1)] +
+                         grid.u[getx(i + resx - 1, 1, (dim_z - 1) / 2)] +
+                         grid.u[getx(i + resx - 1, 1, (dim_z - 1) / 2 + 1)]) /
                         8;
                 }
-                v = (grid.v[gety(i, 0, (dim_z - 1) / 2)] +
-                     grid.v[gety(i, 0, (dim_z - 1) / 2 + 1)]) /
+                v = (grid.v[gety(i, 0 + resy, (dim_z - 1) / 2)] +
+                     grid.v[gety(i, 0 + resy, (dim_z - 1) / 2 + 1)]) /
                     2;
                 w = (grid.w[getz(i, 0, (dim_z_z) / 2)] +
                      grid.w[getz(i, 1, (dim_z_z) / 2)]) /
@@ -686,12 +687,13 @@ void IcoNS::output_profile()
                 w = (grid.w[getz(i, (newDimY_z - 1) / 2, (dim_z_z) / 2)] +
                      grid.w[getz(i, (newDimY_z - 1) / 2 + 1, (dim_z_z) / 2)]) /
                     2;
-                p = (grid.p[getHaloP(i, (xSize[1] - 1) / 2, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(i, (xSize[1] - 1) / 2, (xSize[0] - 1) / 2 + 1)] +
-                     grid.p[getHaloP(i, (xSize[1] - 1) / 2 + 1, (xSize[0] - 1) / 2)] +
-                     grid.p[getHaloP(i, (xSize[1] - 1) / 2 + 1, (xSize[0] - 1) / 2 + 1)]) /
+                p = (grid.p[getHaloP(i, (xSize[1] - 0) / 2, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(i, (xSize[1] - 0) / 2, (xSize[0] - 1) / 2 + 1)] +
+                     grid.p[getHaloP(i, (xSize[1] - 0) / 2 + 1, (xSize[0] - 1) / 2)] +
+                     grid.p[getHaloP(i, (xSize[1] - 0) / 2 + 1, (xSize[0] - 1) / 2 + 1)]) /
                     4;
             }
+
             MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
             offset += sizeof(Real);
             MPI_File_write_at(fh, offset, &v, 1, MPI_REALL, MPI_STATUS_IGNORE);
@@ -717,7 +719,7 @@ void IcoNS::output_profile()
             int iX, iY, iZ, iP, jX, jY, jZ, jP;
             if (PX % 2 == 0)
             {
-                iX = 0;
+                iX = resx;
                 iY = 0;
                 iZ = 0;
                 iP = 0;
@@ -727,12 +729,12 @@ void IcoNS::output_profile()
                 iX = (newDimX_x - 1) / 2;
                 iY = (newDimX_y - 1) / 2;
                 iZ = (newDimX_z - 1) / 2;
-                iP = (xSize[2] - 1) / 2;
+                iP = (xSize[2]) / 2;
             }
             if (PY % 2 == 0)
             {
                 jX = 0;
-                jY = 0;
+                jY = resy;
                 jZ = 0;
                 jP = 0;
             }
@@ -741,7 +743,7 @@ void IcoNS::output_profile()
                 jX = (newDimY_x - 1) / 2;
                 jY = (newDimY_y - 1) / 2;
                 jZ = (newDimY_z - 1) / 2;
-                jP = (xSize[1] - 1) / 2;
+                jP = (xSize[1]) / 2;
             }
             for (int k = 0; k < xSize[0]; k++)
             {
@@ -786,7 +788,6 @@ void IcoNS::output_profile()
                     grid.p[getHaloP(iP + 1, jP, k)] +
                     grid.p[getHaloP(iP + 1, jP + 1, k)]) /
                     4;
-
                 MPI_File_write_at(fh, offset, &u, 1, MPI_REALL, MPI_STATUS_IGNORE);
                 offset += sizeof(Real);
                 MPI_File_write_at(fh, offset, &v, 1, MPI_REALL, MPI_STATUS_IGNORE);

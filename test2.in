@@ -5,10 +5,10 @@
 1000
 
 # Time step: dt
-0.001
+0.005
 
 # Number of time steps: Nt
-25000
+500
 
 # Start of domain: SX,SY,SZ
 -0.5 -0.5 -0.5
@@ -17,10 +17,10 @@
 1.0 1.0 1.0
 
 # Number of grid points: Nx, Ny, Nz
-480 480 480
+50 50 50
 
 # Process grid: Px, Py, Pz
-8 8 1
+2 2 1
 
 # Boundaries :
 1 1 0
