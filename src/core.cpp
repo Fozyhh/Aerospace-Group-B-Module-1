@@ -328,6 +328,9 @@ void IcoNS::solve()
 
     while (i < Nt)
     {
+        if(testCase==0){
+            L2_error(time);
+        }
         solve_time_step(time);
         time += DT;
         i++;
@@ -494,8 +497,8 @@ void IcoNS::parse_input(const std::string &input_file)
                   << "Reynolds number: " << RE << "\n"
                   << "Time step: " << DT << "\n"
                   << "Number of timesteps: " << Nt << "\n"
-                  << "Starting point of the domain: " << SX << "x" << SZ << "x" << SY << "\n"
-                  << "Domain size: " << LX << " x " << LZ << " x " << LY << "\n"
+                  << "Starting point of the domain: " << SX << "x" << SY << "x" << SZ << "\n"
+                  << "Domain size: " << LX << " x " << LY << " x " << LZ << "\n"
                   << "Grid points: " << NX + 1 << " x " << NY + 1 << " x " << NZ + 1 << "\n"
                   << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n"
                   << "Boundary conditions: " << BX << " " << BY << " " << BZ << "\n";
