@@ -138,6 +138,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
+    boundary.update_boundary(y2Grid.u, y2Grid.v, y2Grid.w, time + 64.0 / 120.0 * DT);
 
     exchangeData(y2Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y2Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
@@ -268,7 +269,7 @@ void IcoNS::solve_time_step(Real time)
             }
         }
     }
-
+    boundary.update_boundary(y3Grid.u, y3Grid.v, y3Grid.w, time + 80.0 / 120.0 * DT);
     exchangeData(y3Grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(y3Grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(y3Grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
@@ -387,7 +388,7 @@ void IcoNS::solve_time_step(Real time)
         }
     }
 
-    boundary.update_boundary(grid.u, grid.v, grid.w, time);
+    boundary.update_boundary(grid.u, grid.v, grid.w, time+DT);
     exchangeData(grid.u, newDimX_x, newDimY_x, dim_z, MPI_face_x_x, MPI_face_y_x, 0, 1);
     exchangeData(grid.v, newDimX_y, newDimY_y, dim_z, MPI_face_x_y, MPI_face_y_y, 1, 0);
     exchangeData(grid.w, newDimX_z, newDimY_z, dim_z_z, MPI_face_x_z, MPI_face_y_z, 1, 1);
