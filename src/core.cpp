@@ -247,17 +247,13 @@ void IcoNS::set2Decomp()
 
 void IcoNS::setPoissonSolver()
 {
-    if (testCase == 1)
+    if (BZ)
     {
         poissonSolver = new NeumannPoissonSolver(c2d);
-    }
-    else if (testCase == 2)
-    {
-        poissonSolver = new PeriodicPoissonSolver(c2d);
     }
     else
     {
-        poissonSolver = new NeumannPoissonSolver(c2d);
+        poissonSolver = new PeriodicPoissonSolver(c2d);
     }
 }
 
