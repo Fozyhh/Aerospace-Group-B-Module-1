@@ -16,6 +16,7 @@
 class Boundary
 {
 private:
+
     /// @brief Left and right boundary offsets in x and y directions
     int lbx,lby,rbx,rby,lbz,rbz;
 
@@ -47,14 +48,17 @@ private:
     int offset_x_z, offset_y_z;
 
 public:
+
     /// @brief Vector of boundary functions for u-velocity component
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_u;
     /// @brief Vector of boundary functions for v-velocity component
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_v;
     /// @brief Vector of boundary functions for w-velocity component
     std::vector<std::shared_ptr<BoundaryFunction>> boundary_value_w;
+
     /**
-    * @brief Initialize boundary dimensions and parameters
+    * @brief Initialize boundary dimensions and parameters. 
+    * 
     * @param dim_x_x_ X dimension for x-direction mesh
     * @param dim_y_x_ Y dimension for x-direction mesh
     * @param dim_x_y_ X dimension for y-direction mesh
@@ -135,7 +139,7 @@ public:
     Real approximate_boundary_v(int x, int y, int z, Real t, int face, int side);
 
     /**
-     * @brief Calculate the approximate value of the z velocity in a given point.
+     * @brief Calculates the approximate value of the z velocity in a given point.
      *
      * @param x,y,z Coordinates of the position in the 3D mesh.
      * @param t Time of the time discretization we are considering.
@@ -147,14 +151,16 @@ public:
     Real approximate_boundary_w(int x, int y, int z, Real t, int face, int side);
 
     /**
-     * @brief Adds a boundary function for a specified velocity direction
+     * @brief Adds a boundary function for a specified velocity direction. 
+     * 
      * @param direction Velocity direction (U=length, V=width, W=height)
      * @param x Shared pointer to the boundary function
      */
     void addFunction(Direction direction, std::shared_ptr<BoundaryFunction> x);
 
     /**
-     * @brief Sets boundary offsets
+     * @brief Sets boundary offsets. 
+     * 
      * @param lbx_ Left boundary offset in x-direction
      * @param rbx_ Right boundary offset in x-direction
      * @param lby_ Left boundary offset in y-direction
@@ -163,13 +169,15 @@ public:
     void setBoundaryOffsets(int lbx_, int rbx_, int lby_, int rby_, int lbz_, int rbz_);
 
     /**
-     * @brief Sets process coordinates in the 2D grid
+     * @brief Sets process coordinates in the 2D grid. 
+     * 
      * @param coords_ Array containing process coordinates
     */
     void setCoords(int coords_[2]);
 
     /**
-     * @brief Sets additional dimension parameters
+     * @brief Sets additional dimension parameters. 
+     * 
      * @param other_dim_x_x_ Additional X dimension for x-direction mesh
      * @param other_dim_y_x_ Additional Y dimension for x-direction mesh
      * @param other_dim_x_y_ Additional X dimension for y-direction mesh
@@ -177,45 +185,8 @@ public:
      * @param other_dim_x_z_ Additional X dimension for z-direction mesh
      * @param other_dim_y_z_ Additional Y dimension for z-direction mesh
     */
-    void setOffsets(int offset_x_x_, int offset_y_x_,int offset_x_y_, int offset_y_y_,int offset_x_z_, int offset_y_z_);
-    
-    //SKIPPING GHOST POINT
-    inline int getx(int i, int j, int k)
-    {
-        if (k == -1)
-        {
-            k = dim_z - 2;
-        }
-        if (k == dim_z)
-        {
-            k = 1;
-        }
-        return i * newDimY_x * dim_z + j * dim_z + k;
-    }
-    inline int gety(int i, int j, int k)
-    {
-        if (k == -1)
-        {
-            k = dim_z - 2;
-        }
-        if (k == dim_z)
-        {
-            k = 1;
-        }
-        return i * newDimY_y * dim_z + j * dim_z + k;
-    }
-    inline int getz(int i, int j, int k) { return i * newDimY_z * dim_z_z + j * dim_z_z + (k + (dim_z_z)) % (dim_z_z); }
-    inline int getp(int i, int j, int k)
-    {
-        if (k == -1)
-        {
-            k = xSize[0] - 2;
-        }
-        if (k == xSize[0])
-        {
-            k = 1;
-        }
-        return i * xSize[1] * xSize[0] + j * xSize[0] + k;
-    }
+    void setOffsets(int offset_x_x_, int offset_y_x_,int offset_x_y_, 
+                    int offset_y_y_,int offset_x_z_, int offset_y_z_);
+
 };
 #endif

@@ -2,7 +2,8 @@
 # Compiler and Basic Flags     #
 ################################
 CXX = mpic++
-REALTYPE = -DUSING_DOUBLE #-DUSING_FLOAT
+REALTYPE = -DUSING_DOUBLE
+#REALTYPE = -DUSING_FLOAT
 CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) 
 CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE)
 
