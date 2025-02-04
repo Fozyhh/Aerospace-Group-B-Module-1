@@ -3,9 +3,14 @@
 ################################
 CXX = mpic++
 REALTYPE = -DUSING_DOUBLE
-#REALTYPE = -DUSING_FLOAT
+# REALTYPE = -DUSING_FLOAT
+
+# Optimized flags for performance
 CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) 
 CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE)
+
+# Debug flags for Valgrind
+CXXFLAGS_DEBUG = -std=c++23 -O0 -g -Wall -DDEBUG $(REALTYPE)
 
 
 ################################
@@ -80,3 +85,8 @@ $(DECOMP_LIB): $(DECOMP_OBJECTS)
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f $(DECOMP_OBJECTS)
+
+
+debug: CXXFLAGS = $(CXXFLAGS_DEBUG)
+debug: CXXFLAGS3 = $(CXXFLAGS_DEBUG)
+debug: clean all
