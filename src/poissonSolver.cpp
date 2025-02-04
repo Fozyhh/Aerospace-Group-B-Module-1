@@ -169,25 +169,15 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         for (int j = 0; j < zSize[1]; j++)
         {
-            pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + 0] /= (2 / (DX * DX) * (std::cos(2.0 * 0 * M_PI / (c2d->nxGlobal - 1)) - 1) +
-                                                                     2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
-                                                                     2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
-
-            for (int i = 1; i < zSize[2] / 2; i++)
-
+            for (int i = 0; i < zSize[2] / 2 + 1; i++)
             {
-
-                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + i] /= (2 / (DX * DX) * (std::cos(2.0 * i * M_PI / (c2d->nxGlobal - 1)) - 1) +
+                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + i] /= (2 / (DX * DX) * (std::cos(2.0 * i * M_PI / c2d->nxGlobal) - 1) +
                                                                          2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
                                                                          2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
             }
-            pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + zSize[2] / 2] /= (2 / (DX * DX) * (std::cos(2.0 * zSize[2] / 2 * M_PI / (c2d->nxGlobal - 1)) - 1) +
-                                                                                2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
-                                                                                2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
-
             for (int i = zSize[2] / 2 + 1; i < zSize[2]; i++)
             {
-                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + (i)] /= (2 / (DX * DX) * (std::cos(2.0 * (zSize[2] - i) * M_PI / (c2d->nxGlobal - 1)) - 1) +
+                pz[j * (zSize[1]) * (zSize[2]) + k * (zSize[2]) + (i)] /= (2 / (DX * DX) * (std::cos(2.0 * (zSize[2] - i) * M_PI / c2d->nxGlobal) - 1) +
                                                                            2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
                                                                            2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
             }
@@ -231,7 +221,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     // FFTW_PREFIX(destroy_plan)(neumann);
 
     // Normalization
-    Real normalization_factor1 = 2.0 * (xSize[0] - 1) * 2.0 * (ySize[1] - 1) * 2.0 * (zSize[2] - 1);
+    Real normalization_factor1 = 2.0 * (xSize[0] - 1) * 2.0 * (ySize[1] - 1) * zSize[2];
     for (int i = 0; i < xSize[0] * xSize[1] * xSize[2]; i++)
     {
         F[i] /= normalization_factor1;
