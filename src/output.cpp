@@ -432,11 +432,11 @@ void IcoNS::output_z()
             Real value_x, value_y, value_z, value_p, value_m;
             if (lby && j == 1)
             {
-                value_x = (boundary.boundary_value_u[FRONT]->value(i + offset_x_x_ - 0.5, j + offset_y_x_, z_index_z, DT*Nt));
+                value_x = (boundary.boundary_value_u[FRONT]->value(i + offset_x_x_ - 0.5, j + offset_y_x_, z_index - 0.5, DT*Nt));
             }
             else if (rby && j == newDimY_z - 2)
             {
-                value_x = (boundary.boundary_value_u[BACK]->value(i + offset_x_x_ - 0.5, j + offset_y_x_, z_index_z, DT*Nt));
+                value_x = (boundary.boundary_value_u[BACK]->value(i + offset_x_x_ - 0.5, j + offset_y_x_, z_index - 0.5, DT*Nt));
             }
             else
             {
@@ -445,11 +445,11 @@ void IcoNS::output_z()
 
             if (lbx && i == 1)
             {
-                value_y = (boundary.boundary_value_v[LEFT]->value(i + offset_x_y_, j + offset_y_y_ - 0.5, z_index_z, DT*Nt));
+                value_y = (boundary.boundary_value_v[LEFT]->value(i + offset_x_y_, j + offset_y_y_ - 0.5, z_index - 0.5, DT*Nt));
             }
             else if (rbx && i == newDimX_z - 2)
             {
-                value_y = boundary.boundary_value_v[RIGHT]->value(i + offset_x_y, j + offset_y_y_ - 0.5, z_index_z, DT*Nt);
+                value_y = boundary.boundary_value_v[RIGHT]->value(i + offset_x_y, j + offset_y_y_ - 0.5, z_index - 0.5, DT*Nt);
             }
             else
             {
