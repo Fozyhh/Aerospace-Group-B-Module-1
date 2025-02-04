@@ -400,8 +400,8 @@ inline Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Rea
                     v[gety(i - resx, j - 1 + resy, k)] + v[gety(i + 1 - resx, j - 1 + resy, k)]) /
                        4.0 *
                        (u[getx(i, j + 1, k)] - u[getx(i, j - 1, k)]) / (2.0 * DY) +
-                   (w[getz(i - resx, j - resy, k)] + w[getz(i + 1 - resx, j - resy, k)] +
-                    w[getz(i - resx, j - resy, k - 1)] + w[getz(i + 1 - resx, j - resy, k - 1)]) /
+                   (w[getz(i - resx, j , k)] + w[getz(i + 1 - resx, j , k)] +
+                    w[getz(i - resx, j , k - 1)] + w[getz(i + 1 - resx, j , k - 1)]) /
                        4.0 *
                        (u[getx(i, j, k + 1)] - u[getx(i, j, k - 1)]) / (2.0 * DZ)) +
                  1 / RE * ((u[getx(i + 1, j, k)] - 2 * u[getx(i, j, k)] + u[getx(i - 1, j, k)]) / (DX * DX) + (u[getx(i, j + 1, k)] - 2 * u[getx(i, j, k)] + u[getx(i, j - 1, k)]) / (DY * DY) + (u[getx(i, j, k + 1)] - 2 * u[getx(i, j, k)] + u[getx(i, j, k - 1)]) / (DZ * DZ));
@@ -412,6 +412,7 @@ inline Real IcoNS::functionF_u(const std::vector<Real> &u, const std::vector<Rea
     }
     return value;
 }
+
 
 inline Real IcoNS::functionF_v(const std::vector<Real> &u, const std::vector<Real> &v, const std::vector<Real> &w, int i, int j, int k, Real t)
 {
