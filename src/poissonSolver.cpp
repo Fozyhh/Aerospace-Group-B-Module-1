@@ -8,7 +8,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeX2Y_MajorIndex(F, py);
 
@@ -18,7 +18,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeY2Z_MajorIndex(py, pz);
 
@@ -28,7 +28,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     // Divide by the eigenvalues
     for (int k = 0; k < zSize[0]; k++)
@@ -55,7 +55,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeZ2Y_MajorIndex(pz, py);
 
@@ -65,7 +65,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeY2X_MajorIndex(py, F);
 
@@ -75,7 +75,7 @@ void NeumannPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     // Normalization
     Real normalization_factor1 = 2.0 * (xSize[0] - 1) * 2.0 * (ySize[1] - 1) * 2.0 * (zSize[2] - 1);
@@ -94,7 +94,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeX2Y_MajorIndex(F, py);
 
@@ -104,7 +104,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeY2Z_MajorIndex(py, pz);
 
@@ -162,7 +162,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
         // FFTW_PREFIX(execute_dft_r2c(neumann, &pz[i * zSize[2]], &helper[i * (zSize[2]/2+1)]);
         FFTW_PREFIX(execute_r2r)(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     // Divide by the eigenvalues
     for (int k = 0; k < zSize[0]; k++)
@@ -196,7 +196,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     // Remaining Poisson Solver
 
@@ -208,7 +208,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &py[i * ySize[1]], &py[i * ySize[1]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     c2d->transposeY2X_MajorIndex(py, F);
 
@@ -218,7 +218,7 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
     {
         FFTW_PREFIX(execute_r2r)(neumann, &F[i * xSize[0]], &F[i * xSize[0]]);
     }
-    // FFTW_PREFIX(destroy_plan)(neumann);
+    FFTW_PREFIX(destroy_plan)(neumann);
 
     // Normalization
     Real normalization_factor1 = 2.0 * (xSize[0] - 1) * 2.0 * (ySize[1] - 1) * zSize[2];
