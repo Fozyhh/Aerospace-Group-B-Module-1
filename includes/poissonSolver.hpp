@@ -49,6 +49,11 @@ public:
      * 
      * @param F A pointer to the grid data for pressure.
      */
+
+    virtual ~PoissonSolver() 
+    {
+    } 
+
     virtual void solvePoisson(Real* F) = 0;
 };
 

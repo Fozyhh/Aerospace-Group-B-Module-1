@@ -75,7 +75,7 @@ dirs:
 	@mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/main: $(OBJECTS) $(DECOMP_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS) $(MPI_LDFLAGS)
+	$(CXX) $(CXXFLAGS3) -o $@ $(OBJECTS) $(DECOMP_LIB) $(LIBS) $(MPI_LDFLAGS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS3) $(INCLUDES) -c $< -o $@ $(MPI_LDFLAGS)
