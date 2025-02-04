@@ -212,7 +212,7 @@ public:
   void output_y();
   void output_z();
   void output_profile();
-
+  void cleaner();
   MPI_Status status;
 
 private:

@@ -341,10 +341,7 @@ void IcoNS::solve()
 
     output();
     MPI_Barrier(cart_comm);
-    c2d->deallocXYZ(poissonSolver->py);
-    c2d->deallocXYZ(poissonSolver->pz);
-    c2d->deallocXYZ(Y2_p);
-    FFTW_PREFIX(destroy_plan)(poissonSolver->neumann);
+    cleaner();
 }
 
 
@@ -557,4 +554,24 @@ void IcoNS::L2_error(const Real t)
                   << " Velocity error: " << velocityError << " Pressure error: " << totalPressureError << std::endl
                   << std::endl;
     }
+}
+
+
+void IcoNS::cleaner()
+{
+    c2d->deallocXYZ(poissonSolver->py);
+    c2d->deallocXYZ(poissonSolver->pz);
+    c2d->deallocXYZ(Y2_p);
+    FFTW_PREFIX(cleanup)();
+    delete poissonSolver;
+    c2d->decompInfoFinalize();
+    delete c2d;
+    MPI_Type_free(&MPI_face_x_x);
+    MPI_Type_free(&MPI_face_y_x);
+    MPI_Type_free(&MPI_face_x_y);
+    MPI_Type_free(&MPI_face_y_y);
+    MPI_Type_free(&MPI_face_x_z);
+    MPI_Type_free(&MPI_face_y_z);
+    MPI_Type_free(&MPI_face_x_p);
+    MPI_Type_free(&MPI_face_y_p);
 }
