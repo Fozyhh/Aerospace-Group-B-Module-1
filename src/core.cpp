@@ -524,8 +524,6 @@ void IcoNS::parse_input(const std::string &input_file)
 
 void IcoNS::output()
 {
-    copyPressureToHalo(Y2_p, grid.p);
-    MPI_Barrier(cart_comm);
     exchangeData(grid.p, (xSize[2] + 2), (xSize[1] + 2), xSize[0], MPI_face_x_p, MPI_face_y_p, 1, 1);
     MPI_Barrier(cart_comm);
     output_x();
