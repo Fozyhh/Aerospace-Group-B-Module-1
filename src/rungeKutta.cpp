@@ -264,7 +264,7 @@ void IcoNS::solve_time_step(Real time)
         {
             for (int k = 0; k < xSize[0]; k++)
             {
-                halo_phi[getHaloP(i + 1, j + 1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i + 1, j + 1, k)]; // Phi_p=phi^3
+                halo_phi[getHaloP(i + 1, j + 1, k)] = Y2_p[getp(i, j, k)] + halo_phi[getHaloP(i + 1, j + 1, k)]; 
             }
         }
     }

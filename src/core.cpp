@@ -240,8 +240,6 @@ void IcoNS::set2Decomp()
     zSize[2] = c2d->zSize[2];
 
     // pencils allocation
-    // c2d->allocX(grid.p);
-    // c2d->allocX(Phi_p);
     c2d->allocX(Y2_p);
 }
 
