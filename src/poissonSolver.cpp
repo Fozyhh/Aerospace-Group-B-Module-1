@@ -108,58 +108,11 @@ void PeriodicPoissonSolver::solvePoisson(Real *F)
 
     c2d->transposeY2Z_MajorIndex(py, pz);
 
-    // Version using the total complex and the helper
-
-    // // 3. Z-Direction Transforms
-    // neumann = FFTW_PREFIX(plan_dft_r2c_1d(zSize[2], nullptr, nullptr, FFTW_ESTIMATE);
-
-    // for (int i = 0; i < zSize[1] * zSize[0]; i++)
-    // {
-    //     FFTW_PREFIX(execute_dft_r2c(neumann, &pz[i * zSize[2]], &helper[i * (zSize[2]/2+1)]);
-    // }
-    // FFTW_PREFIX(destroy_plan(neumann);
-
-    // // Divide by the eigenvalues
-    // for (int k = 0; k < zSize[0]; k++)
-    // {
-    //     for (int j = 0; j < zSize[1]; j++)
-    //     {
-    //         for (int i = 0; i < zSize[2]/2+1; i++)
-    //         {
-    //             helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][0] /= (2 / (DX * DX) * (std::cos(2.0*i * M_PI / (c2d->nxGlobal - 1)) - 1) +
-    //                                                                      2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
-    //                                                                      2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
-    //             helper[j * (zSize[1]) * (zSize[2]/2+1) + k * (zSize[2]/2+1) + i][1] /= (2 / (DX * DX) * (std::cos(2.0*i * M_PI / (c2d->nxGlobal - 1)) - 1) +
-    //                                                                             2 / (DY * DY) * (std::cos((j + c2d->coord[0] * zSize[1]) * M_PI / (c2d->nyGlobal - 1)) - 1) +
-    //                                                                             2 / (DZ * DZ) * (std::cos((k + c2d->coord[1] * zSize[0]) * M_PI / (c2d->nzGlobal - 1)) - 1));
-    //         }
-    //     }
-    // }
-
-    // if (c2d->nRank == 0)
-    // {
-    //     helper[0][0] = 0.0;
-    //     helper[0][1] = 0.0;
-    // }
-
-    // // 1. Z-Direction Transforms
-    // neumann = FFTW_PREFIX(plan_dft_c2r_1d(zSize[2], nullptr, nullptr, FFTW_ESTIMATE);
-
-    // for (int i = 0; i < zSize[1] * zSize[0]; i++)
-    // {
-    //     FFTW_PREFIX(execute_dft_c2r(neumann, &helper[i * (zSize[2] / 2 + 1)], &pz[i * zSize[2]]);
-    // }
-    // FFTW_PREFIX(destroy_plan(neumann);
-
-    // Version using the Half complex
-
-    // 3. Z-Direction Transforms
-    // neumann = FFTW_PREFIX(plan_dft_r2c_1d(zSize[2], nullptr, nullptr, FFTW_ESTIMATE);
+    
     neumann = FFTW_PREFIX(plan_r2r_1d)(zSize[2], nullptr, nullptr, FFTW_R2HC, FFTW_ESTIMATE);
 
     for (int i = 0; i < zSize[1] * zSize[0]; i++)
     {
-        // FFTW_PREFIX(execute_dft_r2c(neumann, &pz[i * zSize[2]], &helper[i * (zSize[2]/2+1)]);
         FFTW_PREFIX(execute_r2r)(neumann, &pz[i * zSize[2]], &pz[i * zSize[2]]);
     }
     FFTW_PREFIX(destroy_plan)(neumann);

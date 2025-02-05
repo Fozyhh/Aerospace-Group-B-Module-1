@@ -11,9 +11,6 @@ void Boundary::update_boundary(std::vector<Real> &Yx, std::vector<Real> &Yy, std
     // face 3 -> rby back
     // face 4 5 -> no partition on z
 
-    // Global offsets
-    // std::cout <<coords[0]<< " " << dim_x_x << " " << offset_x_x << std::endl;
-
     // X
     // LEFT FACE
     if (lbx)

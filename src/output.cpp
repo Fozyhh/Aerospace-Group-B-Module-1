@@ -455,8 +455,7 @@ void IcoNS::output_z()
             {
                 value_y = (grid.v[gety(i, j + resy, z_index)] + grid.v[gety(i, j + resy - 1, z_index)] + grid.v[gety(i, j + resy, z_index - 1)] + grid.v[gety(i, j + resy - 1, z_index - 1)])/4;
             }
-            // std::cout << i <<" "<< j<< " " << z_index_z << ",   " << grid.w[getz(i, j, z_index_z)] << std::endl;
-            // int stop; std::cin >> stop;
+
             value_z = grid.w[getz(i, j, z_index_z)];
 
             value_p = (grid.p[getHaloP(i, j, z_index)] + grid.p[getHaloP(i, j, z_index - 1)])/2;
