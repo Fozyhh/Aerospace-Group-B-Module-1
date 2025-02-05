@@ -7,7 +7,7 @@ aerospace-group-b-module-1/
 ├── includes/  # Header files
 ├── doc/       # Documentation
 ├── scripts/   # Python analysis scripts
-├── resources/ # Output resources
+├── dependencies/ #2Decomp library
 ├── Test/      # Test files
 └── README.md
 
@@ -18,7 +18,7 @@ aerospace-group-b-module-1/
 make
 mpirun -n X ./build/main input.in   # Where X is number of processes 
 ```
-Need to de-comment "#define ERROR" and do a make clean
+Need to de-comment "#define ERROR" 
 ### Test Build 
 ```bash
 make
@@ -33,22 +33,19 @@ make clean
 ### Small note
 Complications with 2 decomp compatibility lead to have only codes where every processor has the same number of points for pressure being able to run.
 
+### Output
+The output files are located in the build folder created by the Makefile.
 
-## Python Analysis Scripts
-### Dependencies
+## Dependencies
 
-```bash
-2Decomp and fftw3 libraries install procedure goes here
-```
 
-```bash
-pip install matplotlib numpy pandas
-```
+The FFTW3 library is required. If it is not included as an mkModule, ensure that the necessary variables are correctly set in the Makefile. \
+The 2Decomp library is already included and will be compiled automatically.
 
-## Running Analysis
-```bash
-python3 script.py
-```
+
+
+
+
 ## Documentation
 Additional documentation can be found in the doc directory.
 

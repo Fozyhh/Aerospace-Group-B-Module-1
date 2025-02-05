@@ -4,3 +4,4 @@ build-cpuprof/
 build-memprof/
 .vscode/
 *.o
+*.d
