@@ -6,3 +6,4 @@ build-memprof/
 *.vtk
 *.txt
 *.dat
+*.d
