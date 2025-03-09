@@ -21,9 +21,9 @@ void IcoNS::output_x()
     const Real x_middle = (NX + 1) / 2;
 
     if (rank == 0)
-        std::remove("solution_x.vtk");
+        std::remove(("../results/solution_x_test"+ std::to_string(testCase) + ".vtk").c_str());
     MPI_Barrier(cart_comm);
-    MPI_File_open(cart_comm, "solution_x.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_File_open(cart_comm, ("../results/solution_x_test"+ std::to_string(testCase) + ".vtk").c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
     //===========================================
     // Header Writing (Rank 0 only)
@@ -188,9 +188,9 @@ void IcoNS::output_y()
     const Real y_middle = (NY + 1) / 2;
     const Real y_middle_y = NY / 2;
     if (rank == 0)
-        std::remove("solution_y.vtk");
+        std::remove(("../results/solution_y_test"+ std::to_string(testCase) + ".vtk").c_str());
     MPI_Barrier(cart_comm);
-    MPI_File_open(cart_comm, "solution_y.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_File_open(cart_comm, ("../results/solution_y_test"+ std::to_string(testCase) + ".vtk").c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
     //===========================================
     // Header Writing (Rank 0 only)
@@ -346,9 +346,9 @@ void IcoNS::output_z()
     const Real z_middle= (NZ + 1) / 2;
     const Real z_middle_z = NZ / 2;
     if (rank == 0)
-        std::remove("solution_z.vtk");
+        std::remove(("../results/solution_z_test"+ std::to_string(testCase) + ".vtk").c_str());
     MPI_Barrier(cart_comm);
-    MPI_File_open(cart_comm, "solution_z.vtk", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    MPI_File_open(cart_comm, ("../results/solution_z_test"+ std::to_string(testCase) + ".vtk").c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 
 
 
@@ -494,8 +494,8 @@ void IcoNS::output_z()
 
 void IcoNS::output_profile()
 {
-    const std::string filename = "profile" + std::to_string(testCase) + ".dat";
-    const std::string filenametxt = "profile" + std::to_string(testCase) + ".txt";
+    const std::string filename = "../results/profile" + std::to_string(testCase) + ".dat";
+    const std::string filenametxt = "../results/profile" + std::to_string(testCase) + ".txt";
     if (rank == 0){
         std::remove(filename.c_str());
         std::remove(filenametxt.c_str());

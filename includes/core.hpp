@@ -56,8 +56,11 @@ public:
 
     set2Decomp();
 
+    try{
     setPoissonSolver();
-
+    }catch(const unsupportedBoundaryException& e){
+      if(!rank) std::cout << e.what() <<std::endl;
+    }
     setBoundaryConditions();
 
     setParallelization();
@@ -246,7 +249,7 @@ private:
   C2Decomp *c2d;
 
   // Poisson solver object
-  PoissonSolver *poissonSolver;
+  PoissonSolver *poissonSolver = nullptr;
 
   // Arrays to store the dimensions of the grid in each direction
   int xSize[3], ySize[3], zSize[3];

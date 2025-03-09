@@ -235,5 +235,13 @@ inline double evaluateExpression(const std::string& expr) {
     return static_cast<double>(std::stold(processedExpr));
 }
 
+class unsupportedBoundaryException : public std::exception {
+public:
+    // Sovrascrive il metodo what()
+    const char* what() const noexcept override {
+        return "Error: This boundary setting is not supported yet!";
+    }
+};
+
 
 #endif

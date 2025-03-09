@@ -1,6 +1,8 @@
 build/
-resources/
 build-cpuprof/
 build-memprof/
 .vscode/
 *.o
+*.vtk
+*.txt
+*.dat

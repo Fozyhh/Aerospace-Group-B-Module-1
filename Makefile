@@ -10,8 +10,8 @@ MPI_LDFLAGS   = $(shell mpic++ --showme:link)     # Get MPI link flags
 
 
 # Optimized flags for performance
-CXXFLAGS = -std=c++23 -O2 -march=native -flto -funroll-loops -march=native $(REALTYPE) $(MPI_CXXFLAGS)
-CXXFLAGS3 = -std=c++23 -O3 -march=native -flto -funroll-loops -march=native -Wall $(REALTYPE) $(MPI_CXXFLAGS)
+CXXFLAGS = -std=c++23 -O3 -march=native -funroll-loops -march=native $(REALTYPE) $(MPI_CXXFLAGS)
+CXXFLAGS3 = -std=c++23 -O3 -march=native -funroll-loops -march=native -Wall $(REALTYPE) $(MPI_CXXFLAGS)
 
 # Debug flags for Valgrind
 CXXFLAGS_DEBUG = -std=c++23 -O0 -g -Wall -DDEBUG $(REALTYPE)
@@ -45,6 +45,7 @@ SOURCES = $(SRC_DIR)/main.cpp \
           $(SRC_DIR)/constants.cpp \
           $(SRC_DIR)/error.cpp \
           $(SRC_DIR)/output.cpp \
+          $(SRC_DIR)/setBoundaries.cpp \
 
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 

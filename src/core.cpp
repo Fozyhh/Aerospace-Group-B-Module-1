@@ -1,80 +1,5 @@
 #include "core.hpp"
 
-
-void IcoNS::setBoundaryConditions()
-{
-    std::shared_ptr<BoundaryFunction> u_func;
-    std::shared_ptr<BoundaryFunction> v_func, v_func1;
-    std::shared_ptr<BoundaryFunction> w_func, w_func1;
-
-    if (testCase == 1)
-    {
-        u_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0; });
-        v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0.0; });
-        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                              { return 1.0; });
-        w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0; });
-        for (int i = 0; i < 6 /*nfaces*/; i++)
-        {
-            boundary.addFunction(U, u_func);
-
-            boundary.addFunction(W, v_func);
-            if (i == RIGHT)
-            {
-                boundary.addFunction(V, v_func1);
-            }
-            else
-            {
-                boundary.addFunction(V, v_func);
-            }
-        }
-    }
-    else if (testCase == 2)
-    {
-        u_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0; });
-        v_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0.0; });
-        v_func1 = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                              { return 1.0; });
-        w_func = std::make_shared<Dirichlet>([&](Real /*x*/, Real /*y*/, Real /*z*/, Real /*t*/)
-                                             { return 0; });
-        for (int i = 0; i < 6 /*nfaces*/; i++)
-        {
-            boundary.addFunction(U, u_func);
-
-            boundary.addFunction(W, v_func);
-            if (i == LEFT)
-            {
-                boundary.addFunction(V, v_func1);
-            }
-            else
-            {
-                boundary.addFunction(V, v_func);
-            }
-        }
-    }
-    else
-    {
-        u_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                             { return std::sin(SX + (x + 0.5) * DX) * std::cos(SY + y * DY) * std::sin(SZ + z * DZ) * std::sin(t); });
-        v_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                             { return std::cos(SX + x * DX) * std::sin(SY + (y + 0.5) * DY) * std::sin(SZ + z * DZ) * std::sin(t); });
-        w_func = std::make_shared<Dirichlet>([&](Real x, Real y, Real z, Real t)
-                                             { return 2 * (std::cos(SZ + x * DX) * std::cos(SY + y * DY) * std::cos(SZ + (z + 0.5) * DZ) * std::sin(t)); });
-        for (int i = 0; i < 6 /*nfaces*/; i++)
-        {
-            boundary.addFunction(U, u_func);
-            boundary.addFunction(V, v_func);
-            boundary.addFunction(W, w_func);
-        }
-    }
-}
-
-
 void IcoNS::setParallelization()
 {
     dims[0] = PX;
@@ -246,13 +171,16 @@ void IcoNS::set2Decomp()
 
 void IcoNS::setPoissonSolver()
 {
-    if (BZ)
+    if (BX && BY && BZ)
     {
         poissonSolver = new NeumannPoissonSolver(c2d);
     }
-    else
+    else if (BX && BY && !BZ)
     {
         poissonSolver = new PeriodicPoissonSolver(c2d);
+    }else
+    {
+        throw unsupportedBoundaryException();
     }
 }
 
@@ -261,35 +189,36 @@ void IcoNS::exchangeData(std::vector<Real> &grid_loc, int newDimX, int newDimY, 
 {
     if (!(BY && coords[1] == 0))
     {
-        MPI_Send(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * firstY], 1, MPI_face_x, neighbors[3], 11, cart_comm);
+        MPI_Isend(&grid_loc[dim_z * newDimY + dim_z + dim_z * sameY * lastY], 1, MPI_face_x, neighbors[3], 11, cart_comm, &reqs[2]);
     }
 
     if (!(BY && coords[1] == PY - 1))
     {
 
-        MPI_Recv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &status);
-        MPI_Send(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * lastY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm);
+        MPI_Irecv(&grid_loc[dim_z * newDimY + (newDimY - 1) * dim_z], 1, MPI_face_x, neighbors[1], 11, cart_comm, &reqs[3]);
+        MPI_Wait(&reqs[3], &status);
+        MPI_Isend(&grid_loc[dim_z * newDimY + (newDimY - 2 - sameY * firstY) * dim_z], 1, MPI_face_x, neighbors[1], 12, cart_comm, &reqs[3]);
     }
-
     if (!(BY && coords[1] == 0))
     {
-        MPI_Recv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &status);
+        MPI_Irecv(&grid_loc[dim_z * newDimY], 1, MPI_face_x, neighbors[3], 12, cart_comm, &reqs[2]);
+        MPI_Wait(&reqs[2], &status);
     }
 
     if (!(BX && coords[0] == 0))
     {
-        MPI_Send(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm);
+        MPI_Isend(&grid_loc[(newDimY)*dim_z + (newDimY)*dim_z * sameX * firstX], 1, MPI_face_y, neighbors[0], 10, cart_comm, &reqs[0]);
     }
-
     if (!(BX && coords[0] == PX - 1))
     {
-        MPI_Recv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &status);
-        MPI_Send(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm);
+        MPI_Irecv(&grid_loc[(dim_z)*newDimY * (newDimX - 1)], 1, MPI_face_y, neighbors[2], 10, cart_comm, &reqs[1]);
+        MPI_Wait(&reqs[1], &status);
+        MPI_Isend(&grid_loc[newDimY * dim_z * (newDimX - 2 - sameX * lastX)], 1, MPI_face_y, neighbors[2], 9, cart_comm, &reqs[1]);
     }
-
     if (!(BX && coords[0] == 0))
     {
-        MPI_Recv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &status);
+        MPI_Irecv(&grid_loc[0], 1, MPI_face_y, neighbors[0], 9, cart_comm, &reqs[0]);
+        MPI_Wait(&reqs[0], &status);
     }
 }
 
@@ -311,6 +240,7 @@ void IcoNS::copyPressureToHalo(Real *p, std::vector<Real> &halo)
 
 void IcoNS::solve()
 {
+    if(poissonSolver == nullptr) return;
     Real time = 0.0;
     int i = 0;
     double solve_start_time = MPI_Wtime();
@@ -497,7 +427,6 @@ void IcoNS::parse_input(const std::string &input_file)
                   << "Process grid: " << PX << " x " << PY << " x " << PZ << "\n"
                   << "Boundary conditions: " << BX << " " << BY << " " << BZ << "\n";
     }
-
     // Verify that the process grid matches the number of processes
     if (PX * PY * PZ != size)
     {
