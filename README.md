@@ -63,19 +63,23 @@ Outputs of simulation can be found in the [results](results) directory, where th
 
 The test case 1 consists in a three-dimensional lid-driven cavity with Dirichlet boundary
 conditions on all the 6 faces, where we fix the velocity on y axis to 1 and the other faces to 0. The result shown is a plane cutting the cube on z=0 of a simulation with 120x120x120
-pressure points at 8 seconds.
+pressure points at 8 seconds.  
 Here we show the vortex created along the z plane in both velocity and pressure.
 
-<img src="images/Test1-sol_z-v.png" alt="test1v" width="300" style="margin-left: 60px">   <img src="images/Test1-sol_z-p.png" alt="test1p" width="300" style="margin-left: 150px">
+| Velocity | Pressure |
+|----------|----------|
+| ![test1v](images/Test1-sol_z-v.png) | ![test1p](images/Test1-sol_z-p.png) |
 
 ### Test2
 
 The test case 2 is a lid-driven where we have periodic boundaries in the z direction. The
 result shown is a plane cutting the cube on z=0 of a simulation with 120x120x120 pressure
-points at 20 seconds
+points at 20 seconds.  
 Here we show the vortex created along the z plane in both velocity and pressure.
 
-<img src="images/Test2-sol_z-v.png" alt="test2v" width="300" style="margin-left: 60px">   <img src="images/Test2-sol_z-p.png" alt="test2p" width="300" style="margin-left: 150px">
+| Velocity | Pressure |
+|----------|----------|
+| ![test2v](images/Test2-sol_z-v.png) | ![test2p](images/Test2-sol_z-p.png) |
 
 ### Analysis
 
@@ -83,14 +87,17 @@ Here we show the vortex created along the z plane in both velocity and pressure.
 
 Error has been measured on grids of increasing dimension and decreasing timestep with respect to CFL condition, results show convergence of grade 2 for velocity and around 1.5 for pressure:
 
-<img src="images/VelConv.png" alt="vel" width="300" style="margin-left: 60px">   
-<img src="images/PressConv.png" alt="conv" width="300" style="margin-left: 100px">
+| Velocity Convergence | Pressure Convergence |
+|----------------------|----------------------|
+| ![vel](images/VelConv.png) | ![conv](images/PressConv.png) |
 
 ### Time scalability
 
 Time scalability test were performed on an HPC cluster using up to 256 cores on a 320x320x320 grid:
 
-<img src="images/StrongScalability.png" alt="Scal" width="300" style="margin-left: 60px">   <img src="images/Speedup.png" alt="speed" width="300" style="margin-left: 150px">
+| Strong Scalability | Speedup |
+|--------------------|---------|
+| ![Scal](images/StrongScalability.png) | ![speed](images/Speedup.png) |
 
 ## Documentation
 
