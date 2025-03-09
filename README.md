@@ -84,7 +84,7 @@ Here we show the vortex created along the z plane in both velocity and pressure.
 Error has been measured on grids of increasing dimension and decreasing timestep with respect to CFL condition, results show convergence of grade 2 for velocity and around 1.5 for pressure:
 
 <img src="images/VelConv.png" alt="vel" width="300" style="margin-left: 60px">   
-<img src="images/PressConv.png" alt="conv" width="300" style="margin-left: 150px">
+<img src="images/PressConv.png" alt="conv" width="300" style="margin-left: 100px">
 
 ### Time scalability
 
